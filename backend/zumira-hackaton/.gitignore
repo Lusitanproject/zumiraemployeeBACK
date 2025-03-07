@@ -1,0 +1,34 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Diretórios do ambiente de desenvolvimento
+/.env
+/.env.local
+/.env.*.local
+
+# macOS
+.DS_Store
+
+# Diretórios de build
+/dist
+/build
+
+# Arquivos de dependências específicas do sistema
+.pnp.*
+
+# Diretórios e arquivos temporários
+/.vscode
+.idea/
+*.swp
+*.swo
+
+# Migrações prisma
+migration.sql
