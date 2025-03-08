@@ -25,6 +25,7 @@ model User {
   company             Company @relation(fields: [company_id], references: [id])
   codes               AuthCode[]
   assessment_results  AssessmentResult[]
+  assessment_question_answers AssessmentQuestionAnswer[]
 
   @@map("users")
 }
@@ -121,6 +122,7 @@ model AssessmentQuestionAnswer {
   updated_at              DateTime? @updatedAt
 
   assessment_question     AssessmentQuestion @relation(fields: [assessment_question_id], references: [id])
+  user                    User @relation(fields: [user_id], references: [id])
 
   @@map("assessment_question_answers")
 }
@@ -164,7 +166,7 @@ model SelfMonitoringScale {
 }
 
 model PsychologicalDimension {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   acronym     String
   name        String
   created_at  DateTime? @default(now())
