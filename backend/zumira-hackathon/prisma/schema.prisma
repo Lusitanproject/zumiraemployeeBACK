@@ -22,8 +22,8 @@ model User {
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
 
-  codes               AuthCode[]
   company             Company @relation(fields: [company_id], references: [id])
+  codes               AuthCode[]
   assessment_results  AssessmentResult[]
 
   @@map("users")
@@ -97,13 +97,15 @@ model AssessmentResult {
 }
 
 model AssessmentQuestion {
-  id                  String    @id @default(uuid())
-  description         String
-  assessment_id       String    
-  created_at          DateTime? @default(now())
-  updated_at          DateTime? @updatedAt
+  id                          String    @id @default(uuid())
+  description                 String
+  assessment_id               String
+  psychological_dimension_id  String
+  created_at                  DateTime? @default(now())
+  updated_at                  DateTime? @updatedAt
 
-  assessment          Assessment @relation(fields: [assessment_id], references: [id])
+  assessment                  Assessment @relation(fields: [assessment_id], references: [id])
+  psychological_dimension     PsychologicalDimension @relation(fields: [psychological_dimension_id], references: [id])
   assessment_question_answers AssessmentQuestionAnswer[]
   assessment_question_choices AssessmentQuestionChoice[]
 
@@ -161,3 +163,14 @@ model SelfMonitoringScale {
   @@map("self_monitoring_scales")
 }
 
+model PsychologicalDimension {
+  id          String    @id @default(cuid())
+  acronym     String
+  name        String
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @updatedAt
+
+  assessment_questions AssessmentQuestion[]
+
+  @@map("psychological_dimensions")
+}
