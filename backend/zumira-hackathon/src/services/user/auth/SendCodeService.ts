@@ -39,15 +39,15 @@ class SendCodeService {
         const code = randomInt(100000, 999999).toString();
 
         const now = new Date().getTime();
-        const expires_at = new Date(now + 5 * 60 * 1000); // Expiração em 5 minutos
+        const expiresAt = new Date(now + 5 * 60 * 1000); // Expiração em 5 minutos
 
         await sendEmail(email, code);
 
         await prismaClient.authCode.create({
             data: {
-                user_id: storedEmail.id,
+                userId: storedEmail.id,
                 code: code,
-                expires_at: expires_at,
+                expiresAt: expiresAt,
             },
         });
 

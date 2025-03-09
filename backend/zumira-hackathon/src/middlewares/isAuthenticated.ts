@@ -15,12 +15,12 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
     const [, token] = authToken.split(" ");
 
     try {
-        // validar o token
+        // Validar o token
         const { sub } = verify(token, process.env.JWT_SECRET!) as Payload;
 
-        // recuperar o id do token e armazenar numa variavel user_id dentro de req
+        // Recuperar o id do token e armazenar numa variavel userId dentro de req
         // @ts-ignore
-        req.user_id = sub;
+        req.userId = sub;
 
         return next();
     } catch (err) {

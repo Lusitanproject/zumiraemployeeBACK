@@ -18,14 +18,14 @@ model User {
   email      String    @unique
   name       String    
   role       String
-  company_id String
-  created_at DateTime? @default(now())
-  updated_at DateTime? @updatedAt
+  companyId  String    @map("company_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  company             Company @relation(fields: [company_id], references: [id])
-  codes               AuthCode[]
-  assessment_results  AssessmentResult[]
-  assessment_question_answers AssessmentQuestionAnswer[]
+  company    Company   @relation(fields: [companyId], references: [id])
+  codes      AuthCode[]
+  assessmentResults  AssessmentResult[]
+  assessmentQuestionAnswers AssessmentQuestionAnswer[]
 
   @@map("users")
 }
@@ -33,22 +33,22 @@ model User {
 model AuthCode {
   id         String    @id @default(uuid())
   code       String
-  expires_at DateTime
-  user_id    String
-  created_at DateTime? @default(now())
-  updated_at DateTime? @updatedAt
+  expiresAt  DateTime  @map("expires_at")
+  userId     String    @map("user_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@map("auth_codes")
 }
 
 model Company {
-  id          String  @id @default(cuid())
-  name        String
-  email       String
-  created_at  DateTime? @default(now())
-  updated_at  DateTime? @updatedAt
+  id         String  @id @default(cuid())
+  name       String
+  email      String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   users User[]
 
@@ -60,39 +60,39 @@ model Assessment {
   title               String
   summary             String
   description         String
-  assessment_scale_id String
-  created_at          DateTime? @default(now())
-  updated_at          DateTime? @updatedAt
+  assessmentScaleId   String    @map("assessment_scale_id")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
 
-  assessment_scale    AssessmentScale @relation(fields: [assessment_scale_id], references: [id])
-  assessment_questions  AssessmentQuestion[]
-  assessment_results  AssessmentResult[]
+  assessmentScale    AssessmentScale @relation(fields: [assessmentScaleId], references: [id])
+  assessmentQuestions  AssessmentQuestion[]
+  assessmentResults  AssessmentResult[]
 
   @@map("assessments")
 }
 
 model AssessmentScale {
-  id          String    @id @default(uuid())
-  name        String 
-  created_at  DateTime? @default(now())
-  updated_at  DateTime? @updatedAt
+  id         String    @id @default(uuid())
+  name       String 
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   assessments Assessment[]
-  self_monitoring_scales  SelfMonitoringScale[]
+  selfMonitoringScales  SelfMonitoringScale[]
 
   @@map("assessment_scales")
 }
 
 model AssessmentResult {
-  id                  String    @id @default(uuid())
-  score               Int
-  user_id             String
-  assessment_id       String
-  created_at          DateTime? @default(now())
-  updated_at          DateTime? @updatedAt
+  id             String    @id @default(uuid())
+  score          Int
+  userId         String    @map("user_id")
+  assessmentId   String    @map("assessment_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
-  user                User      @relation(fields: [user_id], references: [id])
-  assessment          Assessment @relation(fields: [assessment_id], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+  assessment    Assessment  @relation(fields: [assessmentId], references: [id])
 
   @@map("assessment_results")
 }
@@ -100,15 +100,15 @@ model AssessmentResult {
 model AssessmentQuestion {
   id                          String    @id @default(uuid())
   description                 String
-  assessment_id               String
-  psychological_dimension_id  String
-  created_at                  DateTime? @default(now())
-  updated_at                  DateTime? @updatedAt
+  assessmentId                String    @map("assessment_id")
+  psychologicalDimensionId     String    @map("psychological_dimension_id")
+  createdAt                   DateTime  @default(now()) @map("created_at")
+  updatedAt                   DateTime  @updatedAt @map("updated_at")
 
-  assessment                  Assessment @relation(fields: [assessment_id], references: [id])
-  psychological_dimension     PsychologicalDimension @relation(fields: [psychological_dimension_id], references: [id])
-  assessment_question_answers AssessmentQuestionAnswer[]
-  assessment_question_choices AssessmentQuestionChoice[]
+  assessment                  Assessment @relation(fields: [assessmentId], references: [id])
+  psychologicalDimension      PsychologicalDimension @relation(fields: [psychologicalDimensionId], references: [id])
+  assessmentQuestionAnswers   AssessmentQuestionAnswer[]
+  assessmentQuestionChoices   AssessmentQuestionChoice[]
 
   @@map("assessment_questions")
 }
@@ -116,13 +116,13 @@ model AssessmentQuestion {
 model AssessmentQuestionAnswer {
   id                      String    @id @default(uuid())
   value                   Int
-  assessment_question_id  String
-  user_id                 String
-  created_at              DateTime? @default(now())
-  updated_at              DateTime? @updatedAt
+  assessmentQuestionId    String    @map("assessment_question_id")
+  userId                 String    @map("user_id")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
 
-  assessment_question     AssessmentQuestion @relation(fields: [assessment_question_id], references: [id])
-  user                    User @relation(fields: [user_id], references: [id])
+  assessmentQuestion     AssessmentQuestion @relation(fields: [assessmentQuestionId], references: [id])
+  user                   User @relation(fields: [userId], references: [id])
 
   @@map("assessment_question_answers")
 }
@@ -131,36 +131,36 @@ model AssessmentQuestionChoice {
   id                      String    @id @default(uuid())
   label                   String
   value                   Float
-  assessment_question_id  String
-  created_at              DateTime? @default(now())
-  updated_at              DateTime? @updatedAt
+  assessmentQuestionId    String    @map("assessment_question_id")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
 
-  assessment_question     AssessmentQuestion @relation(fields: [assessment_question_id], references: [id])
+  assessmentQuestion     AssessmentQuestion @relation(fields: [assessmentQuestionId], references: [id])
 
   @@map("assessment_question_choices")
 }
 
 model SelfMonitoringBlock {
-  id          String    @id @default(cuid())
-  title       String
-  created_at  DateTime? @default(now())
-  updated_at  DateTime? @updatedAt
+  id         String    @id @default(cuid())
+  title      String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  self_monitoring_scales  SelfMonitoringScale[]
+  selfMonitoringScales  SelfMonitoringScale[]
 
   @@map("self_monitoring_blocks")
 }
 
 model SelfMonitoringScale {
-  self_monitoring_id  String
-  assessment_scale_id String
-  created_at          DateTime? @default(now())
-  updated_at          DateTime? @updatedAt
+  selfMonitoringId  String    @map("self_monitoring_id")
+  assessmentScaleId String    @map("assessment_scale_id")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
-  self_monitoring     SelfMonitoringBlock @relation(fields: [self_monitoring_id], references: [id])
-  assessment_scale    AssessmentScale @relation(fields: [assessment_scale_id], references: [id])
+  selfMonitoring   SelfMonitoringBlock @relation(fields: [selfMonitoringId], references: [id])
+  assessmentScale  AssessmentScale @relation(fields: [assessmentScaleId], references: [id])
 
-  @@id([self_monitoring_id, assessment_scale_id])
+  @@id([selfMonitoringId, assessmentScaleId])
 
   @@map("self_monitoring_scales")
 }
@@ -169,10 +169,10 @@ model PsychologicalDimension {
   id          String    @id @default(uuid())
   acronym     String
   name        String
-  created_at  DateTime? @default(now())
-  updated_at  DateTime? @updatedAt
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  assessment_questions AssessmentQuestion[]
+  assessmentQuestions AssessmentQuestion[]
 
   @@map("psychological_dimensions")
 }
