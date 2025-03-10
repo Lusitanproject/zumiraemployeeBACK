@@ -53,7 +53,7 @@ class SendCodeService {
 
         console.log(`Sent code ${code} to ${email}`);
 
-        return { ok: true };
+        return {};
     }
 }
 
