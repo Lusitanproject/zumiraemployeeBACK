@@ -20,15 +20,15 @@ class AuthUserService {
 
         const storedCode = await prismaClient.authCode.findFirst({
             where: {
-                user_id: user.id,
+                userId: user.id,
             },
             orderBy: {
-                expires_at: "desc",
+                expiresAt: "desc",
             },
         });
 
         if (!storedCode) throw new Error("No code was sent");
-        if (storedCode.expires_at < new Date()) throw new Error("Code is expired");
+        if (storedCode.expiresAt < new Date()) throw new Error("Code is expired");
         if (storedCode.code !== code) throw new Error("Incorrect code");
 
         const token = sign(

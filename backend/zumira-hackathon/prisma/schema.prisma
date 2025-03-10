@@ -16,19 +16,165 @@ datasource db {
 model User {
   id         String    @id @default(uuid())
   email      String    @unique
-  created_at DateTime? @default(now())
-  updated_at DateTime? @updatedAt
+  name       String    
+  role       String
+  companyId  String    @map("company_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  codes AuthCode[]
+  company    Company   @relation(fields: [companyId], references: [id])
+  codes      AuthCode[]
+  assessmentResults  AssessmentResult[]
+  assessmentQuestionAnswers AssessmentQuestionAnswer[]
+
+  @@map("users")
 }
 
 model AuthCode {
   id         String    @id @default(uuid())
   code       String
-  expires_at DateTime
-  user_id    String
-  created_at DateTime? @default(now())
-  updated_at DateTime? @updatedAt
+  expiresAt  DateTime  @map("expires_at")
+  userId     String    @map("user_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("auth_codes")
+}
+
+model Company {
+  id         String  @id @default(cuid())
+  name       String
+  email      String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  users User[]
+
+  @@map("companies")
+}
+
+model Assessment {
+  id                  String    @id @default(cuid())
+  title               String
+  summary             String
+  description         String
+  assessmentScaleId   String    @map("assessment_scale_id")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  assessmentScale    AssessmentScale @relation(fields: [assessmentScaleId], references: [id])
+  assessmentQuestions  AssessmentQuestion[]
+  assessmentResults  AssessmentResult[]
+
+  @@map("assessments")
+}
+
+model AssessmentScale {
+  id         String    @id @default(uuid())
+  name       String 
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  assessments Assessment[]
+  selfMonitoringScales  SelfMonitoringScale[]
+
+  @@map("assessment_scales")
+}
+
+model AssessmentResult {
+  id             String    @id @default(uuid())
+  userId         String    @map("user_id")
+  assessmentId   String    @map("assessment_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user          User        @relation(fields: [userId], references: [id])
+  assessment    Assessment  @relation(fields: [assessmentId], references: [id])
+
+  @@map("assessment_results")
+}
+
+model AssessmentQuestion {
+  id                          String    @id @default(uuid())
+  description                 String
+  assessmentId                String    @map("assessment_id")
+  psychologicalDimensionId     String    @map("psychological_dimension_id")
+  createdAt                   DateTime  @default(now()) @map("created_at")
+  updatedAt                   DateTime  @updatedAt @map("updated_at")
+
+  assessment                  Assessment @relation(fields: [assessmentId], references: [id])
+  psychologicalDimension      PsychologicalDimension @relation(fields: [psychologicalDimensionId], references: [id])
+  assessmentQuestionAnswers   AssessmentQuestionAnswer[]
+  assessmentQuestionChoices   AssessmentQuestionChoice[]
+
+  @@map("assessment_questions")
+}
+
+model AssessmentQuestionAnswer {
+  id                          String    @id @default(uuid())
+  value                       Int
+  assessmentQuestionId        String    @map("assessment_question_id")
+  assessmentQuestionChoiceId  String    @map("assessment_question_choice_id")
+  userId                      String    @map("user_id")
+  createdAt                   DateTime  @default(now()) @map("created_at")
+  updatedAt                   DateTime  @updatedAt @map("updated_at")
+
+  assessmentQuestion          AssessmentQuestion @relation(fields: [assessmentQuestionId], references: [id])
+  assessmentQuestionChoice    AssessmentQuestionChoice @relation(fields: [assessmentQuestionChoiceId], references: [id])
+  user                        User @relation(fields: [userId], references: [id])
+
+  @@map("assessment_question_answers")
+}
+
+model AssessmentQuestionChoice {
+  id                      String    @id @default(uuid())
+  label                   String
+  value                   Float
+  assessmentQuestionId    String    @map("assessment_question_id")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  assessmentQuestion      AssessmentQuestion @relation(fields: [assessmentQuestionId], references: [id])
+  assessmentQuestionAnswers AssessmentQuestionAnswer[]
+
+  @@map("assessment_question_choices")
+}
+
+model SelfMonitoringBlock {
+  id         String    @id @default(cuid())
+  title      String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  selfMonitoringScales  SelfMonitoringScale[]
+
+  @@map("self_monitoring_blocks")
+}
+
+model SelfMonitoringScale {
+  selfMonitoringId  String    @map("self_monitoring_id")
+  assessmentScaleId String    @map("assessment_scale_id")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  selfMonitoring   SelfMonitoringBlock @relation(fields: [selfMonitoringId], references: [id])
+  assessmentScale  AssessmentScale @relation(fields: [assessmentScaleId], references: [id])
+
+  @@id([selfMonitoringId, assessmentScaleId])
+
+  @@map("self_monitoring_scales")
+}
+
+model PsychologicalDimension {
+  id          String    @id @default(uuid())
+  acronym     String
+  name        String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  assessmentQuestions AssessmentQuestion[]
+
+  @@map("psychological_dimensions")
 }
