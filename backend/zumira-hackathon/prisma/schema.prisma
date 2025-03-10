@@ -85,7 +85,6 @@ model AssessmentScale {
 
 model AssessmentResult {
   id             String    @id @default(uuid())
-  score          Int
   userId         String    @map("user_id")
   assessmentId   String    @map("assessment_id")
   createdAt      DateTime  @default(now()) @map("created_at")
