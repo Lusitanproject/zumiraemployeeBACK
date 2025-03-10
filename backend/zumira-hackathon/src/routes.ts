@@ -9,6 +9,7 @@ import { CreateQuestionController } from "./controllers/assessmentQuestion/Creat
 import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
 
 import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlocksController";
 
 const router = Router();
 
@@ -22,5 +23,8 @@ router.post("/dimensions", isAuthenticated, new CreatePsychologicalDimensionCont
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
 router.post("assessments/questions", isAuthenticated, new CreateQuestionController().handle);
+
+// ROTAS SELF MONITORING
+router.get("/self-monitoring", isAuthenticated, new ListSelfMonitoringBlocksController().handle);
 
 export { router };
