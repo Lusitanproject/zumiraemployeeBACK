@@ -2,16 +2,18 @@ import prismaClient from "../../prisma";
 
 interface QuestionRequest {
     description: string;
+    index: number;
     assessmentId: string;
     psychologicalDimensionId: string;
     choices: {
         label: string;
         value: number;
+        index: number;
     }[];
 }
 
 class CreateQuestionService {
-    async execute({ description, assessmentId, psychologicalDimensionId, choices }: QuestionRequest) {
+    async execute({ description, assessmentId, index, psychologicalDimensionId, choices }: QuestionRequest) {
         const assessmentExists = await prismaClient.assessment.findFirst({
             where: {
                 id: assessmentId,
@@ -31,6 +33,7 @@ class CreateQuestionService {
         const question = await prismaClient.assessmentQuestion.create({
             data: {
                 description,
+                index,
                 assessmentId,
                 psychologicalDimensionId,
             },
@@ -46,6 +49,7 @@ class CreateQuestionService {
             data: choices.map((c) => ({
                 label: c.label,
                 value: c.value,
+                index: c.index,
                 assessmentQuestionId: question.id,
             })),
         });

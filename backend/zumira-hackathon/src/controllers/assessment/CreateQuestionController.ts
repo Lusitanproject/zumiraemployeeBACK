@@ -5,12 +5,14 @@ import { CreateQuestionService } from "../../services/assessment/CreateQuestionS
 
 const CreateQuestionSchema = z.object({
     description: z.string(),
+    index: z.number().int(),
     assessmentId: z.string().cuid(),
     psychologicalDimensionId: z.string().uuid(),
     choices: z.array(
         z.object({
             label: z.string(),
             value: z.number(),
+            index: z.number().int(),
         })
     ),
 });
@@ -21,10 +23,16 @@ class CreateQuestionController {
 
         if (!success) throw new Error(parseZodError(error));
 
-        const { description, assessmentId, psychologicalDimensionId, choices } = data;
+        const { description, index, assessmentId, psychologicalDimensionId, choices } = data;
 
         const createQuestion = new CreateQuestionService();
-        const question = await createQuestion.execute({ description, assessmentId, psychologicalDimensionId, choices });
+        const question = await createQuestion.execute({
+            description,
+            index,
+            assessmentId,
+            psychologicalDimensionId,
+            choices,
+        });
 
         return res.json({ status: "SUCCESS", data: question });
     }

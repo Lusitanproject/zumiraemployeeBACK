@@ -13,10 +13,12 @@ class DetailAssessmentController {
 
         if (!success) throw new Error(parseZodError(error));
 
+        // @ts-ignore
+        const userId = req.userId;
         const { id: assessmentId } = data;
 
         const detailAssessment = new DetailAssessmentService();
-        const assessment = await detailAssessment.execute(assessmentId);
+        const assessment = await detailAssessment.execute({ userId, assessmentId });
 
         return res.json({ status: "SUCCESS", data: assessment });
     }
