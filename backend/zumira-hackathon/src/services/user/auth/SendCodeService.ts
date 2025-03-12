@@ -19,7 +19,7 @@ async function sendEmail(email: string, code: string) {
             text: `Seu código é ${code}`,
         });
     } catch (err: any) {
-        console.log(err.message);
+        console.log("Error sending email", err.message);
         throw new Error("Error sending email");
     }
 }

@@ -99,6 +99,7 @@ model AssessmentResult {
 model AssessmentQuestion {
   id                          String    @id @default(uuid())
   description                 String
+  index                       Int
   assessmentId                String    @map("assessment_id")
   psychologicalDimensionId     String    @map("psychological_dimension_id")
   createdAt                   DateTime  @default(now()) @map("created_at")
@@ -132,6 +133,7 @@ model AssessmentQuestionChoice {
   id                      String    @id @default(uuid())
   label                   String
   value                   Float
+  index                   Int
   assessmentQuestionId    String    @map("assessment_question_id")
   createdAt               DateTime  @default(now()) @map("created_at")
   updatedAt               DateTime  @updatedAt @map("updated_at")

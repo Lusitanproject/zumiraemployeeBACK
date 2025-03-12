@@ -22,8 +22,8 @@ class ListAssessmentsService {
 
         const assessments = await prismaClient.$queryRaw<AssessmentResult[]>(Prisma.sql`
             SELECT a.id, a.title, a.summary, 
-                jsonb_build_object('id', s.id, 'name', s.name) AS scale, 
-                jsonb_build_object('id', smb.id, 'title', smb.title) AS selfMonitoring,
+                jsonb_build_object('id', s.id, 'name', s.name) AS "scale", 
+                jsonb_build_object('id', smb.id, 'title', smb.title) AS "selfMonitoring",
                 MAX(ans.created_at) AS "lastCompleted"
             
             FROM assessments a 

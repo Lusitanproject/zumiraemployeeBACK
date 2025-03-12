@@ -1,14 +1,16 @@
 import { Router } from "express";
 
+import { isAuthenticated } from "./middlewares/isAuthenticated";
+
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 
 import { CreatePsychologicalDimensionController } from "./controllers/psychologicalDimension/CreatePsychologicalDimensionController";
 
-import { CreateQuestionController } from "./controllers/assessmentQuestion/CreateQuestionController";
+import { CreateQuestionController } from "./controllers/assessment/CreateQuestionController";
 import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
+import { DetailAssessmentController } from "./controllers/assessment/DetailAssessmentController";
 
-import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlocksController";
 
 const router = Router();
@@ -22,7 +24,8 @@ router.post("/dimensions", isAuthenticated, new CreatePsychologicalDimensionCont
 
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
-router.post("assessments/questions", isAuthenticated, new CreateQuestionController().handle);
+router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
+router.post("/assessments/questions", isAuthenticated, new CreateQuestionController().handle);
 
 // ROTAS SELF MONITORING
 router.get("/self-monitoring", isAuthenticated, new ListSelfMonitoringBlocksController().handle);
