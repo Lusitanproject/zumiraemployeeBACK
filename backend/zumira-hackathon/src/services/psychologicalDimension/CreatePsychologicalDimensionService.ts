@@ -1,5 +1,4 @@
 import prismaClient from "../../prisma";
-import { z } from "zod";
 
 interface PsychologicalDimensionRequest {
     acronym: string;

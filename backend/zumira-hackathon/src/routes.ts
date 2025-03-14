@@ -15,6 +15,7 @@ import { CreateResultController } from "./controllers/assessment/CreateResultCon
 import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlocksController";
 
 import { ListCompaniesController } from "./controllers/company/ListCompaniesController";
+import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
 
 const router = Router();
 
@@ -36,5 +37,6 @@ router.get("/self-monitoring", isAuthenticated, new ListSelfMonitoringBlocksCont
 
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated, new ListCompaniesController().handle);
+router.post("/companies", isAuthenticated, new CreateCompanyController().handle);
 
 export { router };
