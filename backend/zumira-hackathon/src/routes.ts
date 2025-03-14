@@ -17,6 +17,7 @@ import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoring
 import { ListCompaniesController } from "./controllers/company/ListCompaniesController";
 import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
 import { ListPsychologicalDimensionsController } from "./controllers/psychologicalDimension/ListPsychologicalDimensionsController";
+import { ListScalesController } from "./controllers/assessment/ListScalesController";
 
 const router = Router();
 
@@ -33,6 +34,7 @@ router.get("/assessments", isAuthenticated, new ListAssessmentsController().hand
 router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
 router.post("/assessments/questions", isAuthenticated, new CreateQuestionController().handle);
 router.post("/assessments/results", isAuthenticated, new CreateResultController().handle);
+router.get("/assessment-scales", isAuthenticated, new ListScalesController().handle);
 
 // ROTAS SELF MONITORING
 router.get("/self-monitoring", isAuthenticated, new ListSelfMonitoringBlocksController().handle);
