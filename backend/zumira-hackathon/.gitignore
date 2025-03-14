@@ -29,6 +29,3 @@ logs
 .idea/
 *.swp
 *.swo
-
-# Migrações prisma
-migration.sql
