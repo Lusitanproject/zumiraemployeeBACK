@@ -3,8 +3,7 @@ import { ListAssessmentsService } from "../../services/assessment/ListAssessment
 
 class ListAssessmentsController {
     async handle(req: Request, res: Response) {
-        // @ts-ignore
-        const userId = req.userId;
+        const userId = req.user.id;
 
         const listAssessments = new ListAssessmentsService();
         const assessments = await listAssessments.execute(userId);

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { CreatePsychologicalDimensionService } from "../../services/psychologicalDimension/CreatePsychologicalDimensionService";
 import { z } from "zod";
 import { parseZodError } from "../../utils/parseZodError";
+import { assertPermissions } from "../../utils/assertPermissions";
 
 const CreateDimensionSchema = z.object({
     acronym: z.string(),
@@ -10,6 +11,8 @@ const CreateDimensionSchema = z.object({
 
 class CreatePsychologicalDimensionController {
     async handle(req: Request, res: Response) {
+        assertPermissions(req.user, "manage-dimension");
+
         const { success, data, error } = CreateDimensionSchema.safeParse(req.body);
 
         if (!success) throw new Error(parseZodError(error));

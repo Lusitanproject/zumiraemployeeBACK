@@ -14,6 +14,9 @@ class AuthUserService {
             where: {
                 email: email,
             },
+            include: {
+                role: true,
+            },
         });
 
         if (!user) throw new Error("Email is not registered");
@@ -41,13 +44,16 @@ class AuthUserService {
                 expiresIn: "30d",
             }
         );
+        const now = new Date().getTime();
+        const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30); // Expiração em 30 dias
 
         console.log(`Authenticated user ${email}`);
 
         return {
-            id: user.id,
-            email: user.email,
+            name: user.name,
+            role: user.role.slug,
             token: token,
+            expiresAt: expiresAt,
         };
     }
 }

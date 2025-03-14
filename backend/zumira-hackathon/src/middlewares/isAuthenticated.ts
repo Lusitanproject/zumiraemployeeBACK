@@ -1,11 +1,35 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
+import prismaClient from "../prisma";
 
 interface Payload {
     sub: string;
 }
 
-export function isAuthenticated(req: Request, res: Response, next: NextFunction) {
+async function getUserPermissions(userId: string) {
+    const user = await prismaClient.user.findFirst({
+        where: {
+            id: userId,
+        },
+        include: {
+            role: {
+                include: {
+                    rolePermissions: {
+                        include: {
+                            permission: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    if (!user) throw new Error("User does not exist");
+
+    return user.role.rolePermissions.map((p) => p.permission.slug);
+}
+
+export async function isAuthenticated(req: Request, res: Response, next: NextFunction) {
     const authToken = req.headers.authorization;
 
     if (!authToken) {
@@ -18,9 +42,13 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
         // Validar o token
         const { sub } = verify(token, process.env.JWT_SECRET!) as Payload;
 
-        // Recuperar o id do token e armazenar numa variavel userId dentro de req
-        // @ts-ignore
-        req.userId = sub;
+        // Recuperar o id do token e armazenar numa variavel user dentro de req
+        const userId = sub;
+
+        req.user = {
+            id: userId,
+            permissions: await getUserPermissions(userId),
+        };
 
         return next();
     } catch (err) {

@@ -17,17 +17,56 @@ model User {
   id         String    @id @default(uuid())
   email      String    @unique
   name       String    
-  role       String
+  roleId     String
   companyId  String    @map("company_id")
   createdAt  DateTime  @default(now()) @map("created_at")
   updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  company    Company   @relation(fields: [companyId], references: [id])
-  codes      AuthCode[]
+  company     Company   @relation(fields: [companyId], references: [id])
+  role        Role      @relation(fields: [roleId], references: [id])
+  codes       AuthCode[]
   assessmentResults  AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
 
   @@map("users")
+}
+
+model Permission {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  description String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model Role {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  users       User[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model RolePermission {
+  roleId        String    @map("role_id")
+  permissionId  String    @map("permission_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  role          Role @relation(fields: [roleId], references: [id])
+  permission    Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+
+  @@map("roles_permissions")
 }
 
 model AuthCode {

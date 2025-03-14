@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 import { parseZodError } from "../../utils/parseZodError";
 import { CreateQuestionService } from "../../services/assessment/CreateQuestionService";
+import { assertPermissions } from "../../utils/assertPermissions";
 
 const CreateQuestionSchema = z.object({
     description: z.string(),
@@ -19,6 +20,8 @@ const CreateQuestionSchema = z.object({
 
 class CreateQuestionController {
     async handle(req: Request, res: Response) {
+        assertPermissions(req.user, "manage-question");
+
         const { success, data, error } = CreateQuestionSchema.safeParse(req.body);
 
         if (!success) throw new Error(parseZodError(error));
