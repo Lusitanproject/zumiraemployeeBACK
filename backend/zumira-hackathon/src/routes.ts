@@ -16,6 +16,7 @@ import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoring
 
 import { ListCompaniesController } from "./controllers/company/ListCompaniesController";
 import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
+import { ListPsychologicalDimensionsController } from "./controllers/psychologicalDimension/ListPsychologicalDimensionsController";
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.post("/auth/verify", new AuthUserController().handle);
 
 // ROTAS PSYCHOLOGICAL DIMENSION
 router.post("/dimensions", isAuthenticated, new CreatePsychologicalDimensionController().handle);
+router.get("/dimensions", isAuthenticated, new ListPsychologicalDimensionsController().handle);
 
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
