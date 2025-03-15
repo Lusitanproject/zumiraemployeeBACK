@@ -4,9 +4,12 @@ import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { AuthUserController } from "./controllers/user/auth/AuthUserController";
+import { CreateUserController } from "./controllers/user/CreateUserController";
 
 import { CreatePsychologicalDimensionController } from "./controllers/psychologicalDimension/CreatePsychologicalDimensionController";
+import { ListPsychologicalDimensionsController } from "./controllers/psychologicalDimension/ListPsychologicalDimensionsController";
 
+import { CreateAssessmentController } from "./controllers/assessment/CreateAssessmentController";
 import { CreateQuestionController } from "./controllers/assessment/CreateQuestionController";
 import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
 import { DetailAssessmentController } from "./controllers/assessment/DetailAssessmentController";
@@ -16,8 +19,6 @@ import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoring
 
 import { ListCompaniesController } from "./controllers/company/ListCompaniesController";
 import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
-import { ListPsychologicalDimensionsController } from "./controllers/psychologicalDimension/ListPsychologicalDimensionsController";
-import { CreateUserController } from "./controllers/user/CreateUserController";
 
 const router = Router();
 
@@ -33,6 +34,7 @@ router.get("/dimensions", isAuthenticated, new ListPsychologicalDimensionsContro
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
+router.post("/assessments", isAuthenticated, new CreateAssessmentController().handle);
 router.post("/assessments/questions", isAuthenticated, new CreateQuestionController().handle);
 router.post("/assessments/results", isAuthenticated, new CreateResultController().handle);
 

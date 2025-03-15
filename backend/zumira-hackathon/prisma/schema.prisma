@@ -97,7 +97,7 @@ model Assessment {
   id                    String   @id @default(cuid())
   title                 String
   summary               String
-  description           String
+  description           String?
   selfMonitoringBlockId String   @map("self_monitoring_block_id")
   createdAt             DateTime @default(now()) @map("created_at")
   updatedAt             DateTime @updatedAt @map("updated_at")
