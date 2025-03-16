@@ -1,27 +1,35 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChartNoAxesColumnIncreasing, ChevronRight, House, LayoutGrid, SquarePen, Users } from "lucide-react"
+import { ChevronRight } from "lucide-react"
+import { DynamicIcon } from "lucide-react/dynamic"
 import { cn } from "@/lib/utils"
 
-const links = [
-  { href: "/chat", label: "Início", icon: House },
-  { href: "/automonitoramento", label: "Automonitoramento", icon: ChartNoAxesColumnIncreasing },
-  { href: "/autogestao", label: "Autogestão", icon: SquarePen },
-  { href: "/rede-apoio", label: "Rede de Apoio", icon: Users },
-  { href: "/biblioteca", label: "Biblioteca", icon: LayoutGrid },
-] as const
+export type MenuIcon = 
+| "house"
+| "chart-no-axes-column-increasing"
+| "square-pen"
+| "users"
+| "layout-grid"
+| "clipboard-list"
+
+export type MenuLink = {
+  href: string
+  label: string
+  icon: MenuIcon
+}
 
 type MainMenuProps = {
   expanded: boolean
+  menu: MenuLink[]
 }
 
-export function MainMenu({ expanded }: MainMenuProps){
+export function MainMenu({ expanded, menu }: MainMenuProps){
   const pathname = usePathname()
 
   return (
     <nav className="flex flex-col">
       <ul>
-        {links.map(item =>  (
+        {menu.map(item =>  (
           <Link
             key={item.href}
             href={item.href}
@@ -32,7 +40,7 @@ export function MainMenu({ expanded }: MainMenuProps){
               "bg-primary-600": pathname.indexOf(item.href) === 0
             })}
           >
-            <item.icon size={20} className="flex-shrink-0"/>
+            <DynamicIcon name={item.icon} size={20} className="flex-shrink-0"/>
             <span
               className={cn("whitespace-nowrap text-sm text-ellipsis overflow-hidden", {
                 "hidden": !expanded

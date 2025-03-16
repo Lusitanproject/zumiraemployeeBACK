@@ -1,73 +1,13 @@
-export default function Autogestao(){
+import { getAssessments, getSelfMonitoringBlocks } from "./actions"
+import { Assessments } from "./components/assessments"
+
+export default async function Autogestao(){
+  const assessments = await getAssessments()
+  const blocks = await getSelfMonitoringBlocks()
+
   return (
-    <div>
-      <h1>Autogestão</h1>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
-      <p>teste</p>
+    <div className="flex flex-col w-full">
+      <Assessments assessments={assessments} blocks={blocks} />
     </div>
   )
 }

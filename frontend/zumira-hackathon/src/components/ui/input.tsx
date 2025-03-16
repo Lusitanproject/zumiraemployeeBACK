@@ -9,6 +9,9 @@ const inputVariants = cva(
       hasIcon: {
         true: "pl-11",
       },
+      hasError: {
+        true: "border-error-300 focus-visible:border-error-300 focus-visible:shadow-error-ring"
+      }
     },
     defaultVariants: {
       hasIcon: false,
@@ -16,14 +19,16 @@ const inputVariants = cva(
   }
 )
 
-function Input({ className, type, hasIcon = false, ...props }: React.ComponentProps<"input"> & VariantProps<typeof inputVariants>) {
+function Input({ className, type, hasIcon = false, hasError = false, ...props }: React.ComponentProps<"input"> & VariantProps<typeof inputVariants>) {
   return (
-    <input
-      type={type}
-      data-slot="input"
-      className={cn(inputVariants({ hasIcon, className }))}
-      {...props}
-    />
+    <div className="w-full relative">
+      <input
+        type={type}
+        data-slot="input"
+        className={cn(inputVariants({ hasIcon, hasError, className }))}
+        {...props}
+      />
+    </div>
   )
 }
 

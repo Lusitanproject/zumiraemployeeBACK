@@ -1,11 +1,15 @@
 "use client"
 import { useCallback, useState } from "react"
-import { UnfoldHorizontal } from "lucide-react"
+import { CircleArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { MainMenu } from "./main-menu"
+import { MainMenu, MenuLink } from "./main-menu"
 import { Button } from "../ui/button"
 
-export function Sidebar() {
+type SidebarProps = {
+  menuItems: MenuLink[]
+}
+
+export function Sidebar({ menuItems }: SidebarProps) {
   const [expanded, setExpanded] = useState<boolean>(true)
 
   const handleToggleExpanded = useCallback(() => {
@@ -22,10 +26,10 @@ export function Sidebar() {
       <div className="w-full flex flex-col">
         <div className={cn("w-full flex justify-center mb-14", { "justify-end": expanded })}>
           <button className="w-6 h-6" onClick={handleToggleExpanded}>
-            <UnfoldHorizontal color="white" />
+            <CircleArrowLeft color="white" />
           </button>
         </div>
-        <MainMenu expanded={expanded} />
+        <MainMenu expanded={expanded} menu={menuItems}/>
       </div>
       <Button variant="secondary" size="xxl" className={cn({ "hidden": !expanded })}>Preciso de ajuda</Button>
     </aside>

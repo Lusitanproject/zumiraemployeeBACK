@@ -175,6 +175,8 @@ model AssessmentQuestionChoice {
 model SelfMonitoringBlock {
   id        String   @id @default(cuid())
   title     String
+  summary   String?
+  icon      String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
