@@ -1,12 +1,17 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { ChatMessage, ChatResponse } from "./definitions";
 import { catchError } from "@/utils/error";
+import { decrypt } from "@/app/_lib/session";
 
 // Uso deve ser evitado em desenvolvimento para não estourar os créditos
 export async function sendMessage(messages: ChatMessage[]): Promise<ChatResponse | null> {
+    const cookie = await cookies();
+    const session = decrypt(cookie.get("session")?.value);
+
     const body = {
-        messages: messages,
+        messages: [{ content: `Meu nome é ${session?.name}`, role: "user" }, ...messages],
         chatbotId: process.env.CHATBASE_CHATBOT_ID,
     };
 
