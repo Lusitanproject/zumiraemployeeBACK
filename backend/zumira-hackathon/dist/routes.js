@@ -5,7 +5,10 @@ const express_1 = require("express");
 const isAuthenticated_1 = require("./middlewares/isAuthenticated");
 const SendCodeController_1 = require("./controllers/user/auth/SendCodeController");
 const AuthUserController_1 = require("./controllers/user/auth/AuthUserController");
+const CreateUserController_1 = require("./controllers/user/CreateUserController");
 const CreatePsychologicalDimensionController_1 = require("./controllers/psychologicalDimension/CreatePsychologicalDimensionController");
+const ListPsychologicalDimensionsController_1 = require("./controllers/psychologicalDimension/ListPsychologicalDimensionsController");
+const CreateAssessmentController_1 = require("./controllers/assessment/CreateAssessmentController");
 const CreateQuestionController_1 = require("./controllers/assessment/CreateQuestionController");
 const ListAssessmentsController_1 = require("./controllers/assessment/ListAssessmentsController");
 const DetailAssessmentController_1 = require("./controllers/assessment/DetailAssessmentController");
@@ -13,9 +16,6 @@ const CreateResultController_1 = require("./controllers/assessment/CreateResultC
 const ListSelfMonitoringBlocksController_1 = require("./controllers/selfMonitoringBlock/ListSelfMonitoringBlocksController");
 const ListCompaniesController_1 = require("./controllers/company/ListCompaniesController");
 const CreateCompanyController_1 = require("./controllers/company/CreateCompanyController");
-const ListPsychologicalDimensionsController_1 = require("./controllers/psychologicalDimension/ListPsychologicalDimensionsController");
-const ListScalesController_1 = require("./controllers/assessment/ListScalesController");
-const CreateUserController_1 = require("./controllers/user/CreateUserController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS USER
@@ -28,9 +28,9 @@ router.get("/dimensions", isAuthenticated_1.isAuthenticated, new ListPsychologic
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated_1.isAuthenticated, new ListAssessmentsController_1.ListAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated_1.isAuthenticated, new DetailAssessmentController_1.DetailAssessmentController().handle);
+router.post("/assessments", isAuthenticated_1.isAuthenticated, new CreateAssessmentController_1.CreateAssessmentController().handle);
 router.post("/assessments/questions", isAuthenticated_1.isAuthenticated, new CreateQuestionController_1.CreateQuestionController().handle);
 router.post("/assessments/results", isAuthenticated_1.isAuthenticated, new CreateResultController_1.CreateResultController().handle);
-router.get("/assessment-scales", isAuthenticated_1.isAuthenticated, new ListScalesController_1.ListScalesController().handle);
 // ROTAS SELF MONITORING
 router.get("/self-monitoring", isAuthenticated_1.isAuthenticated, new ListSelfMonitoringBlocksController_1.ListSelfMonitoringBlocksController().handle);
 // ROTAS COMPANY

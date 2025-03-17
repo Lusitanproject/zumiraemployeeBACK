@@ -24,5 +24,5 @@ app.use((err, req, res, next) => {
     });
 });
 app.listen(process.env.PORT, () => {
-    console.log("\nServer hosted in localhost:3333\n");
+    console.log(`\nServer hosted in localhost:${process.env.PORT}\n`);
 });
