@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChatMessage } from "../definitions";
-import { mockSendMessage } from "../actions";
+import { sendMessage } from "../actions";
 import { Messages } from "./messages";
 import { MessageInput } from "./message-input";
 import { Greeting } from "./greeting";
@@ -34,7 +34,7 @@ export function ChatUi({ username }: ChatUiProps) {
             setLoading(true);
         });
 
-        mockSendMessage(newMessages)
+        sendMessage(newMessages)
             .then((response) => {
                 if (!response?.text) {
                     message.error = "Erro ao processar uma resposta";
