@@ -16,7 +16,7 @@ exports.CreatePsychologicalDimensionService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class CreatePsychologicalDimensionService {
     execute(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ acronym, name }) {
+        return __awaiter(this, arguments, void 0, function* ({ acronym, name, selfMonitoringBlockId }) {
             const dimensionExists = yield prisma_1.default.psychologicalDimension.findFirst({
                 where: {
                     acronym: acronym,
@@ -29,6 +29,7 @@ class CreatePsychologicalDimensionService {
                 data: {
                     acronym,
                     name,
+                    selfMonitoringBlockId,
                 },
                 select: {
                     id: true,
