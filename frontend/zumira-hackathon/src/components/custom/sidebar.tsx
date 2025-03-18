@@ -18,7 +18,7 @@ export function Sidebar({ menuItems }: SidebarProps) {
 
   return (
     <aside
-      className={cn("hidden md:flex flex-col justify-between h-screen bg-primary-400 py-12 transition-all transition-discrete overflow-hidden", {
+      className={cn("hidden md:flex flex-col justify-between h-screen bg-gray-200 py-12 transition-all transition-discrete overflow-hidden", {
         "px-12 w-[18rem]": expanded,
         "px-4 w-[5rem]": !expanded,
       })}
@@ -26,12 +26,12 @@ export function Sidebar({ menuItems }: SidebarProps) {
       <div className="w-full flex flex-col">
         <div className={cn("w-full flex justify-center mb-14", { "justify-end": expanded })}>
           <button className="w-6 h-6" onClick={handleToggleExpanded}>
-            <CircleArrowLeft color="white" />
+            <CircleArrowLeft className="text-primary-300" />
           </button>
         </div>
         <MainMenu expanded={expanded} menu={menuItems}/>
       </div>
-      <Button variant="secondary" size="xxl" className={cn({ "hidden": !expanded })}>Preciso de ajuda</Button>
+      <Button variant="alternate" size="xxl" className={cn({ "hidden": !expanded })}>Preciso de ajuda</Button>
     </aside>
   )
 }

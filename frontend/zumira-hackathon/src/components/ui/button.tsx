@@ -14,6 +14,7 @@ const buttonVariants = cva(
         outline: "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:shadow-focus-ring disabled:border-gray-200 disabled:text-gray-300",
         danger: "bg-error-600 text-white hover:bg-error-700 focus:shadow-focus-ring disabled:bg-error-200",
         link: "text-primary underline-offset-4 hover:underline",
+        alternate: "bg-primary-200 text-white hover:bg-primary-300 focus:shadow-focus-ring disabled:bg-primary-50",
       },
       size: {
         sm: "h-9 rounded-xl gap-2 px-[0.875rem] text-sm font-semibold",

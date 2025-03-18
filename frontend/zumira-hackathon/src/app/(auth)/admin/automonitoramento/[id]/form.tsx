@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import {
   FormErrors,
   INITIAL_VALUE,
@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { IconField } from "./components/icons"
 import { IconName } from "@/components/custom/icon"
 import { Button } from "@/components/ui/button"
+import { saveSelfMonitoringBlock } from "./form-actions"
+import { redirect } from "next/navigation"
 
 type FormProps = {
   data: MonitoringBlock | null
@@ -23,7 +25,9 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
   const [formData, setFormData] = useState<ManageMonitoringBlock>(data ?? INITIAL_VALUE)
   const [errors, setErrors] = useState<FormErrors>(null)
 
-  const handleSubmit = () => {
+  const [formError, setFormError] = useState<string>("")
+
+  const handleSubmit = async () => {
     setErrors(null)
     const validation = ManageMonitoringBlockSchema.safeParse(formData)
 
@@ -32,15 +36,23 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
     }
 
     const payload = {
-      ...(data ? { id: data.id } : {}),
+      id: data?.id ?? undefined,
       ...formData
     }
 
-    console.log(payload)
+    const response = await saveSelfMonitoringBlock(payload)
+
+    if (response) {
+      setFormError(response)
+    }
   }
 
+  const handleCancel = useCallback(() => {
+    redirect("/admin/automonitoramento")
+  }, [])
+
   return (
-    <div className="w-full py-4">
+    <div className="w-full py-4 md:pt-4 md:pb-24">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
           <Label htmlFor="title">Título</Label>
@@ -67,7 +79,7 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
                 { ...current, summary: e.target.value }
               ))
             }}
-            className="h-20"
+            className="h-28"
           />
           {!!errors?.summary && <span className="text-sm text-error-500">{errors.summary}</span>}
         </div>
@@ -80,7 +92,11 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
           }}
         />
       </div>
-      <Button size="xl" variant="primary" onClick={handleSubmit}>Salvar</Button>
+      {!!formError && <span className="text-sm text-error-500">{formError}</span>}
+      <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-end gap-x-3">
+        <Button size="xl" variant="outline" onClick={handleCancel}>Cancelar</Button>
+        <Button size="xl" variant="primary" onClick={handleSubmit}>Salvar</Button>
+      </div>
     </div>
   )
 }

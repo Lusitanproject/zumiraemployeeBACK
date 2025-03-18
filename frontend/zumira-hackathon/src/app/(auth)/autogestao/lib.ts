@@ -12,17 +12,15 @@ type ParsedAssessmentList = {
   available: Assessment[]
 }
 
-export function useFilteredAssessments({ data, selfMonitoringBlockId, term }: FilterProps) {
+export function useFilteredAssessments({ data, selfMonitoringBlockId, term }: FilterProps): ParsedAssessmentList {
   const filteredBySelfMonitoring = selfMonitoringBlockId ? data.filter(item => item.selfMonitoring.id === selfMonitoringBlockId) : data
   const filteredBySearchTerm = term ? filteredBySelfMonitoring.filter(item => item.title.toLowerCase().indexOf(term.toLowerCase()) !== -1) : filteredBySelfMonitoring
 
-  const filtered = filteredBySearchTerm.reduce<ParsedAssessmentList>((previous, current) => {
-    if (current.lastCompleted === null || !isAfter(subYears(new Date(current.lastCompleted), 1), subYears(new Date, 1)) ) {
-      return { ...previous, completed: [...previous.completed, current] }
-    }
+  const completed = filteredBySearchTerm.filter(item => {
+    return item.lastCompleted !== null && isAfter(new Date(item.lastCompleted), subYears(new Date, 1))
+  })
 
-    return { ...previous, available: [...previous.available, current] }
-  }, { completed: [], available: []})
+  const available = filteredBySearchTerm.filter(item => !completed.includes(item))
 
-  return filtered
+  return { available, completed }
 }

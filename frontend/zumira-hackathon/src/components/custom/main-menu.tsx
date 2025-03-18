@@ -11,6 +11,8 @@ export type MenuIcon =
 | "users"
 | "layout-grid"
 | "clipboard-list"
+| "building-2"
+| "brain"
 
 export type MenuLink = {
   href: string
@@ -33,11 +35,11 @@ export function MainMenu({ expanded, menu }: MainMenuProps){
           <Link
             key={item.href}
             href={item.href}
-            className={cn("w-full flex items-center justify-start rounded-xl text-white font-semibold overflow-hidden", {
+            className={cn("w-full flex items-center justify-start rounded-xl text-gray-400 font-semibold overflow-hidden", {
               "px-5 h-11 gap-x-2 grid grid-cols-[20px_minmax(96px,_1fr)_20px]": expanded,
               "h-12 items-center justify-center": !expanded,
               "border-b border-gray-100/20 rounded-none pr-0": pathname.indexOf(item.href) !== 0,
-              "bg-primary-600": pathname.indexOf(item.href) === 0
+              "text-gray-500": pathname.indexOf(item.href) === 0
             })}
           >
             <DynamicIcon name={item.icon} size={20} className="flex-shrink-0"/>
@@ -48,7 +50,7 @@ export function MainMenu({ expanded, menu }: MainMenuProps){
             >{item.label}</span>
             <ChevronRight
               size={20}
-              className={cn("text-white/50", {
+              className={cn("text-gray-500", {
                 "hidden": pathname.indexOf(item.href) !== 0 || !expanded
                 }
               )}

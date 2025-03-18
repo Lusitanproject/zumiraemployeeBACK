@@ -13,7 +13,7 @@ export async function loadSelfMonitoringBlock(id: string | null): Promise<Monito
   const cookie = await cookies()
   const session = decrypt(cookie.get("session")?.value)
 
-  const url = `${process.env.API_BASE_URL}/self-monitoring/${id}`
+  const url = `${process.env.API_BASE_URL}/self-monitoring/admin/${id}`
 
   const [error, response] = await catchError(fetch(url, {
     headers: {
