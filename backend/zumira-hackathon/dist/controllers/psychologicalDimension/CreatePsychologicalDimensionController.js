@@ -17,6 +17,7 @@ const assertPermissions_1 = require("../../utils/assertPermissions");
 const CreateDimensionSchema = zod_1.z.object({
     acronym: zod_1.z.string(),
     name: zod_1.z.string(),
+    selfMonitoringBlockId: zod_1.z.string().cuid(),
 });
 class CreatePsychologicalDimensionController {
     handle(req, res) {
@@ -25,9 +26,9 @@ class CreatePsychologicalDimensionController {
             const { success, data, error } = CreateDimensionSchema.safeParse(req.body);
             if (!success)
                 throw new Error((0, parseZodError_1.parseZodError)(error));
-            const { acronym, name } = data;
+            const { acronym, name, selfMonitoringBlockId } = data;
             const createDimension = new CreatePsychologicalDimensionService_1.CreatePsychologicalDimensionService();
-            const dimension = yield createDimension.execute({ acronym, name });
+            const dimension = yield createDimension.execute({ acronym, name, selfMonitoringBlockId });
             return res.json({ status: "SUCCESS", data: dimension });
         });
     }

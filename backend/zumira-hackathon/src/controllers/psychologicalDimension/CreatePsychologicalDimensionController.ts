@@ -7,6 +7,7 @@ import { assertPermissions } from "../../utils/assertPermissions";
 const CreateDimensionSchema = z.object({
     acronym: z.string(),
     name: z.string(),
+    selfMonitoringBlockId: z.string().cuid(),
 });
 
 class CreatePsychologicalDimensionController {
@@ -17,10 +18,10 @@ class CreatePsychologicalDimensionController {
 
         if (!success) throw new Error(parseZodError(error));
 
-        const { acronym, name } = data;
+        const { acronym, name, selfMonitoringBlockId } = data;
 
         const createDimension = new CreatePsychologicalDimensionService();
-        const dimension = await createDimension.execute({ acronym, name });
+        const dimension = await createDimension.execute({ acronym, name, selfMonitoringBlockId });
 
         return res.json({ status: "SUCCESS", data: dimension });
     }

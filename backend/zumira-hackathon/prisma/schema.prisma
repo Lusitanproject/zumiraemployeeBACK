@@ -17,7 +17,7 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   name      String
-  roleId    String
+  roleId    String   @map("role_id")
   companyId String?  @map("company_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -180,18 +180,21 @@ model SelfMonitoringBlock {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  assessments Assessment[]
+  assessments             Assessment[]
+  pyschologicalDimensions PsychologicalDimension[]
 
   @@map("self_monitoring_blocks")
 }
 
 model PsychologicalDimension {
-  id        String   @id @default(uuid())
-  acronym   String
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                    String   @id @default(uuid())
+  acronym               String
+  name                  String
+  selfMonitoringBlockId String   @map("self_monitoring_block_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
 
+  selfMonitoringBlock SelfMonitoringBlock  @relation(fields: [selfMonitoringBlockId], references: [id])
   assessmentQuestions AssessmentQuestion[]
 
   @@map("psychological_dimensions")

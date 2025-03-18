@@ -3,10 +3,11 @@ import prismaClient from "../../prisma";
 interface PsychologicalDimensionRequest {
     acronym: string;
     name: string;
+    selfMonitoringBlockId: string;
 }
 
 class CreatePsychologicalDimensionService {
-    async execute({ acronym, name }: PsychologicalDimensionRequest) {
+    async execute({ acronym, name, selfMonitoringBlockId }: PsychologicalDimensionRequest) {
         const dimensionExists = await prismaClient.psychologicalDimension.findFirst({
             where: {
                 acronym: acronym,
@@ -20,6 +21,7 @@ class CreatePsychologicalDimensionService {
             data: {
                 acronym,
                 name,
+                selfMonitoringBlockId,
             },
             select: {
                 id: true,
