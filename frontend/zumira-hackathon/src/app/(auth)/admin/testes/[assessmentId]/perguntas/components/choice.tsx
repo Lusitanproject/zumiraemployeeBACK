@@ -20,7 +20,7 @@ export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
         <Label htmlFor="choices">Opções</Label>
         <ButtonIcon
           tooltip="Nova opção"
-          onClick={(e) => {
+          onClick={() => {
             dispatch({
               type: "ADD-CHOICE",
               payload: {

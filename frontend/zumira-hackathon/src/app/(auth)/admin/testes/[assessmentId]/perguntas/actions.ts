@@ -14,7 +14,9 @@ type GetDimensionsByBlock =
   | { status: "SUCCESS"; data: { dimensions: Dimension[] } }
   | { status: "ERROR"; message: string };
 
-type UpdateAssessmentQuestions = { status: "SUCCESS"; data: {} } | { status: "ERROR"; message: string };
+type UpdateAssessmentQuestions =
+  | { status: "SUCCESS"; data: Record<string, never> }
+  | { status: "ERROR"; message: string };
 
 export async function getAssessmentQuestions(assessmentId: string): Promise<GetAssessmentQuestions> {
   const cookie = await cookies();
