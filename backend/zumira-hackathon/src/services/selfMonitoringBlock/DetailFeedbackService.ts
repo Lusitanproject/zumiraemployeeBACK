@@ -14,8 +14,21 @@ class DetailFeedbackService {
             },
             select: {
                 text: true,
-                selfMonitoringBlockId: true,
                 userId: true,
+                selfMonitoringBlock: {
+                    select: {
+                        id: true,
+                        title: true,
+                        summary: true,
+                        icon: true,
+                        pyschologicalDimensions: {
+                            select: {
+                                name: true,
+                                acronym: true,
+                            },
+                        },
+                    },
+                },
             },
             orderBy: {
                 createdAt: "desc",
