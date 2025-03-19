@@ -138,12 +138,14 @@ class UpdateFeedbackService {
         }
 
         const message = dimensionValues
+            .filter((d) => d.values.length)
             .map((d) => {
                 const sum = d.values.reduce((sum, v) => sum + v, 0);
                 const average = sum / d.values.length;
                 return `${d.dimension.name}: ${average.toFixed(2)}`;
             })
             .join(", ");
+        if (!message) throw new Error("No values to send");
 
         const response = await messageAssistant(message, block.openaiAssistantId);
 

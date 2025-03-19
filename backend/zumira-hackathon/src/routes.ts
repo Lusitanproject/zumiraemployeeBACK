@@ -4,37 +4,41 @@ import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { AuthUserController } from "./controllers/user/auth/AuthUserController";
+
 import { CreateUserController } from "./controllers/admin/users/CreateUserController";
+import { ListUsersByCompanyController } from "./controllers/admin/users/ListUsersByCompanyController";
+import { ListAllUsersController } from "./controllers/admin/users/ListAllUsersController";
+import { FindUserController } from "./controllers/admin/users/FindUserController";
+import { UpdateUserController } from "./controllers/admin/users/UpdateUserController";
+
+import { FindAllRolesController } from "./controllers/admin/roles/FindAllRolesController";
+
+import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
+import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
 
 import { CreateAssessmentController } from "./controllers/assessment/CreateAssessmentController";
 import { CreateQuestionController } from "./controllers/assessment/CreateQuestionController";
 import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
 import { DetailAssessmentController } from "./controllers/assessment/DetailAssessmentController";
 import { CreateResultController } from "./controllers/assessment/CreateResultController";
+import { AssessmentDetailForAdminController } from "./controllers/assessment/AssessmentDetailForAdminController";
+import { UpdateAssessmentController } from "./controllers/admin/assessments/UpdateAssessmentController";
+import { UpdateQuestionsController } from "./controllers/assessment/UpdateQuestionsController";
+
+import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
 
 import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlocksController";
-
-import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
-import { AssessmentDetailForAdminController } from "./controllers/assessment/AssessmentDetailForAdminController";
-import { ListUsersByCompanyController } from "./controllers/admin/users/ListUsersByCompanyController";
 import { ListAllSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindAllSelfMonitoringBlocksController";
 import { CreateSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/CreateSelfMonitoringBlockController";
 import { EditSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/EditSelfMonitoringBlockController";
 import { FindSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindSelfMonitoringBlockController";
-import { ListAllUsersController } from "./controllers/admin/users/ListAllUsersController";
-import { FindUserController } from "./controllers/admin/users/FindUserController";
-import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
-import { FindAllRolesController } from "./controllers/admin/roles/FindAllRolesController";
-import { UpdateUserController } from "./controllers/admin/users/UpdateUserController";
-import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
-import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
-import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
-import { UpdateAssessmentController } from "./controllers/admin/assessments/UpdateAssessmentController";
-import { FindDimensionByBlockController } from "./controllers/admin/dimensions/FindBySelfMonitoringController";
-import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
 import { UpdateFeedbackController } from "./controllers/selfMonitoringBlock/UpdateFeedbackController";
 import { DetailFeedbackController } from "./controllers/selfMonitoringBlock/DetailFeedbackController";
-import { UpdateQuestionsController } from "./controllers/assessment/UpdateQuestionsController";
+
+import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
+import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
+import { FindDimensionByBlockController } from "./controllers/admin/dimensions/FindBySelfMonitoringController";
+import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
 
 const router = Router();
 
@@ -78,8 +82,6 @@ router.put("/self-monitoring/admin/:id", isAuthenticated, new EditSelfMonitoring
 router.get("/self-monitoring/admin/:id", isAuthenticated, new FindSelfMonitoringBlocksController().handle);
 router.post("/self-monitoring/feedback/:id", isAuthenticated, new UpdateFeedbackController().handle);
 router.get("/self-monitoring/feedback/:id", isAuthenticated, new DetailFeedbackController().handle);
-router.post("/self-monitoring/:id/feedback", isAuthenticated, new UpdateFeedbackController().handle);
-router.get("/self-monitoring/:id/feedback", isAuthenticated, new DetailFeedbackController().handle);
 
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated, new FindAllCompaniesController().handle);
