@@ -6,5 +6,8 @@ export default async function Chat() {
     const cookie = await cookies();
     const session = decrypt(cookie.get("session")?.value);
 
-    return <ChatUi username={session?.name ?? "Usuário"} />;
+    // Combinação de nome+role é provisória e causará inconsistências
+    return (
+        <ChatUi username={session?.name ?? "Usuário"} chatId={session ? session?.name + session?.role : undefined} />
+    );
 }

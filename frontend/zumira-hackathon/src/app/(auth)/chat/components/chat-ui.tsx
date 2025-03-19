@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatMessage } from "../definitions";
 import { sendMessage } from "../actions";
 import { Messages } from "./messages";
@@ -10,9 +10,10 @@ import { flushSync } from "react-dom";
 
 interface ChatUiProps {
     username: string;
+    chatId?: string;
 }
 
-export function ChatUi({ username }: ChatUiProps) {
+export function ChatUi({ username, chatId }: ChatUiProps) {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -52,6 +53,21 @@ export function ChatUi({ username }: ChatUiProps) {
                 setLoading(false);
             });
     }
+
+    // Persistência das mensagens em localstorage é temporario até guardar no banco de dados (pós MVP)
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const value = localStorage.getItem("messages");
+            const parsed = value ? JSON.parse(value) : null;
+            if (parsed.id === chatId) setMessages(parsed.messages);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (chatId) {
+            localStorage.setItem("messages", JSON.stringify({ messages: messages, id: chatId }));
+        }
+    }, [messages]);
 
     return (
         <div className="flex flex-col size-full overflow-hidden justify-between">

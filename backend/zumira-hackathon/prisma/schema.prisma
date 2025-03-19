@@ -27,6 +27,7 @@ model User {
   codes                     AuthCode[]
   assessmentResults         AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
+  selfMonitoringFeedbacks   SelfMonitoringFeedback[]
 
   @@map("users")
 }
@@ -149,8 +150,8 @@ model AssessmentQuestionAnswer {
   createdAt                  DateTime @default(now()) @map("created_at")
   updatedAt                  DateTime @updatedAt @map("updated_at")
 
-  assessmentQuestion       AssessmentQuestion       @relation(fields: [assessmentQuestionId], references: [id])
-  assessmentQuestionChoice AssessmentQuestionChoice @relation(fields: [assessmentQuestionChoiceId], references: [id])
+  assessmentQuestion       AssessmentQuestion       @relation(fields: [assessmentQuestionId], references: [id], onDelete: Cascade)
+  assessmentQuestionChoice AssessmentQuestionChoice @relation(fields: [assessmentQuestionChoiceId], references: [id], onDelete: Cascade)
   assessmentResult         AssessmentResult         @relation(fields: [assessmentResultId], references: [id])
   user                     User                     @relation(fields: [userId], references: [id])
 
@@ -166,22 +167,24 @@ model AssessmentQuestionChoice {
   createdAt            DateTime @default(now()) @map("created_at")
   updatedAt            DateTime @updatedAt @map("updated_at")
 
-  assessmentQuestion        AssessmentQuestion         @relation(fields: [assessmentQuestionId], references: [id])
+  assessmentQuestion        AssessmentQuestion         @relation(fields: [assessmentQuestionId], references: [id], onDelete: Cascade)
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
 
   @@map("assessment_question_choices")
 }
 
 model SelfMonitoringBlock {
-  id        String   @id @default(cuid())
-  title     String
-  summary   String?
-  icon      String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                String   @id @default(cuid())
+  title             String
+  summary           String?
+  icon              String?
+  openaiAssistantId String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
   assessments             Assessment[]
   pyschologicalDimensions PsychologicalDimension[]
+  selfMonitoringFeedbacks SelfMonitoringFeedback[]
 
   @@map("self_monitoring_blocks")
 }
@@ -198,4 +201,18 @@ model PsychologicalDimension {
   assessmentQuestions AssessmentQuestion[]
 
   @@map("psychological_dimensions")
+}
+
+model SelfMonitoringFeedback {
+  id                    String   @id @default(uuid())
+  text                  String
+  userId                String
+  selfMonitoringBlockId String   @map("self_monitoring_block_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  user                User                @relation(fields: [userId], references: [id])
+  selfMonitoringBlock SelfMonitoringBlock @relation(fields: [selfMonitoringBlockId], references: [id])
+
+  @@map("self_monitoring_feedback")
 }

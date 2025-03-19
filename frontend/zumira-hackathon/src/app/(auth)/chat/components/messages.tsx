@@ -21,7 +21,10 @@ export function Messages({ messages, loadingResponse }: MessagesProps) {
     }, [messages, loadingResponse]);
 
     return (
-        <div ref={divRef} className="flex flex-col size-full py-[1.375rem] gap-[1.375rem] overflow-scroll px-5">
+        <div
+            ref={divRef}
+            className="flex flex-col size-full py-[1.375rem] gap-[1.375rem] overflow-y-scroll overflow-x-hidden px-5"
+        >
             {messages.map((m, i) => (
                 <Fragment key={i}>
                     {m.role === "assistant" && <hr className="text-gray-200 -mx-5" />}

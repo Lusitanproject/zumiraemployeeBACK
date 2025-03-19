@@ -15,7 +15,7 @@ class CreateAssessmentService {
             },
         });
 
-        if (!block) throw new Error("Asssessment scale does not exist");
+        if (!block) throw new Error("Self monitoring block does not exist");
 
         const assessment = await prismaClient.assessment.create({
             data: {
