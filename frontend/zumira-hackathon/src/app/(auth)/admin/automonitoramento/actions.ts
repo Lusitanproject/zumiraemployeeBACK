@@ -15,7 +15,7 @@ export async function getMonitoringBlocks(): Promise<GetMonitoringBlocks> {
   const cookie = await cookies()
   const session = decrypt(cookie.get("session")?.value)
 
-  const url = `${process.env.API_BASE_URL}/self-monitoring`
+  const url = `${process.env.API_BASE_URL}/self-monitoring/admin`
 
   const [error, response] = await catchError(fetch(url, {
     headers: {

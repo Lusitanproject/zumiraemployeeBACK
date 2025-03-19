@@ -6,7 +6,7 @@ class ListPsychologicalDimensionsController {
         const listDimensions = new ListPsychologicalDimensionsService();
         const dimensions = await listDimensions.execute();
 
-        return res.json({ status: "SUCCESS", data: dimensions });
+        return res.json({ status: "SUCCESS", data: { dimensions } });
     }
 }
 

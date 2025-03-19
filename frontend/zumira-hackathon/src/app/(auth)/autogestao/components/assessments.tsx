@@ -1,6 +1,6 @@
 "use client"
 import { useSearchParams } from "next/navigation"
-import { useFilteredAssessments } from "../_lib"
+import { useFilteredAssessments } from "../lib"
 import { Assessment, SelfMonitoringBlock } from "../definitions"
 import { MonitoringBlocks } from "./monitoring-blocks"
 import { SearchBar } from "./search-bar"

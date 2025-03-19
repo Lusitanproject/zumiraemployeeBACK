@@ -13,7 +13,10 @@ export async function getSidebarContent() {
     { href: "/rede-apoio", label: "Rede de Apoio", icon: "users", role: "user" },
     { href: "/biblioteca", label: "Biblioteca", icon: "layout-grid", role: "user" },
     { href: "/admin/automonitoramento", label: "Automonitoramento", icon: "chart-no-axes-column-increasing", role: "admin" },
+    { href: "/admin/dimensoes", label: "Dimensões", role: "admin", icon: "brain" },
     { href: "/admin/testes", label: "Testes", role: "admin", icon: "clipboard-list" },
+    { href: "/admin/usuarios", label: "Usuários", role: "admin", icon: "users" },
+    { href: "/admin/empresas", label: "Empresas", role: "admin", icon: "building-2" },
   ] as const
 
   const menu: MenuLink[] = links

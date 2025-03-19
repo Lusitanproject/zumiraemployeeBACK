@@ -1,5 +1,6 @@
 import { Assessment } from "../definitions"
 import { AssessmentCard } from "./assessment-card"
+import { AssessmentModal } from "./assessment-modal"
 
 type AssessmentListProps = {
   title: string
@@ -17,13 +18,20 @@ export function AssessmentList({ data, title, completed }: AssessmentListProps) 
       <h3 className="text-base font-semibold text-gray-700 mb-5">{title}</h3>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {data.map(item => (
-          <AssessmentCard
+          <AssessmentModal
             key={item.id}
             id={item.id}
-            summary={item.summary}
             title={item.title}
-            completed={!!completed}
-          />
+            summary={item.summary}
+            lastCompleted={item.lastCompleted}
+          >
+            <AssessmentCard
+              id={item.id}
+              summary={item.summary}
+              title={item.title}
+              completed={!!completed}
+            />
+          </AssessmentModal>
         ))}
       </div>
     </div>
