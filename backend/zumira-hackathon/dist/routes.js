@@ -31,6 +31,8 @@ const UpdateFeedbackController_1 = require("./controllers/selfMonitoringBlock/Up
 const DetailFeedbackController_1 = require("./controllers/selfMonitoringBlock/DetailFeedbackController");
 const FindAllCompaniesController_1 = require("./controllers/admin/companies/FindAllCompaniesController");
 const CreateCompanyController_1 = require("./controllers/company/CreateCompanyController");
+const FindBySelfMonitoringController_1 = require("./controllers/admin/dimensions/FindBySelfMonitoringController");
+const FindCompanyController_1 = require("./controllers/admin/companies/FindCompanyController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -47,6 +49,7 @@ router.get("/roles", isAuthenticated_1.isAuthenticated, new FindAllRolesControll
 // ROTAS PSYCHOLOGICAL DIMENSION
 router.post("/dimensions", isAuthenticated_1.isAuthenticated, new CreateDimensionController_1.CreateDimensionController().handle);
 router.get("/dimensions", isAuthenticated_1.isAuthenticated, new FindAllDimensionController_1.FindAllDimensionsController().handle);
+router.get("/dimensions/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new FindBySelfMonitoringController_1.FindDimensionByBlockController().handle);
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated_1.isAuthenticated, new ListAssessmentsController_1.ListAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated_1.isAuthenticated, new DetailAssessmentController_1.DetailAssessmentController().handle);
@@ -68,4 +71,5 @@ router.post("/self-monitoring/feedback/:id", isAuthenticated_1.isAuthenticated, 
 router.get("/self-monitoring/feedback/:id", isAuthenticated_1.isAuthenticated, new DetailFeedbackController_1.DetailFeedbackController().handle);
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated_1.isAuthenticated, new FindAllCompaniesController_1.FindAllCompaniesController().handle);
+router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
 router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);

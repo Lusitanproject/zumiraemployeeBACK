@@ -5,7 +5,7 @@ const zod_1 = require("zod");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const AssessmentQuestionAdminService_1 = require("../../../services/admin/AssessmentQuestionAdminService");
 const RequestParam = zod_1.z.object({
-    id: zod_1.z.string().cuid()
+    assessmentId: zod_1.z.string().cuid()
 });
 class FindQuestionByAssessmentController {
     async handle(req, res) {
@@ -17,7 +17,7 @@ class FindQuestionByAssessmentController {
             });
         }
         const questionAdminService = new AssessmentQuestionAdminService_1.AssessmentQuestionAdminService();
-        const questions = await questionAdminService.findByAssessment(data.id);
+        const questions = await questionAdminService.findByAssessment(data.assessmentId);
         return res.json({ status: "SUCCESS", data: { questions } });
     }
 }

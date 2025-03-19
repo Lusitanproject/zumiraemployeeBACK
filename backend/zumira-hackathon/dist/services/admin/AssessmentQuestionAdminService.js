@@ -27,6 +27,14 @@ class AssessmentQuestionAdminService {
                         acronym: true,
                         name: true
                     }
+                },
+                assessmentQuestionChoices: {
+                    select: {
+                        id: true,
+                        index: true,
+                        label: true,
+                        value: true
+                    }
                 }
             }
         });
