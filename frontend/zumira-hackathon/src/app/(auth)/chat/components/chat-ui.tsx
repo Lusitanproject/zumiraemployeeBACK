@@ -59,7 +59,7 @@ export function ChatUi({ username, chatId }: ChatUiProps) {
         if (typeof window !== "undefined") {
             const value = localStorage.getItem("messages");
             const parsed = value ? JSON.parse(value) : null;
-            if (parsed.id === chatId) setMessages(parsed.messages);
+            if (parsed && parsed.id === chatId) setMessages(parsed.messages);
         }
     }, []);
 
