@@ -14,6 +14,8 @@ interface ChoiceFieldProps {
 }
 
 export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
+  const sorted = question.assessmentQuestionChoices.sort((a, b) => a.index - b.index);
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row w-full justify-between items-center">
@@ -33,7 +35,7 @@ export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
         </ButtonIcon>
       </div>
       <div id="choices" className="flex flex-col gap-2 items-center">
-        {question.assessmentQuestionChoices.map((c, i) => (
+        {sorted.map((c, i) => (
           <div key={c.key} className="flex flex-col items-start gap-1 w-full">
             <span className="flex w-fit font-bold text-xs text-gray-700">Opção {i + 1}</span>
             <div className="flex flex-row gap-2 w-full items-center">
