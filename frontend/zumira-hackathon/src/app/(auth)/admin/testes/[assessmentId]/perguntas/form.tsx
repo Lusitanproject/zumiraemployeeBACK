@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
 import { ChoiceField } from "./components/choice";
 import { updateAssessmentQuestions } from "./actions";
-import { flushSync } from "react-dom";
 
 type ManageQuestionsFormProps = {
   questions: AssessmentQuestion[];
