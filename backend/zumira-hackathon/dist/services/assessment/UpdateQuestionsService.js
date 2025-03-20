@@ -18,8 +18,11 @@ class UpdateQuestionsService {
         const oldChoices = oldQuestions.map((q) => q.assessmentQuestionChoices.map((c) => c)).flat();
         const deletedQuestions = oldQuestions.filter((oldQuestion) => !questions.some((q) => oldQuestion.id === q.id));
         const deletedChoices = oldChoices.filter((oldChoice) => !questions.some((q) => q.choices.some((c) => oldChoice.id === c.id)));
+        const maintainedQuestions = oldQuestions.filter((oldQuestion) => questions.some((q) => oldQuestion.id === q.id));
+        const maintainedChoices = oldChoices.filter((oldChoice) => questions.some((q) => q.choices.some((c) => oldChoice.id === c.id)));
         for (const question of questions) {
             if (!question.id) {
+                // Create new question and choices
                 const createdQuestion = await prisma_1.default.assessmentQuestion.create({
                     data: {
                         assessmentId: assessmentId,
@@ -45,8 +48,21 @@ class UpdateQuestionsService {
                 });
             }
             else {
+                // Update existing question
+                await prisma_1.default.assessmentQuestion.update({
+                    where: {
+                        id: question.id,
+                    },
+                    data: {
+                        assessmentId: assessmentId,
+                        description: question.description,
+                        index: question.index,
+                        psychologicalDimensionId: question.psychologicalDimensionId,
+                    },
+                });
                 for (const choice of question.choices) {
                     if (!choice.id) {
+                        // Create new choices
                         await prisma_1.default.assessmentQuestionChoice.create({
                             data: {
                                 index: choice.index,
@@ -60,6 +76,19 @@ class UpdateQuestionsService {
                                 value: true,
                                 index: true,
                                 assessmentQuestionId: true,
+                            },
+                        });
+                    }
+                    else {
+                        // Update existing choice
+                        await prisma_1.default.assessmentQuestionChoice.update({
+                            where: {
+                                id: choice.id,
+                            },
+                            data: {
+                                index: choice.index,
+                                label: choice.label,
+                                value: choice.value,
                             },
                         });
                     }
