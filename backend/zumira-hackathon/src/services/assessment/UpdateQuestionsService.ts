@@ -37,14 +37,10 @@ class UpdateQuestionsService {
       (oldChoice) => !questions.some((q) => q.choices.some((c) => oldChoice.id === c.id))
     );
 
-    const maintainedQuestions = oldQuestions.filter((oldQuestion) => questions.some((q) => oldQuestion.id === q.id));
-    const maintainedChoices = oldChoices.filter((oldChoice) =>
-      questions.some((q) => q.choices.some((c) => oldChoice.id === c.id))
-    );
-
     for (const question of questions) {
       if (!question.id) {
         // Create new question and choices
+        console.log(`Creating question ${question.index}`);
         const createdQuestion = await prismaClient.assessmentQuestion.create({
           data: {
             assessmentId: assessmentId,
@@ -71,6 +67,7 @@ class UpdateQuestionsService {
         });
       } else {
         // Update existing question
+        console.log(`Updating question ${question.index}`);
         await prismaClient.assessmentQuestion.update({
           where: {
             id: question.id,
@@ -86,6 +83,7 @@ class UpdateQuestionsService {
         for (const choice of question.choices) {
           if (!choice.id) {
             // Create new choices
+            console.log(`Creating choice ${question.index}:${choice.index}`);
             await prismaClient.assessmentQuestionChoice.create({
               data: {
                 index: choice.index,
@@ -103,6 +101,7 @@ class UpdateQuestionsService {
             });
           } else {
             // Update existing choice
+            console.log(`Updating choice ${question.index}:${choice.index}`);
             await prismaClient.assessmentQuestionChoice.update({
               where: {
                 id: choice.id,
@@ -118,6 +117,7 @@ class UpdateQuestionsService {
       }
     }
 
+    console.log(`Deleting removed questions`);
     await prismaClient.assessmentQuestion.deleteMany({
       where: {
         id: {
@@ -125,6 +125,7 @@ class UpdateQuestionsService {
         },
       },
     });
+    console.log(`Deleting removed choices`);
     await prismaClient.assessmentQuestionChoice.deleteMany({
       where: {
         id: {

@@ -26,6 +26,8 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
   const translated = translateQuestions(questions);
   const [state, dispatch] = useReducer(reducer, { questions: translated });
   const [invalidQuestions, setInvalidQuestions] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const sorted = state.questions.sort((a, b) => a.index - b.index);
 
@@ -33,7 +35,10 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
     redirect(`/admin/testes/${data.id}`);
   }, []);
 
-  const handleUpdateQuestions = useCallback(() => {
+  const handleUpdateQuestions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
     const invalid = [] as string[];
     for (const question of state.questions) {
       const { success } = ManageQuestionSchema.safeParse(question);
@@ -50,8 +55,11 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
     setInvalidQuestions(invalid);
 
     if (!invalid.length) {
-      updateAssessmentQuestions(data.id, state.questions);
+      const response = await updateAssessmentQuestions(data.id, state.questions);
+      if (response.status === "ERROR") setError(response.message);
     }
+
+    setLoading(false);
   }, [state]);
 
   useEffect(() => {
@@ -129,11 +137,12 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
         ))}
       </div>
       <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-end gap-x-3">
+        <span className="text-error-500">{error}</span>
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleUpdateQuestions}>
-          Salvar
+        <Button size="xl" variant="primary" onClick={handleUpdateQuestions} disabled={loading}>
+          {loading ? "Salvando..." : "Salvar"}
         </Button>
       </div>
     </div>
