@@ -153,7 +153,7 @@ export function AssessmentForm({ data, blocks }: FormProps) {
             <Label htmlFor="operation">Tipo de operação</Label>
             <Select
               name="operation"
-              defaultValue={"AVERAGE"}
+              defaultValue={data?.operationType || "AVERAGE"}
               onValueChange={(value) =>
                 setFormData((current) => ({
                   ...current,
