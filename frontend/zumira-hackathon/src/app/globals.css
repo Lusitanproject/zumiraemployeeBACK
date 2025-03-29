@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -9,71 +10,71 @@
   --font-mono: var(--font-rawline);
   --font-cursive: var(--font-borel);
 
-  --color-gray-25: #FCFCFD;
-  --color-gray-50: #F9FAFB;
-  --color-gray-100: #F2F4F7;
-  --color-gray-200: #EAECF0;
-  --color-gray-300: #D0D5DD;
-  --color-gray-400: #98A2B3;
+  --color-gray-25: #fcfcfd;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f2f4f7;
+  --color-gray-200: #eaecf0;
+  --color-gray-300: #d0d5dd;
+  --color-gray-400: #98a2b3;
   --color-gray-500: #667085;
   --color-gray-600: #475467;
   --color-gray-700: #344054;
-  --color-gray-800: #1D2939;
+  --color-gray-800: #1d2939;
   --color-gray-900: #101828;
 
-  --color-primary-25: #B4FFC2;
-  --color-primary-50: #96F1A7;
-  --color-primary-100: #78DB8E;
-  --color-primary-200: #5CC576;
-  --color-primary-300: #53C772;
-  --color-primary-400: #3FB060;
-  --color-primary-500: #1F9A4B;
+  --color-primary-25: #b4ffc2;
+  --color-primary-50: #96f1a7;
+  --color-primary-100: #78db8e;
+  --color-primary-200: #5cc576;
+  --color-primary-300: #53c772;
+  --color-primary-400: #3fb060;
+  --color-primary-500: #1f9a4b;
   --color-primary-600: #008538;
-  --color-primary-700: #006F27;
-  --color-primary-800: #005A18;
-  --color-primary-900: #00460B;
+  --color-primary-700: #006f27;
+  --color-primary-800: #005a18;
+  --color-primary-900: #00460b;
 
-  --color-error-25: #FFFBFA;
-  --color-error-50: #FEF3F2;
-  --color-error-100: #FEE4E2;
-  --color-error-200: #FECDCA;
-  --color-error-300: #FDA29B;
-  --color-error-400: #F97066;
-  --color-error-500: #F04438;
-  --color-error-600: #D92D20;
-  --color-error-700: #B42318;
+  --color-error-25: #fffbfa;
+  --color-error-50: #fef3f2;
+  --color-error-100: #fee4e2;
+  --color-error-200: #fecdca;
+  --color-error-300: #fda29b;
+  --color-error-400: #f97066;
+  --color-error-500: #f04438;
+  --color-error-600: #d92d20;
+  --color-error-700: #b42318;
   --color-error-800: #912018;
-  --color-error-900: #7A271A;
+  --color-error-900: #7a271a;
 
-  --color-warning-25: #FFFCF5;
-  --color-warning-50: #FFFAEB;
-  --color-warning-100: #FEF0C7;
-  --color-warning-200: #FEDF89;
-  --color-warning-300: #FEC84B;
-  --color-warning-400: #FDB022;
-  --color-warning-500: #F79009;
-  --color-warning-600: #DC6803;
-  --color-warning-700: #B54708;
-  --color-warning-800: #93370D;
-  --color-warning-900: #7A2E0E;
+  --color-warning-25: #fffcf5;
+  --color-warning-50: #fffaeb;
+  --color-warning-100: #fef0c7;
+  --color-warning-200: #fedf89;
+  --color-warning-300: #fec84b;
+  --color-warning-400: #fdb022;
+  --color-warning-500: #f79009;
+  --color-warning-600: #dc6803;
+  --color-warning-700: #b54708;
+  --color-warning-800: #93370d;
+  --color-warning-900: #7a2e0e;
 
-  --color-success-25: #F6FEF9;
-  --color-success-50: #ECFDF3;
-  --color-success-100: #D1FADF;
-  --color-success-200: #A6F4C5;
-  --color-success-300: #6CE9A6;
-  --color-success-400: #32D583;
-  --color-success-500: #12B76A;
+  --color-success-25: #f6fef9;
+  --color-success-50: #ecfdf3;
+  --color-success-100: #d1fadf;
+  --color-success-200: #a6f4c5;
+  --color-success-300: #6ce9a6;
+  --color-success-400: #32d583;
+  --color-success-500: #12b76a;
   --color-success-600: #039855;
-  --color-success-700: #027A48;
-  --color-success-800: #05603A;
-  --color-success-900: #054F31;
+  --color-success-700: #027a48;
+  --color-success-800: #05603a;
+  --color-success-900: #054f31;
 
-  --color-blue-light-50: #F0F9FF;
-  --color-blue-light-700: #026AA2;
+  --color-blue-light-50: #f0f9ff;
+  --color-blue-light-700: #026aa2;
 
-  --color-purple-50: #F4F3FF;
-  --color-purple-700: #5925DC;
+  --color-purple-50: #f4f3ff;
+  --color-purple-700: #5925dc;
 
   --shadow-focus-ring: 0px 0px 0px 4px #c7c6c5;
   --shadow-error-ring: 0px 0px 0px 4px #fee4e2;
@@ -112,7 +113,52 @@
     @apply bg-white text-black font-sans;
   }
 
-  input, button {
+  input,
+  button {
     @apply font-sans;
+  }
+
+  .markdown h1,
+  .markdown h2,
+  .markdown h3,
+  .markdown h4,
+  .markdown h5,
+  .markdown h6 {
+    font-size: 1.125rem !important;
+  }
+
+  .markdown li {
+    height: auto !important;
+    padding-left: 1rem;
+    list-style-position: outside;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .markdown li p {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .markdown ul {
+    height: fit-content !important;
+  }
+
+  .markdown * {
+    font-size: 1rem;
+  }
+
+  @keyframes jump {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+
+  .animate-jump {
+    animation: jump 1.5s ease-in-out infinite;
   }
 }

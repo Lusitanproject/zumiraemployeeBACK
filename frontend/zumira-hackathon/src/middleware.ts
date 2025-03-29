@@ -15,8 +15,8 @@ export default async function middleware(req: NextRequest) {
   const session = decrypt(cookie.get("session")?.value);
 
   // Adicionar path aos headers para usar em server components/actions
-  const headers = new Headers(req.headers);
-  headers.set("x-current-path", req.nextUrl.pathname);
+  const res = NextResponse.next();
+  res.headers.set("x-current-path", req.nextUrl.pathname);
 
   if (isProtectedRoute && !session?.token) {
     deleteSession();
@@ -35,7 +35,7 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/chat", req.nextUrl));
   }
 
-  return NextResponse.next({ headers });
+  return res;
 }
 
 export const config = {
