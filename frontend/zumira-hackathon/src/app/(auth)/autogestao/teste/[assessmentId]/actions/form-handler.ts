@@ -1,36 +1,16 @@
 "use server";
 
 import { cookies } from "next/headers";
-import {
-  AssessmentQuestionChoices,
-  FormState,
-  MutateAssessmentResult,
-  SaveAssessmentAnswerSchema,
-} from "../definitions";
+import { FormState, MutateAssessmentResult, SaveAssessmentAnswerSchema } from "../definitions";
 import { catchError } from "@/utils/error";
 import { decrypt } from "@/app/_lib/session";
 import { redirect, RedirectType } from "next/navigation";
+import { getFormAnswersData } from "./util";
 
 export async function saveAnswersAction(tate: FormState, formData: FormData): Promise<FormState> {
-  const data = [];
+  const data = getFormAnswersData(formData);
 
-  for (const answer of formData.entries()) {
-    data.push({ key: answer[0], value: answer[1] as string });
-  }
-
-  const answers: AssessmentQuestionChoices = data
-    .filter((item) => item.key !== "assessmentId" && item.key.indexOf("$ACTION_") === -1)
-    .map((item) => ({
-      assessmentQuestionId: item.key,
-      assessmentQuestionChoiceId: item.value,
-    }));
-
-  const assessmentId = data.find((item) => item.key === "assessmentId")?.value;
-
-  const validationResult = SaveAssessmentAnswerSchema.safeParse({
-    assessmentId,
-    answers,
-  });
+  const validationResult = SaveAssessmentAnswerSchema.safeParse(data);
 
   if (!validationResult.success) {
     return {
@@ -73,7 +53,7 @@ export async function saveAnswersAction(tate: FormState, formData: FormData): Pr
   const result = (await response.json()) as MutateAssessmentResult;
 
   if (result.status === "SUCCESS") {
-    fetch(`${process.env.API_BASE_URL}/assessments/feedback/${assessmentId}`, {
+    fetch(`${process.env.API_BASE_URL}/assessments/feedback/${data.assessmentId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
