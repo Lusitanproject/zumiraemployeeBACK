@@ -16,7 +16,7 @@ type AssessmentFormProps = {
 };
 
 export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
-  const [state, action, pending] = useActionState(saveAnswersAction, undefined);
+  const [, action, pending] = useActionState(saveAnswersAction, undefined);
   const [unanswered, setUnanswered] = useState<string[]>([]);
 
   async function handleSumbit(formData: FormData) {
