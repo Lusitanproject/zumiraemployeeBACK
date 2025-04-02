@@ -9,7 +9,7 @@ export function HeadImage({ size = "medium", fadeColor = "var(--color-white)" }:
   const width = size === "small" ? 221 : size === "large" ? 598 : 396;
   const height = size === "small" ? 183 : size === "large" ? 612 : 330;
 
-  const gradientId = v4();
+  const gradientId = btoa(fadeColor);
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill="none" viewBox="0 0 598 612">
