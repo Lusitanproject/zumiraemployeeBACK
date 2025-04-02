@@ -1,5 +1,3 @@
-import { v4 } from "uuid";
-
 interface HeadImageProps {
   size?: "small" | "medium" | "large";
   fadeColor?: string;
