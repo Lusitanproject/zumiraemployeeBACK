@@ -22,6 +22,13 @@ export type GetFeedback = {
           acronym: string;
         }[];
       };
+      createdAt: Date;
+    }[];
+    processing: {
+      id: string;
+      title: string;
+      summary: string;
+      description: string;
     }[];
   };
   message?: string;

@@ -9,17 +9,28 @@ interface FeedbackProps {
   title: string;
   subtitle: string;
   text: string;
+  createdAt: Date;
 }
 
-export function Feedback({ title, subtitle, text }: FeedbackProps) {
+export function Feedback({ title, subtitle, text, createdAt }: FeedbackProps) {
   const [showAll, setShowAll] = useState<boolean>(false);
+
+  function formatDate(date: Date): string {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Mês é baseado em zero
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
 
   return (
     <div
       className={`relative flex flex-col size-full justify-between ${showAll ? "overflow-visible" : "overflow-hidden"}`}
     >
       <div className="flex flex-col justify-start">
-        <h1 className="text-lg text-gray-600 leading-7 font-bold">{title}</h1>
+        <h1 className="text-lg text-gray-600 leading-7 font-bold">
+          {title} - {formatDate(new Date(createdAt))}
+        </h1>
         <h2 className="text-base text-gray-600 leading-6 font-semibold">{subtitle}</h2>
         <div className="markdown prose lg:prose-xl">
           <Markdown>{text}</Markdown>

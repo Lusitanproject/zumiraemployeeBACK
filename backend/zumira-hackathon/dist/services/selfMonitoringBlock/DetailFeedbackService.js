@@ -35,6 +35,7 @@ class DetailFeedbackService {
                                 },
                             },
                         },
+                        assessmentResults: true,
                         assessmentQuestions: {
                             select: {
                                 psychologicalDimension: {
@@ -53,6 +54,29 @@ class DetailFeedbackService {
                 createdAt: "desc",
             },
             distinct: ["assessmentId"],
+        });
+        const assessments = await prisma_1.default.assessment.findMany({
+            where: {
+                selfMonitoringBlockId,
+            },
+            include: {
+                assessmentResults: {
+                    select: {
+                        id: true,
+                    },
+                    where: {
+                        userId,
+                    },
+                },
+                assessmentFeedbacks: {
+                    select: {
+                        id: true,
+                    },
+                    where: {
+                        userId,
+                    },
+                },
+            },
         });
         const formattedFeedbacks = feedbacks.map((f) => ({
             id: f.id,
@@ -73,8 +97,22 @@ class DetailFeedbackService {
                 ],
             },
             selfMonitoringBlock: f.assessment.selfMonitoringBlock,
+            createdAt: f.createdAt,
         }));
-        return { items: formattedFeedbacks };
+        const processing = assessments
+            .map((a) => {
+            console.log();
+            if (a.assessmentResults.length !== a.assessmentFeedbacks.length) {
+                return {
+                    id: a.id,
+                    title: a.title,
+                    summary: a.summary,
+                    description: a.description,
+                };
+            }
+        })
+            .filter((a) => !!a);
+        return { items: formattedFeedbacks, processing };
     }
 }
 exports.DetailFeedbackService = DetailFeedbackService;
