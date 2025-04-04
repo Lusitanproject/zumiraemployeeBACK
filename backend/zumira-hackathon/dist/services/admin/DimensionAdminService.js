@@ -16,10 +16,10 @@ class DimensionAdminService {
                 selfMonitoringBlock: {
                     select: {
                         id: true,
-                        title: true
-                    }
-                }
-            }
+                        title: true,
+                    },
+                },
+            },
         });
         return dimension;
     }
@@ -32,10 +32,10 @@ class DimensionAdminService {
                 selfMonitoringBlock: {
                     select: {
                         id: true,
-                        title: true
-                    }
-                }
-            }
+                        title: true,
+                    },
+                },
+            },
         });
         return dimension;
     }
@@ -49,16 +49,29 @@ class DimensionAdminService {
                 selfMonitoringBlock: {
                     select: {
                         id: true,
-                        title: true
-                    }
-                }
-            }
+                        title: true,
+                    },
+                },
+            },
         });
         return dimension;
     }
     async create(data) {
         const dimension = await prisma_1.default.psychologicalDimension.create({ data });
         return dimension;
+    }
+    async edit(data) {
+        const { id, acronym, name, selfMonitoringBlockId } = data;
+        await prisma_1.default.psychologicalDimension.update({
+            where: {
+                id,
+            },
+            data: {
+                acronym,
+                name,
+                selfMonitoringBlockId,
+            },
+        });
     }
 }
 exports.DimensionAdminService = DimensionAdminService;
