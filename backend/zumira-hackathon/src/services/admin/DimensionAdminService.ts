@@ -1,8 +1,9 @@
 import { z } from "zod";
 import prismaClient from "../../prisma";
-import { CreateDimensionSchema } from "../../definitions/admin/dimension";
+import { CreateDimensionSchema, EditDimensionSchema } from "../../definitions/admin/dimension";
 
-type CreateDimension = z.infer<typeof CreateDimensionSchema>
+type CreateDimension = z.infer<typeof CreateDimensionSchema>;
+type EditDimension = z.infer<typeof EditDimensionSchema>;
 
 class DimensionAdminService {
   async find(dimensionId: string) {
@@ -15,12 +16,12 @@ class DimensionAdminService {
         selfMonitoringBlock: {
           select: {
             id: true,
-            title: true
-          }
-        }
-      }
-    })
-    return dimension
+            title: true,
+          },
+        },
+      },
+    });
+    return dimension;
   }
 
   async findAll() {
@@ -32,12 +33,12 @@ class DimensionAdminService {
         selfMonitoringBlock: {
           select: {
             id: true,
-            title: true
-          }
-        }
-      }
-    })
-    return dimension
+            title: true,
+          },
+        },
+      },
+    });
+    return dimension;
   }
 
   async findBySelfMonitoring(selfMonitoringBlockId: string) {
@@ -50,18 +51,33 @@ class DimensionAdminService {
         selfMonitoringBlock: {
           select: {
             id: true,
-            title: true
-          }
-        }
-      }
-    })
-    return dimension
+            title: true,
+          },
+        },
+      },
+    });
+    return dimension;
   }
 
   async create(data: CreateDimension) {
-    const dimension = await prismaClient.psychologicalDimension.create({ data })
-    return dimension
+    const dimension = await prismaClient.psychologicalDimension.create({ data });
+    return dimension;
+  }
+
+  async edit(data: EditDimension) {
+    const { id, acronym, name, selfMonitoringBlockId } = data;
+
+    await prismaClient.psychologicalDimension.update({
+      where: {
+        id,
+      },
+      data: {
+        acronym,
+        name,
+        selfMonitoringBlockId,
+      },
+    });
   }
 }
 
-export { DimensionAdminService }
+export { DimensionAdminService };

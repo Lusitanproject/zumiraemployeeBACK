@@ -40,6 +40,8 @@ import { CreateCompanyController } from "./controllers/company/CreateCompanyCont
 import { FindDimensionByBlockController } from "./controllers/admin/dimensions/FindBySelfMonitoringController";
 import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
 import { ListFeedbacksController } from "./controllers/assessment/feedback/ListFeedbacksController";
+import { FindDimensionController } from "./controllers/admin/dimensions/FindDimensionController";
+import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
 
 const router = Router();
 
@@ -60,7 +62,8 @@ router.get("/roles", isAuthenticated, new FindAllRolesController().handle);
 // ROTAS PSYCHOLOGICAL DIMENSION
 router.post("/dimensions", isAuthenticated, new CreateDimensionController().handle);
 router.get("/dimensions", isAuthenticated, new FindAllDimensionsController().handle);
-router.get("/dimensions/:selfMonitoringBlockId", isAuthenticated, new FindDimensionByBlockController().handle);
+router.get("/dimensions/:psychologicalDimensionId", isAuthenticated, new FindDimensionController().handle);
+router.put("/dimensions/:psychologicalDimensionId", isAuthenticated, new EditDimensionController().handle);
 
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
@@ -84,6 +87,11 @@ router.post("/self-monitoring/admin", isAuthenticated, new CreateSelfMonitoringB
 router.put("/self-monitoring/admin/:id", isAuthenticated, new EditSelfMonitoringBlocksController().handle);
 router.get("/self-monitoring/admin/:id", isAuthenticated, new FindSelfMonitoringBlocksController().handle);
 router.get("/self-monitoring/feedback/:id", isAuthenticated, new DetailFeedbackController().handle);
+router.get(
+  "/self-monitoring/dimensions/:selfMonitoringBlockId",
+  isAuthenticated,
+  new FindDimensionByBlockController().handle
+);
 
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated, new FindAllCompaniesController().handle);
