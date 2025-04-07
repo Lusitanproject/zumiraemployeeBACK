@@ -4,8 +4,8 @@ export const SelfMonitoringBlockSchema = z.object({
   id: z.string().cuid(),
   title: z.string(),
   summary: z.string().optional(),
-  icon: z.string().optional()
-})
+  icon: z.string().optional(),
+});
 
 export const AssessmentSchema = z.object({
   id: z.string().cuid(),
@@ -14,45 +14,51 @@ export const AssessmentSchema = z.object({
   description: z.string(),
   selfMonitoringBlock: z.object({
     id: z.string().cuid(),
-    title: z.string()
+    title: z.string(),
   }),
-  assessmentQuestions: z.array(z.object({
-    id: z.string().uuid(),
-    description: z.string(),
-    index: z.number().int(),
-    assessmentQuestionChoices: z.array(z.object({
+  assessmentQuestions: z.array(
+    z.object({
       id: z.string().uuid(),
-      label: z.string(),
-      value: z.number(),
-      index: z.number().int()
-    }))
-  }))
-})
+      description: z.string(),
+      index: z.number().int(),
+      assessmentQuestionChoices: z.array(
+        z.object({
+          id: z.string().uuid(),
+          label: z.string(),
+          value: z.number(),
+          index: z.number().int(),
+        })
+      ),
+    })
+  ),
+});
 
 export const UserSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   email: z.string().email(),
-  company: z.object({
-    id: z.string().cuid(),
-    name: z.string()
-  }).optional(),
+  company: z
+    .object({
+      id: z.string().cuid(),
+      name: z.string(),
+    })
+    .optional(),
   role: z.object({
     id: z.string(),
-    slug: z.string()
-  })
-})
+    slug: z.string(),
+  }),
+});
 
 export const CompanySchema = z.object({
   id: z.string().cuid(),
   name: z.string(),
-  email: z.string().email()
-})
+  email: z.string().email(),
+});
 
 export const RoleSchema = z.object({
   id: z.string().uuid(),
-  slug: z.string()
-})
+  slug: z.string(),
+});
 
 export const PsychologicalDimensionSchema = z.object({
   id: z.string().uuid(),
@@ -60,9 +66,9 @@ export const PsychologicalDimensionSchema = z.object({
   name: z.string().min(1),
   selfMonitoringBlock: z.object({
     id: z.string().cuid(),
-    title: z.string().min(1)
-  })
-})
+    title: z.string().min(1),
+  }),
+});
 
 export const AssessmentQuestionSchema = z.object({
   id: z.string().uuid(),
@@ -72,12 +78,25 @@ export const AssessmentQuestionSchema = z.object({
   psychologicalDimension: z.object({
     id: z.string().uuid(),
     name: z.string().min(1),
-    acronym: z.string().min(1)
+    acronym: z.string().min(1),
   }),
-  assessmentQuestionChoices: z.array(z.object({
-    id: z.string().uuid(),
-    label: z.string().min(1),
-    value: z.number(),
-    index: z.number().int()
-  }))
-})
+  assessmentQuestionChoices: z.array(
+    z.object({
+      id: z.string().uuid(),
+      label: z.string().min(1),
+      value: z.number(),
+      index: z.number().int(),
+    })
+  ),
+});
+
+export const NationalitySchema = z.object({
+  id: z.string().cuid(),
+  name: z.string(),
+  acronym: z
+    .string()
+    .toLowerCase()
+    .regex(/^[a-z]{2}-[a-z]{2}$/i, {
+      message: "Acronym must be in the format xx-yy (e.g., pt-br, en-us)",
+    }),
+});
