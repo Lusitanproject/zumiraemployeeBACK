@@ -1,7 +1,16 @@
-export default function Biblioteca(){
+export default function Biblioteca() {
   return (
-    <div>
-      <h1>Biblioteca</h1>
+    <div className="flex flex-col gap-3 text-gray-600">
+      <h1 className="text-2xl font-bold">✨ Está quase pronta!...</h1>
+      <div className="flex flex-col gap-2 text-lg max-w-[50vw]">
+        <p>
+          A <span className="italic font-semibold">Biblioteca da Zumira</span> está sendo preparada para oferecer
+          conteúdos que inspiram, informam e cuidam de você.
+        </p>
+        <p>
+          Aqui você encontrará ferramentas práticas, testes psicológicos e conteúdos transformadores com base científica
+        </p>
+      </div>
     </div>
-  )
+  );
 }
