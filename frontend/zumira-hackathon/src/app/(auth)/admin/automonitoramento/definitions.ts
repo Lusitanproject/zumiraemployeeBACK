@@ -1,13 +1,23 @@
-import { z } from "zod"
-import { SelfMonitoringBlockSchema } from "@/schemas"
+import { z } from "zod";
+import { NationalitySchema, SelfMonitoringBlockSchema } from "@/schemas";
 
-export type MonitoringBlock = z.infer<typeof SelfMonitoringBlockSchema>
+export type MonitoringBlock = z.infer<typeof SelfMonitoringBlockSchema>;
+export type Nationality = z.infer<typeof NationalitySchema>;
 
 export type GetSelfMonitoringBlocks =
   | {
-      status: "SUCCESS",
+      status: "SUCCESS";
       data: {
-        blocks: MonitoringBlock[]
-      }
+        blocks: MonitoringBlock[];
+      };
     }
-  | { status: "ERROR", message: string }
+  | { status: "ERROR"; message: string };
+
+export type GetNationalities =
+  | {
+      status: "SUCCESS";
+      data: {
+        items: Nationality[];
+      };
+    }
+  | { status: "ERROR"; message: string };

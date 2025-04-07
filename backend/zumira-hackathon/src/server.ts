@@ -11,7 +11,7 @@ app.use(cors());
 app.use(router);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
+  console.error(err.message);
 
   if (err instanceof Error) {
     return res.status(400).json({

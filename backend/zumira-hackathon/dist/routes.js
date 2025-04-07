@@ -36,6 +36,7 @@ const FindCompanyController_1 = require("./controllers/admin/companies/FindCompa
 const ListFeedbacksController_1 = require("./controllers/assessment/feedback/ListFeedbacksController");
 const FindDimensionController_1 = require("./controllers/admin/dimensions/FindDimensionController");
 const EditDimensionController_1 = require("./controllers/admin/dimensions/EditDimensionController");
+const ListNationalitiesController_1 = require("./controllers/nationality/ListNationalitiesController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -79,3 +80,5 @@ router.get("/self-monitoring/dimensions/:selfMonitoringBlockId", isAuthenticated
 router.get("/companies", isAuthenticated_1.isAuthenticated, new FindAllCompaniesController_1.FindAllCompaniesController().handle);
 router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
 router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
+// ROTAS NATIONALITY
+router.get("/nationalities", isAuthenticated_1.isAuthenticated, new ListNationalitiesController_1.ListNationalitiesController().handle);
