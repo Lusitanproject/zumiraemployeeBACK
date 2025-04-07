@@ -8,6 +8,7 @@ export const CreateAssessmentSchema = z.object({
   selfMonitoringBlockId: z.string().cuid(),
   openaiAssistantId: z.string().optional(),
   operationType: z.nativeEnum(Operation),
+  nationalityId: z.string().cuid(),
 });
 
 export const UpdateAssessmentSchema = z.object({
@@ -17,6 +18,7 @@ export const UpdateAssessmentSchema = z.object({
   selfMonitoringBlockId: z.string().cuid().optional(),
   openaiAssistantId: z.string().optional(),
   operationType: z.nativeEnum(Operation),
+  nationalityId: z.string().cuid(),
 });
 
 export type CreateAssessment = z.infer<typeof CreateAssessmentSchema>;

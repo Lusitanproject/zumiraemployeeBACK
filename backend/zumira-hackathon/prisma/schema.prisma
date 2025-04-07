@@ -103,6 +103,10 @@ model Nationality {
   id       String @id @default(cuid())
   acronymn String @unique
   name     String
+
+  assessments Assessment[]
+
+  @@map("nationalities")
 }
 
 model Assessment {
@@ -113,10 +117,12 @@ model Assessment {
   openaiAssistantId     String?
   operationType         Operation @default(AVERAGE) @map("operation_type")
   selfMonitoringBlockId String    @map("self_monitoring_block_id")
+  nationalityId         String
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
   selfMonitoringBlock SelfMonitoringBlock  @relation(fields: [selfMonitoringBlockId], references: [id])
+  nationality         Nationality          @relation(fields: [nationalityId], references: [id])
   assessmentQuestions AssessmentQuestion[]
   assessmentResults   AssessmentResult[]
   assessmentFeedbacks AssessmentFeedback[]

@@ -17,8 +17,8 @@ class AssessmentDetailForAdminService {
                 selfMonitoringBlock: {
                     select: {
                         id: true,
-                        title: true
-                    }
+                        title: true,
+                    },
                 },
                 assessmentQuestions: {
                     select: {
@@ -33,6 +33,12 @@ class AssessmentDetailForAdminService {
                                 index: true,
                             },
                         },
+                    },
+                },
+                nationality: {
+                    select: {
+                        acronymn: true,
+                        name: true,
                     },
                 },
             },

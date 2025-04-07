@@ -2,17 +2,10 @@ import { CreateAssessment } from "../../definitions/admin/assessment";
 import prismaClient from "../../prisma";
 
 class CreateAssessmentService {
-  async execute({
-    title,
-    summary,
-    description,
-    selfMonitoringBlockId,
-    operationType,
-    openaiAssistantId,
-  }: CreateAssessment) {
+  async execute(data: CreateAssessment) {
     const block = await prismaClient.selfMonitoringBlock.findFirst({
       where: {
-        id: selfMonitoringBlockId,
+        id: data.selfMonitoringBlockId,
       },
     });
 
@@ -20,12 +13,7 @@ class CreateAssessmentService {
 
     const assessment = await prismaClient.assessment.create({
       data: {
-        title,
-        summary,
-        description,
-        selfMonitoringBlockId,
-        operationType,
-        openaiAssistantId,
+        ...data,
       },
       select: {
         id: true,
