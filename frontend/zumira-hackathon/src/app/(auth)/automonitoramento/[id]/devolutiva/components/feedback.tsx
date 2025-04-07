@@ -9,10 +9,10 @@ interface FeedbackProps {
   title: string;
   subtitle: string;
   text: string;
-  createdAt: Date;
+  answeredAt: Date;
 }
 
-export function Feedback({ title, subtitle, text, createdAt }: FeedbackProps) {
+export function Feedback({ title, subtitle, text, answeredAt }: FeedbackProps) {
   const [showAll, setShowAll] = useState<boolean>(false);
 
   function formatDate(date: Date): string {
@@ -28,13 +28,15 @@ export function Feedback({ title, subtitle, text, createdAt }: FeedbackProps) {
       className={`relative flex flex-col size-full justify-between ${showAll ? "overflow-visible" : "overflow-hidden"}`}
     >
       <div className="flex flex-col justify-start">
-        <h1 className="text-lg text-gray-600 leading-7 font-bold">
-          {title} - {formatDate(new Date(createdAt))}
-        </h1>
+        <h1 className="text-lg text-gray-600 leading-7 font-bold">{title}</h1>
         <h2 className="text-base text-gray-600 leading-6 font-semibold">{subtitle}</h2>
         <div className="markdown prose lg:prose-xl">
           <Markdown>{text}</Markdown>
         </div>
+        <hr className="text-gray-300 my-3" />
+        <footer className="text-base text-gray-600 leading-4 font-semibold">
+          Teste realizado em {formatDate(new Date(answeredAt))}
+        </footer>
       </div>
       <div
         className={`absolute w-full bottom-0 bg-gradient-to-t from-white via-white via-70% to-transparent duration-500 ${

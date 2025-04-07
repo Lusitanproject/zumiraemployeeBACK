@@ -15,7 +15,7 @@ export default async function Devolutiva({ params }: { params: Promise<{ id: str
         title={feedback.items[0].assessment.title}
         subtitle={feedback.items[0].assessment.psychologicalDimensions.map((d) => d.name).join(", ")}
         text={feedback.items[0].text}
-        createdAt={feedback.items[0].createdAt}
+        answeredAt={feedback.items[0].answeredAt}
       />
     );
   } else if (feedback?.processing.length) {

@@ -97,11 +97,10 @@ class DetailFeedbackService {
                 ],
             },
             selfMonitoringBlock: f.assessment.selfMonitoringBlock,
-            createdAt: f.createdAt,
+            answeredAt: new Date(Math.max(...f.assessment.assessmentResults.map((r) => new Date(r.createdAt).getTime()))),
         }));
         const processing = assessments
             .map((a) => {
-            console.log();
             if (a.assessmentResults.length !== a.assessmentFeedbacks.length) {
                 return {
                     id: a.id,
