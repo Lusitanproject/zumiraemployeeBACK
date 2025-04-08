@@ -19,14 +19,19 @@ enum Operation {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  roleId    String   @map("role_id")
-  companyId String?  @map("company_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  occupation    String?
+  birthdate     DateTime?
+  gender        String?
+  nationalityId String?   @map("nationality_id")
+  roleId        String    @map("role_id")
+  companyId     String?   @map("company_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
+  nationality               Nationality?               @relation(fields: [nationalityId], references: [id])
   company                   Company?                   @relation(fields: [companyId], references: [id])
   role                      Role                       @relation(fields: [roleId], references: [id])
   codes                     AuthCode[]
@@ -105,6 +110,7 @@ model Nationality {
   name     String
 
   assessments Assessment[]
+  users       User[]
 
   @@map("nationalities")
 }
@@ -114,10 +120,10 @@ model Assessment {
   title                 String
   summary               String
   description           String?
-  openaiAssistantId     String?
+  openaiAssistantId     String?   @map("openai_assistant_id")
   operationType         Operation @default(AVERAGE) @map("operation_type")
   selfMonitoringBlockId String    @map("self_monitoring_block_id")
-  nationalityId         String
+  nationalityId         String    @map("nationality_id")
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
@@ -224,7 +230,7 @@ model PsychologicalDimension {
 model AssessmentFeedback {
   id           String   @id @default(uuid())
   text         String
-  userId       String
+  userId       String   @map("user_id")
   assessmentId String   @map("assessment_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
