@@ -12,7 +12,7 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use(routes_1.router);
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error(err.message);
     if (err instanceof Error) {
         return res.status(400).json({
             status: "ERROR",

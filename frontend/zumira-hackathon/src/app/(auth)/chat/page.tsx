@@ -12,7 +12,7 @@ export default async function Chat() {
   return (
     <ChatUi
       context={{ username: session?.name ?? "Usuário", feedbacks: feedbacks }}
-      chatId={session ? session?.name + session?.role : undefined}
+      chatId={btoa(session ? session?.name + session?.role : "")}
     />
   );
 }

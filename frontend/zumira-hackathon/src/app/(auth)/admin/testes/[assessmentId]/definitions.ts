@@ -13,6 +13,7 @@ export type AssessmentSummary = {
   selfMonitoringBlockId: string;
   openaiAssistantId: string;
   operationType: AssessmentOperation;
+  nationalityId: string;
 };
 
 export type AssessmentResponse = { status: "SUCCESS"; data: AssessmentSummary } | { status: "ERROR"; message: string };
@@ -24,6 +25,7 @@ export const CreateAssessmentSchema = z.object({
   selfMonitoringBlockId: z.string().cuid(),
   openaiAssistantId: z.string().optional(),
   operationType: z.enum(["SUM", "AVERAGE"]),
+  nationalityId: z.string().cuid(),
 });
 
 export type ManageAssessment = z.infer<typeof CreateAssessmentSchema>;
@@ -35,6 +37,7 @@ export type FormErrors = {
   description?: string[];
   selfMonitoringBlockId?: string[];
   operationType?: string[];
+  nationalityId?: string[];
 } | null;
 
 export const INITIAL_VALUE: ManageAssessment = {
@@ -44,6 +47,7 @@ export const INITIAL_VALUE: ManageAssessment = {
   selfMonitoringBlockId: "",
   openaiAssistantId: "",
   operationType: "AVERAGE",
+  nationalityId: "",
 };
 
 export type CreateAssessmentResponse =

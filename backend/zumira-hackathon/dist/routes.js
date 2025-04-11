@@ -34,6 +34,9 @@ const CreateCompanyController_1 = require("./controllers/company/CreateCompanyCo
 const FindBySelfMonitoringController_1 = require("./controllers/admin/dimensions/FindBySelfMonitoringController");
 const FindCompanyController_1 = require("./controllers/admin/companies/FindCompanyController");
 const ListFeedbacksController_1 = require("./controllers/assessment/feedback/ListFeedbacksController");
+const FindDimensionController_1 = require("./controllers/admin/dimensions/FindDimensionController");
+const EditDimensionController_1 = require("./controllers/admin/dimensions/EditDimensionController");
+const ListNationalitiesController_1 = require("./controllers/nationality/ListNationalitiesController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -50,7 +53,8 @@ router.get("/roles", isAuthenticated_1.isAuthenticated, new FindAllRolesControll
 // ROTAS PSYCHOLOGICAL DIMENSION
 router.post("/dimensions", isAuthenticated_1.isAuthenticated, new CreateDimensionController_1.CreateDimensionController().handle);
 router.get("/dimensions", isAuthenticated_1.isAuthenticated, new FindAllDimensionController_1.FindAllDimensionsController().handle);
-router.get("/dimensions/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new FindBySelfMonitoringController_1.FindDimensionByBlockController().handle);
+router.get("/dimensions/:psychologicalDimensionId", isAuthenticated_1.isAuthenticated, new FindDimensionController_1.FindDimensionController().handle);
+router.put("/dimensions/:psychologicalDimensionId", isAuthenticated_1.isAuthenticated, new EditDimensionController_1.EditDimensionController().handle);
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated_1.isAuthenticated, new ListAssessmentsController_1.ListAssessmentsController().handle);
 router.get("/assessments/feedback", isAuthenticated_1.isAuthenticated, new ListFeedbacksController_1.ListFeedbacksController().handle);
@@ -71,7 +75,10 @@ router.post("/self-monitoring/admin", isAuthenticated_1.isAuthenticated, new Cre
 router.put("/self-monitoring/admin/:id", isAuthenticated_1.isAuthenticated, new EditSelfMonitoringBlockController_1.EditSelfMonitoringBlocksController().handle);
 router.get("/self-monitoring/admin/:id", isAuthenticated_1.isAuthenticated, new FindSelfMonitoringBlockController_1.FindSelfMonitoringBlocksController().handle);
 router.get("/self-monitoring/feedback/:id", isAuthenticated_1.isAuthenticated, new DetailFeedbackController_1.DetailFeedbackController().handle);
+router.get("/self-monitoring/dimensions/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new FindBySelfMonitoringController_1.FindDimensionByBlockController().handle);
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated_1.isAuthenticated, new FindAllCompaniesController_1.FindAllCompaniesController().handle);
 router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
 router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
+// ROTAS NATIONALITY
+router.get("/nationalities", isAuthenticated_1.isAuthenticated, new ListNationalitiesController_1.ListNationalitiesController().handle);

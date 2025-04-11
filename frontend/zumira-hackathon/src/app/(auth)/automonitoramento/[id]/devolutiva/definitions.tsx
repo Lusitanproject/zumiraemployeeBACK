@@ -22,7 +22,7 @@ export type GetFeedback = {
           acronym: string;
         }[];
       };
-      createdAt: Date;
+      answeredAt: Date;
     }[];
     processing: {
       id: string;

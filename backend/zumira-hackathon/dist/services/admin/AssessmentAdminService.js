@@ -17,6 +17,7 @@ class AssessmentAdminService {
                 selfMonitoringBlockId: true,
                 openaiAssistantId: true,
                 operationType: true,
+                nationalityId: true,
             },
         });
         return assessment;

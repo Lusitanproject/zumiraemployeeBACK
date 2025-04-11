@@ -6,22 +6,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateAssessmentService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class CreateAssessmentService {
-    async execute({ title, summary, description, selfMonitoringBlockId, operationType, openaiAssistantId, }) {
+    async execute(data) {
         const block = await prisma_1.default.selfMonitoringBlock.findFirst({
             where: {
-                id: selfMonitoringBlockId,
+                id: data.selfMonitoringBlockId,
             },
         });
         if (!block)
             throw new Error("Self monitoring block does not exist");
         const assessment = await prisma_1.default.assessment.create({
             data: {
-                title,
-                summary,
-                description,
-                selfMonitoringBlockId,
-                operationType,
-                openaiAssistantId,
+                ...data,
             },
             select: {
                 id: true,

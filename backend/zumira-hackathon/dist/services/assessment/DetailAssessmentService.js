@@ -47,6 +47,12 @@ class DetailAssessmentService {
                         createdAt: true,
                     },
                 },
+                nationality: {
+                    select: {
+                        acronymn: true,
+                        name: true,
+                    },
+                },
             },
         });
         if (!assessment)
@@ -57,6 +63,7 @@ class DetailAssessmentService {
             description: assessment.description,
             assessmensQuestions: assessment.assessmentQuestions,
             selfMonitoringBlock: assessment.selfMonitoringBlock,
+            nationality: assessment.nationality,
             lastCompleted: new Date(Math.max(...assessment.assessmentResults.map((r) => new Date(r.createdAt).getTime()))),
         };
         return formattedAssesment;

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListAssessmentsService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class ListAssessmentsService {
-    async execute(userId) {
+    async execute({ userId, nationalityId }) {
         const userExists = await prisma_1.default.user.findFirst({
             where: {
                 id: userId,
@@ -15,6 +15,9 @@ class ListAssessmentsService {
         if (!userExists)
             throw new Error("User does not exist");
         const assessments = await prisma_1.default.assessment.findMany({
+            where: {
+                nationalityId, // Ignorado se for undefined
+            },
             select: {
                 id: true,
                 title: true,

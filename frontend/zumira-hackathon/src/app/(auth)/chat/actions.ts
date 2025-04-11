@@ -7,17 +7,23 @@ import { decrypt } from "@/app/_lib/session";
 
 // Uso deve ser evitado em desenvolvimento para não estourar os créditos
 export async function sendMessage(messages: ChatMessage[], context: ChatContext): Promise<ChatResponse | null> {
+  const oldMessages = messages.slice(0, -1);
+  const newMessage = messages.at(-1);
+
   const body = {
     messages: [
       { content: `Meu nome é ${context.username}`, role: "user" },
+      ...oldMessages,
       ...context.feedbacks.map((f) => ({
         content: `TESTE: ${f.assessment.title}\nRESULTADO/DEVOLUTIVA: ${f.text}`,
         role: "user",
-      })),
-      ...messages,
+      })), // Testes são enviados entre as mengagens anteriores e a nova para sempre manter o contexto atualizado
+      newMessage,
     ],
     chatbotId: process.env.CHATBASE_CHATBOT_ID,
   };
+
+  console.log("mandou");
 
   const [error, response] = await catchError(
     fetch("https://www.chatbase.co/api/v1/chat", {

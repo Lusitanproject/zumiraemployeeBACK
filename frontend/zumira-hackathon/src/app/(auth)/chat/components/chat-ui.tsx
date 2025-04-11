@@ -61,13 +61,13 @@ export function ChatUi({ chatId, context }: ChatUiProps) {
       const parsed = value ? JSON.parse(value) : null;
       if (parsed && parsed.id === chatId) setMessages(parsed.messages);
     }
-  }, []);
+  }, [chatId]);
 
   useEffect(() => {
     if (chatId) {
       localStorage.setItem("messages", JSON.stringify({ messages: messages, id: chatId }));
     }
-  }, [messages]);
+  }, [messages, chatId]);
 
   return (
     <div className="flex flex-col size-full overflow-hidden justify-between">

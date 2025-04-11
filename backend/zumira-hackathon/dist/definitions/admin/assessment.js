@@ -10,6 +10,7 @@ exports.CreateAssessmentSchema = zod_1.z.object({
     selfMonitoringBlockId: zod_1.z.string().cuid(),
     openaiAssistantId: zod_1.z.string().optional(),
     operationType: zod_1.z.nativeEnum(client_1.Operation),
+    nationalityId: zod_1.z.string().cuid(),
 });
 exports.UpdateAssessmentSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
@@ -18,4 +19,5 @@ exports.UpdateAssessmentSchema = zod_1.z.object({
     selfMonitoringBlockId: zod_1.z.string().cuid().optional(),
     openaiAssistantId: zod_1.z.string().optional(),
     operationType: zod_1.z.nativeEnum(client_1.Operation),
+    nationalityId: zod_1.z.string().cuid(),
 });

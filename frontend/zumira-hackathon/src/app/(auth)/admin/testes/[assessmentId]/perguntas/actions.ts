@@ -54,7 +54,7 @@ export async function getDimensionsByBlock(blockId: string): Promise<Dimension[]
   const cookie = await cookies();
   const session = decrypt(cookie.get("session")?.value);
 
-  const url = `${process.env.API_BASE_URL}/dimensions/${blockId}`;
+  const url = `${process.env.API_BASE_URL}/self-monitoring/dimensions/${blockId}`;
 
   const [error, response] = await catchError(
     fetch(url, {

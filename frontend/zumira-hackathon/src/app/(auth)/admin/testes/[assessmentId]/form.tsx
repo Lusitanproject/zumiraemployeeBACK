@@ -17,13 +17,15 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { redirect } from "next/navigation";
 import { saveAssessment } from "./form-actions";
+import { Nationality } from "../../automonitoramento/definitions";
 
 type FormProps = {
   data: AssessmentSummary | null;
   blocks: MonitoringBlock[];
+  nationalities: Nationality[];
 };
 
-export function AssessmentForm({ data, blocks }: FormProps) {
+export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
   const parsedData: ManageAssessment | null = data
     ? {
         title: data.title,
@@ -32,6 +34,7 @@ export function AssessmentForm({ data, blocks }: FormProps) {
         selfMonitoringBlockId: data.selfMonitoringBlockId,
         openaiAssistantId: data.openaiAssistantId,
         operationType: data.operationType,
+        nationalityId: data.nationalityId,
       }
     : null;
 
@@ -111,6 +114,31 @@ export function AssessmentForm({ data, blocks }: FormProps) {
           {!!errors?.description && <span className="text-sm text-error-500">{errors.description}</span>}
         </div>
         <div className="pb-3">
+          <Label htmlFor="nationality">Nacionalidade</Label>
+          <Select
+            name="nationality"
+            defaultValue={formData.nationalityId}
+            onValueChange={(value) =>
+              setFormData((current) => ({
+                ...current,
+                nationalityId: value,
+              }))
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {nationalities.map((n) => (
+                <SelectItem key={n.id} value={n.id}>
+                  {n.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {!!errors?.nationalityId && <span className="text-sm text-error-500">{errors.nationalityId}</span>}
+        </div>
+        <div className="pb-3">
           <Label htmlFor="assistantId">ID do assistente OpenAi</Label>
           <Input
             id="assistantId"
@@ -169,7 +197,7 @@ export function AssessmentForm({ data, blocks }: FormProps) {
                 <SelectItem value={"SUM"}>Soma</SelectItem>
               </SelectContent>
             </Select>
-            {!!errors?.operationType && <span className="text-sm text-error-500">{errors.selfMonitoringBlockId}</span>}
+            {!!errors?.operationType && <span className="text-sm text-error-500">{errors.operationType}</span>}
           </div>
         </div>
         {!!formError && <span className="text-sm text-error-500">{formError}</span>}
