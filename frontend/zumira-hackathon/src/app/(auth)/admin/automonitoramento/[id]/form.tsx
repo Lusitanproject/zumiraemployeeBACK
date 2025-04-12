@@ -48,7 +48,7 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
   };
 
   const handleCancel = useCallback(() => {
-    redirect("/admin/automonitoramento");
+    redirect("/admin/autoconhecimento");
   }, []);
 
   return (

@@ -1,19 +1,17 @@
-import { TriangleAlert } from "lucide-react"
-// import { getMonitoringBlocks } from "../../automonitoramento/actions"
-import { getAssessmentQuestions, getDimensionsByBlock } from "./actions"
-import { getAssessmentData } from "../actions"
-import { ManageQuestionsForm } from "./form"
+import { TriangleAlert } from "lucide-react";
+// import { getMonitoringBlocks } from "../../autoconhecimento/actions"
+import { getAssessmentQuestions, getDimensionsByBlock } from "./actions";
+import { getAssessmentData } from "../actions";
+import { ManageQuestionsForm } from "./form";
 
-export default async function ManageAssessmentQuestions({
-  params
-}: { params: Promise<{ assessmentId: string }> }) {
-  const assessmentId = (await params).assessmentId
-  const data = await getAssessmentData(assessmentId)
-  const questions = await getAssessmentQuestions(assessmentId)
+export default async function ManageAssessmentQuestions({ params }: { params: Promise<{ assessmentId: string }> }) {
+  const assessmentId = (await params).assessmentId;
+  const data = await getAssessmentData(assessmentId);
+  const questions = await getAssessmentQuestions(assessmentId);
 
-  const dimensions = await getDimensionsByBlock(data?.selfMonitoringBlockId ?? "")
+  const dimensions = await getDimensionsByBlock(data?.selfMonitoringBlockId ?? "");
 
-  if(questions.status === "ERROR" || !data) {
+  if (questions.status === "ERROR" || !data) {
     return (
       <div className="flex flex-col w-full">
         <div className="flex items-center justify-between py-4 border-b border-gray-100">
@@ -21,19 +19,17 @@ export default async function ManageAssessmentQuestions({
         </div>
         <div className="flex items-center gap-x-4 py-6">
           <TriangleAlert className="size-6 text-error-500" />
-          <span className="text-base text-error-500">Ocorreu um erro ao buscar as informações desse teste. Por favor, tente mais tarde.</span>
+          <span className="text-base text-error-500">
+            Ocorreu um erro ao buscar as informações desse teste. Por favor, tente mais tarde.
+          </span>
         </div>
       </div>
-    )  
+    );
   }
 
   return (
     <div className="flex flex-col w-full">
-      <ManageQuestionsForm
-        data={data}
-        questions={questions.data.questions}
-        dimensions={dimensions}
-      />
+      <ManageQuestionsForm data={data} questions={questions.data.questions} dimensions={dimensions} />
     </div>
-  )
+  );
 }

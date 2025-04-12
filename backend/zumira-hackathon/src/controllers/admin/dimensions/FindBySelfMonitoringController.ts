@@ -26,7 +26,7 @@ class FindDimensionByBlockController {
     if (!monitoringBlockExists) {
       return res.status(400).json({
         status: "ERROR",
-        message: "O bloco de automonitoramento informado não existe.",
+        message: "O bloco de autoconhecimento informado não existe.",
       });
     }
 

@@ -11,7 +11,7 @@ type CardProps = {
 
 export function Card({ id, title, summary, icon }: CardProps) {
   return (
-    <Link className="p-[1.375rem] rounded-xl bg-gray-100" href={`/automonitoramento/${id}/devolutiva`}>
+    <Link className="p-[1.375rem] rounded-xl bg-gray-100" href={`/autoconhecimento/${id}/devolutiva`}>
       <div className="flex h-[50px] justify-start mb-3">
         <div className="w-[50px] h-[50px] rounded-xl bg-primary-50 flex items-center justify-center">
           {!!icon && <CustomIcon name={icon as IconName} className="size-6" />}

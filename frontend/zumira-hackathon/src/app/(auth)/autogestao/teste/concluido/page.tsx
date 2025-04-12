@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
@@ -12,12 +12,15 @@ export default function AssessmentComplete() {
           <User className="size-16" />
         </div>
         <h3 className="text-4xl font-semibold text-gray-700 text-center mb-4">Teste concluído</h3>
-        <p className="text-base leading-6 text-center text-gray-700 mb-8">Recebemos suas respostas e vamos analisá-las e, em breve, <br/>atualizaremos suas devolutivas na área de <strong>automonitoramento</strong>.</p>
+        <p className="text-base leading-6 text-center text-gray-700 mb-8">
+          Recebemos suas respostas e vamos analisá-las e, em breve, <br />
+          atualizaremos suas devolutivas na área de <strong>autoconhecimento</strong>.
+        </p>
 
         <Button variant="primary" size="lg" onClick={() => redirect("/autogestao", RedirectType.replace)}>
           <span>Voltar para Autogestão</span>
         </Button>
       </div>
-    </div >
-  )
+    </div>
+  );
 }

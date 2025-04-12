@@ -1,30 +1,24 @@
-"use client"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import {
-  ChartNoAxesColumnIncreasing,
-  House,
-  LayoutGrid,
-  SquarePen,
-  Users
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ChartNoAxesColumnIncreasing, House, LayoutGrid, SquarePen, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/chat", label: "Início", icon: House },
-  { href: "/automonitoramento", label: "Automonitoramento", icon: ChartNoAxesColumnIncreasing },
+  { href: "/autoconhecimento", label: "Autoconhecimento", icon: ChartNoAxesColumnIncreasing },
   { href: "/autogestao", label: "Autogestão", icon: SquarePen },
   { href: "/rede-apoio", label: "Rede de Apoio", icon: Users },
   { href: "/biblioteca", label: "Biblioteca", icon: LayoutGrid },
-] as const
+] as const;
 
 export function TabBar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="md:hidden absolute bottom-0 left-0 right-0 border-t border-gray-200 px-6 pt-7 pb-14 bg-white">
       <ul className="flex justify-between items-center">
-        {links.map(item => (
+        {links.map((item) => (
           <Link
             key={item.href}
             href={item.href}
@@ -34,13 +28,17 @@ export function TabBar() {
             })}
           >
             <item.icon size={24} />
-            <span className={cn({
-              "font-bold text-sm": pathname.indexOf(item.href) === 0,
-              "hidden": pathname.indexOf(item.href) !== 0
-            })}>{item.label}</span>
+            <span
+              className={cn({
+                "font-bold text-sm": pathname.indexOf(item.href) === 0,
+                hidden: pathname.indexOf(item.href) !== 0,
+              })}
+            >
+              {item.label}
+            </span>
           </Link>
         ))}
       </ul>
     </nav>
-  )
+  );
 }
