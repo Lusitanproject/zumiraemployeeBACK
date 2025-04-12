@@ -14,7 +14,7 @@ export function MonitoringBlocksList({ data }: MonitoringBlocksListProps) {
     <div className="flex flex-col">
       <div className="relative border-b border-gray-200 mb-[35px] h-[18px]">
         <span className="absolute top-0 left-0 w-fit pr-3 flex items-center text-lg font-medium text-gray-500 bg-white">
-          Avaliações
+          Minhas avaliações
         </span>
       </div>
       <div className="grid sm:grid-cols-2 grid-cols-1 gap-2.5">
