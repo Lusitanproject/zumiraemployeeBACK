@@ -11,7 +11,7 @@ class CreateDimensionController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const { acronym, name, selfMonitoringBlockId } = data;
@@ -20,7 +20,7 @@ class CreateDimensionController {
         if (!monitoringBlockExists) {
             return res.status(400).json({
                 status: "ERROR",
-                message: "O bloco de automonitoramento informado não existe."
+                message: "O bloco de autoconhecimento informado não existe.",
             });
         }
         const dimensionAdminService = new DimensionAdminService_1.DimensionAdminService();
