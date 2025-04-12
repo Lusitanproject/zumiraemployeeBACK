@@ -8,13 +8,13 @@ export async function getSidebarContent() {
 
   const links = [
     { href: "/chat", label: "Início", icon: "house", role: "user" },
-    { href: "/automonitoramento", label: "Automonitoramento", icon: "chart-no-axes-column-increasing", role: "user" },
+    { href: "/autoconhecimento", label: "Autoconhecimento", icon: "chart-no-axes-column-increasing", role: "user" },
     { href: "/autogestao", label: "Autogestão", icon: "square-pen", role: "user" },
     { href: "/rede-apoio", label: "Rede de Apoio", icon: "users", role: "user" },
     { href: "/biblioteca", label: "Biblioteca", icon: "layout-grid", role: "user" },
     {
-      href: "/admin/automonitoramento",
-      label: "Automonitoramento",
+      href: "/admin/autoconhecimento",
+      label: "Autoconhecimento",
       icon: "chart-no-axes-column-increasing",
       role: "admin",
     },

@@ -39,5 +39,5 @@ export async function saveSelfMonitoringBlock(data: Payload) {
     return response.statusText;
   }
 
-  redirect("/admin/automonitoramento");
+  redirect("/admin/autoconhecimento");
 }

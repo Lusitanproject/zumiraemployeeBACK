@@ -1,27 +1,31 @@
-"use client"
-import { useCallback, useState } from "react"
-import { CircleArrowLeft } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { MainMenu, MenuLink } from "./main-menu"
-import { Button } from "../ui/button"
+"use client";
+import { useCallback, useState } from "react";
+import { CircleArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { MainMenu, MenuLink } from "./main-menu";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 type SidebarProps = {
-  menuItems: MenuLink[]
-}
+  menuItems: MenuLink[];
+};
 
 export function Sidebar({ menuItems }: SidebarProps) {
-  const [expanded, setExpanded] = useState<boolean>(true)
+  const [expanded, setExpanded] = useState<boolean>(true);
 
   const handleToggleExpanded = useCallback(() => {
-    setExpanded(current => !current)
-  }, [])
+    setExpanded((current) => !current);
+  }, []);
 
   return (
     <aside
-      className={cn("hidden md:flex flex-col justify-between h-screen bg-gray-200 py-12 transition-all transition-discrete overflow-hidden", {
-        "px-12 w-[18rem]": expanded,
-        "px-4 w-[5rem]": !expanded,
-      })}
+      className={cn(
+        "hidden md:flex flex-col justify-between h-screen bg-gray-200 py-12 transition-all transition-discrete overflow-hidden",
+        {
+          "px-12 w-[18rem]": expanded,
+          "px-4 w-[5rem]": !expanded,
+        }
+      )}
     >
       <div className="w-full flex flex-col">
         <div className={cn("w-full flex justify-center mb-14", { "justify-end": expanded })}>
@@ -29,9 +33,13 @@ export function Sidebar({ menuItems }: SidebarProps) {
             <CircleArrowLeft className="text-primary-300" />
           </button>
         </div>
-        <MainMenu expanded={expanded} menu={menuItems}/>
+        <MainMenu expanded={expanded} menu={menuItems} />
       </div>
-      <Button variant="alternate" size="xxl" className={cn({ "hidden": !expanded })}>Preciso de ajuda</Button>
+      <Button variant="alternate" size="xxl" className={cn({ hidden: !expanded })}>
+        <Link href={process.env.NEXT_PUBLIC_GET_HELP_URL ?? "#"} target="_blank" rel="noopener noreferrer">
+          Preciso de ajuda
+        </Link>
+      </Button>
     </aside>
-  )
+  );
 }

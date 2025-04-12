@@ -38,7 +38,7 @@ export async function getAssessmentData(assessmentId: string): Promise<Assessmen
   if (
     parsed.data.lastCompleted !== null &&
     isAfter(new Date(parsed.data.lastCompleted), subYears(new Date(), 1)) &&
-    !process.env.NEXT_PUBLIC_ALLOW_REPEAT_ASSESSMENTS
+    !(process.env.NEXT_PUBLIC_ALLOW_REPEAT_ASSESSMENTS === "true")
   ) {
     return { status: "COMPLETED", message: "" };
   }

@@ -1,19 +1,16 @@
-import Link from "next/link"
-import { CustomIcon, IconName } from "@/components/custom/icon"
+import Link from "next/link";
+import { CustomIcon, IconName } from "@/components/custom/icon";
 
 type CardProps = {
-  id: string
-  title: string
-  summary: string | undefined
-  icon: IconName | undefined
-}
+  id: string;
+  title: string;
+  summary: string | undefined;
+  icon: IconName | undefined;
+};
 
 export function Card({ id, title, summary, icon }: CardProps) {
   return (
-    <Link
-      className="p-[1.375rem] rounded-xl bg-gray-100"
-      href={`/admin/automonitoramento/${id}`}
-    >
+    <Link className="p-[1.375rem] rounded-xl bg-gray-100" href={`/admin/autoconhecimento/${id}`}>
       <div className="flex h-[50px] justify-start mb-3">
         <div className="w-[50px] h-[50px] rounded-xl bg-primary-50 flex items-center justify-center">
           {!!icon && <CustomIcon name={icon as IconName} className="size-6" />}
@@ -24,5 +21,5 @@ export function Card({ id, title, summary, icon }: CardProps) {
         <p className="w-full h-14 overflow-hidden text-ellipsis text-xs font-normal text-gray-900">{summary}</p>
       </div>
     </Link>
-  )
+  );
 }

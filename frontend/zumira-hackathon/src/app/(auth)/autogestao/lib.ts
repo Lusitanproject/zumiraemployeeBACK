@@ -24,7 +24,7 @@ export function useFilteredAssessments({ data, selfMonitoringBlockId, term }: Fi
     return (
       item.lastCompleted !== null &&
       isAfter(new Date(item.lastCompleted), subYears(new Date(), 1)) &&
-      !process.env.NEXT_PUBLIC_ALLOW_REPEAT_ASSESSMENTS
+      !(process.env.NEXT_PUBLIC_ALLOW_REPEAT_ASSESSMENTS === "true")
     );
   });
 

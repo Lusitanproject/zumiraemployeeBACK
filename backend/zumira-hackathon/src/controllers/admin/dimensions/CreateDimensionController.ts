@@ -9,26 +9,26 @@ class CreateDimensionController {
   async handle(req: Request, res: Response) {
     const { success, data, error } = CreateDimensionSchema.safeParse(req.body);
 
-    if(!success) {
+    if (!success) {
       return res.status(400).json({
         status: "ERROR",
-        message: parseZodError(error)
-      })
+        message: parseZodError(error),
+      });
     }
 
     const { acronym, name, selfMonitoringBlockId } = data;
 
     const selfMonitoringAdminService = new SelfMonitoringAdminService();
-    const monitoringBlockExists = await selfMonitoringAdminService.find(selfMonitoringBlockId)
+    const monitoringBlockExists = await selfMonitoringAdminService.find(selfMonitoringBlockId);
 
-    if(!monitoringBlockExists) {
+    if (!monitoringBlockExists) {
       return res.status(400).json({
         status: "ERROR",
-        message: "O bloco de automonitoramento informado não existe."
-      })
+        message: "O bloco de autoconhecimento informado não existe.",
+      });
     }
 
-    const dimensionAdminService = new DimensionAdminService()
+    const dimensionAdminService = new DimensionAdminService();
     const dimension = await dimensionAdminService.create({ acronym, name, selfMonitoringBlockId });
 
     return res.json({ status: "SUCCESS", data: dimension });

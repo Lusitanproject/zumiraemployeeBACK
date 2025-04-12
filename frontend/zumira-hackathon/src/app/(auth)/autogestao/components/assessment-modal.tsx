@@ -28,6 +28,7 @@ export function AssessmentModal({ id, title, summary, lastCompleted, children }:
     redirect(`/autogestao/teste/${id}`);
   }, [id]);
 
+  // TODO: Isso é diferente do normal? O fluxo não permite que esse if aconteça
   if (unavailable) {
     <AlertDialog>
       {children}
@@ -59,18 +60,15 @@ export function AssessmentModal({ id, title, summary, lastCompleted, children }:
       {children}
       <AlertDialogContent>
         <AlertDialogHeader className="relative pt-16">
+          <AlertDialogCancel className="absolute top-0 left-0 w-8 h-8 flex items-center justify-center border-0">
+            <SquareX className="size-6 text-gray-400" />
+          </AlertDialogCancel>
           <div className="absolute -top-[84px] w-[8.25rem] h-[8.25rem] bg-primary-50 left-1/2 -translate-x-1/2 shadow-xl rounded-4xl flex items-center justify-center">
             <User className="size-16" />
           </div>
-          <div className="flex flex-row justify-between">
-            <AlertDialogCancel className="w-8 h-8 flex items-center justify-center border-0">
-              <SquareX className="size-6 text-gray-400" />
-            </AlertDialogCancel>
-            <AlertDialogTitle className="text-4xl font-semibold text-gray-700 text-center mb-2">
-              {title}
-            </AlertDialogTitle>
-            <div className="size-8 flex-none" />
-          </div>
+          <AlertDialogTitle className="text-4xl w-full font-semibold text-gray-700 text-center mb-2">
+            {title}
+          </AlertDialogTitle>
           <AlertDialogDescription className="text-sm leading-5 text-center text-gray-700 mb-8">
             {summary}
           </AlertDialogDescription>

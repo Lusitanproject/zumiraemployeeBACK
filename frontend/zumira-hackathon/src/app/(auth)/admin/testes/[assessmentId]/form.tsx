@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { redirect } from "next/navigation";
 import { saveAssessment } from "./form-actions";
-import { Nationality } from "../../automonitoramento/definitions";
+import { Nationality } from "../../autoconhecimento/definitions";
 
 type FormProps = {
   data: AssessmentSummary | null;
@@ -151,7 +151,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         </div>
         <div className="pb-3 flex flex-row gap-10">
           <div>
-            <Label htmlFor="selfMonitoringBlockId">Bloco de Automonitoramento</Label>
+            <Label htmlFor="selfMonitoringBlockId">Bloco de Autoconhecimento</Label>
             <Select
               name="selfMonitoringBlockId"
               defaultValue={formData.selfMonitoringBlockId}
