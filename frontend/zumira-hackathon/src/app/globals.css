@@ -125,28 +125,54 @@
   .markdown h4,
   .markdown h5,
   .markdown h6 {
-    font-size: 1.125rem !important;
+    margin-top: 0 !important;
+  }
+
+  .markdown h1 {
+    font-size: 1.6rem !important;
+    margin: 0.4rem 0 0.8rem 0 !important;
+  }
+  .markdown h2 {
+    font-size: 1.35rem !important;
+    margin: 0.25rem 0 0.5rem 0 !important;
+  }
+
+  .markdown h3,
+  .markdown h4,
+  .markdown h5,
+  .markdown h6 {
+    font-size: 1.1rem !important;
+    margin: 0.1rem 0 0.2rem 0 !important;
   }
 
   .markdown li {
-    height: auto !important;
-    padding-left: 1rem;
-    list-style-position: outside;
-    line-height: 1.2;
     margin-bottom: 0.5rem;
   }
 
-  .markdown li p {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-  }
-
+  .markdown ol,
   .markdown ul {
-    height: fit-content !important;
+    /* padding-left: 0 !important; */
+    margin: 0.75rem 0 !important;
+    gap: 0rem !important;
   }
 
   .markdown * {
     font-size: 1rem;
+  }
+
+  .markdown p {
+    margin: 0.75rem 0 !important;
+    line-height: 1.5rem;
+  }
+
+  .ProseMirror:focus {
+    outline: none;
+  }
+
+  .ProseMirror {
+    padding: 0.25rem 0.75rem !important;
+    min-height: 10rem;
+    overflow: scroll;
   }
 
   @keyframes jump {
