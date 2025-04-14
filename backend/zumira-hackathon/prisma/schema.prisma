@@ -38,6 +38,7 @@ model User {
   assessmentResults         AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
   assessmentFeedbacks       AssessmentFeedback[]
+  notificationRecipients    NotificationRecipient[]
 
   @@map("users")
 }
@@ -239,4 +240,45 @@ model AssessmentFeedback {
   assessment Assessment @relation(fields: [assessmentId], references: [id])
 
   @@map("assessment_feedback")
+}
+
+model Notification {
+  id                 String   @id @default(cuid())
+  title              String
+  summary            String
+  content            String
+  notificationTypeId String   @map("notification_type_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  notificationType       NotificationType        @relation(fields: [notificationTypeId], references: [id])
+  notificationRecipients NotificationRecipient[]
+
+  @@map("notifications")
+}
+
+model NotificationType {
+  id        String   @id @default(cuid())
+  name      String
+  priority  Int
+  color     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  notifications Notification[]
+
+  @@map("notification_types")
+}
+
+model NotificationRecipient {
+  userId         String   @map("user_id")
+  notificationId String   @map("notification_id")
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user         User         @relation(fields: [userId], references: [id])
+  notification Notification @relation(fields: [notificationId], references: [id])
+
+  @@unique([userId, notificationId])
+  @@map("notification_recipients")
 }
