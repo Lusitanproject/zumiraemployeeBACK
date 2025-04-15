@@ -48,6 +48,7 @@ import { ListNationalitiesController } from "./controllers/nationality/ListNatio
 import { CreateNotificationController } from "./controllers/notification/CreateNotificationController";
 import { ListNotificationsController } from "./controllers/notification/ListNotificationsController";
 import { ReadNotificationController } from "./controllers/notification/ReadNotificationController";
+import { DeleteNotificationController } from "./controllers/notification/DeleteNotificationController";
 
 const router = Router();
 
@@ -111,5 +112,6 @@ router.get("/nationalities", isAuthenticated, new ListNationalitiesController().
 router.post("/notifications", isAuthenticated, new CreateNotificationController().handle);
 router.get("/notifications/:filter", isAuthenticated, new ListNotificationsController().handle);
 router.put("/notifications/:notificationId/read", isAuthenticated, new ReadNotificationController().handle);
+router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
 
 export { router };

@@ -16,8 +16,14 @@ export const ReadNotificationSchema = z.object({
   notificationId: z.string().cuid(),
 });
 
+export const DeleteNotificationSchema = z.object({
+  notificationId: z.string().cuid(),
+});
+
 export type CreateNotificationRequest = z.infer<typeof CreateNotificationSchema>;
 
 export type ListNotificationsRequest = { userId: string } & z.infer<typeof ListNotificationsSchema>;
 
 export type ReadNotificationRequest = { userId: string } & z.infer<typeof ReadNotificationSchema>;
+
+export type DeleteNotificationRequest = z.infer<typeof DeleteNotificationSchema>;
