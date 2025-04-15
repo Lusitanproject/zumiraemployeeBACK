@@ -249,6 +249,7 @@ model Notification {
   content            String
   notificationTypeId String   @map("notification_type_id")
   createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
   notificationType       NotificationType        @relation(fields: [notificationTypeId], references: [id])
   notificationRecipients NotificationRecipient[]
@@ -277,7 +278,7 @@ model NotificationRecipient {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   user         User         @relation(fields: [userId], references: [id])
-  notification Notification @relation(fields: [notificationId], references: [id])
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, notificationId])
   @@map("notification_recipients")

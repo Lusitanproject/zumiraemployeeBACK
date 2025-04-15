@@ -23,8 +23,6 @@ export async function sendMessage(messages: ChatMessage[], context: ChatContext)
     chatbotId: process.env.CHATBASE_CHATBOT_ID,
   };
 
-  console.log("mandou");
-
   const [error, response] = await catchError(
     fetch("https://www.chatbase.co/api/v1/chat", {
       method: "POST",

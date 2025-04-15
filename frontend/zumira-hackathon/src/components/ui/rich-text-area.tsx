@@ -96,7 +96,6 @@ export function RichTextArea({ id, value, onChange }: RichTextAreaProps) {
   const debounced = useDebouncedCallback((html) => {
     const turndownService = new TurndownService();
     onChange(turndownService.turndown(html));
-    console.log(turndownService.turndown(html));
   }, 500);
 
   const editor = useEditor({
