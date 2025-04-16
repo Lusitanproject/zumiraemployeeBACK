@@ -6,34 +6,22 @@ import {
 import prismaClient from "../../prisma";
 
 class NotificationAdminService {
-  async find(id: string) {
-    const user = await prismaClient.user.findUnique({
-      where: { id },
+  async findAll() {
+    const notifications = await prismaClient.notification.findMany({
       select: {
         id: true,
-        name: true,
-        email: true,
-        company: {
+        title: true,
+        summary: true,
+        content: true,
+        notificationTypeId: true,
+        notificationType: {
           select: {
             id: true,
             name: true,
+            priority: true,
+            color: true,
           },
         },
-        role: {
-          select: {
-            id: true,
-            slug: true,
-          },
-        },
-      },
-    });
-    return user;
-  }
-
-  async findAll() {
-    const notifications = await prismaClient.notification.findMany({
-      include: {
-        notificationType: true,
       },
     });
 
@@ -43,8 +31,20 @@ class NotificationAdminService {
   async findByType(notificationTypeId: string) {
     const notifications = await prismaClient.notification.findMany({
       where: { notificationTypeId },
-      include: {
-        notificationType: true,
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        content: true,
+        notificationTypeId: true,
+        notificationType: {
+          select: {
+            id: true,
+            name: true,
+            priority: true,
+            color: true,
+          },
+        },
       },
     });
 

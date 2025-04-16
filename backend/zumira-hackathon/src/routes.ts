@@ -51,6 +51,7 @@ import { DetailNotificationController } from "./controllers/notification/DetailN
 import { CreateNotificationController } from "./controllers/admin/notifications/CreateNotificationController";
 import { UpdateNotificationController } from "./controllers/admin/notifications/UpdateNotificationController";
 import { DeleteNotificationController } from "./controllers/admin/notifications/DeleteNotificationController";
+import { FindAllNotificationsController } from "./controllers/admin/notifications/FindAllNotificationsController";
 
 const router = Router();
 
@@ -112,6 +113,7 @@ router.get("/nationalities", isAuthenticated, new ListNationalitiesController().
 
 // ROTAS NOTIFICATION
 router.get("/notifications", isAuthenticated, new ListNotificationsController().handle);
+router.get("/notifications/admin", isAuthenticated, new FindAllNotificationsController().handle);
 router.get("/notifications/:notificationId", isAuthenticated, new DetailNotificationController().handle);
 router.put("/notifications/:notificationId", isAuthenticated, new UpdateNotificationController().handle);
 router.put("/notifications/:notificationId/read", isAuthenticated, new ReadNotificationController().handle);
