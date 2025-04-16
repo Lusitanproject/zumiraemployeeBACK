@@ -5,22 +5,22 @@ import { parseZodError } from "../../../utils/parseZodError";
 import { AssessmentQuestionAdminService } from "../../../services/admin/AssessmentQuestionAdminService";
 
 const RequestParam = z.object({
-  assessmentId: z.string().cuid()
-})
+  assessmentId: z.string().cuid(),
+});
 
 class FindQuestionByAssessmentController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = RequestParam.safeParse(req.params)
+    const { success, data, error } = RequestParam.safeParse(req.params);
 
     if (!success) {
       return res.status(400).json({
         status: "ERROR",
-        message: parseZodError(error)
-      })
+        message: parseZodError(error),
+      });
     }
 
     const questionAdminService = new AssessmentQuestionAdminService();
-    const questions = await questionAdminService.findByAssessment(data.assessmentId)
+    const questions = await questionAdminService.findByAssessment(data.assessmentId);
 
     return res.json({ status: "SUCCESS", data: { questions } });
   }

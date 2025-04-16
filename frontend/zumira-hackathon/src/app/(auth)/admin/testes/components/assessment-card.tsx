@@ -1,14 +1,14 @@
-import Link from "next/link"
-import { User } from "lucide-react"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { User } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type AssessmentCardProps = {
-  id: string
-  title: string
-  summary: string
-}
+  id: string;
+  title: string;
+  summary: string;
+};
 
-export function AssessmentCard({ id, title, summary }: AssessmentCardProps){
+export function AssessmentCard({ id, title, summary }: AssessmentCardProps) {
   return (
     <Link
       href={`/admin/testes/${id}`}
@@ -22,5 +22,5 @@ export function AssessmentCard({ id, title, summary }: AssessmentCardProps){
       <span className="w-full overflow-hidden whitespace-nowrap text-ellipsis text-base font-medium mb-3">{title}</span>
       <p className="w-full h-14 text-xs leading-[18px] text-ellipsis overflow-hidden">{summary}</p>
     </Link>
-  )
+  );
 }

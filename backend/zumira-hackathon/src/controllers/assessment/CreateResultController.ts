@@ -5,31 +5,31 @@ import { CreateResultService } from "../../services/assessment/CreateResultServi
 import { assertPermissions } from "../../utils/assertPermissions";
 
 const CreateResultSchema = z.object({
-    assessmentId: z.string().cuid(),
-    answers: z.array(
-        z.object({
-            assessmentQuestionId: z.string().uuid(),
-            assessmentQuestionChoiceId: z.string().uuid(),
-        })
-    ),
+  assessmentId: z.string().cuid(),
+  answers: z.array(
+    z.object({
+      assessmentQuestionId: z.string().uuid(),
+      assessmentQuestionChoiceId: z.string().uuid(),
+    }),
+  ),
 });
 
 class CreateResultController {
-    async handle(req: Request, res: Response) {
-        assertPermissions(req.user, "answer-assessment");
+  async handle(req: Request, res: Response) {
+    assertPermissions(req.user, "answer-assessment");
 
-        const { success, data, error } = CreateResultSchema.safeParse(req.body);
+    const { success, data, error } = CreateResultSchema.safeParse(req.body);
 
-        if (!success) throw new Error(parseZodError(error));
+    if (!success) throw new Error(parseZodError(error));
 
-        const userId = req.user.id;
-        const { assessmentId, answers } = data;
+    const userId = req.user.id;
+    const { assessmentId, answers } = data;
 
-        const createResult = new CreateResultService();
-        const result = await createResult.execute({ userId, assessmentId, answers });
+    const createResult = new CreateResultService();
+    const result = await createResult.execute({ userId, assessmentId, answers });
 
-        return res.json({ status: "SUCCESS", data: result });
-    }
+    return res.json({ status: "SUCCESS", data: result });
+  }
 }
 
 export { CreateResultController };

@@ -154,7 +154,7 @@ export function reducer(state: ManageQuestionState, action: ManageQuestionAction
       }
 
       question.assessmentQuestionChoices = question.assessmentQuestionChoices.filter(
-        (c) => c.key !== action.payload.choiceKey
+        (c) => c.key !== action.payload.choiceKey,
       );
 
       return { questions: state.questions };

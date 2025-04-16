@@ -2,8 +2,8 @@ import { z } from "zod";
 import prismaClient from "../../prisma";
 import { CreateUserSchema, UpdateUserSchema } from "../../definitions/admin/users";
 
-type CreateUser = z.infer<typeof CreateUserSchema>
-type UpdateUser = z.infer<typeof UpdateUserSchema>
+type CreateUser = z.infer<typeof CreateUserSchema>;
+type UpdateUser = z.infer<typeof UpdateUserSchema>;
 
 class UserAdminService {
   async find(id: string) {
@@ -16,18 +16,18 @@ class UserAdminService {
         company: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         role: {
           select: {
             id: true,
-            slug: true
-          }
-        }
-      }
-    })
-    return user
+            slug: true,
+          },
+        },
+      },
+    });
+    return user;
   }
 
   async findAll() {
@@ -39,18 +39,18 @@ class UserAdminService {
         company: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         role: {
           select: {
             id: true,
-            slug: true
-          }
-        }
-      }
-    })
-    return users
+            slug: true,
+          },
+        },
+      },
+    });
+    return users;
   }
 
   // Busca um usuário que possua o email informado
@@ -64,19 +64,19 @@ class UserAdminService {
         company: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         role: {
           select: {
             id: true,
-            slug: true
-          }
-        }
-      }
-    })
+            slug: true,
+          },
+        },
+      },
+    });
 
-    return user
+    return user;
   }
 
   // Lista todos os usuários que pertencem a empresa informada
@@ -90,36 +90,36 @@ class UserAdminService {
         company: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
         role: {
           select: {
             id: true,
-            slug: true
-          }
-        }
-      }
-    })
+            slug: true,
+          },
+        },
+      },
+    });
 
-    return users
+    return users;
   }
 
   async create(data: CreateUser) {
     const user = await prismaClient.user.create({
-      data
-    })
+      data,
+    });
 
-    return user
+    return user;
   }
 
   async update({ id, ...data }: UpdateUser & { id: string }) {
     const user = await prismaClient.user.update({
       where: { id },
-      data
-    })
-    return user
+      data,
+    });
+    return user;
   }
 }
 
-export { UserAdminService }
+export { UserAdminService };

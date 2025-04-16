@@ -99,7 +99,7 @@ router.get("/self-monitoring/feedback/:id", isAuthenticated, new DetailFeedbackC
 router.get(
   "/self-monitoring/dimensions/:selfMonitoringBlockId",
   isAuthenticated,
-  new FindDimensionByBlockController().handle
+  new FindDimensionByBlockController().handle,
 );
 
 // ROTAS COMPANY

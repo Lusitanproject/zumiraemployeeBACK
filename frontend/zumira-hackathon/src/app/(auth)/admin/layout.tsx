@@ -1,12 +1,12 @@
-import { ReactNode } from "react"
-import { verifyUserRole } from "./actions"
+import { ReactNode } from "react";
+import { verifyUserRole } from "./actions";
 
 type LayoutProps = {
-  children: ReactNode
-}
+  children: ReactNode;
+};
 
 export default async function AdminLayout({ children }: LayoutProps) {
-  await verifyUserRole() 
+  await verifyUserRole();
 
-  return children
+  return children;
 }

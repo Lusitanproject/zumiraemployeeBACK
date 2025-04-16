@@ -1,4 +1,4 @@
-import { z } from "zod"
-import { CompanySchema } from "@/schemas"
+import { z } from "zod";
+import { CompanySchema } from "@/schemas";
 
-export type Company = z.infer<typeof CompanySchema>
+export type Company = z.infer<typeof CompanySchema>;

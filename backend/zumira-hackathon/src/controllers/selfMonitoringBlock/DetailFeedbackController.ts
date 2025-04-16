@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 import { parseZodError } from "../../utils/parseZodError";
 import { DetailFeedbackService } from "../../services/selfMonitoringBlock/DetailFeedbackService";
-import { GenerateFeedbackController } from "../assessment/GenerateFeedbackController";
 
 const DetailFeedbackSchema = z.object({
   id: z.string().cuid(),
@@ -18,7 +17,7 @@ class DetailFeedbackController {
     const userId = req.user.id;
 
     const detailFeedback = new DetailFeedbackService();
-    let feedback = await detailFeedback.execute({ userId, selfMonitoringBlockId });
+    const feedback = await detailFeedback.execute({ userId, selfMonitoringBlockId });
 
     return res.json({ status: "SUCCESS", data: feedback });
   }

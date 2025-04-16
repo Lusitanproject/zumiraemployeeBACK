@@ -1,9 +1,9 @@
-import Image from "next/image"
-import { Bell } from "lucide-react"
+import Image from "next/image";
+import { Bell } from "lucide-react";
 
-import logo from "../../../public/logo-zumira.png"
-import { Avatar } from "./avatar"
-import { PageTitle } from "./page-title"
+import logo from "../../../public/logo-zumira.png";
+import { Avatar } from "./avatar";
+import { PageTitle } from "./page-title";
 
 export function Header() {
   return (
@@ -20,7 +20,6 @@ export function Header() {
         </button>
         <Avatar />
       </div>
-
     </header>
-  )
+  );
 }
