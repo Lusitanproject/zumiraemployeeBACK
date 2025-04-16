@@ -24,7 +24,7 @@ export function Sidebar({ menuItems }: SidebarProps) {
         {
           "px-12 w-[18rem]": expanded,
           "px-4 w-[5rem]": !expanded,
-        }
+        },
       )}
     >
       <div className="w-full flex flex-col">

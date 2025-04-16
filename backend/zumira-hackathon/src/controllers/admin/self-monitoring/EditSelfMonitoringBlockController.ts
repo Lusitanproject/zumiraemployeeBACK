@@ -6,23 +6,23 @@ import { parseZodError } from "../../../utils/parseZodError";
 import { z } from "zod";
 
 const RequestParamSchema = z.object({
-  id: z.string().cuid()
-})
+  id: z.string().cuid(),
+});
 
 class EditSelfMonitoringBlocksController {
   async handle(req: Request, res: Response) {
-    const { id } = RequestParamSchema.parse(req.params)
+    const { id } = RequestParamSchema.parse(req.params);
     const { success, data, error } = EditSelfMonitoringBlockSchema.safeParse(req.body);
 
     if (!success) {
       return res.status(400).json({
         status: "ERROR",
-        message: parseZodError(error)
-      })
+        message: parseZodError(error),
+      });
     }
 
     const selfMonitoringService = new SelfMonitoringAdminService();
-    const block = await selfMonitoringService.update({ ...data, id })
+    const block = await selfMonitoringService.update({ ...data, id });
 
     return res.json({ status: "SUCCESS", data: block });
   }

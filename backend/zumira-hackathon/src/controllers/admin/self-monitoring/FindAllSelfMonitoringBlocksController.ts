@@ -5,7 +5,7 @@ import { SelfMonitoringAdminService } from "../../../services/admin/SelfMonitori
 class ListAllSelfMonitoringBlocksController {
   async handle(req: Request, res: Response) {
     const selfMonitoringService = new SelfMonitoringAdminService();
-    const blocks = await selfMonitoringService.findAll()
+    const blocks = await selfMonitoringService.findAll();
 
     return res.json({ status: "SUCCESS", data: { blocks } });
   }

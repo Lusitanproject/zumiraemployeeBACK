@@ -98,7 +98,7 @@ class DetailFeedbackService {
                 name: q.psychologicalDimension.name,
                 acronym: q.psychologicalDimension.acronym,
               },
-            ])
+            ]),
           ).values(),
         ],
       },

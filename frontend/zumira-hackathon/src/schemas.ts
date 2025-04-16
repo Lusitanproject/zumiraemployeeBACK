@@ -27,9 +27,9 @@ export const AssessmentSchema = z.object({
           label: z.string(),
           value: z.number(),
           index: z.number().int(),
-        })
+        }),
       ),
-    })
+    }),
   ),
 });
 
@@ -86,7 +86,7 @@ export const AssessmentQuestionSchema = z.object({
       label: z.string().min(1),
       value: z.number(),
       index: z.number().int(),
-    })
+    }),
   ),
 });
 

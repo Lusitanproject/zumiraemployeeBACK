@@ -5,7 +5,7 @@ import { DimensionAdminService } from "../../../services/admin/DimensionAdminSer
 class FindAllDimensionsController {
   async handle(req: Request, res: Response) {
     const dimensionAdminService = new DimensionAdminService();
-    const dimensions = await dimensionAdminService.findAll()
+    const dimensions = await dimensionAdminService.findAll();
 
     return res.json({ status: "SUCCESS", data: { dimensions } });
   }

@@ -29,7 +29,7 @@ export const AssessmentQuestionChoicesSchema = z.array(
   z.object({
     assessmentQuestionId: z.string().uuid(),
     assessmentQuestionChoiceId: z.string().uuid(),
-  })
+  }),
 );
 
 export const SaveAssessmentAnswerSchema = z.object({

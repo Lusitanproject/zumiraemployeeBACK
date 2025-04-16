@@ -31,7 +31,7 @@ export async function saveAnswersAction(tate: FormState, formData: FormData): Pr
         "Content-Type": "application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    })
+    }),
   );
 
   if (error) {

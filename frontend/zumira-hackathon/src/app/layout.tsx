@@ -14,11 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${rawline.className} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`${rawline.className} antialiased`}>{children}</body>
     </html>
   );
 }

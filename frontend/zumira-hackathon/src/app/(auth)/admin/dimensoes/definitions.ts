@@ -1,4 +1,4 @@
-import { z } from "zod"
-import { PsychologicalDimensionSchema } from "@/schemas"
+import { z } from "zod";
+import { PsychologicalDimensionSchema } from "@/schemas";
 
-export type Dimension = z.infer<typeof PsychologicalDimensionSchema>
+export type Dimension = z.infer<typeof PsychologicalDimensionSchema>;

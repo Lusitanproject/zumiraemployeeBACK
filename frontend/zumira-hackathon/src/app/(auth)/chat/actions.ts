@@ -31,7 +31,7 @@ export async function sendMessage(messages: ChatMessage[], context: ChatContext)
         Authorization: `Bearer ${process.env.CHATBASE_SECRET_KEY}`,
       },
       body: JSON.stringify(body),
-    })
+    }),
   );
 
   if (error) {
@@ -71,7 +71,7 @@ export async function getFeedbacks() {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    })
+    }),
   );
 
   if (error) {

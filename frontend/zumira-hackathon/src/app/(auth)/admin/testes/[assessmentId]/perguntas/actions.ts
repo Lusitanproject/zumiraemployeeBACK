@@ -30,7 +30,7 @@ export async function getAssessmentQuestions(assessmentId: string): Promise<GetA
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    })
+    }),
   );
 
   if (error) {
@@ -63,7 +63,7 @@ export async function getDimensionsByBlock(blockId: string): Promise<Dimension[]
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    })
+    }),
   );
 
   if (error) {
@@ -112,7 +112,7 @@ export async function updateAssessmentQuestions(assessmentId: string, questions:
         Authorization: `Bearer ${session?.token}`,
       },
       body: JSON.stringify(body),
-    })
+    }),
   );
 
   if (error) {
