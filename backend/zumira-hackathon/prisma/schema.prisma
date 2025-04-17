@@ -121,7 +121,7 @@ model Assessment {
   title                 String
   summary               String
   description           String?
-  openaiAssistantId     String?   @map("openai_assistant_id")
+  feedbackInstructions  String?   @map("feedback_instructions")
   operationType         Operation @default(AVERAGE) @map("operation_type")
   selfMonitoringBlockId String    @map("self_monitoring_block_id")
   nationalityId         String    @map("nationality_id")

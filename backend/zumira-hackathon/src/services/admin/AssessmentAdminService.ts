@@ -11,7 +11,7 @@ class AssessmentAdminService {
         description: true,
         summary: true,
         selfMonitoringBlockId: true,
-        openaiAssistantId: true,
+        feedbackInstructions: true,
         operationType: true,
         nationalityId: true,
       },

@@ -28,14 +28,14 @@ async function messageAssistant(message: string, assistantId: string) {
     await axios.post(
       `https://api.openai.com/v1/threads/${threadId}/messages`,
       { role: "user", content: `${message}` },
-      { headers },
+      { headers }
     );
 
     // Iniciar execução do assistente
     const runResponse = await axios.post(
       `https://api.openai.com/v1/threads/${threadId}/runs`,
       { assistant_id: assistantId, response_format: "auto" },
-      { headers },
+      { headers }
     );
     const runId = runResponse.data.id;
 
@@ -60,7 +60,7 @@ async function messageAssistant(message: string, assistantId: string) {
     });
 
     const responseText = messagesResponse.data.data.find(
-      (msg: { role: string; content: { text: { value: string } }[] }) => msg.role === "assistant",
+      (msg: { role: string; content: { text: { value: string } }[] }) => msg.role === "assistant"
     )?.content[0]?.text.value;
     if (!responseText) {
       throw new Error();
@@ -90,7 +90,7 @@ class GenerateFeedbackService {
         id: assessmentId,
       },
       select: {
-        openaiAssistantId: true,
+        feedbackInstructions: true,
         operationType: true,
         assessmentQuestions: {
           select: {
@@ -113,7 +113,7 @@ class GenerateFeedbackService {
         },
       },
     });
-    if (!assessment?.openaiAssistantId) throw new Error("No assistant registered for this assessment");
+    if (!assessment?.feedbackInstructions) throw new Error("No assistant registered for this assessment");
 
     const dimensions = [] as { data: { id: string; name: string }; values: number[] }[];
     assessment.assessmentQuestions.map((q) => {
@@ -146,9 +146,9 @@ class GenerateFeedbackService {
       .join(", ");
     if (!message) throw new Error("No values to send");
 
-    console.log(`Generating feedback for assessment ${assessmentId} with assistant ${assessment.openaiAssistantId}`);
+    console.log(`Generating feedback for assessment ${assessmentId} with assistant ${assessment.feedbackInstructions}`);
 
-    const response = await messageAssistant(message, assessment.openaiAssistantId);
+    const response = await messageAssistant(message, assessment.feedbackInstructions);
 
     const assessmentFeeedback = await prismaClient.assessmentFeedback.create({
       data: {
