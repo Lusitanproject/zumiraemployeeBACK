@@ -6,7 +6,7 @@ export const CreateAssessmentSchema = z.object({
   summary: z.string().min(1),
   description: z.string().optional(),
   selfMonitoringBlockId: z.string().cuid(),
-  openaiAssistantId: z.string().optional(),
+  feedbackInstructions: z.string().optional(),
   operationType: z.nativeEnum(Operation),
   nationalityId: z.string().cuid(),
 });
@@ -16,7 +16,7 @@ export const UpdateAssessmentSchema = z.object({
   summary: z.string().min(1).optional(),
   description: z.string().optional(),
   selfMonitoringBlockId: z.string().cuid().optional(),
-  openaiAssistantId: z.string().optional(),
+  feedbackInstructions: z.string().optional(),
   operationType: z.nativeEnum(Operation),
   nationalityId: z.string().cuid(),
 });

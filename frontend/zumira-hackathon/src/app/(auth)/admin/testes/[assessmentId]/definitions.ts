@@ -11,7 +11,7 @@ export type AssessmentSummary = {
   description: string;
   summary: string;
   selfMonitoringBlockId: string;
-  openaiAssistantId: string;
+  feedbackInstructions: string;
   operationType: AssessmentOperation;
   nationalityId: string;
 };
@@ -23,7 +23,7 @@ export const CreateAssessmentSchema = z.object({
   summary: z.string().min(1),
   description: z.string(),
   selfMonitoringBlockId: z.string().cuid(),
-  openaiAssistantId: z.string().optional(),
+  feedbackInstructions: z.string().optional(),
   operationType: z.enum(["SUM", "AVERAGE"]),
   nationalityId: z.string().cuid(),
 });
@@ -36,6 +36,7 @@ export type FormErrors = {
   summary?: string[];
   description?: string[];
   selfMonitoringBlockId?: string[];
+  feedbackInstructions?: string[];
   operationType?: string[];
   nationalityId?: string[];
 } | null;
@@ -45,7 +46,7 @@ export const INITIAL_VALUE: ManageAssessment = {
   summary: "",
   description: "",
   selfMonitoringBlockId: "",
-  openaiAssistantId: "",
+  feedbackInstructions: "",
   operationType: "AVERAGE",
   nationalityId: "",
 };

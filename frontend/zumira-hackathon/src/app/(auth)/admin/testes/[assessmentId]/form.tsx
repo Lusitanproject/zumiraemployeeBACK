@@ -33,7 +33,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         summary: data.summary,
         description: data.description,
         selfMonitoringBlockId: data.selfMonitoringBlockId,
-        openaiAssistantId: data.openaiAssistantId,
+        feedbackInstructions: data.feedbackInstructions,
         operationType: data.operationType,
         nationalityId: data.nationalityId,
       }
@@ -138,15 +138,19 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           {!!errors?.nationalityId && <span className="text-sm text-error-500">{errors.nationalityId}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="assistantId">ID do assistente OpenAi</Label>
-          <Input
-            id="assistantId"
-            name="assistantId"
-            value={formData.openaiAssistantId ?? ""}
+          <Label htmlFor="instructions">Instruções para IA de devolutiva</Label>
+          <Textarea
+            id="instructions"
+            name="instructions"
+            value={formData.feedbackInstructions ?? ""}
             onChange={(e) => {
-              setFormData((current) => ({ ...current, openaiAssistantId: e.target.value }));
+              setFormData((current) => ({ ...current, feedbackInstructions: e.target.value }));
             }}
+            className="h-40"
           />
+          {!!errors?.feedbackInstructions && (
+            <span className="text-sm text-error-500">{errors.feedbackInstructions}</span>
+          )}
         </div>
         <div className="pb-3 flex flex-row gap-10">
           <div>
