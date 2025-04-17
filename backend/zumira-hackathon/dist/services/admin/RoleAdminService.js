@@ -8,7 +8,7 @@ const prisma_1 = __importDefault(require("../../prisma"));
 class RoleAdminService {
     async find(roleId) {
         const role = await prisma_1.default.role.findUnique({
-            where: { id: roleId }
+            where: { id: roleId },
         });
         return role;
     }
@@ -18,13 +18,13 @@ class RoleAdminService {
     }
     async findBySlug(slug) {
         const role = await prisma_1.default.role.findUnique({
-            where: { slug }
+            where: { slug },
         });
         return role;
     }
     async create(slug) {
         const role = await prisma_1.default.role.create({
-            data: { slug }
+            data: { slug },
         });
         return role;
     }

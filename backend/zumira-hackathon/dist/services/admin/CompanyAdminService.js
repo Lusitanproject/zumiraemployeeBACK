@@ -8,7 +8,7 @@ const prisma_1 = __importDefault(require("../../prisma"));
 class CompanyAdminService {
     async find(companyId) {
         const company = await prisma_1.default.company.findFirst({
-            where: { id: companyId }
+            where: { id: companyId },
         });
         return company;
     }

@@ -24,7 +24,8 @@ async function sendEmail(email, code) {
         });
     }
     catch (err) {
-        console.log("Error sending email", err.message);
+        if (err instanceof Error)
+            console.log("Error sending email", err.message);
         throw new Error("Error sending email");
     }
 }

@@ -9,7 +9,7 @@ const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminServi
 const users_1 = require("../../../definitions/admin/users");
 const zod_1 = require("zod");
 const RequestParams = zod_1.z.object({
-    id: zod_1.z.string().uuid()
+    id: zod_1.z.string().uuid(),
 });
 class UpdateUserController {
     async handle(req, res) {
@@ -19,7 +19,7 @@ class UpdateUserController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const { name, roleId, companyId } = data;
@@ -29,13 +29,13 @@ class UpdateUserController {
             if (!role) {
                 return res.status(400).json({
                     status: "ERROR",
-                    message: "O perfil de usuário informado é inválido"
+                    message: "O perfil de usuário informado é inválido",
                 });
             }
             if (role.slug === "admin" && req.user.role !== "admin") {
                 return res.status(400).json({
                     status: "ERROR",
-                    message: "O usuário não tem permissão para realizar essa operação."
+                    message: "O usuário não tem permissão para realizar essa operação.",
                 });
             }
         }
@@ -45,7 +45,7 @@ class UpdateUserController {
             if (!company) {
                 return res.status(400).json({
                     status: "ERROR",
-                    message: "A empresa informada não é válida"
+                    message: "A empresa informada não é válida",
                 });
             }
         }

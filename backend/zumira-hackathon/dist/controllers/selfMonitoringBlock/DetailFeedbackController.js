@@ -15,7 +15,7 @@ class DetailFeedbackController {
         const { id: selfMonitoringBlockId } = data;
         const userId = req.user.id;
         const detailFeedback = new DetailFeedbackService_1.DetailFeedbackService();
-        let feedback = await detailFeedback.execute({ userId, selfMonitoringBlockId });
+        const feedback = await detailFeedback.execute({ userId, selfMonitoringBlockId });
         return res.json({ status: "SUCCESS", data: feedback });
     }
 }

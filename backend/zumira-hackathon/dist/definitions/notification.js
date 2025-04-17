@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EditNotificationSchema = exports.NotificationIdSchema = exports.ListNotificationsSchema = exports.CreateNotificationSchema = void 0;
+exports.UpdateNotificationSchema = exports.NotificationIdSchema = exports.ListNotificationsSchema = exports.CreateNotificationSchema = void 0;
 const zod_1 = require("zod");
 exports.CreateNotificationSchema = zod_1.z.object({
     title: zod_1.z.string().nonempty(),
@@ -15,7 +15,7 @@ exports.ListNotificationsSchema = zod_1.z.object({
 exports.NotificationIdSchema = zod_1.z.object({
     notificationId: zod_1.z.string().cuid(),
 });
-exports.EditNotificationSchema = zod_1.z.object({
+exports.UpdateNotificationSchema = zod_1.z.object({
     notificationId: zod_1.z.string().cuid(),
     title: zod_1.z.string().nonempty(),
     summary: zod_1.z.string().nonempty(),

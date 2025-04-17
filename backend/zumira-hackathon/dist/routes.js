@@ -37,12 +37,14 @@ const ListFeedbacksController_1 = require("./controllers/assessment/feedback/Lis
 const FindDimensionController_1 = require("./controllers/admin/dimensions/FindDimensionController");
 const EditDimensionController_1 = require("./controllers/admin/dimensions/EditDimensionController");
 const ListNationalitiesController_1 = require("./controllers/nationality/ListNationalitiesController");
-const CreateNotificationController_1 = require("./controllers/notification/CreateNotificationController");
 const ListNotificationsController_1 = require("./controllers/notification/ListNotificationsController");
 const ReadNotificationController_1 = require("./controllers/notification/ReadNotificationController");
-const DeleteNotificationController_1 = require("./controllers/notification/DeleteNotificationController");
 const DetailNotificationController_1 = require("./controllers/notification/DetailNotificationController");
-const EditNotificationController_1 = require("./controllers/notification/EditNotificationController");
+const CreateNotificationController_1 = require("./controllers/admin/notifications/CreateNotificationController");
+const UpdateNotificationController_1 = require("./controllers/admin/notifications/UpdateNotificationController");
+const DeleteNotificationController_1 = require("./controllers/admin/notifications/DeleteNotificationController");
+const FindAllNotificationsController_1 = require("./controllers/admin/notifications/FindAllNotificationsController");
+const FindAllTypesController_1 = require("./controllers/admin/notifications/FindAllTypesController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -90,8 +92,10 @@ router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyCo
 router.get("/nationalities", isAuthenticated_1.isAuthenticated, new ListNationalitiesController_1.ListNationalitiesController().handle);
 // ROTAS NOTIFICATION
 router.get("/notifications", isAuthenticated_1.isAuthenticated, new ListNotificationsController_1.ListNotificationsController().handle);
+router.get("/notifications/admin", isAuthenticated_1.isAuthenticated, new FindAllNotificationsController_1.FindAllNotificationsController().handle);
+router.get("/notifications/admin/types", isAuthenticated_1.isAuthenticated, new FindAllTypesController_1.FindAllTypesController().handle);
 router.get("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new DetailNotificationController_1.DetailNotificationController().handle);
-router.put("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new EditNotificationController_1.EditNotificationController().handle);
+router.put("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new UpdateNotificationController_1.UpdateNotificationController().handle);
 router.put("/notifications/:notificationId/read", isAuthenticated_1.isAuthenticated, new ReadNotificationController_1.ReadNotificationController().handle);
 router.post("/notifications", isAuthenticated_1.isAuthenticated, new CreateNotificationController_1.CreateNotificationController().handle);
 router.delete("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new DeleteNotificationController_1.DeleteNotificationController().handle);

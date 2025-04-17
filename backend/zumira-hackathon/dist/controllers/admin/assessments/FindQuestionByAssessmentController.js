@@ -5,7 +5,7 @@ const zod_1 = require("zod");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const AssessmentQuestionAdminService_1 = require("../../../services/admin/AssessmentQuestionAdminService");
 const RequestParam = zod_1.z.object({
-    assessmentId: zod_1.z.string().cuid()
+    assessmentId: zod_1.z.string().cuid(),
 });
 class FindQuestionByAssessmentController {
     async handle(req, res) {
@@ -13,7 +13,7 @@ class FindQuestionByAssessmentController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const questionAdminService = new AssessmentQuestionAdminService_1.AssessmentQuestionAdminService();

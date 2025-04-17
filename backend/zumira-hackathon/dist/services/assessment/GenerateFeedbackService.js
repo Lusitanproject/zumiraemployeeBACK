@@ -7,7 +7,7 @@ exports.GenerateFeedbackService = void 0;
 const axios_1 = __importDefault(require("axios"));
 const prisma_1 = __importDefault(require("../../prisma"));
 async function messageAssistant(message, assistantId) {
-    var _a, _b, _c;
+    var _a, _b;
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
     if (!OPENAI_API_KEY) {
         throw new Error("Invalid configuration: OPENAI_API_KEY was not defined.");
@@ -42,7 +42,7 @@ async function messageAssistant(message, assistantId) {
         const messagesResponse = await axios_1.default.get(`https://api.openai.com/v1/threads/${threadId}/messages`, {
             headers,
         });
-        const responseText = (_c = (_b = (_a = messagesResponse.data.data.find((msg) => msg.role === "assistant")) === null || _a === void 0 ? void 0 : _a.content[0]) === null || _b === void 0 ? void 0 : _b.text) === null || _c === void 0 ? void 0 : _c.value;
+        const responseText = (_b = (_a = messagesResponse.data.data.find((msg) => msg.role === "assistant")) === null || _a === void 0 ? void 0 : _a.content[0]) === null || _b === void 0 ? void 0 : _b.text.value;
         if (!responseText) {
             throw new Error();
         }

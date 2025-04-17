@@ -8,7 +8,7 @@ const prisma_1 = __importDefault(require("../../prisma"));
 class SelfMonitoringAdminService {
     async find(id) {
         const user = await prisma_1.default.selfMonitoringBlock.findUnique({
-            where: { id }
+            where: { id },
         });
         return user;
     }
@@ -23,7 +23,7 @@ class SelfMonitoringAdminService {
     async update({ id, ...data }) {
         const user = await prisma_1.default.selfMonitoringBlock.update({
             where: { id },
-            data
+            data,
         });
         return user;
     }

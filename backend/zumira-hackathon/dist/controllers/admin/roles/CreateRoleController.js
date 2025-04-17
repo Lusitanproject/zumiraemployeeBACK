@@ -6,7 +6,7 @@ const assertPermissions_1 = require("../../../utils/assertPermissions");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const RoleAdminService_1 = require("../../../services/admin/RoleAdminService");
 exports.CreateRoleSchema = zod_1.z.object({
-    slug: zod_1.z.string()
+    slug: zod_1.z.string(),
 });
 class CreateRoleController {
     async handle(req, res) {
@@ -15,7 +15,7 @@ class CreateRoleController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const { slug } = data;
@@ -24,7 +24,7 @@ class CreateRoleController {
         if (roleExists) {
             return res.status(400).json({
                 status: "ERROR",
-                message: "Já existe um perfil com o valor informado"
+                message: "Já existe um perfil com o valor informado",
             });
         }
         const role = await roleService.create(slug);
