@@ -1,11 +1,9 @@
-import { getCompanyData } from "./actions"
-import { CompanyForm } from "./form"
+import { getCompanyData } from "./actions";
+import { CompanyForm } from "./form";
 
-export default async function ManageCompany({
-  params
-}: { params: Promise<{ companyId: string }> }) {
-  const id = (await params).companyId
-  const companies = await getCompanyData(id === "novo" ? null : id)
+export default async function ManageCompany({ params }: { params: Promise<{ companyId: string }> }) {
+  const id = (await params).companyId;
+  const companies = await getCompanyData(id === "novo" ? null : id);
 
   return (
     <div className="flex flex-col w-full">
@@ -14,5 +12,5 @@ export default async function ManageCompany({
       </div>
       <CompanyForm data={companies} />
     </div>
-  )
+  );
 }

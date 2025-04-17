@@ -6,8 +6,8 @@ import { UserAdminService } from "../../../services/admin/UserAdminService";
 import { z } from "zod";
 
 const FindByCompanySchema = z.object({
-  companyId: z.string().cuid()
-})
+  companyId: z.string().cuid(),
+});
 
 class ListUsersByCompanyController {
   async handle(req: Request, res: Response) {
@@ -15,17 +15,17 @@ class ListUsersByCompanyController {
 
     const { success, data, error } = FindByCompanySchema.safeParse(req.params);
 
-    if(!success) {
+    if (!success) {
       return res.status(400).json({
         status: "ERROR",
-        message: parseZodError(error)
-      })
+        message: parseZodError(error),
+      });
     }
 
     const { companyId } = data;
 
     const userService = new UserAdminService();
-    const users = await userService.findByCompany(companyId)
+    const users = await userService.findByCompany(companyId);
 
     return res.json({ status: "SUCCESS", data: { users } });
   }

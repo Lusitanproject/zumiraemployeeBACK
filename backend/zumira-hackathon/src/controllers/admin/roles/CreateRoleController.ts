@@ -7,8 +7,8 @@ import { parseZodError } from "../../../utils/parseZodError";
 import { RoleAdminService } from "../../../services/admin/RoleAdminService";
 
 export const CreateRoleSchema = z.object({
-  slug: z.string()
-})
+  slug: z.string(),
+});
 
 class CreateRoleController {
   async handle(req: Request, res: Response) {
@@ -16,26 +16,26 @@ class CreateRoleController {
 
     const { success, data, error } = CreateRoleSchema.safeParse(req.body);
 
-    if(!success) {
+    if (!success) {
       return res.status(400).json({
         status: "ERROR",
-        message: parseZodError(error)
-      })
+        message: parseZodError(error),
+      });
     }
 
     const { slug } = data;
 
-    const roleService = new RoleAdminService()
-    const roleExists = await roleService.findBySlug(slug)
+    const roleService = new RoleAdminService();
+    const roleExists = await roleService.findBySlug(slug);
 
-    if(roleExists) {
+    if (roleExists) {
       return res.status(400).json({
         status: "ERROR",
-        message: "Já existe um perfil com o valor informado"
-      })
+        message: "Já existe um perfil com o valor informado",
+      });
     }
 
-    const role = await roleService.create(slug)
+    const role = await roleService.create(slug);
 
     return res.json({ status: "SUCCESS", data: role });
   }

@@ -28,14 +28,14 @@ async function messageAssistant(message: string, assistantId: string) {
     await axios.post(
       `https://api.openai.com/v1/threads/${threadId}/messages`,
       { role: "user", content: `${message}` },
-      { headers }
+      { headers },
     );
 
     // Iniciar execução do assistente
     const runResponse = await axios.post(
       `https://api.openai.com/v1/threads/${threadId}/runs`,
       { assistant_id: assistantId, response_format: "auto" },
-      { headers }
+      { headers },
     );
     const runId = runResponse.data.id;
 
@@ -59,8 +59,9 @@ async function messageAssistant(message: string, assistantId: string) {
       headers,
     });
 
-    const responseText = messagesResponse.data.data.find((msg: any) => msg.role === "assistant")?.content[0]?.text
-      ?.value;
+    const responseText = messagesResponse.data.data.find(
+      (msg: { role: string; content: { text: { value: string } }[] }) => msg.role === "assistant",
+    )?.content[0]?.text.value;
     if (!responseText) {
       throw new Error();
     } else {

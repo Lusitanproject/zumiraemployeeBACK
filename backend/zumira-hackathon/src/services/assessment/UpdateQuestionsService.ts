@@ -36,7 +36,7 @@ class UpdateQuestionsService {
 
     const deletedQuestions = oldQuestions.filter((oldQuestion) => !questions.some((q) => oldQuestion.id === q.id));
     const deletedChoices = oldChoices.filter(
-      (oldChoice) => !questions.some((q) => q.choices.some((c) => oldChoice.id === c.id))
+      (oldChoice) => !questions.some((q) => q.choices.some((c) => oldChoice.id === c.id)),
     );
 
     for (const question of questions) {

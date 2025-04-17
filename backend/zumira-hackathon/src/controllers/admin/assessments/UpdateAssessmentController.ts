@@ -6,23 +6,23 @@ import { UpdateAssessmentSchema } from "../../../definitions/admin/assessment";
 import { AssessmentAdminService } from "../../../services/admin/AssessmentAdminService";
 
 const RequestParamSchema = z.object({
-  id: z.string().cuid()
-})
+  id: z.string().cuid(),
+});
 
 class UpdateAssessmentController {
   async handle(req: Request, res: Response) {
-    const { id } = RequestParamSchema.parse(req.params)
+    const { id } = RequestParamSchema.parse(req.params);
     const { success, data, error } = UpdateAssessmentSchema.safeParse(req.body);
 
     if (!success) {
       return res.status(400).json({
         status: "ERROR",
-        message: parseZodError(error)
-      })
+        message: parseZodError(error),
+      });
     }
 
     const assessmentAdminService = new AssessmentAdminService();
-    const assessment = await assessmentAdminService.update({ ...data, id })
+    const assessment = await assessmentAdminService.update({ ...data, id });
 
     return res.json({ status: "SUCCESS", data: assessment });
   }

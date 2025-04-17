@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { redirect } from "next/navigation";
 import { saveAssessment } from "./form-actions";
 import { Nationality } from "../../autoconhecimento/definitions";
+import { RichTextArea } from "@/components/ui/rich-text-area";
 
 type FormProps = {
   data: AssessmentSummary | null;
@@ -102,14 +103,12 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         </div>
         <div className="pb-3">
           <Label htmlFor="description">Descrição</Label>
-          <Textarea
+          <RichTextArea
             id="description"
-            name="description"
             value={formData.description ?? ""}
-            onChange={(e) => {
-              setFormData((current) => ({ ...current, description: e.target.value }));
+            onChange={(value) => {
+              setFormData((current) => ({ ...current, description: value }));
             }}
-            className="h-20"
           />
           {!!errors?.description && <span className="text-sm text-error-500">{errors.description}</span>}
         </div>

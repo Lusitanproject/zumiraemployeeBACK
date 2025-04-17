@@ -8,10 +8,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "fastly.picsum.photos",
         port: "",
-        pathname: "/id/183/**"
-      }
-    ]
-  }
+        pathname: "/id/183/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

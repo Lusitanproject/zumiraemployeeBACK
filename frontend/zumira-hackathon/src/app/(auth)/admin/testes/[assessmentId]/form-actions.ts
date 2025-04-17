@@ -32,7 +32,7 @@ export async function saveAssessment(data: Payload) {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    })
+    }),
   );
 
   if (error) {
