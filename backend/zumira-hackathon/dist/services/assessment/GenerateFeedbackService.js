@@ -4,55 +4,48 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenerateFeedbackService = void 0;
-const axios_1 = __importDefault(require("axios"));
 const prisma_1 = __importDefault(require("../../prisma"));
-async function messageAssistant(message, assistantId) {
-    var _a, _b;
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-    if (!OPENAI_API_KEY) {
-        throw new Error("Invalid configuration: OPENAI_API_KEY was not defined.");
-    }
-    const headers = {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-        "OpenAI-Beta": "assistants=v2",
+const openai_1 = __importDefault(require("openai"));
+async function sendMessage(instructions, message) {
+    const openai = new openai_1.default({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
+    const instructionsObj = {
+        role: "system",
+        content: [
+            {
+                type: "input_text",
+                text: instructions,
+            },
+        ],
     };
-    try {
-        // Criar um novo thread
-        const threadResponse = await axios_1.default.post("https://api.openai.com/v1/threads", {}, { headers });
-        const threadId = threadResponse.data.id;
-        // Enviar mensagem ao thread
-        await axios_1.default.post(`https://api.openai.com/v1/threads/${threadId}/messages`, { role: "user", content: `${message}` }, { headers });
-        // Iniciar execução do assistente
-        const runResponse = await axios_1.default.post(`https://api.openai.com/v1/threads/${threadId}/runs`, { assistant_id: assistantId, response_format: "auto" }, { headers });
-        const runId = runResponse.data.id;
-        // Aguardar finalização da execução
-        let status = "in_progress";
-        while (status === "in_progress" || status === "queued") {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            const runCheck = await axios_1.default.get(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
-                headers,
-            });
-            status = runCheck.data.status;
-            if (status === "failed") {
-                throw new Error();
-            }
-        }
-        // Obter resposta do assistente
-        const messagesResponse = await axios_1.default.get(`https://api.openai.com/v1/threads/${threadId}/messages`, {
-            headers,
-        });
-        const responseText = (_b = (_a = messagesResponse.data.data.find((msg) => msg.role === "assistant")) === null || _a === void 0 ? void 0 : _a.content[0]) === null || _b === void 0 ? void 0 : _b.text.value;
-        if (!responseText) {
-            throw new Error();
-        }
-        else {
-            return { text: responseText };
-        }
-    }
-    catch {
-        throw new Error("Something went wrong");
-    }
+    const response = await openai.responses.create({
+        model: "gpt-4.1",
+        input: [
+            ...(instructions ? [instructionsObj] : []),
+            {
+                role: "user",
+                content: [
+                    {
+                        type: "input_text",
+                        text: message,
+                    },
+                ],
+            },
+        ],
+        text: {
+            format: {
+                type: "text",
+            },
+        },
+        reasoning: {},
+        tools: [],
+        temperature: 1,
+        max_output_tokens: 2048,
+        top_p: 1,
+        store: true,
+    });
+    return response;
 }
 class GenerateFeedbackService {
     async execute({ userId, assessmentId }) {
@@ -72,7 +65,7 @@ class GenerateFeedbackService {
                 id: assessmentId,
             },
             select: {
-                openaiAssistantId: true,
+                feedbackInstructions: true,
                 operationType: true,
                 assessmentQuestions: {
                     select: {
@@ -95,8 +88,8 @@ class GenerateFeedbackService {
                 },
             },
         });
-        if (!(assessment === null || assessment === void 0 ? void 0 : assessment.openaiAssistantId))
-            throw new Error("No assistant registered for this assessment");
+        if (!assessment)
+            throw new Error("Assessment does not exist");
         const dimensions = [];
         assessment.assessmentQuestions.map((q) => {
             if (!dimensions.find((d) => d.data.id === q.psychologicalDimension.id)) {
@@ -125,11 +118,11 @@ class GenerateFeedbackService {
             .join(", ");
         if (!message)
             throw new Error("No values to send");
-        console.log(`Generating feedback for assessment ${assessmentId} with assistant ${assessment.openaiAssistantId}`);
-        const response = await messageAssistant(message, assessment.openaiAssistantId);
+        console.log(`Generating feedback for assessment ${assessmentId}`);
+        const response = await sendMessage(assessment.feedbackInstructions, message);
         const assessmentFeeedback = await prisma_1.default.assessmentFeedback.create({
             data: {
-                text: response.text,
+                text: response.output_text,
                 userId,
                 assessmentId,
             },
@@ -140,6 +133,7 @@ class GenerateFeedbackService {
                 assessmentId: true,
             },
         });
+        console.log(`Done generating feedback for assessment ${assessmentId}`);
         return assessmentFeeedback;
     }
 }

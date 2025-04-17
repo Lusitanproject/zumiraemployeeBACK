@@ -12,7 +12,7 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use(routes_1.router);
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
     console.error(`${kleur_1.default.red(req.url)}: ${err.message}`);
     if (err instanceof Error) {
         return res.status(400).json({
