@@ -126,7 +126,7 @@ class GenerateUserFeedbackService {
       .join(", ");
     if (!message) throw new Error("No values to send");
 
-    console.log(`Generating feedback for assessment ${assessmentId}`);
+    console.log(`Generating user feedback for assessment ${assessmentId}`);
 
     const response = await sendMessage(assessment.userFeedbackInstructions, message);
 
@@ -143,8 +143,6 @@ class GenerateUserFeedbackService {
         assessmentId: true,
       },
     });
-
-    console.log(`Done generating feedback for assessment ${assessmentId}`);
 
     return assessmentFeeedback;
   }

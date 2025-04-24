@@ -17,6 +17,30 @@ class CompanyAdminService {
     return companies;
   }
 
+  async findAllFeedbacks(userId: string) {
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id: userId,
+        companyId: {
+          not: null,
+        },
+      },
+    });
+
+    if (!user?.companyId) throw new Error("User is not associated with a company");
+
+    const feedbacks = await prismaClient.companyAssessmentFeedback.findMany({
+      where: {
+        companyId: user.companyId,
+      },
+      include: {
+        assessment: true,
+      },
+    });
+
+    return { items: feedbacks };
+  }
+
   async create(data: CreateCompany) {
     const company = await prismaClient.company.create({ data });
     return company;
