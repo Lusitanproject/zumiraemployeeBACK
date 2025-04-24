@@ -45,6 +45,7 @@ const UpdateNotificationController_1 = require("./controllers/admin/notification
 const DeleteNotificationController_1 = require("./controllers/admin/notifications/DeleteNotificationController");
 const FindAllNotificationsController_1 = require("./controllers/admin/notifications/FindAllNotificationsController");
 const FindAllTypesController_1 = require("./controllers/admin/notifications/FindAllTypesController");
+const FindAllFeedbacksController_1 = require("./controllers/admin/companies/FindAllFeedbacksController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -86,6 +87,7 @@ router.get("/self-monitoring/feedback/:id", isAuthenticated_1.isAuthenticated, n
 router.get("/self-monitoring/dimensions/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new FindBySelfMonitoringController_1.FindDimensionByBlockController().handle);
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated_1.isAuthenticated, new FindAllCompaniesController_1.FindAllCompaniesController().handle);
+router.get("companies/feedbacks/:companyId", isAuthenticated_1.isAuthenticated, new FindAllFeedbacksController_1.FindAllFeedbacksController().handle);
 router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
 router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
 // ROTAS NATIONALITY

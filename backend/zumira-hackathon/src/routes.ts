@@ -53,6 +53,7 @@ import { UpdateNotificationController } from "./controllers/admin/notifications/
 import { DeleteNotificationController } from "./controllers/admin/notifications/DeleteNotificationController";
 import { FindAllNotificationsController } from "./controllers/admin/notifications/FindAllNotificationsController";
 import { FindAllTypesController } from "./controllers/admin/notifications/FindAllTypesController";
+import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAllFeedbacksController";
 
 const router = Router();
 
@@ -106,6 +107,7 @@ router.get(
 
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated, new FindAllCompaniesController().handle);
+router.get("companies/feedbacks/:companyId", isAuthenticated, new FindAllFeedbacksController().handle);
 router.get("/companies/:companyId", isAuthenticated, new FindCompanyController().handle);
 router.post("/companies", isAuthenticated, new CreateCompanyController().handle);
 

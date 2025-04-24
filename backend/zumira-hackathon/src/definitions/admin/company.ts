@@ -8,3 +8,7 @@ export const CreateCompanySchema = z.object({
 export const FindCompanySchema = z.object({
   id: z.string().cuid(),
 });
+
+export const FindAllFeedbacksSchema = z.object({
+  companyId: z.string().cuid(),
+});

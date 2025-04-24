@@ -16,6 +16,17 @@ class CompanyAdminService {
         const companies = await prisma_1.default.company.findMany();
         return companies;
     }
+    async findAllFeedbacks(companyId) {
+        const feedbacks = await prisma_1.default.companyAssessmentFeedback.findMany({
+            where: {
+                companyId,
+            },
+            include: {
+                assessment: true,
+            },
+        });
+        return { items: feedbacks };
+    }
     async create(data) {
         const company = await prisma_1.default.company.create({ data });
         return company;
