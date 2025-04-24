@@ -2,7 +2,7 @@ import prismaClient from "../../prisma";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
 
-interface GenerateFeedbackRequest {
+interface GenerateUserFeedbackRequest {
   userId: string;
   assessmentId: string;
 }
@@ -52,8 +52,8 @@ async function sendMessage(instructions: string | null, message: string) {
   return response;
 }
 
-class GenerateFeedbackService {
-  async execute({ userId, assessmentId }: GenerateFeedbackRequest) {
+class GenerateUserFeedbackService {
+  async execute({ userId, assessmentId }: GenerateUserFeedbackRequest) {
     const latestResult = await prismaClient.assessmentResult.findFirst({
       where: {
         assessmentId,
@@ -70,7 +70,7 @@ class GenerateFeedbackService {
         id: assessmentId,
       },
       select: {
-        feedbackInstructions: true,
+        userFeedbackInstructions: true,
         operationType: true,
         assessmentQuestions: {
           select: {
@@ -128,9 +128,9 @@ class GenerateFeedbackService {
 
     console.log(`Generating feedback for assessment ${assessmentId}`);
 
-    const response = await sendMessage(assessment.feedbackInstructions, message);
+    const response = await sendMessage(assessment.userFeedbackInstructions, message);
 
-    const assessmentFeeedback = await prismaClient.assessmentFeedback.create({
+    const assessmentFeeedback = await prismaClient.userAssessmentFeedback.create({
       data: {
         text: response.output_text,
         userId,
@@ -150,4 +150,4 @@ class GenerateFeedbackService {
   }
 }
 
-export { GenerateFeedbackService };
+export { GenerateUserFeedbackService };

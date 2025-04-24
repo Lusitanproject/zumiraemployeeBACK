@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { parseZodError } from "../../utils/parseZodError";
-import { GenerateFeedbackService } from "../../services/assessment/GenerateFeedbackService";
+import { GenerateUserFeedbackService } from "../../services/assessment/GenerateUserFeedbackService";
 
 const GenerateFeedbackSchema = z.object({
   id: z.string().cuid(),
 });
 
-class GenerateFeedbackController {
+class GenerateUserFeedbackController {
   async handle(req: Request, res: Response) {
     const { success, data, error } = GenerateFeedbackSchema.safeParse(req.params);
 
@@ -16,11 +16,11 @@ class GenerateFeedbackController {
     const { id: assessmentId } = data;
     const userId = req.user.id;
 
-    const generateFeedback = new GenerateFeedbackService();
+    const generateFeedback = new GenerateUserFeedbackService();
     const feedback = await generateFeedback.execute({ userId, assessmentId });
 
     return res.json({ status: "SUCCESS", data: feedback });
   }
 }
 
-export { GenerateFeedbackController };
+export { GenerateUserFeedbackController };

@@ -7,7 +7,7 @@ exports.ListFeedbacksService = void 0;
 const prisma_1 = __importDefault(require("../../../prisma"));
 class ListFeedbacksService {
     async execute(userId) {
-        const recentFeedbacks = await prisma_1.default.assessmentFeedback.groupBy({
+        const recentFeedbacks = await prisma_1.default.userAssessmentFeedback.groupBy({
             by: ["assessmentId"],
             where: {
                 userId,
@@ -22,7 +22,7 @@ class ListFeedbacksService {
             assessmentId,
             createdAt: _max.createdAt,
         }));
-        const feedbacks = await prisma_1.default.assessmentFeedback.findMany({
+        const feedbacks = await prisma_1.default.userAssessmentFeedback.findMany({
             where: {
                 OR: validFeedbacks,
             },

@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GenerateFeedbackController = void 0;
+exports.GenerateUserFeedbackController = void 0;
 const zod_1 = require("zod");
 const parseZodError_1 = require("../../utils/parseZodError");
 const GenerateUserFeedbackService_1 = require("../../services/assessment/GenerateUserFeedbackService");
 const GenerateFeedbackSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
 });
-class GenerateFeedbackController {
+class GenerateUserFeedbackController {
     async handle(req, res) {
         const { success, data, error } = GenerateFeedbackSchema.safeParse(req.params);
         if (!success)
@@ -19,4 +19,4 @@ class GenerateFeedbackController {
         return res.json({ status: "SUCCESS", data: feedback });
     }
 }
-exports.GenerateFeedbackController = GenerateFeedbackController;
+exports.GenerateUserFeedbackController = GenerateUserFeedbackController;

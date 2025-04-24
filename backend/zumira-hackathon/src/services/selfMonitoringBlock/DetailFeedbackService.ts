@@ -1,12 +1,12 @@
 import prismaClient from "../../prisma";
 
-interface DetailFeedbackRequest {
+interface DetailUserFeedbackRequest {
   userId: string;
   selfMonitoringBlockId: string;
 }
-class DetailFeedbackService {
-  async execute({ userId, selfMonitoringBlockId }: DetailFeedbackRequest) {
-    const feedbacks = await prismaClient.assessmentFeedback.findMany({
+class DetailUserFeedbackService {
+  async execute({ userId, selfMonitoringBlockId }: DetailUserFeedbackRequest) {
+    const feedbacks = await prismaClient.userAssessmentFeedback.findMany({
       where: {
         userId,
         assessment: {
@@ -71,7 +71,7 @@ class DetailFeedbackService {
             userId,
           },
         },
-        assessmentFeedbacks: {
+        userAssessmentFeedbacks: {
           select: {
             id: true,
           },
@@ -98,7 +98,7 @@ class DetailFeedbackService {
                 name: q.psychologicalDimension.name,
                 acronym: q.psychologicalDimension.acronym,
               },
-            ]),
+            ])
           ).values(),
         ],
       },
@@ -108,7 +108,7 @@ class DetailFeedbackService {
 
     const processing = assessments
       .map((a) => {
-        if (a.assessmentResults.length !== a.assessmentFeedbacks.length) {
+        if (a.assessmentResults.length !== a.userAssessmentFeedbacks.length) {
           return {
             id: a.id,
             title: a.title,
@@ -123,4 +123,4 @@ class DetailFeedbackService {
   }
 }
 
-export { DetailFeedbackService };
+export { DetailUserFeedbackService };
