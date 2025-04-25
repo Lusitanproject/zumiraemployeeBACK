@@ -138,7 +138,7 @@ class GenerateCompanyFeedbackService {
     const message = Object.entries(dimensionScores)
       .map(([dimension, scores]) => {
         const average = scores.reduce((sum, v) => sum + v, 0) / scores.length;
-        return `${dimension}: ${average}`;
+        return `${dimension}: ${average.toFixed(2)}`;
       })
       .join(", ");
 
