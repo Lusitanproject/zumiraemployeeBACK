@@ -12,9 +12,11 @@ ALTER TABLE "assessment_feedback" DROP CONSTRAINT "assessment_feedback_assessmen
 ALTER TABLE "assessment_feedback" DROP CONSTRAINT "assessment_feedback_user_id_fkey";
 
 -- AlterTable
-ALTER TABLE "assessments" DROP COLUMN "feedback_instructions",
-ADD COLUMN     "company_feedback_instructions" TEXT,
-ADD COLUMN     "user_feedback_instructions" TEXT;
+ALTER TABLE "assessments"
+RENAME COLUMN "feedback_instructions" TO "user_feedback_instructions";
+
+ALTER TABLE "assessments"
+ADD COLUMN "company_feedback_instructions" TEXT;
 
 ALTER TABLE "assessment_feedback" RENAME TO "user_assessment_feedback";
 ALTER INDEX "assessment_feedback_pkey" RENAME TO "user_assessment_feedback_pkey";
