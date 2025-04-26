@@ -1,33 +1,33 @@
 export type Assessment = {
-  id: string
-  title: string
-  summary: string
+  id: string;
+  title: string;
+  summary: string;
   scale: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
   selfMonitoring: {
-    id: string
-    title: string
-  }
-  lastCompleted: Date | null
-}
+    id: string;
+    title: string;
+  };
+  lastCompleted: Date | null;
+};
 
 export type SelfMonitoringBlock = {
-  id: string
-  title: string
-}
+  id: string;
+  title: string;
+};
 
 export type GetAssessmentsSuccess = {
-  status: "SUCCESS",
+  status: "SUCCESS";
   data: {
-    assessments: Assessment[]
-  }
-}
+    assessments: Assessment[];
+  };
+};
 
 export type GetSelfMonitoringBlocks = {
-  status: "SUCCESS",
+  status: "SUCCESS";
   data: {
-    blocks: SelfMonitoringBlock[]
-  }
-}
+    blocks: SelfMonitoringBlock[];
+  };
+};

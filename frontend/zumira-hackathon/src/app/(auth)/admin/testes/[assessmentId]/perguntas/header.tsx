@@ -3,9 +3,9 @@ import { ActionDispatch } from "react";
 import { ManageQuestionAction } from "./context/types";
 
 type HeaderProps = {
-  title: string
-  dispatch: ActionDispatch<[action: ManageQuestionAction]>
-}
+  title: string;
+  dispatch: ActionDispatch<[action: ManageQuestionAction]>;
+};
 
 export function Header({ dispatch, title }: HeaderProps) {
   return (
@@ -22,5 +22,5 @@ export function Header({ dispatch, title }: HeaderProps) {
         <span className="text-sm text-gray-500 font-medium">Cadastrar nova pergunta</span>
       </button>
     </div>
-  )
+  );
 }

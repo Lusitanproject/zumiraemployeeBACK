@@ -5,25 +5,25 @@ import { DetailAssessmentService } from "../../services/assessment/DetailAssessm
 import { assertPermissions } from "../../utils/assertPermissions";
 
 const CreateIdSchema = z.object({
-    id: z.string().cuid(),
+  id: z.string().cuid(),
 });
 
 class DetailAssessmentController {
-    async handle(req: Request, res: Response) {
-        assertPermissions(req.user, "read-assessment");
+  async handle(req: Request, res: Response) {
+    assertPermissions(req.user, "read-assessment");
 
-        const { success, data, error } = CreateIdSchema.safeParse(req.params);
+    const { success, data, error } = CreateIdSchema.safeParse(req.params);
 
-        if (!success) throw new Error(parseZodError(error));
+    if (!success) throw new Error(parseZodError(error));
 
-        const userId = req.user.id;
-        const { id: assessmentId } = data;
+    const userId = req.user.id;
+    const { id: assessmentId } = data;
 
-        const detailAssessment = new DetailAssessmentService();
-        const assessment = await detailAssessment.execute({ userId, assessmentId });
+    const detailAssessment = new DetailAssessmentService();
+    const assessment = await detailAssessment.execute({ userId, assessmentId });
 
-        return res.json({ status: "SUCCESS", data: assessment });
-    }
+    return res.json({ status: "SUCCESS", data: assessment });
+  }
 }
 
 export { DetailAssessmentController };

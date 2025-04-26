@@ -1,19 +1,29 @@
-import { User } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { AlertDialogTrigger } from "@/components/ui/alert-dialog"
+"use client";
+
+import { User } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { AssessmentModal } from "./assessment-modal";
+import { useState } from "react";
 
 type AssessmentCardProps = {
-  id: string
-  title: string
-  summary: string
-  completed: boolean
-}
+  id: string;
+  title: string;
+  summary: string;
+  completed: boolean;
+};
 
-export function AssessmentCard({ title, summary, completed }: AssessmentCardProps){
+export function AssessmentCard({ id, title, summary, completed }: AssessmentCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  function toggleModal() {
+    setIsModalOpen((prev) => !prev);
+  }
+
   return (
-    <AlertDialogTrigger
-      className={cn("rounded-xl bg-gray-100 p-[1.375rem] flex flex-col h-[12.375rem] text-left", {
-        "bg-primary-25/50 pointer-events-none": completed
+    <div
+      onClick={toggleModal}
+      className={cn("rounded-xl bg-gray-100 p-[1.375rem] flex flex-col h-[12.375rem] text-left cursor-default", {
+        "bg-primary-25/50 pointer-events-none": completed,
       })}
     >
       <div className="flex w-full mb-3">
@@ -23,6 +33,7 @@ export function AssessmentCard({ title, summary, completed }: AssessmentCardProp
       </div>
       <span className="w-full overflow-hidden whitespace-nowrap text-ellipsis text-base font-medium mb-3">{title}</span>
       <p className="w-full h-14 text-xs leading-[18px] text-ellipsis overflow-hidden">{summary}</p>
-    </AlertDialogTrigger>
-  )
+      <AssessmentModal key={id} id={id} title={title} summary={summary} onClose={toggleModal} open={isModalOpen} />
+    </div>
+  );
 }

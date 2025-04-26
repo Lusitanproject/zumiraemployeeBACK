@@ -1,6 +1,7 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
 import cors from "cors";
+import kleur from "kleur";
 
 import { router } from "./routes";
 
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(router);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.message);
+  console.error(`${kleur.red(req.url)}: ${err.message}`);
 
   if (err instanceof Error) {
     return res.status(400).json({

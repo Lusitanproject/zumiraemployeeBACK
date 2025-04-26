@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import { ChangeEvent } from "react"
-import { Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { ChangeEvent } from "react";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export function SearchBar() {
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const { replace } = useRouter()
-  const search = searchParams.get("busca")
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const search = searchParams.get("busca");
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    const params = new URLSearchParams(searchParams)
-    if(e.target.value.trim()) {
-      params.set("busca", e.target.value)
+    const params = new URLSearchParams(searchParams);
+    if (e.target.value.trim()) {
+      params.set("busca", e.target.value);
     } else {
-      params.delete("busca")
+      params.delete("busca");
     }
 
-    replace(`${pathname}?${params.toString()}`)
-  }
+    replace(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <div className="pt-4 mb-8">
@@ -38,5 +38,5 @@ export function SearchBar() {
         </div>
       </div>
     </div>
-  )
+  );
 }

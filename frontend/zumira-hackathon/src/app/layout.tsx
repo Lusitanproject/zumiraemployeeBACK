@@ -13,12 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${rawline.className} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="pt-BR">
+      <body className={`${rawline.className} antialiased`}>{children}</body>
     </html>
   );
 }

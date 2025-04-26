@@ -1,35 +1,38 @@
 import { z } from "zod";
 import prismaClient from "../../prisma";
-import { CreateSelfMonitoringBlockSchema, EditSelfMonitoringBlockSchema } from "../../definitions/admin/self-monitoring";
+import {
+  CreateSelfMonitoringBlockSchema,
+  EditSelfMonitoringBlockSchema,
+} from "../../definitions/admin/self-monitoring";
 
-type CreateBlock = z.infer<typeof CreateSelfMonitoringBlockSchema>
-type UpdateBlock = z.infer<typeof EditSelfMonitoringBlockSchema>
+type CreateBlock = z.infer<typeof CreateSelfMonitoringBlockSchema>;
+type UpdateBlock = z.infer<typeof EditSelfMonitoringBlockSchema>;
 
 class SelfMonitoringAdminService {
   async find(id: string) {
     const user = await prismaClient.selfMonitoringBlock.findUnique({
-      where: { id }
-    })
-    return user
+      where: { id },
+    });
+    return user;
   }
 
   async findAll() {
-    const users = await prismaClient.selfMonitoringBlock.findMany()
-    return users
+    const users = await prismaClient.selfMonitoringBlock.findMany();
+    return users;
   }
 
   async create(data: CreateBlock) {
-    const user = await prismaClient.selfMonitoringBlock.create({ data })
-    return user
+    const user = await prismaClient.selfMonitoringBlock.create({ data });
+    return user;
   }
 
   async update({ id, ...data }: UpdateBlock & { id: string }) {
     const user = await prismaClient.selfMonitoringBlock.update({
       where: { id },
-      data
-    })
-    return user
+      data,
+    });
+    return user;
   }
 }
 
-export { SelfMonitoringAdminService }
+export { SelfMonitoringAdminService };

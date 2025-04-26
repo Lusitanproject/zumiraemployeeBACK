@@ -6,13 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 require("express-async-errors");
 const cors_1 = __importDefault(require("cors"));
+const kleur_1 = __importDefault(require("kleur"));
 const routes_1 = require("./routes");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use(routes_1.router);
 app.use((err, req, res, next) => {
-    console.error(err.message);
+    console.error(`${kleur_1.default.red(req.url)}: ${err.message}`);
     if (err instanceof Error) {
         return res.status(400).json({
             status: "ERROR",

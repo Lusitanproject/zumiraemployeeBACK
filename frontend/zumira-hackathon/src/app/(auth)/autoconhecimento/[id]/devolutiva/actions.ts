@@ -17,7 +17,7 @@ export async function getFeedback(selfMonitoringBlockId: string): Promise<GetFee
         "Content-Type": "application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    })
+    }),
   );
 
   if (error) {

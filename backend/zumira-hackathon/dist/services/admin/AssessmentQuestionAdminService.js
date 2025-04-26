@@ -8,7 +8,7 @@ const prisma_1 = __importDefault(require("../../prisma"));
 class AssessmentQuestionAdminService {
     async find(assessmentQuestionId) {
         const question = await prisma_1.default.assessmentQuestion.findUnique({
-            where: { id: assessmentQuestionId }
+            where: { id: assessmentQuestionId },
         });
         return question;
     }
@@ -25,18 +25,18 @@ class AssessmentQuestionAdminService {
                     select: {
                         id: true,
                         acronym: true,
-                        name: true
-                    }
+                        name: true,
+                    },
                 },
                 assessmentQuestionChoices: {
                     select: {
                         id: true,
                         index: true,
                         label: true,
-                        value: true
-                    }
-                }
-            }
+                        value: true,
+                    },
+                },
+            },
         });
         return questions;
     }

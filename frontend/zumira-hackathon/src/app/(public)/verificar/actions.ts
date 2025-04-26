@@ -37,7 +37,7 @@ export async function verifyCode(state: FormState, formData: FormData): Promise<
       headers: {
         "Content-Type": "application/json",
       },
-    })
+    }),
   );
 
   if (error) {

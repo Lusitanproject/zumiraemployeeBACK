@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { redirect } from "next/navigation";
 import { saveAssessment } from "./form-actions";
 import { Nationality } from "../../autoconhecimento/definitions";
+import { RichTextArea } from "@/components/ui/rich-text-area";
 
 type FormProps = {
   data: AssessmentSummary | null;
@@ -32,7 +33,8 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         summary: data.summary,
         description: data.description,
         selfMonitoringBlockId: data.selfMonitoringBlockId,
-        openaiAssistantId: data.openaiAssistantId,
+        userFeedbackInstructions: data.userFeedbackInstructions,
+        companyFeedbackInstructions: data.companyFeedbackInstructions,
         operationType: data.operationType,
         nationalityId: data.nationalityId,
       }
@@ -102,14 +104,12 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         </div>
         <div className="pb-3">
           <Label htmlFor="description">Descrição</Label>
-          <Textarea
+          <RichTextArea
             id="description"
-            name="description"
             value={formData.description ?? ""}
-            onChange={(e) => {
-              setFormData((current) => ({ ...current, description: e.target.value }));
+            onChange={(value) => {
+              setFormData((current) => ({ ...current, description: value }));
             }}
-            className="h-20"
           />
           {!!errors?.description && <span className="text-sm text-error-500">{errors.description}</span>}
         </div>
@@ -139,15 +139,34 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           {!!errors?.nationalityId && <span className="text-sm text-error-500">{errors.nationalityId}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="assistantId">ID do assistente OpenAi</Label>
-          <Input
-            id="assistantId"
-            name="assistantId"
-            value={formData.openaiAssistantId ?? ""}
+          <Label htmlFor="instructions-u">Instruções para IA de devolutiva individual</Label>
+          <Textarea
+            id="instructions-u"
+            name="instructions-u"
+            value={formData.userFeedbackInstructions ?? ""}
             onChange={(e) => {
-              setFormData((current) => ({ ...current, openaiAssistantId: e.target.value }));
+              setFormData((current) => ({ ...current, userFeedbackInstructions: e.target.value }));
             }}
+            className="h-40"
           />
+          {!!errors?.userFeedbackInstructions && (
+            <span className="text-sm text-error-500">{errors.userFeedbackInstructions}</span>
+          )}
+        </div>
+        <div className="pb-3">
+          <Label htmlFor="instructions-g">Instruções para IA de devolutiva de grupo</Label>
+          <Textarea
+            id="instructions-g"
+            name="instructions-g"
+            value={formData.companyFeedbackInstructions ?? ""}
+            onChange={(e) => {
+              setFormData((current) => ({ ...current, companyFeedbackInstructions: e.target.value }));
+            }}
+            className="h-40"
+          />
+          {!!errors?.companyFeedbackInstructions && (
+            <span className="text-sm text-error-500">{errors.companyFeedbackInstructions}</span>
+          )}
         </div>
         <div className="pb-3 flex flex-row gap-10">
           <div>

@@ -18,7 +18,7 @@ function SingleMessage({ role, content, error }: ChatMessage) {
         style={{ overflowWrap: "anywhere" }}
       >
         <div
-          className={`flex flex-col w-auto max-w-[80%] rounded-xl px-[1.375rem] py-4 whitespace-pre-line markdown prose lg:prose-xl ${
+          className={`flex flex-col w-auto max-w-[80%] rounded-xl px-[1.375rem] py-4 markdown prose ${
             role === "user" ? "bg-gray-200 rounded-br-none" : "bg-gray-100 rounded-bl-none"
           }`}
         >

@@ -5,7 +5,7 @@ const zod_1 = require("zod");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const UserAdminService_1 = require("../../../services/admin/UserAdminService");
 const RequestParam = zod_1.z.object({
-    userId: zod_1.z.string().uuid()
+    userId: zod_1.z.string().uuid(),
 });
 class FindUserController {
     async handle(req, res) {
@@ -13,7 +13,7 @@ class FindUserController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const userAdminService = new UserAdminService_1.UserAdminService();
@@ -21,7 +21,7 @@ class FindUserController {
         if (!user) {
             return res.status(400).json({
                 status: "ERROR",
-                message: "Usuário não encontrado."
+                message: "Usuário não encontrado.",
             });
         }
         return res.json({ status: "SUCCESS", data: user });

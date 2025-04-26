@@ -34,7 +34,7 @@ export async function getMonitoringBlocks(): Promise<GetMonitoringBlocks> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    })
+    }),
   );
 
   if (error) {
@@ -66,7 +66,7 @@ export async function getNationalities(): Promise<GetNationalities> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    })
+    }),
   );
 
   if (error) {

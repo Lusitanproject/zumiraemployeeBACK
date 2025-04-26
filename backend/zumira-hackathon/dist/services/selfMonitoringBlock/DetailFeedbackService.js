@@ -3,11 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DetailFeedbackService = void 0;
+exports.DetailUserFeedbackService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
-class DetailFeedbackService {
+class DetailUserFeedbackService {
     async execute({ userId, selfMonitoringBlockId }) {
-        const feedbacks = await prisma_1.default.assessmentFeedback.findMany({
+        const feedbacks = await prisma_1.default.userAssessmentFeedback.findMany({
             where: {
                 userId,
                 assessment: {
@@ -68,7 +68,7 @@ class DetailFeedbackService {
                         userId,
                     },
                 },
-                assessmentFeedbacks: {
+                userAssessmentFeedbacks: {
                     select: {
                         id: true,
                     },
@@ -101,7 +101,7 @@ class DetailFeedbackService {
         }));
         const processing = assessments
             .map((a) => {
-            if (a.assessmentResults.length !== a.assessmentFeedbacks.length) {
+            if (a.assessmentResults.length !== a.userAssessmentFeedbacks.length) {
                 return {
                     id: a.id,
                     title: a.title,
@@ -114,4 +114,4 @@ class DetailFeedbackService {
         return { items: formattedFeedbacks, processing };
     }
 }
-exports.DetailFeedbackService = DetailFeedbackService;
+exports.DetailUserFeedbackService = DetailUserFeedbackService;

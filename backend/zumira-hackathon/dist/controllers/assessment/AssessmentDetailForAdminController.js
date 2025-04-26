@@ -15,7 +15,7 @@ class AssessmentDetailForAdminController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const detailAssessment = new AssessmentAdminService_1.AssessmentAdminService();

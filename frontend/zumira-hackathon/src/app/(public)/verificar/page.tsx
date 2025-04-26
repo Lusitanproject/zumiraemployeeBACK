@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Mail } from "lucide-react";
-import logo from "../../../../public/logo-zumira.png";
+import logo from "../../../../public/logo--green.svg";
 import { VerifyCodeForm } from "./form";
 import { ResendButton } from "./components/resend-button";
 

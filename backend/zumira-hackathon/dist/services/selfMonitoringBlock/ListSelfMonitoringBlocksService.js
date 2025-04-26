@@ -12,7 +12,7 @@ class ListSelfMonitoringBlocksService {
                 id: true,
                 title: true,
                 summary: true,
-                icon: true
+                icon: true,
             },
         });
         return { blocks };

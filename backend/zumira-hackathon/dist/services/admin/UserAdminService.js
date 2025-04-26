@@ -16,16 +16,16 @@ class UserAdminService {
                 company: {
                     select: {
                         id: true,
-                        name: true
-                    }
+                        name: true,
+                    },
                 },
                 role: {
                     select: {
                         id: true,
-                        slug: true
-                    }
-                }
-            }
+                        slug: true,
+                    },
+                },
+            },
         });
         return user;
     }
@@ -38,16 +38,16 @@ class UserAdminService {
                 company: {
                     select: {
                         id: true,
-                        name: true
-                    }
+                        name: true,
+                    },
                 },
                 role: {
                     select: {
                         id: true,
-                        slug: true
-                    }
-                }
-            }
+                        slug: true,
+                    },
+                },
+            },
         });
         return users;
     }
@@ -62,16 +62,16 @@ class UserAdminService {
                 company: {
                     select: {
                         id: true,
-                        name: true
-                    }
+                        name: true,
+                    },
                 },
                 role: {
                     select: {
                         id: true,
-                        slug: true
-                    }
-                }
-            }
+                        slug: true,
+                    },
+                },
+            },
         });
         return user;
     }
@@ -86,29 +86,29 @@ class UserAdminService {
                 company: {
                     select: {
                         id: true,
-                        name: true
-                    }
+                        name: true,
+                    },
                 },
                 role: {
                     select: {
                         id: true,
-                        slug: true
-                    }
-                }
-            }
+                        slug: true,
+                    },
+                },
+            },
         });
         return users;
     }
     async create(data) {
         const user = await prisma_1.default.user.create({
-            data
+            data,
         });
         return user;
     }
     async update({ id, ...data }) {
         const user = await prisma_1.default.user.update({
             where: { id },
-            data
+            data,
         });
         return user;
     }

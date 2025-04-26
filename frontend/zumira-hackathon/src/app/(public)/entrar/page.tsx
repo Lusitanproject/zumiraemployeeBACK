@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "../../../../public/logo-zumira.png";
+import logo from "../../../../public/logo--green.svg";
 import { SignUpForm } from "./form";
 import { borel } from "@/app/fonts";
 import { HeadImage } from "@/components/custom/head-image";

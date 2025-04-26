@@ -5,7 +5,7 @@ const zod_1 = require("zod");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
 const RequestParam = zod_1.z.object({
-    companyId: zod_1.z.string().cuid()
+    companyId: zod_1.z.string().cuid(),
 });
 class FindCompanyController {
     async handle(req, res) {
@@ -13,7 +13,7 @@ class FindCompanyController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const companyAdminService = new CompanyAdminService_1.CompanyAdminService();
@@ -21,7 +21,7 @@ class FindCompanyController {
         if (!company) {
             return res.status(400).json({
                 status: "ERROR",
-                message: "Empresa não encontrada não encontrado."
+                message: "Empresa não encontrada não encontrado.",
             });
         }
         return res.json({ status: "SUCCESS", data: company });

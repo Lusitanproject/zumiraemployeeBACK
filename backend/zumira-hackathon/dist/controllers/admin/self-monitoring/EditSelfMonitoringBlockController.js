@@ -6,7 +6,7 @@ const self_monitoring_1 = require("../../../definitions/admin/self-monitoring");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const zod_1 = require("zod");
 const RequestParamSchema = zod_1.z.object({
-    id: zod_1.z.string().cuid()
+    id: zod_1.z.string().cuid(),
 });
 class EditSelfMonitoringBlocksController {
     async handle(req, res) {
@@ -15,7 +15,7 @@ class EditSelfMonitoringBlocksController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const selfMonitoringService = new SelfMonitoringService_1.SelfMonitoringAdminService();

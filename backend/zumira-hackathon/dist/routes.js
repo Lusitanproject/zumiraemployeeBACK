@@ -27,8 +27,9 @@ const FindAllSelfMonitoringBlocksController_1 = require("./controllers/admin/sel
 const CreateSelfMonitoringBlockController_1 = require("./controllers/admin/self-monitoring/CreateSelfMonitoringBlockController");
 const EditSelfMonitoringBlockController_1 = require("./controllers/admin/self-monitoring/EditSelfMonitoringBlockController");
 const FindSelfMonitoringBlockController_1 = require("./controllers/admin/self-monitoring/FindSelfMonitoringBlockController");
-const GenerateFeedbackController_1 = require("./controllers/assessment/GenerateFeedbackController");
-const DetailFeedbackController_1 = require("./controllers/selfMonitoringBlock/DetailFeedbackController");
+const GenerateUserFeedbackController_1 = require("./controllers/assessment/GenerateUserFeedbackController");
+const GenerateCompanyFeedbackController_1 = require("./controllers/assessment/GenerateCompanyFeedbackController");
+const DetailUserFeedbackController_1 = require("./controllers/selfMonitoringBlock/DetailUserFeedbackController");
 const FindAllCompaniesController_1 = require("./controllers/admin/companies/FindAllCompaniesController");
 const CreateCompanyController_1 = require("./controllers/company/CreateCompanyController");
 const FindBySelfMonitoringController_1 = require("./controllers/admin/dimensions/FindBySelfMonitoringController");
@@ -37,6 +38,15 @@ const ListFeedbacksController_1 = require("./controllers/assessment/feedback/Lis
 const FindDimensionController_1 = require("./controllers/admin/dimensions/FindDimensionController");
 const EditDimensionController_1 = require("./controllers/admin/dimensions/EditDimensionController");
 const ListNationalitiesController_1 = require("./controllers/nationality/ListNationalitiesController");
+const ListNotificationsController_1 = require("./controllers/notification/ListNotificationsController");
+const ReadNotificationController_1 = require("./controllers/notification/ReadNotificationController");
+const DetailNotificationController_1 = require("./controllers/notification/DetailNotificationController");
+const CreateNotificationController_1 = require("./controllers/admin/notifications/CreateNotificationController");
+const UpdateNotificationController_1 = require("./controllers/admin/notifications/UpdateNotificationController");
+const DeleteNotificationController_1 = require("./controllers/admin/notifications/DeleteNotificationController");
+const FindAllNotificationsController_1 = require("./controllers/admin/notifications/FindAllNotificationsController");
+const FindAllTypesController_1 = require("./controllers/admin/notifications/FindAllTypesController");
+const FindAllFeedbacksController_1 = require("./controllers/admin/companies/FindAllFeedbacksController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -65,7 +75,8 @@ router.post("/assessments/questions", isAuthenticated_1.isAuthenticated, new Cre
 router.post("/assessments/results", isAuthenticated_1.isAuthenticated, new CreateResultController_1.CreateResultController().handle);
 router.put("/assessments/questions/:id", isAuthenticated_1.isAuthenticated, new UpdateQuestionsController_1.UpdateQuestionsController().handle);
 router.put("/assessments/:id", isAuthenticated_1.isAuthenticated, new UpdateAssessmentController_1.UpdateAssessmentController().handle);
-router.post("/assessments/feedback/:id", isAuthenticated_1.isAuthenticated, new GenerateFeedbackController_1.GenerateFeedbackController().handle);
+router.post("/assessments/feedback/users/:id", isAuthenticated_1.isAuthenticated, new GenerateUserFeedbackController_1.GenerateUserFeedbackController().handle);
+router.post("/assessments/feedback/companies/:id", isAuthenticated_1.isAuthenticated, new GenerateCompanyFeedbackController_1.GenerateCompanyFeedbackController().handle);
 // ROTAS QUESTIONS
 router.get("/questions/:assessmentId", isAuthenticated_1.isAuthenticated, new FindQuestionByAssessmentController_1.FindQuestionByAssessmentController().handle);
 // ROTAS SELF MONITORING
@@ -74,11 +85,21 @@ router.get("/self-monitoring/admin", isAuthenticated_1.isAuthenticated, new Find
 router.post("/self-monitoring/admin", isAuthenticated_1.isAuthenticated, new CreateSelfMonitoringBlockController_1.CreateSelfMonitoringBlocksController().handle);
 router.put("/self-monitoring/admin/:id", isAuthenticated_1.isAuthenticated, new EditSelfMonitoringBlockController_1.EditSelfMonitoringBlocksController().handle);
 router.get("/self-monitoring/admin/:id", isAuthenticated_1.isAuthenticated, new FindSelfMonitoringBlockController_1.FindSelfMonitoringBlocksController().handle);
-router.get("/self-monitoring/feedback/:id", isAuthenticated_1.isAuthenticated, new DetailFeedbackController_1.DetailFeedbackController().handle);
+router.get("/self-monitoring/feedback/:id", isAuthenticated_1.isAuthenticated, new DetailUserFeedbackController_1.DetailUserFeedbackController().handle);
 router.get("/self-monitoring/dimensions/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new FindBySelfMonitoringController_1.FindDimensionByBlockController().handle);
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated_1.isAuthenticated, new FindAllCompaniesController_1.FindAllCompaniesController().handle);
+router.get("/companies/feedback", isAuthenticated_1.isAuthenticated, new FindAllFeedbacksController_1.FindAllFeedbacksController().handle);
 router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
 router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
 // ROTAS NATIONALITY
 router.get("/nationalities", isAuthenticated_1.isAuthenticated, new ListNationalitiesController_1.ListNationalitiesController().handle);
+// ROTAS NOTIFICATION
+router.get("/notifications", isAuthenticated_1.isAuthenticated, new ListNotificationsController_1.ListNotificationsController().handle);
+router.get("/notifications/admin", isAuthenticated_1.isAuthenticated, new FindAllNotificationsController_1.FindAllNotificationsController().handle);
+router.get("/notifications/admin/types", isAuthenticated_1.isAuthenticated, new FindAllTypesController_1.FindAllTypesController().handle);
+router.get("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new DetailNotificationController_1.DetailNotificationController().handle);
+router.put("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new UpdateNotificationController_1.UpdateNotificationController().handle);
+router.put("/notifications/:notificationId/read", isAuthenticated_1.isAuthenticated, new ReadNotificationController_1.ReadNotificationController().handle);
+router.post("/notifications", isAuthenticated_1.isAuthenticated, new CreateNotificationController_1.CreateNotificationController().handle);
+router.delete("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new DeleteNotificationController_1.DeleteNotificationController().handle);

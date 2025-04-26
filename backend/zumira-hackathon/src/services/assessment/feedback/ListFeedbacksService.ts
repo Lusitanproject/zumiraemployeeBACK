@@ -2,7 +2,7 @@ import prismaClient from "../../../prisma";
 
 class ListFeedbacksService {
   async execute(userId: string) {
-    const recentFeedbacks = await prismaClient.assessmentFeedback.groupBy({
+    const recentFeedbacks = await prismaClient.userAssessmentFeedback.groupBy({
       by: ["assessmentId"],
       where: {
         userId,
@@ -19,7 +19,7 @@ class ListFeedbacksService {
         createdAt: _max.createdAt as Date,
       }));
 
-    const feedbacks = await prismaClient.assessmentFeedback.findMany({
+    const feedbacks = await prismaClient.userAssessmentFeedback.findMany({
       where: {
         OR: validFeedbacks,
       },

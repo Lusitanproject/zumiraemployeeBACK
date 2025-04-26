@@ -45,7 +45,7 @@ async function isAuthenticated(req, res, next) {
         req.user = await getUserData(userId);
         return next();
     }
-    catch (err) {
+    catch {
         return res.status(401).end();
     }
 }

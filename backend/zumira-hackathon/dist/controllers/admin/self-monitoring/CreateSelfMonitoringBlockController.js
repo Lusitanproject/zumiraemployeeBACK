@@ -10,7 +10,7 @@ class CreateSelfMonitoringBlocksController {
         if (!success) {
             return res.status(400).json({
                 status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error)
+                message: (0, parseZodError_1.parseZodError)(error),
             });
         }
         const selfMonitoringService = new SelfMonitoringService_1.SelfMonitoringAdminService();

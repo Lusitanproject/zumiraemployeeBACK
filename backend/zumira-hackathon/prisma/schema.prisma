@@ -37,7 +37,8 @@ model User {
   codes                     AuthCode[]
   assessmentResults         AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
-  assessmentFeedbacks       AssessmentFeedback[]
+  userAssessmentFeedbacks   UserAssessmentFeedback[]
+  notificationRecipients    NotificationRecipient[]
 
   @@map("users")
 }
@@ -99,7 +100,8 @@ model Company {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  users User[]
+  users                      User[]
+  companyAssessmentFeedbacks CompanyAssessmentFeedback[]
 
   @@map("companies")
 }
@@ -116,22 +118,24 @@ model Nationality {
 }
 
 model Assessment {
-  id                    String    @id @default(cuid())
-  title                 String
-  summary               String
-  description           String?
-  openaiAssistantId     String?   @map("openai_assistant_id")
-  operationType         Operation @default(AVERAGE) @map("operation_type")
-  selfMonitoringBlockId String    @map("self_monitoring_block_id")
-  nationalityId         String    @map("nationality_id")
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
+  id                          String    @id @default(cuid())
+  title                       String
+  summary                     String
+  description                 String?
+  userFeedbackInstructions    String?   @map("user_feedback_instructions")
+  companyFeedbackInstructions String?   @map("company_feedback_instructions")
+  operationType               Operation @default(AVERAGE) @map("operation_type")
+  selfMonitoringBlockId       String    @map("self_monitoring_block_id")
+  nationalityId               String    @map("nationality_id")
+  createdAt                   DateTime  @default(now()) @map("created_at")
+  updatedAt                   DateTime  @updatedAt @map("updated_at")
 
-  selfMonitoringBlock SelfMonitoringBlock  @relation(fields: [selfMonitoringBlockId], references: [id])
-  nationality         Nationality          @relation(fields: [nationalityId], references: [id])
-  assessmentQuestions AssessmentQuestion[]
-  assessmentResults   AssessmentResult[]
-  assessmentFeedbacks AssessmentFeedback[]
+  selfMonitoringBlock        SelfMonitoringBlock         @relation(fields: [selfMonitoringBlockId], references: [id])
+  nationality                Nationality                 @relation(fields: [nationalityId], references: [id])
+  assessmentQuestions        AssessmentQuestion[]
+  assessmentResults          AssessmentResult[]
+  userAssessmentFeedbacks    UserAssessmentFeedback[]
+  companyAssessmentFeedbacks CompanyAssessmentFeedback[]
 
   @@map("assessments")
 }
@@ -227,7 +231,7 @@ model PsychologicalDimension {
   @@map("psychological_dimensions")
 }
 
-model AssessmentFeedback {
+model UserAssessmentFeedback {
   id           String   @id @default(uuid())
   text         String
   userId       String   @map("user_id")
@@ -238,5 +242,61 @@ model AssessmentFeedback {
   user       User       @relation(fields: [userId], references: [id])
   assessment Assessment @relation(fields: [assessmentId], references: [id])
 
-  @@map("assessment_feedback")
+  @@map("user_assessment_feedback")
+}
+
+model CompanyAssessmentFeedback {
+  id           String   @id @default(uuid())
+  text         String
+  companyId    String   @map("company_id")
+  assessmentId String   @map("assessment_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  company    Company    @relation(fields: [companyId], references: [id])
+  assessment Assessment @relation(fields: [assessmentId], references: [id])
+
+  @@map("company_assessment_feedback")
+}
+
+model Notification {
+  id                 String   @id @default(cuid())
+  title              String
+  summary            String
+  content            String
+  notificationTypeId String   @map("notification_type_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  notificationType       NotificationType        @relation(fields: [notificationTypeId], references: [id])
+  notificationRecipients NotificationRecipient[]
+
+  @@map("notifications")
+}
+
+model NotificationType {
+  id        String   @id @default(cuid())
+  name      String
+  priority  Int
+  color     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  notifications Notification[]
+
+  @@map("notification_types")
+}
+
+model NotificationRecipient {
+  userId         String   @map("user_id")
+  notificationId String   @map("notification_id")
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user         User         @relation(fields: [userId], references: [id])
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notificationId])
+  @@map("notification_recipients")
 }

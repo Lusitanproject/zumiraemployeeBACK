@@ -3,48 +3,48 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 type CreateSessionProps = {
-  name: string
-  role: string
-  token: string
-  expiresAt: Date
-}
+  name: string;
+  role: string;
+  token: string;
+  expiresAt: Date;
+};
 
 export function decrypt(data: string | undefined): CreateSessionProps | null {
-  if(!data) {
-    return null
+  if (!data) {
+    return null;
   }
 
-  return JSON.parse(data) as CreateSessionProps
+  return JSON.parse(data) as CreateSessionProps;
 }
 
 export function isExpired(date: Date) {
-  return isAfter(date, new Date())
+  return isAfter(date, new Date());
 }
 
 export async function createSession(data: CreateSessionProps) {
   const cookie = await cookies();
-  cookie.set('session', JSON.stringify(data), {
+  cookie.set("session", JSON.stringify(data), {
     httpOnly: true,
     secure: true,
-    expires: new Date(data.expiresAt)
-  })
+    expires: new Date(data.expiresAt),
+  });
 }
 
 export async function verifySession() {
   const cookie = await cookies();
-  const session = decrypt(cookie.get("session")?.value)
+  const session = decrypt(cookie.get("session")?.value);
 
-  if(!session) {
-    redirect("/entrar")
+  if (!session) {
+    redirect("/entrar");
   }
 
-  if(isExpired(session.expiresAt)) {
-    redirect("/entrar")
+  if (isExpired(session.expiresAt)) {
+    redirect("/entrar");
   }
 }
 
 export async function deleteSession() {
   const cookie = await cookies();
-  cookie.delete("session")
-  redirect("/entrar")
+  cookie.delete("session");
+  redirect("/entrar");
 }

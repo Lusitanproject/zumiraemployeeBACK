@@ -11,12 +11,12 @@ class CreateSelfMonitoringBlocksController {
     if (!success) {
       return res.status(400).json({
         status: "ERROR",
-        message: parseZodError(error)
-      })
+        message: parseZodError(error),
+      });
     }
 
     const selfMonitoringService = new SelfMonitoringAdminService();
-    const block = await selfMonitoringService.create(data)
+    const block = await selfMonitoringService.create(data);
 
     return res.json({ status: "SUCCESS", data: block });
   }
