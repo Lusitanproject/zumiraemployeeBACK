@@ -65,17 +65,16 @@ class SendCodeService {
         const code = (0, crypto_1.randomInt)(100000, 999999).toString();
         const now = new Date().getTime();
         const expiresAt = new Date(now + 5 * 60 * 1000); // Expiração em 5 minutos
-        sendEmail(user, code).then(async () => {
-            await prisma_1.default.authCode.create({
-                data: {
-                    userId: user.id,
-                    code: code,
-                    expiresAt: expiresAt,
-                },
-            });
-            if (process.env.PRODUCTION !== "true")
-                console.log(`Sent code ${code} to ${email}`);
+        await sendEmail(user, code);
+        await prisma_1.default.authCode.create({
+            data: {
+                userId: user.id,
+                code: code,
+                expiresAt: expiresAt,
+            },
         });
+        if (process.env.PRODUCTION !== "true")
+            console.log(`Sent code ${code} to ${email}`);
         return {};
     }
 }
