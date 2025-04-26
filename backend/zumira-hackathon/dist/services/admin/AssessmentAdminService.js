@@ -16,7 +16,7 @@ class AssessmentAdminService {
                 summary: true,
                 selfMonitoringBlockId: true,
                 userFeedbackInstructions: true,
-                companyAssessmentFeedbacks: true,
+                companyFeedbackInstructions: true,
                 operationType: true,
                 nationalityId: true,
             },
