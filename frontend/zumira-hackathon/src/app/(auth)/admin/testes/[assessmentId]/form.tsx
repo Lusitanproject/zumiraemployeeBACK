@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import {
   AssessmentSummary,
@@ -73,11 +73,6 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
       redirect(`/admin/testes/${data.id}/perguntas`);
     }
   }, [data]);
-
-  useEffect(() => {
-    console.log(data);
-    console.log(formData);
-  }, [formData, data]);
 
   return (
     <div className="w-full py-4 md:pt-4 md:pb-24">
