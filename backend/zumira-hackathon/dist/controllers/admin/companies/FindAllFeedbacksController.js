@@ -6,7 +6,7 @@ class FindAllFeedbacksController {
     async handle(req, res) {
         const companyAdminService = new CompanyAdminService_1.CompanyAdminService();
         const feedbacks = await companyAdminService.findAllFeedbacks(req.user.id);
-        return res.json({ status: "SUCCESS", data: { feedbacks } });
+        return res.json({ status: "SUCCESS", data: feedbacks });
     }
 }
 exports.FindAllFeedbacksController = FindAllFeedbacksController;

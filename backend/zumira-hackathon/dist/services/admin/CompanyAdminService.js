@@ -27,7 +27,7 @@ class CompanyAdminService {
         });
         if (!(user === null || user === void 0 ? void 0 : user.companyId))
             throw new Error("User is not associated with a company");
-        const feedbacks = await prisma_1.default.companyAssessmentFeedback.findMany({
+        const allFeedbacks = await prisma_1.default.companyAssessmentFeedback.findMany({
             where: {
                 companyId: user.companyId,
             },
@@ -35,7 +35,13 @@ class CompanyAdminService {
                 assessment: true,
             },
         });
-        return { items: feedbacks };
+        const aux = {};
+        allFeedbacks.forEach((f) => {
+            const id = f.assessmentId;
+            if (!aux[id] || f.createdAt > aux[id].createdAt)
+                aux[id] = f;
+        });
+        return { items: Object.values(aux) };
     }
     async create(data) {
         const company = await prisma_1.default.company.create({ data });
