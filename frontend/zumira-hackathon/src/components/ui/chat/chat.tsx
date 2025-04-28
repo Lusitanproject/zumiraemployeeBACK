@@ -72,7 +72,7 @@ export function Chat({ children, username, chatbotId, context }: AssistantChatPr
       <Messages messages={messages} loadingResponse={loading} />
 
       <div
-        className={`absolute size-full duration-200 pointer-events-none ${
+        className={`absolute size-full duration-200 pointer-events-none left-0 top-0 ${
           messages.length === 0 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
         }`}
       >
