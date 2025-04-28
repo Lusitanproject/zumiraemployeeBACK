@@ -1,6 +1,7 @@
 import { z } from "zod";
 import prismaClient from "../../prisma";
 import { CreateCompanySchema } from "../../definitions/admin/company";
+import { CompanyAssessmentFeedback } from "@prisma/client";
 
 type CreateCompany = z.infer<typeof CreateCompanySchema>;
 
@@ -29,7 +30,7 @@ class CompanyAdminService {
 
     if (!user?.companyId) throw new Error("User is not associated with a company");
 
-    const feedbacks = await prismaClient.companyAssessmentFeedback.findMany({
+    const allFeedbacks = await prismaClient.companyAssessmentFeedback.findMany({
       where: {
         companyId: user.companyId,
       },
@@ -38,7 +39,13 @@ class CompanyAdminService {
       },
     });
 
-    return { items: feedbacks };
+    const aux: Record<string, CompanyAssessmentFeedback> = {};
+    allFeedbacks.forEach((f) => {
+      const id = f.assessmentId;
+      if (!aux[id] || f.createdAt > aux[id].createdAt) aux[id] = f;
+    });
+
+    return { items: Object.values(aux) };
   }
 
   async create(data: CreateCompany) {

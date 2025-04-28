@@ -250,6 +250,7 @@ model CompanyAssessmentFeedback {
   text         String
   companyId    String   @map("company_id")
   assessmentId String   @map("assessment_id")
+  respondents  Int      @default(0) // Remove default value in next migration
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 

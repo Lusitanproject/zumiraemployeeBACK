@@ -136,6 +136,7 @@ class GenerateCompanyFeedbackService {
                 text: response.output_text,
                 companyId: company.id,
                 assessmentId,
+                respondents: Object.keys(latestResults).length,
             },
             select: {
                 id: true,

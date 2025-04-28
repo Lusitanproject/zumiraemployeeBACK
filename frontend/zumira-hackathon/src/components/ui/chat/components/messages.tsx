@@ -1,34 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { ChatMessage } from "../definitions";
+import { cn } from "@/lib/utils";
+import { Fragment, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
+import { ChatMessage } from "../definitions";
 
 interface MessagesProps {
   messages: ChatMessage[];
   loadingResponse?: boolean;
-}
-
-function SingleMessage({ role, content, error }: ChatMessage) {
-  return (
-    <>
-      {role === "assistant" && <hr className="text-gray-200 -mx-5" />}
-      <div
-        className={`flex flex-col w-full ${role === "user" ? "items-end" : "items-start"}`}
-        style={{ overflowWrap: "anywhere" }}
-      >
-        <div
-          className={`flex flex-col w-auto max-w-[80%] rounded-xl px-[1.375rem] py-4 markdown prose ${
-            role === "user" ? "bg-gray-200 rounded-br-none" : "bg-gray-100 rounded-bl-none"
-          }`}
-        >
-          {role === "assistant" ? <Markdown>{content}</Markdown> : <span className="text-base">{content}</span>}
-        </div>
-
-        {error && <span className="text-md text-red-400">{error}</span>}
-      </div>
-    </>
-  );
 }
 
 export function Messages({ messages, loadingResponse }: MessagesProps) {
@@ -49,7 +28,29 @@ export function Messages({ messages, loadingResponse }: MessagesProps) {
       className="flex flex-col size-full py-[1.375rem] gap-[1.375rem] overflow-y-scroll overflow-x-hidden px-5"
     >
       {messages.map((m, i) => (
-        <SingleMessage key={i} content={m.content} role={m.role} error={m.error} />
+        <Fragment key={i}>
+          {m.role === "assistant" && <hr className="text-gray-200 -mx-5" />}
+          <div
+            className={`flex flex-col w-full ${m.role === "user" ? "items-end" : "items-start"}`}
+            style={{ overflowWrap: "anywhere" }}
+          >
+            <div
+              className={cn(
+                `flex flex-col w-auto max-w-96 rounded-xl px-[1.375rem] py-4 markdown prose ${
+                  m.role === "user" ? "bg-gray-200 rounded-br-none" : "bg-gray-100 rounded-bl-none"
+                }`
+              )}
+            >
+              {m.role === "assistant" ? (
+                <Markdown>{m.content}</Markdown>
+              ) : (
+                <span className="text-base">{m.content}</span>
+              )}
+            </div>
+
+            {m.error && <span className="text-md text-red-400">{m.error}</span>}
+          </div>
+        </Fragment>
       ))}
 
       {/* Chat bubble com 3 pontos flutuando */}

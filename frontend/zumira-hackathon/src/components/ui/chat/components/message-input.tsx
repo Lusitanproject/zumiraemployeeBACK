@@ -4,11 +4,12 @@ import { Send } from "lucide-react";
 import { useRef } from "react";
 
 interface MessageInputProps {
+  placeholder?: string;
   disabled?: boolean;
   action?: (formData: FormData) => void;
 }
 
-export function MessageInput({ disabled, action }: MessageInputProps) {
+export function MessageInput({ placeholder, disabled, action }: MessageInputProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -42,7 +43,7 @@ export function MessageInput({ disabled, action }: MessageInputProps) {
   return (
     <form
       ref={formRef}
-      className="flex flex-row w-full min-h-[3.125rem] max-h-32 border-gray-300 border-1 rounded-xl overflow-clip mb-4"
+      className="flex flex-row w-full min-h-[3.125rem] max-h-32 border-gray-300 border-1 rounded-xl overflow-clip"
       action={innerAction}
     >
       <div className="flex size-full py-2.5">
@@ -50,7 +51,7 @@ export function MessageInput({ disabled, action }: MessageInputProps) {
           ref={textareaRef}
           className="flex w-full focus:outline-none focus:ring-transparent px-3.5 field-sizing-content resize-none"
           style={{ overflowWrap: "anywhere" }}
-          placeholder="Digite como você está se sentindo"
+          placeholder={placeholder}
           name="message"
           onKeyDown={handleKeyDown}
         />

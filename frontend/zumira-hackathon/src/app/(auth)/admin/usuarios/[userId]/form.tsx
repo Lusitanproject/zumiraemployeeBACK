@@ -132,7 +132,7 @@ export function UserForm({ data, companies, roles }: FormProps) {
         </div>
       </div>
       {!!formError && <span className="text-sm text-error-500">{formError}</span>}
-      <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-end gap-x-3">
+      <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
