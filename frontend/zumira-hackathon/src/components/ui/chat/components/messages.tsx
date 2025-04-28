@@ -36,8 +36,8 @@ export function Messages({ messages, loadingResponse }: MessagesProps) {
           >
             <div
               className={cn(
-                `flex flex-col w-auto max-w-96 rounded-xl px-[1.375rem] py-4 markdown prose ${
-                  m.role === "user" ? "bg-gray-200 rounded-br-none" : "bg-gray-100 rounded-bl-none"
+                `flex flex-col w-auto max-w-4xl rounded-xl px-[1.375rem] py-4 markdown prose ${
+                  m.role === "user" ? "bg-gray-200 rounded-br-none ml-10" : "bg-gray-100 rounded-bl-none mr-10"
                 }`
               )}
             >

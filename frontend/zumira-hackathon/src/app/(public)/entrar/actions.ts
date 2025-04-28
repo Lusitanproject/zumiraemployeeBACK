@@ -30,7 +30,7 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
       headers: {
         "Content-Type": "application/json",
       },
-    }),
+    })
   );
 
   if (error) {
@@ -58,6 +58,6 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
       expires: addMinutes(new Date(), 5),
     });
 
-    redirect("/verificar", RedirectType.replace);
+    redirect("/verificar", RedirectType.push);
   }
 }

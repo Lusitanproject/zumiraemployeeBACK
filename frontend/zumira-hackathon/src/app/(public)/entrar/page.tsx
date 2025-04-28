@@ -3,6 +3,7 @@ import logo from "../../../../public/logo--green.svg";
 import { SignUpForm } from "./form";
 import { borel } from "@/app/fonts";
 import { HeadImage } from "@/components/custom/head-image";
+import Link from "next/link";
 
 export default function Entrar() {
   return (
@@ -22,6 +23,12 @@ export default function Entrar() {
         </p>
       </div>
       <SignUpForm />
+      <p className="text-sm leading-4 mt-8 text-gray-900">
+        Ao utilizar a plataforma, você concorda com os nossos{" "}
+        <Link className="text-primary-600 underline" href="/termos">
+          Termos de Uso
+        </Link>
+      </p>
     </div>
   );
 }
