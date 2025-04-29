@@ -19,29 +19,29 @@ async function sendEmail(user, code) {
     });
     const url = "https://www.zumira.com.br/verificar";
     const html = `
-    <p>Olá ${user.name},</p>
+  <p>Hello ${user.name},</p>
 
-    <p>Seja bem-vindo(a) à <strong>Zumira</strong> - sua assistente de saúde mental e bem estar.</p>
+  <p>Welcome to <strong>Zumira</strong> — your mental health and well-being assistant.</p>
 
-    <p>Seu <strong>código de acesso exclusivo</strong> é: <strong>${code}</strong></p>
+  <p>Your <strong>exclusive access code</strong> is: <strong>${code}</strong></p>
 
-    <p>Com ele, você poderá iniciar sua jornada de autoconhecimento, realizar testes psicológicos, acompanhar sua evolução emocional e, se desejar, agendar um atendimento com profissionais da nossa rede de apoio.</p>
+  <p>With it, you can start your self-awareness journey, take psychological assessments, track your emotional progress, and, if you wish, schedule an appointment with professionals from our support network.</p>
 
-    <p>Acesse a plataforma pelo link abaixo e insira seu código para começar:</p>
+  <p>Access the platform through the link below and enter your code to get started:</p>
 
-    <p><a href="${url}">${url}</a></p>
+  <p><a href="${url}">${url}</a></p>
 
-    <p>Se tiver qualquer dúvida ou precisar de suporte, estamos por aqui para te ajudar.<br />
-    Boa experiência com a Zumira!</p>
+  <p>If you have any questions or need support, we’re here to help.<br />
+  Enjoy your experience with Zumira!</p>
 
-    <p>Com carinho,<br />
-    <strong>Equipe Zumira</strong></p>
-  `;
+  <p>With love,<br />
+  <strong>The Zumira Team</strong></p>
+`;
     try {
         await transporter.sendMail({
             from: `<${process.env.EMAIL_USER}>`,
             to: user.email,
-            subject: "Seu Código de Acesso à Plataforma Zumira",
+            subject: "Your Access Code to the Zumira Platform",
             html: html,
         });
     }
