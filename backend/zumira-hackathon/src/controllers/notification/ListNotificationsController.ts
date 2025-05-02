@@ -5,7 +5,7 @@ import { parseZodError } from "../../utils/parseZodError";
 
 class ListNotificationsController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = ListNotificationsSchema.safeParse(req.body);
+    const { success, data, error } = ListNotificationsSchema.safeParse(req.query);
 
     if (!success) throw new Error(parseZodError(error));
 

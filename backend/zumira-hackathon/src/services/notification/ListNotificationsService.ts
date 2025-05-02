@@ -10,11 +10,18 @@ class ListNotificationsService {
       },
       select: {
         read: true,
+        createdAt: true,
         notification: {
           select: {
             id: true,
             title: true,
             summary: true,
+            notificationType: {
+              select: {
+                color: true,
+                priority: true,
+              },
+            },
           },
         },
       },
@@ -26,6 +33,7 @@ class ListNotificationsService {
       notifications: notifications.map((n) => ({
         ...n.notification,
         read: n.read,
+        receivedAt: n.createdAt,
       })),
     };
   }
