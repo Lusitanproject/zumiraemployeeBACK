@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { Bell } from "lucide-react";
 
 import logo from "../../../public/logo--green.svg";
 import { Avatar } from "./avatar";
 import { PageTitle } from "./page-title";
+import { Notifications } from "./notifications/notifications";
 
 export function Header() {
   return (
@@ -15,9 +15,7 @@ export function Header() {
       <PageTitle />
 
       <div className="flex items-center justify-end gap-x-3">
-        <button className="w-11 h-11 ">
-          <Bell size={24} className="text-gray-400" />
-        </button>
+        <Notifications />
         <Avatar />
       </div>
     </header>
