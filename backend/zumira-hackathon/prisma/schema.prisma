@@ -107,9 +107,11 @@ model Company {
 }
 
 model Nationality {
-  id       String @id @default(cuid())
-  acronymn String @unique
-  name     String
+  id        String   @id @default(cuid())
+  acronymn  String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") // TODO: remove default in next migration
 
   assessments Assessment[]
   users       User[]
@@ -136,6 +138,7 @@ model Assessment {
   assessmentResults          AssessmentResult[]
   userAssessmentFeedbacks    UserAssessmentFeedback[]
   companyAssessmentFeedbacks CompanyAssessmentFeedback[]
+  assessmentResultRatings    AssessmentResultRating[]
 
   @@map("assessments")
 }
@@ -250,7 +253,7 @@ model CompanyAssessmentFeedback {
   text         String
   companyId    String   @map("company_id")
   assessmentId String   @map("assessment_id")
-  respondents  Int      @default(0) // Remove default value in next migration
+  respondents  Int
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -300,4 +303,28 @@ model NotificationRecipient {
 
   @@unique([userId, notificationId])
   @@map("notification_recipients")
+}
+
+model ResultRating {
+  id        String   @unique @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  assessmentResultRatings AssessmentResultRating[]
+
+  @@map("result_ratings")
+}
+
+model AssessmentResultRating {
+  assessmentId   String   @map("assessment_id")
+  resultRatingId String   @map("result_rating_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  assessment   Assessment   @relation(fields: [assessmentId], references: [id])
+  resultRating ResultRating @relation(fields: [resultRatingId], references: [id])
+
+  @@unique([assessmentId, resultRatingId])
+  @@map("assessments_result_ratings")
 }
