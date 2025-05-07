@@ -142,20 +142,36 @@ model Assessment {
 }
 
 model AssessmentResult {
-  id             String   @id @default(uuid())
-  feedback       String?
-  resultRatingId String?
-  userId         String   @map("user_id")
-  assessmentId   String   @map("assessment_id")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id                       String   @id @default(uuid())
+  feedback                 String?
+  assessmentResultRatingId String?
+  userId                   String   @map("user_id")
+  assessmentId             String   @map("assessment_id")
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
 
   user                      User                       @relation(fields: [userId], references: [id])
   assessment                Assessment                 @relation(fields: [assessmentId], references: [id])
-  resultRating              ResultRating?              @relation(fields: [resultRatingId], references: [id])
+  assessmentResultRating    AssessmentResultRating?    @relation(fields: [assessmentResultRatingId], references: [id])
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
+  alerts                    Alert[]
 
   @@map("assessment_results")
+}
+
+model AssessmentResultRating {
+  id                 String   @unique @default(uuid())
+  name               String
+  assessmentId       String   @map("assessment_id")
+  notificationTypeId String   @map("notification_type_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  assessment        Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  assessmentResults AssessmentResult[]
+  Alerts            Alert[]
+
+  @@map("assessment_result_ratings")
 }
 
 model AssessmentQuestion {
@@ -292,27 +308,15 @@ model NotificationRecipient {
   @@map("notification_recipients")
 }
 
-model ResultRating {
-  id        String   @unique @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+model Alert {
+  id                       String   @unique @default(uuid())
+  assessmentResultId       String   @map("assessment_result_id")
+  assessmentResultRatingId String   @map("assessment_result_rating_id")
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
 
-  assessmentResultRatings AssessmentResultRating[]
-  assessmentResults       AssessmentResult[]
+  assessmentResult       AssessmentResult       @relation(fields: [assessmentResultId], references: [id], onDelete: Cascade)
+  assessmentResultRating AssessmentResultRating @relation(fields: [assessmentResultRatingId], references: [id], onDelete: Cascade)
 
-  @@map("result_ratings")
-}
-
-model AssessmentResultRating {
-  assessmentId   String   @map("assessment_id")
-  resultRatingId String   @map("result_rating_id")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-
-  assessment   Assessment   @relation(fields: [assessmentId], references: [id])
-  resultRating ResultRating @relation(fields: [resultRatingId], references: [id])
-
-  @@unique([assessmentId, resultRatingId])
-  @@map("assessments_result_ratings")
+  @@map("alerts")
 }
