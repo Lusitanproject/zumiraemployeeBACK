@@ -56,6 +56,9 @@ import { FindAllNotificationsController } from "./controllers/admin/notification
 import { FindAllTypesController } from "./controllers/admin/notifications/FindAllTypesController";
 import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAllFeedbacksController";
 import { ListResultsController } from "./controllers/assessment/ListResultsController";
+import { ListRatingsController } from "./controllers/admin/result-ratings/ListRatingsController";
+import { CreateRatingController } from "./controllers/admin/result-ratings/CreateRatingController";
+import { EditRatingController } from "./controllers/admin/result-ratings/EditRatingController";
 
 const router = Router();
 
@@ -130,5 +133,10 @@ router.put("/notifications/:notificationId", isAuthenticated, new UpdateNotifica
 router.put("/notifications/:notificationId/read", isAuthenticated, new ReadNotificationController().handle);
 router.post("/notifications", isAuthenticated, new CreateNotificationController().handle);
 router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
+
+// ROTAS RESULT RATING
+router.get("/result-ratings", isAuthenticated, new ListRatingsController().handle);
+router.post("/result-ratings", isAuthenticated, new CreateRatingController().handle);
+router.put("/result-ratings/:id", isAuthenticated, new EditRatingController().handle);
 
 export { router };
