@@ -54,7 +54,7 @@ export async function signup(state: FormState, formData: FormData): Promise<Form
   if (data.status === "SUCCESS") {
     cookie.set("session:verify", email, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       expires: addMinutes(new Date(), 5),
     });
 

@@ -25,7 +25,7 @@ export async function createSession(data: CreateSessionProps) {
   const cookie = await cookies();
   cookie.set("session", JSON.stringify(data), {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     expires: new Date(data.expiresAt),
   });
 }
