@@ -168,6 +168,7 @@ model AssessmentResultRating {
   updatedAt          DateTime @updatedAt @map("updated_at")
 
   assessment        Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  notificationType  NotificationType  @relation(fields: [notificationTypeId], references: [id])
   assessmentResults AssessmentResult[]
   Alerts            Alert[]
 
@@ -290,6 +291,7 @@ model NotificationType {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   notifications Notification[]
+  assessmentResultRatings AssessmentResultRating[]
 
   @@map("notification_types")
 }
