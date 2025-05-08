@@ -23,5 +23,16 @@ export const UpdateAssessmentSchema = z.object({
   nationalityId: z.string().cuid(),
 });
 
+export const UpdateRatingsSchema = z.object({
+  ratings: z.array(
+    z.object({
+      id: z.string().uuid().optional(),
+      name: z.string().nonempty(),
+      notificationTypeId: z.string().cuid(),
+    })
+  ),
+});
+
 export type CreateAssessment = z.infer<typeof CreateAssessmentSchema>;
 export type UpdateAssessment = z.infer<typeof UpdateAssessmentSchema>;
+export type UpdateRatingsRequest = z.infer<typeof UpdateRatingsSchema> & { assessmentId: string };

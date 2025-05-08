@@ -21,7 +21,7 @@ class ListSelfMonitoringBlockResultsService {
             },
           },
         },
-        resultRating: {
+        assessmentResultRating: {
           select: {
             name: true,
           },
@@ -44,7 +44,7 @@ class ListSelfMonitoringBlockResultsService {
       return {
         id: r.id,
         feedback: r.feedback,
-        resultRating: r.resultRating,
+        assessmentResultRating: r.assessmentResultRating,
         assessment: {
           id: r.assessment.id,
           title: r.assessment.title,
