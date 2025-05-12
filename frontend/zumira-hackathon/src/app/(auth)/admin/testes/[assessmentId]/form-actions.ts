@@ -52,6 +52,4 @@ export async function saveAssessment(data: Payload) {
   if (method === "POST") {
     redirect(`/admin/testes/${result.data.id}/perguntas`);
   }
-
-  redirect("/admin/testes");
 }
