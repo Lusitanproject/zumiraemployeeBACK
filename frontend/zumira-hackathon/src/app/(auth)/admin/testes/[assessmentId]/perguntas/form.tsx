@@ -12,7 +12,6 @@ import { AssessmentSummary } from "../definitions";
 import { ButtonIcon } from "./components/button-icon";
 import { DimensionField } from "./components/dimension";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
 import { ChoiceField } from "./components/choice";
 import { updateAssessmentQuestions } from "./actions";
 
@@ -30,10 +29,6 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
   const [error, setError] = useState<string | null>(null);
 
   const sorted = state.questions.sort((a, b) => a.index - b.index);
-
-  const handleCancel = useCallback(() => {
-    redirect(`/admin/testes/${data.id}`);
-  }, []);
 
   const handleUpdateQuestions = useCallback(async () => {
     setLoading(true);
@@ -60,7 +55,7 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
     }
 
     setLoading(false);
-  }, [state]);
+  }, [state, data]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
