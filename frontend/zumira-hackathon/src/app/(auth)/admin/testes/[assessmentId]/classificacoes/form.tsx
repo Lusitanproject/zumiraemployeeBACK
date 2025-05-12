@@ -24,7 +24,7 @@ export function ManageRatingsForm({ data, ratings, notificationTypes }: ManageRa
   const [invalidRatings, setInvalidRatings] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [_, reflow] = useState<boolean>(false);
+  const [, reflow] = useState<boolean>(false);
 
   const handleUpdateRatings = useCallback(async () => {
     setLoading(true);
