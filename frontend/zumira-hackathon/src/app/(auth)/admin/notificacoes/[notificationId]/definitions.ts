@@ -40,7 +40,7 @@ export type GetNotificationError = {
 export type GetNotificationTypesSuccess = {
   status: "SUCCESS";
   data: {
-    types: NotificationType[];
+    items: NotificationType[];
   };
 };
 
