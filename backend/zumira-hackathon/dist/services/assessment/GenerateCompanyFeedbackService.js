@@ -129,7 +129,6 @@ class GenerateCompanyFeedbackService {
             .join(", ");
         if (!message)
             throw new Error("No values to send");
-        console.log(`Generating company feedback for assessment ${assessmentId}`);
         const response = await sendMessage(assessment.companyFeedbackInstructions, message);
         const assessmentFeeedback = await prisma_1.default.companyAssessmentFeedback.create({
             data: {
