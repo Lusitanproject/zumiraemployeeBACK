@@ -71,5 +71,5 @@ export async function getNotificationTypes(): Promise<NotificationType[]> {
     return [];
   }
 
-  return parsed.data.types;
+  return parsed.data.items;
 }
