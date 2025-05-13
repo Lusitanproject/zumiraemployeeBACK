@@ -55,8 +55,6 @@ function createMessage(result: AssessmentResultQueryResponse) {
     })
     .join(", ");
 
-  devLog(message);
-
   return message;
 }
 
@@ -134,14 +132,14 @@ async function generateResponse(
   return response;
 }
 
-async function storeFeedback(result: AssessmentResultQueryResponse, feedback: string, rating: AssessmentResultRating) {
+async function storeFeedback(result: AssessmentResultQueryResponse, feedback: string, rating?: AssessmentResultRating) {
   await prismaClient.assessmentResult.update({
     where: {
       id: result.id,
     },
     data: {
       feedback,
-      assessmentResultRatingId: rating.id,
+      assessmentResultRatingId: rating?.id,
     },
   });
 }
@@ -189,6 +187,7 @@ class GenerateUserFeedbackService {
 
     const message = createMessage(result);
     if (!message) throw new Error("No values to send");
+    devLog("Message: ", message);
 
     const response = await generateResponse(
       assessmentId,
@@ -205,11 +204,16 @@ class GenerateUserFeedbackService {
       generateAlert: boolean;
     };
 
-    const rating = result.assessment.assessmentResultRatings.find((r) => r.name === args.identifiedRating);
-    if (!rating) throw new Error(`Rating "${args.identifiedRating}" does not exist`);
+    devLog("AI response: ", args);
+
+    const ratings = result.assessment.assessmentResultRatings;
+    const rating = ratings.find((r) => r.name === args.identifiedRating);
+    if (!rating && ratings.length !== 0) {
+      throw new Error(`Rating "${args.identifiedRating}" does not exist`);
+    }
 
     await storeFeedback(result, args.feedback, rating);
-    if (args.generateAlert) await createAlert(result, rating, userId);
+    if (args.generateAlert && rating) await createAlert(result, rating, userId);
 
     return args;
   }
