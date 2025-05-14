@@ -58,6 +58,7 @@ import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAl
 import { ListResultsController } from "./controllers/assessment/ListResultsController";
 import { UpdateResultRatingsController } from "./controllers/admin/assessments/UpdateResultRatingsController";
 import { FindResultRatingsByAssessmentController } from "./controllers/admin/assessments/FindResultRatingsByAssessmentController";
+import { DetailResultController } from "./controllers/assessment/DetailResultController";
 
 const router = Router();
 
@@ -97,6 +98,7 @@ router.get("/assessments/questions/:assessmentId", isAuthenticated, new FindQues
 
 // ROTAS RESULTS
 router.get("/assessments/results", isAuthenticated, new ListResultsController().handle);
+router.get("/assessments/results/:id", isAuthenticated, new DetailResultController().handle);
 router.post("/assessments/results", isAuthenticated, new CreateResultController().handle);
 
 // ROTAS RESULT RATINGS

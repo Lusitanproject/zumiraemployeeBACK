@@ -4,6 +4,7 @@ import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AssessmentModal } from "./assessment-modal";
 import { useState } from "react";
+import { redirect, RedirectType } from "next/navigation";
 
 type AssessmentCardProps = {
   id: string;
@@ -19,11 +20,15 @@ export function AssessmentCard({ id, title, summary, completed }: AssessmentCard
     setIsModalOpen((prev) => !prev);
   }
 
+  function goToFeedback() {
+    redirect(`/autogestao/teste/${id}/devolutiva`, RedirectType.push);
+  }
+
   return (
     <div
-      onClick={toggleModal}
-      className={cn("rounded-xl bg-gray-100 p-[1.375rem] flex flex-col h-[12.375rem] text-left cursor-default", {
-        "bg-primary-25/50 pointer-events-none": completed,
+      onClick={completed ? goToFeedback : toggleModal}
+      className={cn("rounded-xl bg-gray-100 p-[1.375rem] flex flex-col h-[12.375rem] text-left cursor-pointer", {
+        "bg-primary-25/50": completed,
       })}
     >
       <div className="flex w-full mb-3">

@@ -55,9 +55,11 @@ function Button({
   const Comp = asChild ? Slot : "button";
 
   return (
-    <Comp data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props}>
+    <Comp data-slot="button" className={cn(buttonVariants({ variant, size, className }), "cursor-pointer")} {...props}>
       <span className="relative">
-        <span className={cn(loading ? "opacity-0" : "opacity-100")}>{props.children}</span>
+        <span className={cn("flex flex-row items-center justify-center", loading ? "opacity-0" : "opacity-100")}>
+          {props.children}
+        </span>
         <span className={cn("absolute flex top-1/2 left-1/2 -translate-1/2", loading ? "opacity-100" : "opacity-0")}>
           <Spinner size={size} />
         </span>
