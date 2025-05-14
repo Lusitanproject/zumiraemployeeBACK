@@ -26,7 +26,7 @@ export function NoData({ selfMonitoringBlockId }: NoDataProps) {
           variant="primary"
           size="xxl"
           className="w-full mt-8"
-          onClick={() => redirect(`/autogestao?avaliacao=${selfMonitoringBlockId}`)}
+          onClick={() => redirect(`/autoconhecimento?avaliacao=${selfMonitoringBlockId}`)}
         >
           <span>Fazer Autoavaliação</span>
           <ChevronRight className="size-6" />

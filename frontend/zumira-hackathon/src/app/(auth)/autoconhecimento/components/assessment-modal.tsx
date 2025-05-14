@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { ChevronRight, SquareX, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 export type AssessmentModalProps = {
   id: string;
@@ -15,7 +15,7 @@ export type AssessmentModalProps = {
 
 export function AssessmentModal({ id, title, summary, open, onClose }: AssessmentModalProps) {
   const handleOpenAssessment = useCallback(() => {
-    redirect(`/autogestao/teste/${id}`);
+    redirect(`/autoconhecimento/teste/${id}`, RedirectType.push);
   }, [id]);
 
   return (

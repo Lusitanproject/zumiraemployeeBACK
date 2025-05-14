@@ -1,13 +1,19 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChartNoAxesColumnIncreasing, House, LayoutGrid, SquarePen, Users } from "lucide-react";
+import {
+  // ChartNoAxesColumnIncreasing,
+  House,
+  LayoutGrid,
+  SquarePen,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/chat", label: "Início", icon: House },
-  { href: "/autoconhecimento", label: "Autoconhecimento", icon: ChartNoAxesColumnIncreasing },
-  { href: "/autogestao", label: "Autogestão", icon: SquarePen },
+  // { href: "/autoconhecimento", label: "Autoconhecimento", icon: ChartNoAxesColumnIncreasing },
+  { href: "/autoconhecimento", label: "Autoconhecimento", icon: SquarePen },
   { href: "/rede-apoio", label: "Rede de Apoio", icon: Users },
   { href: "/biblioteca", label: "Biblioteca", icon: LayoutGrid },
 ] as const;

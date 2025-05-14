@@ -5,3 +5,4 @@ export const ListAssessmentsSchema = z.object({
 });
 
 export type ListAssessmentsRequest = { userId: string } & z.infer<typeof ListAssessmentsSchema>;
+export type DetailResultRequest = { userId: string; assessmentId: string };

@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { redirect, RedirectType } from "next/navigation";
 
-export default function AssessmentComplete() {
+interface ConcludedProps {
+  assessmentId: string;
+}
+
+export function Concluded({ assessmentId }: ConcludedProps) {
   return (
     <div className="flex flex-1 h-2/3 items-center justify-center">
       <div className="flex flex-col text-center">
@@ -16,8 +20,12 @@ export default function AssessmentComplete() {
           Receba sua devolutiva na área de <strong>Autoconhecimento</strong>.
         </p>
 
-        <Button variant="primary" size="lg" onClick={() => redirect("/autoconhecimento", RedirectType.replace)}>
-          <span>Ir para Autoconhecimento</span>
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => redirect(`/autoconhecimento/teste/${assessmentId}/devolutiva`, RedirectType.replace)}
+        >
+          <span>Ver minha devolutiva</span>
         </Button>
       </div>
     </div>

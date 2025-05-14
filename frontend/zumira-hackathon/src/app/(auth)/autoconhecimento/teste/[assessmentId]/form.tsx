@@ -80,7 +80,7 @@ export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
             size="xl"
             variant="outline"
             type="button"
-            onClick={() => redirect("/autogestao", RedirectType.replace)}
+            onClick={() => redirect("/autoconhecimento", RedirectType.replace)}
           >
             Cancelar
           </Button>
