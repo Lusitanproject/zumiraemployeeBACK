@@ -4,22 +4,28 @@ export type ManageRatingState = {
   ratings: ManageRating[];
 };
 
-type SetNotificationType = {
-  ratingKey: string;
-  notificationTypeId: string;
-};
-
 type RemoveRating = {
   ratingKey: string;
 };
 
-type ChangeName = {
+type ChangeRisk = {
   ratingKey: string;
-  name: string;
+  risk: string;
+};
+
+type ChangeProfile = {
+  ratingKey: string;
+  profile: string;
+};
+
+type ChangeColor = {
+  ratingKey: string;
+  color: string;
 };
 
 export type ManageRatingAction =
   | { type: "ADD-RATING" }
   | { type: "REMOVE-RATING"; payload: RemoveRating }
-  | { type: "SET-NOTIFICATION-TYPE"; payload: SetNotificationType }
-  | { type: "CHANGE-NAME"; payload: ChangeName };
+  | { type: "CHANGE-RISK"; payload: ChangeRisk }
+  | { type: "CHANGE-PROFILE"; payload: ChangeProfile }
+  | { type: "CHANGE-COLOR"; payload: ChangeColor };

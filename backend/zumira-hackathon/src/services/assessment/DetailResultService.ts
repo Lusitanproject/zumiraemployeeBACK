@@ -14,7 +14,9 @@ class DetailResultService {
         feedback: true,
         assessmentResultRating: {
           select: {
-            name: true,
+            risk: true,
+            profile: true,
+            color: true,
           },
         },
         assessment: {

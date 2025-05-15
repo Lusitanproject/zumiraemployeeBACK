@@ -4,8 +4,9 @@ export function translateRatings(ratings: AssessmentRating[]): ManageRating[] {
   const translated: ManageRating[] = ratings.map((r) => ({
     key: r.id,
     id: r.id,
-    name: r.name,
-    notificationTypeId: r.notificationType.id,
+    risk: r.risk,
+    profile: r.profile,
+    color: r.color,
   }));
 
   return translated;

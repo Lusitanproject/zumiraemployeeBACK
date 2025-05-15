@@ -160,15 +160,15 @@ model AssessmentResult {
 }
 
 model AssessmentResultRating {
-  id                 String   @unique @default(uuid())
-  name               String
-  assessmentId       String   @map("assessment_id")
-  notificationTypeId String   @map("notification_type_id")
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
+  id           String   @unique @default(uuid())
+  risk         String   @default("Novo risco") // TODO: REMOVER NA PROXIMA MIGRATION
+  profile      String   @default("Novo perfil")
+  color        String   @default("#FFFFFF")
+  assessmentId String   @map("assessment_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   assessment        Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  notificationType  NotificationType  @relation(fields: [notificationTypeId], references: [id])
   assessmentResults AssessmentResult[]
   Alerts            Alert[]
 
@@ -291,7 +291,6 @@ model NotificationType {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   notifications Notification[]
-  assessmentResultRatings AssessmentResultRating[]
 
   @@map("notification_types")
 }

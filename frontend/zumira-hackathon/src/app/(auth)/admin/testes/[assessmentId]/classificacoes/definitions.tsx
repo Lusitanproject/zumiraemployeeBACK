@@ -1,16 +1,10 @@
 import { z } from "zod";
 
-export interface NotificationType {
-  id: string;
-  name: string;
-  priority: number;
-  color: string;
-}
-
 export interface AssessmentRating {
   id: string;
-  name: string;
-  notificationType: NotificationType;
+  risk: string;
+  profile: string;
+  color: string;
 }
 
 export type GetAssessmentRatings =
@@ -18,18 +12,6 @@ export type GetAssessmentRatings =
       status: "SUCCESS";
       data: {
         items: AssessmentRating[];
-      };
-    }
-  | {
-      status: "ERROR";
-      message: string;
-    };
-
-export type GetNotificationTypes =
-  | {
-      status: "SUCCESS";
-      data: {
-        items: NotificationType[];
       };
     }
   | {
@@ -50,8 +32,9 @@ export type UpdateAssessmentRatings =
 export const ManageRatingSchema = z.object({
   key: z.string().uuid(),
   id: z.string().uuid().optional(),
-  name: z.string(),
-  notificationTypeId: z.string().cuid(),
+  risk: z.string().nonempty(),
+  profile: z.string().nonempty(),
+  color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/),
 });
 
 export type ManageRating = z.infer<typeof ManageRatingSchema>;

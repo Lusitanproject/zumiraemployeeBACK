@@ -23,7 +23,7 @@ class ListSelfMonitoringBlockResultsService {
         },
         assessmentResultRating: {
           select: {
-            name: true,
+            risk: true,
           },
         },
       },
