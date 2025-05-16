@@ -41,11 +41,12 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
 
   const [formData, setFormData] = useState<ManageAssessment>(parsedData ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
-
   const [formError, setFormError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async () => {
     setErrors(null);
+    setLoading(true);
     const validation = CreateAssessmentSchema.safeParse(formData);
     if (!validation.success) {
       setErrors(validation.error.flatten().fieldErrors);
@@ -61,6 +62,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
     if (response) {
       setFormError(response);
     }
+    setLoading(false);
   };
 
   return (
@@ -211,7 +213,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         {!!formError && <span className="text-sm text-error-500">{formError}</span>}
       </div>
       <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
-        <Button size="xl" variant="primary" onClick={handleSubmit}>
+        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
           Salvar detalhes
         </Button>
       </div>

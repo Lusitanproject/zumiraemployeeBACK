@@ -48,7 +48,6 @@ function createMessage(result) {
         }
     })
         .join(", ");
-    (0, devLog_1.devLog)(message);
     return message;
 }
 async function generateResponse(assessmentId, instructions, message, ratings) {
@@ -94,7 +93,7 @@ async function generateResponse(assessmentId, instructions, message, ratings) {
                         identifiedRating: {
                             type: "string",
                             description: "Classificação baseada nos escores.",
-                            enum: ratings.map((r) => r.name),
+                            enum: ratings.map((r) => r.risk),
                         },
                         generateAlert: {
                             type: "boolean",
@@ -121,31 +120,15 @@ async function storeFeedback(result, feedback, rating) {
         },
         data: {
             feedback,
-            assessmentResultRatingId: rating.id,
+            assessmentResultRatingId: rating === null || rating === void 0 ? void 0 : rating.id,
         },
     });
 }
-async function createAlert(result, rating, userId) {
+async function createAlert(result, rating) {
     await prisma_1.default.alert.create({
         data: {
             assessmentResultId: result.id,
             assessmentResultRatingId: rating.id,
-        },
-    });
-    const notification = await prisma_1.default.notification.create({
-        data: {
-            title: `Alerta de devolutiva`,
-            summary: `Sua devolutiva para ${result.assessment.title} gerou um alerta.`,
-            content: `Ao analisar seus resultados, identificamos **${rating.name}** para **${result.assessment.title}**.
-
-Veja mais sobre sua devolutiva [aqui](https://www.zumira.com.br/autoconhecimento/${result.assessment.selfMonitoringBlock.id}/devolutiva).`,
-            notificationTypeId: rating.notificationTypeId,
-        },
-    });
-    await prisma_1.default.notificationRecipient.create({
-        data: {
-            notificationId: notification.id,
-            userId,
         },
     });
 }
@@ -166,16 +149,20 @@ class GenerateUserFeedbackService {
         const message = createMessage(result);
         if (!message)
             throw new Error("No values to send");
+        (0, devLog_1.devLog)("Message: ", message);
         const response = await generateResponse(assessmentId, result.assessment.userFeedbackInstructions, message, result.assessment.assessmentResultRatings);
         // Workaround para a tipagem desatualizada da resposta da openai (nao tem .arguments)
         const toolCall = response.output[0];
         const args = JSON.parse(toolCall.arguments);
-        const rating = result.assessment.assessmentResultRatings.find((r) => r.name === args.identifiedRating);
-        if (!rating)
+        (0, devLog_1.devLog)("AI response: ", args);
+        const ratings = result.assessment.assessmentResultRatings;
+        const rating = ratings.find((r) => r.risk === args.identifiedRating);
+        if (!rating && ratings.length !== 0) {
             throw new Error(`Rating "${args.identifiedRating}" does not exist`);
+        }
         await storeFeedback(result, args.feedback, rating);
-        if (args.generateAlert)
-            await createAlert(result, rating, userId);
+        if (args.generateAlert && rating)
+            await createAlert(result, rating);
         return args;
     }
 }

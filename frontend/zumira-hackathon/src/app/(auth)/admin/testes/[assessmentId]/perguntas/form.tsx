@@ -137,8 +137,8 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
       </div>
       <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
         <span className="text-error-500">{error}</span>
-        <Button size="xl" variant="primary" onClick={handleUpdateQuestions} disabled={loading}>
-          {loading ? "Salvando..." : "Salvar perguntas"}
+        <Button size="xl" variant="primary" onClick={handleUpdateQuestions} disabled={loading} loading={loading}>
+          Salvar perguntas
         </Button>
       </div>
     </div>

@@ -27,8 +27,11 @@ export const UpdateRatingsSchema = z.object({
   ratings: z.array(
     z.object({
       id: z.string().uuid().optional(),
-      name: z.string().nonempty(),
-      notificationTypeId: z.string().cuid(),
+      risk: z.string().nonempty(),
+      profile: z.string().nonempty(),
+      color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+        message: "Color value must be in hexadecimal (#RRGGBB)",
+      }),
     })
   ),
 });

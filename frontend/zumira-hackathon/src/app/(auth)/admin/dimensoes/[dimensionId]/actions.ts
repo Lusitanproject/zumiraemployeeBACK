@@ -21,7 +21,7 @@ export async function getDimensionData(dimensionId: string | null): Promise<Dime
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {
@@ -45,7 +45,7 @@ export async function getMonitoringBlocks(): Promise<MonitoringBlock[]> {
   const cookie = await cookies();
   const session = decrypt(cookie.get("session")?.value);
 
-  const url = `${process.env.API_BASE_URL}/self-monitoring`;
+  const url = `${process.env.API_BASE_URL}/self-monitoring/admin`;
 
   const [error, response] = await catchError(
     fetch(url, {
@@ -53,7 +53,7 @@ export async function getMonitoringBlocks(): Promise<MonitoringBlock[]> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

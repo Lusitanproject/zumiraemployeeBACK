@@ -26,7 +26,10 @@ exports.UpdateAssessmentSchema = zod_1.z.object({
 exports.UpdateRatingsSchema = zod_1.z.object({
     ratings: zod_1.z.array(zod_1.z.object({
         id: zod_1.z.string().uuid().optional(),
-        name: zod_1.z.string().nonempty(),
-        notificationTypeId: zod_1.z.string().cuid(),
+        risk: zod_1.z.string().nonempty(),
+        profile: zod_1.z.string().nonempty(),
+        color: zod_1.z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+            message: "Color value must be in hexadecimal (#RRGGBB)",
+        }),
     })),
 });

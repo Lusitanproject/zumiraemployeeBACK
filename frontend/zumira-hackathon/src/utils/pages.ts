@@ -1,7 +1,7 @@
 export function getPageName(url: string): string {
   switch (url) {
-    case "/autogestao":
-      return "Autogestão";
+    case "/autoconhecimento":
+      return "Autoconhecimento";
     case "/autoconhecimento":
       return "Autoconhecimento";
     case "/notificacoes":

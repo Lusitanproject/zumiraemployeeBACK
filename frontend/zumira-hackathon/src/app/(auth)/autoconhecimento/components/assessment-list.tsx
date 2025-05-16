@@ -18,8 +18,8 @@ export function AssessmentList({ data, title, completed }: AssessmentListProps) 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {data.map((item) => (
           <AssessmentCard
-            key={item.id}
             id={item.id}
+            key={item.id}
             summary={item.summary}
             title={item.title}
             completed={!!completed}

@@ -6,7 +6,7 @@ import { devLog } from "../../../utils/devLog";
 
 async function sendEmail(user: User, code: string) {
   const transporter = nodemailer.createTransport({
-    host: "email-ssl.com.br",
+    host: process.env.EMAIL_HOST,
     port: 587,
     secure: false,
     auth: {

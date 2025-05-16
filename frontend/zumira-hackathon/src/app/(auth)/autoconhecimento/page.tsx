@@ -1,12 +1,13 @@
-import { getMonitoringBlocks } from "./actions";
-import { MonitoringBlocksList } from "./components/monitoring-blocks-list";
+import { getAssessments, getSelfMonitoringBlocks } from "./actions";
+import { Assessments } from "./components/assessments";
 
 export default async function Autoconhecimento() {
-  const result = await getMonitoringBlocks();
+  const assessments = await getAssessments();
+  const blocks = await getSelfMonitoringBlocks();
 
   return (
-    <div className="flex flex-col w-full py-4">
-      <MonitoringBlocksList data={result.data} />
+    <div className="flex flex-col w-full">
+      <Assessments assessments={assessments} blocks={blocks} />
     </div>
   );
 }

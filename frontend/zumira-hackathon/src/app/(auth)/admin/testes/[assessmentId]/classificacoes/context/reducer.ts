@@ -7,8 +7,9 @@ export function reducer(state: ManageRatingState, action: ManageRatingAction): M
     case "ADD-RATING": {
       const empty: ManageRating = {
         key: v4(),
-        name: "",
-        notificationTypeId: "",
+        risk: "",
+        profile: "",
+        color: "",
       };
 
       return { ratings: [...state.ratings, empty] };
@@ -19,19 +20,28 @@ export function reducer(state: ManageRatingState, action: ManageRatingAction): M
       return { ratings };
     }
 
-    case "SET-NOTIFICATION-TYPE": {
+    case "CHANGE-RISK": {
       const rating = state.ratings.find((item) => item.key === action.payload.ratingKey);
       if (rating) {
-        rating.notificationTypeId = action.payload.notificationTypeId;
+        rating.risk = action.payload.risk;
       }
 
       return state;
     }
 
-    case "CHANGE-NAME": {
+    case "CHANGE-PROFILE": {
       const rating = state.ratings.find((item) => item.key === action.payload.ratingKey);
       if (rating) {
-        rating.name = action.payload.name;
+        rating.profile = action.payload.profile;
+      }
+
+      return state;
+    }
+
+    case "CHANGE-COLOR": {
+      const rating = state.ratings.find((item) => item.key === action.payload.ratingKey);
+      if (rating) {
+        rating.color = action.payload.color;
       }
 
       return state;

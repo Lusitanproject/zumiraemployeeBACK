@@ -3,7 +3,7 @@
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
 import { cookies } from "next/headers";
-import { GetAssessmentRatings, GetNotificationTypes, UpdateAssessmentRatings } from "./definitions";
+import { GetAssessmentRatings, UpdateAssessmentRatings } from "./definitions";
 import { ManageRatingState } from "./context/types";
 
 export async function getAssessmentRatings(assessmentId: string) {
@@ -30,38 +30,6 @@ export async function getAssessmentRatings(assessmentId: string) {
   }
 
   const parsed = (await response.json()) as GetAssessmentRatings;
-
-  if (parsed.status === "ERROR") {
-    return [];
-  }
-
-  return parsed.data.items;
-}
-
-export async function getNotificationTypes() {
-  const cookie = await cookies();
-  const session = decrypt(cookie.get("session")?.value);
-
-  const url = `${process.env.API_BASE_URL}/notifications/admin/types`;
-
-  const [error, response] = await catchError(
-    fetch(url, {
-      headers: {
-        "Content-Type": "Application/json",
-        Authorization: `Bearer ${session?.token}`,
-      },
-    })
-  );
-
-  if (error) {
-    return [];
-  }
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const parsed = (await response.json()) as GetNotificationTypes;
 
   if (parsed.status === "ERROR") {
     return [];
