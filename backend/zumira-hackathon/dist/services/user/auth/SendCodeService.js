@@ -10,7 +10,7 @@ const crypto_1 = require("crypto");
 const devLog_1 = require("../../../utils/devLog");
 async function sendEmail(user, code) {
     const transporter = nodemailer_1.default.createTransport({
-        host: "email-ssl.com.br",
+        host: process.env.EMAIL_HOST,
         port: 587,
         secure: false,
         auth: {

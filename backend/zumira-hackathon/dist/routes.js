@@ -49,6 +49,7 @@ const FindAllFeedbacksController_1 = require("./controllers/admin/companies/Find
 const ListResultsController_1 = require("./controllers/assessment/ListResultsController");
 const UpdateResultRatingsController_1 = require("./controllers/admin/assessments/UpdateResultRatingsController");
 const FindResultRatingsByAssessmentController_1 = require("./controllers/admin/assessments/FindResultRatingsByAssessmentController");
+const DetailResultController_1 = require("./controllers/assessment/DetailResultController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -81,6 +82,7 @@ router.put("/assessments/questions/:id", isAuthenticated_1.isAuthenticated, new 
 router.get("/assessments/questions/:assessmentId", isAuthenticated_1.isAuthenticated, new FindQuestionByAssessmentController_1.FindQuestionByAssessmentController().handle);
 // ROTAS RESULTS
 router.get("/assessments/results", isAuthenticated_1.isAuthenticated, new ListResultsController_1.ListResultsController().handle);
+router.get("/assessments/results/:id", isAuthenticated_1.isAuthenticated, new DetailResultController_1.DetailResultController().handle);
 router.post("/assessments/results", isAuthenticated_1.isAuthenticated, new CreateResultController_1.CreateResultController().handle);
 // ROTAS RESULT RATINGS
 router.get("/assessments/ratings/:id", isAuthenticated_1.isAuthenticated, new FindResultRatingsByAssessmentController_1.FindResultRatingsByAssessmentController().handle);

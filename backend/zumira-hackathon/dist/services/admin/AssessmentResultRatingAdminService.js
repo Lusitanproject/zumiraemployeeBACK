@@ -12,14 +12,9 @@ class AssessmentResultRatingAdminService {
             where: { assessmentId },
             select: {
                 id: true,
-                name: true,
-                notificationType: {
-                    select: {
-                        id: true,
-                        name: true,
-                        color: true,
-                    },
-                },
+                risk: true,
+                profile: true,
+                color: true,
             },
         });
         return { items: ratings };
@@ -42,8 +37,9 @@ class AssessmentResultRatingAdminService {
         await Promise.all([
             prisma_1.default.assessmentResultRating.createMany({
                 data: newRatings.map((r) => ({
-                    name: r.name,
-                    notificationTypeId: r.notificationTypeId,
+                    risk: r.risk,
+                    profile: r.profile,
+                    color: r.color,
                     assessmentId: data.assessmentId,
                 })),
             }),
@@ -58,7 +54,7 @@ class AssessmentResultRatingAdminService {
                 where: {
                     id: r.id,
                 },
-                data: { name: r.name, notificationTypeId: r.notificationTypeId },
+                data: { risk: r.risk, profile: r.profile, color: r.color },
             })),
         ]);
         return {};
