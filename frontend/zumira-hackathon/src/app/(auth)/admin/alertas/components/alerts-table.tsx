@@ -1,16 +1,30 @@
+import { Spinner } from "@/components/custom/spinner";
 import { Result } from "../definitions";
 
 interface AlertsTableProps {
-  results: Result[];
+  results?: Result[];
+  loading?: boolean;
 }
 
-export function AlertsTable({ results }: AlertsTableProps) {
+export function AlertsTable({ results, loading }: AlertsTableProps) {
   function formatDate(date: Date) {
     return `${date.getDay()} / ${date.getMonth() + 1} / ${date.getFullYear()}`;
   }
 
+  if (loading || results === undefined) {
+    return (
+      <span className="flex w-full text-center justify-center text-gray-500 bg-gray-100 rounded-xl p-1.5 border-1 border-gray-300">
+        <Spinner size="xl" color="var(--color-gray-300)" />
+      </span>
+    );
+  }
+
   if (!results.length) {
-    return <span className="w-full text-center text-gray-400">Sem resultados</span>;
+    return (
+      <span className="w-full text-center text-gray-500 bg-gray-100 rounded-xl p-1.5 border-1 border-gray-300">
+        Sem resultados
+      </span>
+    );
   }
 
   const sample = results.length ? results[0] : null;
@@ -18,10 +32,10 @@ export function AlertsTable({ results }: AlertsTableProps) {
   return (
     <div className="rounded-xl border-1 border-gray-300 overflow-hidden">
       <table className="min-w-full text-sm text-center rounded-xl">
-        <thead className="bg-gray-100 text-gray-700 font-semibold">
+        <thead className="bg-gray-100 text-gray-500 font-semibold">
           <tr>
             <th className="p-2">Código</th>
-            <th className="p-2">Perfil de risco</th>
+            <th className="p-2">Perfil</th>
             {sample &&
               sample.scores.map((score) => (
                 <td key={score.dimension.id} className="p-2">
@@ -44,13 +58,13 @@ export function AlertsTable({ results }: AlertsTableProps) {
                   </td>
                 ))}
                 <td className="p-2">{formatDate(new Date(result.createdAt))}</td>
-                <td className="p-2 flex flex-row items-center justify-center gap-2">
+                <td className="p-2 flex flex-row items-center justify-center gap-3">
                   <div
-                    className="size-3.5 rounded-full flex-none border-1 border-gray-300"
+                    className="size-2 rounded-full flex-none"
                     style={{ backgroundColor: result.assessmentResultRating.color }}
                   />
                   {result.assessmentResultRating.risk}
-                  <div className="size-3.5 flex-none" />
+                  <div className="size-2 flex-none" />
                 </td>
               </tr>
             );

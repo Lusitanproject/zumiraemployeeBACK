@@ -12,22 +12,28 @@ interface AlertsUIProps {
 }
 
 export function AlertsUI({ assessments, companies }: AlertsUIProps) {
-  const [results, setResults] = useState<Result[]>([]);
+  const [results, setResults] = useState<Result[]>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   async function fetchResults(data: FiltersType) {
+    setLoading(true);
     const newData = await getFilteredResults(data);
     setResults(newData);
+    setLoading(false);
   }
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-2">
       <div className="flex flex-col">
-        <h2 className="text-xl text-gray-500">Selecione os filtros: </h2>
-        <Filters assessments={assessments} companies={companies} onChangeFilters={fetchResults} />
+        <Filters
+          assessments={assessments}
+          companies={companies}
+          onChangeFilters={fetchResults}
+          totalResults={Number(results?.length)}
+        />
       </div>
       <div className="flex flex-col gap-2">
-        {!!results.length && <h2 className="text-xl text-gray-500">Resultados: </h2>}
-        <AlertsTable results={results} />
+        <AlertsTable results={results} loading={loading} />
       </div>
     </div>
   );

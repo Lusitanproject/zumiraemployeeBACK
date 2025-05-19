@@ -59,7 +59,7 @@ export interface Result {
 
 export interface Filters {
   assessmentId: string;
-  companyId: string;
+  companyId?: string;
 }
 
 export interface Company {

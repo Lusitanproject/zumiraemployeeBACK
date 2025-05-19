@@ -54,7 +54,7 @@ export async function calculateResultScores(resultIds: string[]) {
     },
   });
 
-  if (!results.length) throw new Error("No results were found");
+  if (!results.length) return [];
 
   const sample = results[0];
 
