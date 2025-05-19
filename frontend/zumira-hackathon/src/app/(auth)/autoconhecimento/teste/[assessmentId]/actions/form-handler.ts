@@ -53,22 +53,6 @@ export async function saveAnswersAction(tate: FormState, formData: FormData): Pr
   const result = (await response.json()) as MutateAssessmentResult;
 
   if (result.status === "SUCCESS") {
-    fetch(`${process.env.API_BASE_URL}/assessments/feedback/users/${data.assessmentId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.token}`,
-      },
-    });
-
-    fetch(`${process.env.API_BASE_URL}/assessments/feedback/companies/${data.assessmentId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.token}`,
-      },
-    });
-
     redirect(`/autoconhecimento/teste/${data.assessmentId}/concluido`, RedirectType.replace);
   }
 }
