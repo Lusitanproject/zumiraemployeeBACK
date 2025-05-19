@@ -50,6 +50,7 @@ const ListResultsController_1 = require("./controllers/assessment/ListResultsCon
 const UpdateResultRatingsController_1 = require("./controllers/admin/assessments/UpdateResultRatingsController");
 const FindResultRatingsByAssessmentController_1 = require("./controllers/admin/assessments/FindResultRatingsByAssessmentController");
 const DetailResultController_1 = require("./controllers/assessment/DetailResultController");
+const FindFilteredResultsController_1 = require("./controllers/admin/assessments/FindFilteredResultsController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -68,6 +69,11 @@ router.post("/dimensions", isAuthenticated_1.isAuthenticated, new CreateDimensio
 router.get("/dimensions", isAuthenticated_1.isAuthenticated, new FindAllDimensionController_1.FindAllDimensionsController().handle);
 router.get("/dimensions/:psychologicalDimensionId", isAuthenticated_1.isAuthenticated, new FindDimensionController_1.FindDimensionController().handle);
 router.put("/dimensions/:psychologicalDimensionId", isAuthenticated_1.isAuthenticated, new EditDimensionController_1.EditDimensionController().handle);
+// ROTAS RESULTS
+router.get("/assessments/results", isAuthenticated_1.isAuthenticated, new ListResultsController_1.ListResultsController().handle);
+router.get("/assessments/results/admin", isAuthenticated_1.isAuthenticated, new FindFilteredResultsController_1.FindFilteredResultsController().handle);
+router.get("/assessments/results/:id", isAuthenticated_1.isAuthenticated, new DetailResultController_1.DetailResultController().handle);
+router.post("/assessments/results", isAuthenticated_1.isAuthenticated, new CreateResultController_1.CreateResultController().handle);
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated_1.isAuthenticated, new ListAssessmentsController_1.ListAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated_1.isAuthenticated, new DetailAssessmentController_1.DetailAssessmentController().handle);
@@ -80,10 +86,6 @@ router.put("/assessments/:id", isAuthenticated_1.isAuthenticated, new UpdateAsse
 router.post("/assessments/questions", isAuthenticated_1.isAuthenticated, new CreateQuestionController_1.CreateQuestionController().handle);
 router.put("/assessments/questions/:id", isAuthenticated_1.isAuthenticated, new UpdateQuestionsController_1.UpdateQuestionsController().handle);
 router.get("/assessments/questions/:assessmentId", isAuthenticated_1.isAuthenticated, new FindQuestionByAssessmentController_1.FindQuestionByAssessmentController().handle);
-// ROTAS RESULTS
-router.get("/assessments/results", isAuthenticated_1.isAuthenticated, new ListResultsController_1.ListResultsController().handle);
-router.get("/assessments/results/:id", isAuthenticated_1.isAuthenticated, new DetailResultController_1.DetailResultController().handle);
-router.post("/assessments/results", isAuthenticated_1.isAuthenticated, new CreateResultController_1.CreateResultController().handle);
 // ROTAS RESULT RATINGS
 router.get("/assessments/ratings/:id", isAuthenticated_1.isAuthenticated, new FindResultRatingsByAssessmentController_1.FindResultRatingsByAssessmentController().handle);
 router.put("/assessments/ratings/:id", isAuthenticated_1.isAuthenticated, new UpdateResultRatingsController_1.UpdateResultRatingsController().handle);
