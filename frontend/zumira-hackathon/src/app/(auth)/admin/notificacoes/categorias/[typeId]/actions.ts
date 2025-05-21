@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
-import { GetNotificationType, NotificationType } from "./definitions";
+import { GetNotificationType } from "./definitions";
 
 export async function getNotificationType(notificationTypeId: string | null) {
   if (notificationTypeId === null) {
