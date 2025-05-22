@@ -27,8 +27,8 @@ export function Assessments({ assessments, blocks }: AssessmentsProps) {
       <SearchBar />
       <MonitoringBlocks data={blocks} />
       <div className="flex flex-col border-t border-gray-200 pt-8 mt-8  md:border-0">
-        <AssessmentList title="Tarefas a realizar" data={available} />
-        <AssessmentList title="Tarefas concluídas" data={completed} completed />
+        <AssessmentList title="Avaliações a realizar" data={available} />
+        <AssessmentList title="Minhas avaliações" data={completed} completed />
       </div>
     </div>
   );

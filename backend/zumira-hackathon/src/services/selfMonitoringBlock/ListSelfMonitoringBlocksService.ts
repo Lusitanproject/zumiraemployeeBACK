@@ -9,6 +9,11 @@ class ListSelfMonitoringBlocksService {
         summary: true,
         icon: true,
       },
+      where: {
+        assessments: {
+          some: {},
+        },
+      },
     });
 
     return { blocks };
