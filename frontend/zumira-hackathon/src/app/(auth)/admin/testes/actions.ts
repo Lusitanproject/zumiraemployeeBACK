@@ -15,7 +15,7 @@ export async function getAssessments(): Promise<Assessment[]> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error || !response.ok) {

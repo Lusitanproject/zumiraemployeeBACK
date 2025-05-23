@@ -13,6 +13,7 @@ class NotificationAdminService {
                 title: true,
                 summary: true,
                 content: true,
+                actionUrl: true,
                 notificationType: {
                     select: {
                         id: true,
@@ -33,6 +34,7 @@ class NotificationAdminService {
                 title: true,
                 summary: true,
                 content: true,
+                actionUrl: true,
                 notificationType: {
                     select: {
                         id: true,
@@ -45,7 +47,7 @@ class NotificationAdminService {
         });
         return { notifications };
     }
-    async create({ title, summary, content, notificationTypeId, userIds }) {
+    async create({ title, summary, content, notificationTypeId, actionUrl, userIds }) {
         const users = await prisma_1.default.user.findMany({
             where: {
                 id: {
@@ -63,6 +65,7 @@ class NotificationAdminService {
                 title,
                 summary,
                 content,
+                actionUrl,
                 notificationTypeId,
             },
         });
@@ -74,7 +77,7 @@ class NotificationAdminService {
         });
         return notification;
     }
-    async update({ notificationId, title, summary, content, notificationTypeId }) {
+    async update({ notificationId, title, summary, content, notificationTypeId, actionUrl }) {
         try {
             const notification = await prisma_1.default.notification.update({
                 where: {
@@ -84,6 +87,7 @@ class NotificationAdminService {
                     title,
                     summary,
                     content,
+                    actionUrl,
                     notificationTypeId,
                 },
             });

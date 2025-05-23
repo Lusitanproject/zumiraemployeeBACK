@@ -29,7 +29,7 @@ export async function saveUser(data: Payload) {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

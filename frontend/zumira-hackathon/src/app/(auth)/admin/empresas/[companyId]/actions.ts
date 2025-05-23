@@ -21,7 +21,7 @@ export async function getCompanyData(companyId: string | null): Promise<Company 
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

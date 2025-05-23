@@ -27,7 +27,7 @@ export async function saveCompany(data: Payload) {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

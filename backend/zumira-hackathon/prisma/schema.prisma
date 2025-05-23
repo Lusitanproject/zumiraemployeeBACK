@@ -271,12 +271,13 @@ model Notification {
   id                 String   @id @default(cuid())
   title              String
   summary            String
-  content            String
+  content            String?
+  actionUrl          String?  @map("action_url")
   notificationTypeId String   @map("notification_type_id")
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 
-  notificationType       NotificationType        @relation(fields: [notificationTypeId], references: [id])
+  notificationType       NotificationType?       @relation(fields: [notificationTypeId], references: [id])
   notificationRecipients NotificationRecipient[]
 
   @@map("notifications")
@@ -313,6 +314,7 @@ model Alert {
   id                       String   @id @default(uuid())
   assessmentResultId       String   @map("assessment_result_id")
   assessmentResultRatingId String   @map("assessment_result_rating_id")
+  read                     Boolean  @default(false)
   createdAt                DateTime @default(now()) @map("created_at")
   updatedAt                DateTime @updatedAt @map("updated_at")
 

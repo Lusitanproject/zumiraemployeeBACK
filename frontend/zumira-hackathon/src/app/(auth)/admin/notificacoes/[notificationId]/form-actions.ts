@@ -10,11 +10,12 @@ export type Payload = {
   id: string | undefined;
   title: string;
   summary: string;
-  content: string;
+  content?: string | null;
+  actionUrl?: string | null;
   notificationTypeId: string;
 };
 
-export async function saveNotification(data: Payload) {
+export async function saveNotification(data: Payload, userIds: string[]) {
   const cookie = await cookies();
   const session = decrypt(cookie.get("session")?.value);
 
@@ -24,7 +25,7 @@ export async function saveNotification(data: Payload) {
   const [error, response] = await catchError(
     fetch(url, {
       method,
-      body: JSON.stringify({ ...data, userIds: [] }),
+      body: JSON.stringify({ ...data, userIds }),
       headers: {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,

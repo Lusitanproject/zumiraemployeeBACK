@@ -16,6 +16,7 @@ class DetailNotificationService {
                 title: true,
                 summary: true,
                 content: true,
+                actionUrl: true,
                 notificationType: {
                     select: {
                         id: true,
