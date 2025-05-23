@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Notification } from "./definitions";
 import Link from "next/link";
+import { readNotification } from "./actions";
 
 interface NotificationCardProps {
   notification: Notification;
@@ -24,7 +25,10 @@ export function NotificationCard({ notification, selected }: NotificationCardPro
   }
 
   return (
-    <Link href={`/notificacoes?id=${notification.id}`}>
+    <Link
+      href={notification.actionUrl ?? `/notificacoes?id=${notification.id}`}
+      onClick={() => readNotification(notification.id)}
+    >
       <section
         className={cn(
           "relative flex flex-col gap-1 p-3 rounded-md  border-gray-100 border-1",

@@ -17,6 +17,7 @@ class ListNotificationsService {
             title: true,
             summary: true,
             content: true,
+            actionUrl: true,
             notificationType: {
               select: {
                 color: true,

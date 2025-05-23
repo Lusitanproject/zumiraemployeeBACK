@@ -73,7 +73,7 @@ export function Filters({ assessments, companies, totalResults, onChangeFilters 
             </Select>
           </div>
         </div>
-        <span className="text-gray-500 text-sm">Mostrando {totalResults} resultados</span>
+        <span className="text-gray-500 text-sm">Mostrando {Number(totalResults)} resultados</span>
       </div>
     </div>
   );

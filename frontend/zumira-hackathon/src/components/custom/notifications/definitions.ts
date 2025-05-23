@@ -2,6 +2,7 @@ export type Notification = {
   id: string;
   title: string;
   summary: string;
+  actionUrl?: string;
   read: boolean;
   receivedAt: Date;
   notificationType: {

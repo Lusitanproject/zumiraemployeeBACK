@@ -3,7 +3,8 @@ import { z } from "zod";
 export const CreateNotificationSchema = z.object({
   title: z.string().nonempty(),
   summary: z.string().nonempty(),
-  content: z.string().nonempty(),
+  content: z.string().nonempty().optional().nullable(),
+  actionUrl: z.string().nonempty().optional().nullable(),
   notificationTypeId: z.string().cuid(),
   userIds: z.array(z.string().uuid()),
 });
@@ -20,7 +21,8 @@ export const UpdateNotificationSchema = z.object({
   notificationId: z.string().cuid(),
   title: z.string().nonempty(),
   summary: z.string().nonempty(),
-  content: z.string().nonempty(),
+  content: z.string().nonempty().optional().nullable(),
+  actionUrl: z.string().nonempty().optional().nullable(),
   notificationTypeId: z.string().cuid(),
 });
 
