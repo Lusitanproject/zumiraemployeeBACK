@@ -5,7 +5,8 @@ const zod_1 = require("zod");
 exports.CreateNotificationSchema = zod_1.z.object({
     title: zod_1.z.string().nonempty(),
     summary: zod_1.z.string().nonempty(),
-    content: zod_1.z.string().nonempty(),
+    content: zod_1.z.string().nonempty().optional().nullable(),
+    actionUrl: zod_1.z.string().nonempty().optional().nullable(),
     notificationTypeId: zod_1.z.string().cuid(),
     userIds: zod_1.z.array(zod_1.z.string().uuid()),
 });
@@ -19,6 +20,7 @@ exports.UpdateNotificationSchema = zod_1.z.object({
     notificationId: zod_1.z.string().cuid(),
     title: zod_1.z.string().nonempty(),
     summary: zod_1.z.string().nonempty(),
-    content: zod_1.z.string().nonempty(),
+    content: zod_1.z.string().nonempty().optional().nullable(),
+    actionUrl: zod_1.z.string().nonempty().optional().nullable(),
     notificationTypeId: zod_1.z.string().cuid(),
 });
