@@ -24,7 +24,7 @@ export async function getUsers(): Promise<User[]> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

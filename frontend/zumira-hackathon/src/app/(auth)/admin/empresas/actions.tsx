@@ -24,7 +24,7 @@ export async function getCompanies(): Promise<Company[]> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

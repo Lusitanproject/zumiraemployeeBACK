@@ -21,7 +21,7 @@ export async function loadSelfMonitoringBlock(id: string | null): Promise<Monito
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

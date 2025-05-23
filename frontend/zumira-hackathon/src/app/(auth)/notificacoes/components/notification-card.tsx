@@ -31,6 +31,10 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
     return `${day}/${month}/${year} às ${hours}:${minutes}`;
   }
 
+  function handleRedirect(href: string) {
+    window.open(href, "_blank", "noopener,noreferrer");
+  }
+
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.offsetHeight);
@@ -41,7 +45,11 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
     <section
       id={id}
       onClick={() => {
-        if (isMobile() && !open) onOpen?.(notification.id);
+        if (notification.actionUrl) {
+          handleRedirect(notification.actionUrl);
+        } else {
+          if (isMobile() && !open) onOpen?.(notification.id);
+        }
       }}
       className={cn(
         "relative flex flex-col gap-1 p-3 rounded-md border-1 duration-200",
@@ -63,10 +71,16 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
       </span>
 
       <button
-        className="w-fit text-xs leading-[18px] text-gray-400 text-start cursor-pointer"
-        onClick={() => (open ? onClose?.(notification.id) : onOpen?.(notification.id))}
+        className="w-fit text-xs leading-[18px] text-gray-400 text-start cursor-pointer underline"
+        onClick={() =>
+          notification.actionUrl
+            ? handleRedirect(notification.actionUrl)
+            : open
+            ? onClose?.(notification.id)
+            : onOpen?.(notification.id)
+        }
       >
-        Ver {open ? "menos" : "mais"}
+        Ver {open && !notification.actionUrl ? "menos" : "mais"}
       </button>
 
       {!notification.read && (

@@ -23,7 +23,7 @@ export async function getMonitoringBlocks(): Promise<GetMonitoringBlocks> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

@@ -21,7 +21,7 @@ export async function getUserData(userId: string | null): Promise<User | null> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {
@@ -53,7 +53,7 @@ export async function getCompanies(): Promise<Company[]> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {
@@ -85,7 +85,7 @@ export async function getRoles(): Promise<Role[]> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

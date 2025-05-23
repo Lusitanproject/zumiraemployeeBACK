@@ -23,7 +23,7 @@ export async function getAssessmentData(assessmentId: string): Promise<Assessmen
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error || !response.ok) {

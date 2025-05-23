@@ -20,7 +20,7 @@ export async function getAssessmentData(assessmentId: string | null): Promise<As
       headers: {
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error || !response.ok) {

@@ -1,3 +1,5 @@
+"use server";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
 import { cookies } from "next/headers";
@@ -53,6 +55,13 @@ export async function detailNotification(notificationId: string) {
     return null;
   }
 
+  return parsed.data;
+}
+
+export async function readNotification(notificationId: string) {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
   fetch(`${process.env.API_BASE_URL}/notifications/${notificationId}/read`, {
     method: "PUT",
     headers: {
@@ -60,6 +69,4 @@ export async function detailNotification(notificationId: string) {
       Authorization: `Bearer ${session?.token}`,
     },
   });
-
-  return parsed.data;
 }

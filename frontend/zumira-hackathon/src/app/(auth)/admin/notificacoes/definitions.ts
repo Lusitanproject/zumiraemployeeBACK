@@ -9,7 +9,8 @@ export type Notification = {
   id: string;
   title: string;
   summary: string;
-  content: string;
+  content?: string;
+  actionUrl?: string;
   notificationType: NotificationType;
 };
 
