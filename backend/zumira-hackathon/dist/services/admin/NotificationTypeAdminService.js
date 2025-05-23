@@ -29,5 +29,13 @@ class NotificationTypeAdminService {
         });
         return { items: types };
     }
+    async create(data) {
+        const type = await prisma_1.default.notificationType.create({ data });
+        return type;
+    }
+    async update(data) {
+        const type = await prisma_1.default.notificationType.update({ where: { id: data.id }, data });
+        return type;
+    }
 }
 exports.NotificationTypeAdminService = NotificationTypeAdminService;

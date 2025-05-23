@@ -20,6 +20,7 @@ class ListNotificationsService {
                         id: true,
                         title: true,
                         summary: true,
+                        content: true,
                         notificationType: {
                             select: {
                                 color: true,

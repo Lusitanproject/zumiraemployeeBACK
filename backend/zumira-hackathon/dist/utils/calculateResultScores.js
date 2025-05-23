@@ -48,7 +48,7 @@ async function calculateResultScores(resultIds) {
         },
     });
     if (!results.length)
-        throw new Error("No results were found");
+        return [];
     const sample = results[0];
     const dimensionIds = [...new Set(sample.assessment.assessmentQuestions.map((q) => q.psychologicalDimensionId))];
     const dimensions = dimensionIds

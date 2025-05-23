@@ -51,6 +51,9 @@ const UpdateResultRatingsController_1 = require("./controllers/admin/assessments
 const FindResultRatingsByAssessmentController_1 = require("./controllers/admin/assessments/FindResultRatingsByAssessmentController");
 const DetailResultController_1 = require("./controllers/assessment/DetailResultController");
 const FindFilteredResultsController_1 = require("./controllers/admin/assessments/FindFilteredResultsController");
+const FindNotificationTypeController_1 = require("./controllers/admin/notifications/FindNotificationTypeController");
+const CreateNotificationTypeController_1 = require("./controllers/admin/notifications/CreateNotificationTypeController");
+const UpdateNotificationTypeController_1 = require("./controllers/admin/notifications/UpdateNotificationTypeController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -108,8 +111,11 @@ router.get("/nationalities", isAuthenticated_1.isAuthenticated, new ListNational
 router.get("/notifications", isAuthenticated_1.isAuthenticated, new ListNotificationsController_1.ListNotificationsController().handle);
 router.get("/notifications/admin", isAuthenticated_1.isAuthenticated, new FindAllNotificationsController_1.FindAllNotificationsController().handle);
 router.get("/notifications/admin/types", isAuthenticated_1.isAuthenticated, new FindAllTypesController_1.FindAllTypesController().handle);
+router.get("/notifications/admin/types/:id", isAuthenticated_1.isAuthenticated, new FindNotificationTypeController_1.FindNotificationTypeController().handle);
 router.get("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new DetailNotificationController_1.DetailNotificationController().handle);
 router.put("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new UpdateNotificationController_1.UpdateNotificationController().handle);
 router.put("/notifications/:notificationId/read", isAuthenticated_1.isAuthenticated, new ReadNotificationController_1.ReadNotificationController().handle);
+router.put("/notifications/admin/types/:id", isAuthenticated_1.isAuthenticated, new UpdateNotificationTypeController_1.UpdateNotificationTypeController().handle);
 router.post("/notifications", isAuthenticated_1.isAuthenticated, new CreateNotificationController_1.CreateNotificationController().handle);
+router.post("/notifications/admin/types", isAuthenticated_1.isAuthenticated, new CreateNotificationTypeController_1.CreateNotificationTypeController().handle);
 router.delete("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new DeleteNotificationController_1.DeleteNotificationController().handle);
