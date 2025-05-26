@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import {
   AssessmentSummary,
@@ -15,7 +15,6 @@ import { Label } from "@/components/custom/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { redirect } from "next/navigation";
 import { saveAssessment } from "./form-actions";
 import { Nationality } from "../../autoconhecimento/definitions";
 import { RichTextArea } from "@/components/ui/rich-text-area";
@@ -42,11 +41,12 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
 
   const [formData, setFormData] = useState<ManageAssessment>(parsedData ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
-
   const [formError, setFormError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async () => {
     setErrors(null);
+    setLoading(true);
     const validation = CreateAssessmentSchema.safeParse(formData);
     if (!validation.success) {
       setErrors(validation.error.flatten().fieldErrors);
@@ -62,17 +62,8 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
     if (response) {
       setFormError(response);
     }
+    setLoading(false);
   };
-
-  const handleCancel = useCallback(() => {
-    redirect("/admin/testes");
-  }, []);
-
-  const handleMoveToQuestions = useCallback(() => {
-    if (data?.id) {
-      redirect(`/admin/testes/${data.id}/perguntas`);
-    }
-  }, [data]);
 
   return (
     <div className="w-full py-4 md:pt-4 md:pb-24">
@@ -222,16 +213,8 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         {!!formError && <span className="text-sm text-error-500">{formError}</span>}
       </div>
       <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
-        <Button size="xl" variant="outline" onClick={handleCancel}>
-          Cancelar
-        </Button>
-        {data?.id && (
-          <Button size="xl" variant="secondary" onClick={handleMoveToQuestions}>
-            Cadastrar perguntas
-          </Button>
-        )}
-        <Button size="xl" variant="primary" onClick={handleSubmit}>
-          Salvar
+        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+          Salvar detalhes
         </Button>
       </div>
     </div>

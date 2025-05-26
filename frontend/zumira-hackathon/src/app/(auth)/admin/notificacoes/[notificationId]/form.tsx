@@ -7,6 +7,7 @@ import {
   INITIAL_VALUE,
   ManageNotification,
   ManageNotificationSchema,
+  User,
 } from "./definitions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/custom/label";
@@ -16,43 +17,65 @@ import { saveNotification } from "./form-actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Notification } from "../definitions";
 import { RichTextArea } from "@/components/ui/rich-text-area";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type FormProps = {
   data: Notification | null;
   types: NotificationType[];
+  users: User[];
 };
 
-export function NotificationForm({ data, types }: FormProps) {
+export function NotificationForm({ data, types, users }: FormProps) {
   const parsedNotification = data && {
     title: data.title,
     summary: data.summary,
     content: data.content,
     notificationTypeId: data.notificationType.id,
+    actionUrl: data.actionUrl,
   };
 
   const [formData, setFormData] = useState<ManageNotification>(parsedNotification ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
+  const [contentType, setContentType] = useState<"call-to-action" | "text">(
+    data ? (data.content ? "text" : "call-to-action") : "text"
+  );
 
   const handleSubmit = async () => {
+    setLoading(true);
     setErrors(null);
-    const validation = ManageNotificationSchema.safeParse(formData);
+
+    const processedFormData = { ...formData };
+    if (contentType === "text") {
+      processedFormData.actionUrl = null;
+    } else {
+      processedFormData.content = null;
+    }
+
+    const validation = ManageNotificationSchema.safeParse(processedFormData);
 
     if (!validation.success) {
       setErrors(validation.error.flatten().fieldErrors);
+      setLoading(false);
+      return;
     }
 
     const payload = {
       id: data?.id ?? undefined,
-      ...formData,
+      ...processedFormData,
     };
 
-    const response = await saveNotification(payload);
+    const response = await saveNotification(
+      payload,
+      users.map((u) => u.id)
+    );
 
     if (response) {
       setFormError(response);
     }
+
+    setLoading(false);
   };
 
   const handleCancel = useCallback(() => {
@@ -86,19 +109,55 @@ export function NotificationForm({ data, types }: FormProps) {
           />
           {!!errors?.summary && <span className="text-sm text-error-500">{errors.summary}</span>}
         </div>
-        <div className="pb-3">
-          <Label htmlFor="content">Conteúdo</Label>
-          <RichTextArea
-            id="content"
-            value={formData.content ?? ""}
-            onChange={(value) => {
-              setFormData((current) => ({ ...current, content: value }));
+        <div>
+          <Label htmlFor="content">Tipo de notificação</Label>
+          <RadioGroup
+            className="flex flex-row text-sm my-2"
+            value={contentType}
+            onValueChange={(value) => {
+              if (value === "text" || value === "call-to-action") {
+                setContentType(value);
+              }
             }}
-          />
-          {!!errors?.content && <span className="text-sm text-error-500">{errors.content}</span>}
+          >
+            <div className="flex flex-row gap-2 items-center">
+              <RadioGroupItem id="content-text" value="text" />
+              <label htmlFor="content-text">Conteúdo</label>
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <RadioGroupItem id="content-call-to-action" value="call-to-action" />
+              <label htmlFor="content-call-to-action">Call to action</label>
+            </div>
+          </RadioGroup>
         </div>
         <div className="pb-3">
-          <Label htmlFor="notificationTypeId">Tipo de Notificação</Label>
+          {contentType === "text" ? (
+            <>
+              <Label htmlFor="content">Conteúdo</Label>
+              <RichTextArea
+                id="content"
+                value={formData.content ?? ""}
+                onChange={(value) => {
+                  setFormData((current) => ({ ...current, content: value }));
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <Label htmlFor="link">Link de redirecionamento</Label>
+              <Input
+                id="link"
+                value={formData.actionUrl ?? ""}
+                onChange={(e) => {
+                  setFormData((current) => ({ ...current, actionUrl: e.target.value }));
+                }}
+              />
+            </>
+          )}
+          {!!errors?.contentOrActionUrl && <span className="text-sm text-error-500">{errors.contentOrActionUrl}</span>}
+        </div>
+        <div className="pb-3">
+          <Label htmlFor="notificationTypeId">Categoria</Label>
           <Select
             name="notificationTypeId"
             defaultValue={formData.notificationTypeId}
@@ -128,7 +187,7 @@ export function NotificationForm({ data, types }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit}>
+        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
           Salvar
         </Button>
       </div>

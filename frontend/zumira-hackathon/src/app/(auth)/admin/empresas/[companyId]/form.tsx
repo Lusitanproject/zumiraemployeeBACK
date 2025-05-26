@@ -20,10 +20,11 @@ export function CompanyForm({ data }: FormProps) {
 
   const [formData, setFormData] = useState<ManageCompany>(parsedUser ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
 
   const handleSubmit = async () => {
+    setLoading(true);
     setErrors(null);
     const validation = ManageCompanySchema.safeParse(formData);
 
@@ -41,6 +42,8 @@ export function CompanyForm({ data }: FormProps) {
     if (response) {
       setFormError(response);
     }
+
+    setLoading(false);
   };
 
   const handleCancel = useCallback(() => {
@@ -81,7 +84,7 @@ export function CompanyForm({ data }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit}>
+        <Button size="xl" variant="primary" onClick={handleSubmit} loading={loading} disabled={loading}>
           Salvar
         </Button>
       </div>

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateAssessmentSchema = exports.CreateAssessmentSchema = void 0;
+exports.FindFilteredResultsSchema = exports.UpdateRatingsSchema = exports.UpdateAssessmentSchema = exports.CreateAssessmentSchema = void 0;
 const client_1 = require("@prisma/client");
 const zod_1 = require("zod");
 exports.CreateAssessmentSchema = zod_1.z.object({
@@ -22,4 +22,18 @@ exports.UpdateAssessmentSchema = zod_1.z.object({
     companyFeedbackInstructions: zod_1.z.string().optional(),
     operationType: zod_1.z.nativeEnum(client_1.Operation),
     nationalityId: zod_1.z.string().cuid(),
+});
+exports.UpdateRatingsSchema = zod_1.z.object({
+    ratings: zod_1.z.array(zod_1.z.object({
+        id: zod_1.z.string().uuid().optional(),
+        risk: zod_1.z.string().nonempty(),
+        profile: zod_1.z.string().nonempty(),
+        color: zod_1.z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+            message: "Color value must be in hexadecimal (#RRGGBB)",
+        }),
+    })),
+});
+exports.FindFilteredResultsSchema = zod_1.z.object({
+    assessmentId: zod_1.z.string().cuid(),
+    companyId: zod_1.z.string().cuid().optional(),
 });

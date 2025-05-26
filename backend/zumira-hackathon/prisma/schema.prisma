@@ -37,7 +37,6 @@ model User {
   codes                     AuthCode[]
   assessmentResults         AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
-  userAssessmentFeedbacks   UserAssessmentFeedback[]
   notificationRecipients    NotificationRecipient[]
 
   @@map("users")
@@ -107,9 +106,11 @@ model Company {
 }
 
 model Nationality {
-  id       String @id @default(cuid())
-  acronymn String @unique
-  name     String
+  id        String   @id @default(cuid())
+  acronymn  String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") // TODO: remove default in next migration
 
   assessments Assessment[]
   users       User[]
@@ -134,24 +135,44 @@ model Assessment {
   nationality                Nationality                 @relation(fields: [nationalityId], references: [id])
   assessmentQuestions        AssessmentQuestion[]
   assessmentResults          AssessmentResult[]
-  userAssessmentFeedbacks    UserAssessmentFeedback[]
   companyAssessmentFeedbacks CompanyAssessmentFeedback[]
+  assessmentResultRatings    AssessmentResultRating[]
 
   @@map("assessments")
 }
 
 model AssessmentResult {
-  id           String   @id @default(uuid())
-  userId       String   @map("user_id")
+  id                       String   @id @default(uuid())
+  feedback                 String?
+  assessmentResultRatingId String?
+  userId                   String   @map("user_id")
+  assessmentId             String   @map("assessment_id")
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  user                      User                       @relation(fields: [userId], references: [id])
+  assessment                Assessment                 @relation(fields: [assessmentId], references: [id])
+  assessmentResultRating    AssessmentResultRating?    @relation(fields: [assessmentResultRatingId], references: [id])
+  assessmentQuestionAnswers AssessmentQuestionAnswer[]
+  alerts                    Alert[]
+
+  @@map("assessment_results")
+}
+
+model AssessmentResultRating {
+  id           String   @unique @default(uuid())
+  risk         String
+  profile      String
+  color        String
   assessmentId String   @map("assessment_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  user                      User                       @relation(fields: [userId], references: [id])
-  assessment                Assessment                 @relation(fields: [assessmentId], references: [id])
-  assessmentQuestionAnswers AssessmentQuestionAnswer[]
+  assessment        Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  assessmentResults AssessmentResult[]
+  Alerts            Alert[]
 
-  @@map("assessment_results")
+  @@map("assessment_result_ratings")
 }
 
 model AssessmentQuestion {
@@ -231,26 +252,12 @@ model PsychologicalDimension {
   @@map("psychological_dimensions")
 }
 
-model UserAssessmentFeedback {
-  id           String   @id @default(uuid())
-  text         String
-  userId       String   @map("user_id")
-  assessmentId String   @map("assessment_id")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-
-  user       User       @relation(fields: [userId], references: [id])
-  assessment Assessment @relation(fields: [assessmentId], references: [id])
-
-  @@map("user_assessment_feedback")
-}
-
 model CompanyAssessmentFeedback {
   id           String   @id @default(uuid())
   text         String
   companyId    String   @map("company_id")
   assessmentId String   @map("assessment_id")
-  respondents  Int      @default(0) // Remove default value in next migration
+  respondents  Int
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -264,12 +271,13 @@ model Notification {
   id                 String   @id @default(cuid())
   title              String
   summary            String
-  content            String
+  content            String?
+  actionUrl          String?  @map("action_url")
   notificationTypeId String   @map("notification_type_id")
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 
-  notificationType       NotificationType        @relation(fields: [notificationTypeId], references: [id])
+  notificationType       NotificationType?       @relation(fields: [notificationTypeId], references: [id])
   notificationRecipients NotificationRecipient[]
 
   @@map("notifications")
@@ -300,4 +308,18 @@ model NotificationRecipient {
 
   @@unique([userId, notificationId])
   @@map("notification_recipients")
+}
+
+model Alert {
+  id                       String   @id @default(uuid())
+  assessmentResultId       String   @map("assessment_result_id")
+  assessmentResultRatingId String   @map("assessment_result_rating_id")
+  read                     Boolean  @default(false)
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  assessmentResult       AssessmentResult       @relation(fields: [assessmentResultId], references: [id], onDelete: Cascade)
+  assessmentResultRating AssessmentResultRating @relation(fields: [assessmentResultRatingId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
 }

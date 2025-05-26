@@ -33,7 +33,7 @@ export function ResendButton() {
         disabled={counter > 0}
         onClick={handleClick}
       >
-        Não recebi o código{counter > 0 && ` (${counter}s)`}
+        Enviar outro código{counter > 0 && ` (${counter}s)`}
       </button>
     </div>
   );

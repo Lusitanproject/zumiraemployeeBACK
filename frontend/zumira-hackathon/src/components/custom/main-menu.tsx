@@ -13,7 +13,8 @@ export type MenuIcon =
   | "clipboard-list"
   | "building-2"
   | "brain"
-  | "mails";
+  | "mails"
+  | "circle-alert";
 
 export type MenuLink = {
   href: string;

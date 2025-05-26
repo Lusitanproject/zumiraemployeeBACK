@@ -2,10 +2,11 @@ import prismaClient from "../../../prisma";
 import nodemailer from "nodemailer";
 import { randomInt } from "crypto";
 import { User } from "@prisma/client";
+import { devLog } from "../../../utils/devLog";
 
 async function sendEmail(user: User, code: string) {
   const transporter = nodemailer.createTransport({
-    host: "email-ssl.com.br",
+    host: process.env.EMAIL_HOST,
     port: 587,
     secure: false,
     auth: {
@@ -76,7 +77,7 @@ class SendCodeService {
       },
     });
 
-    if (process.env.PRODUCTION !== "true") console.log(`Sent code ${code} to ${email}`);
+    devLog(`Sent code ${code} to ${email}`);
 
     return {};
   }

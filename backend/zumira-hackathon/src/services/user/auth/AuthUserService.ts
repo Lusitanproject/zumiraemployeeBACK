@@ -24,15 +24,12 @@ class AuthUserService {
     const storedCode = await prismaClient.authCode.findFirst({
       where: {
         userId: user.id,
-      },
-      orderBy: {
-        expiresAt: "desc",
+        code,
       },
     });
 
-    if (!storedCode) throw new Error("No code was sent");
-    if (storedCode.expiresAt < new Date()) throw new Error("Code is expired");
-    if (storedCode.code !== code) throw new Error("Incorrect code");
+    if (!storedCode) throw new Error("Invalid code");
+    if (storedCode.expiresAt < new Date()) throw new Error("Expired code");
 
     const token = sign(
       {
@@ -42,12 +39,10 @@ class AuthUserService {
       {
         subject: String(user.id),
         expiresIn: "30d",
-      },
+      }
     );
     const now = new Date().getTime();
     const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30); // Expiração em 30 dias
-
-    console.log(`Authenticated user ${email}`);
 
     return {
       name: user.name,

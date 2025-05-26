@@ -16,7 +16,7 @@ const inputVariants = cva(
     defaultVariants: {
       hasIcon: false,
     },
-  },
+  }
 );
 
 function Input({

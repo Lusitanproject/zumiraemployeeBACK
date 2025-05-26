@@ -3,13 +3,13 @@
 import { cookies } from "next/headers";
 import { catchError } from "@/utils/error";
 import { decrypt } from "@/app/_lib/session";
-import { GetFeedback } from "./definitions";
+import { GetResults } from "./definitions";
 
-export async function getFeedbacks() {
+export async function getResults() {
   const cookie = await cookies();
   const session = decrypt(cookie.get("session")?.value);
 
-  const url = `${process.env.API_BASE_URL}/assessments/feedback`;
+  const url = `${process.env.API_BASE_URL}/assessments/results`;
 
   const [error, response] = await catchError(
     fetch(url, {
@@ -28,7 +28,7 @@ export async function getFeedbacks() {
     return { status: "ERROR", data: [], message: response.statusText };
   }
 
-  const parsed = (await response.json()) as GetFeedback;
+  const parsed = (await response.json()) as GetResults;
 
   return {
     status: parsed.status,

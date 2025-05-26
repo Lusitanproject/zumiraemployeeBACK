@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { decrypt } from "@/app/_lib/session";
-import { getFeedbacks } from "./actions";
+import { getResults } from "./actions";
 import { Chat as ChatComponent } from "@/components/ui/chat/chat";
 import { ChatMessage } from "@/components/ui/chat/definitions";
 
@@ -9,9 +9,9 @@ export default async function Chat() {
   const session = decrypt(cookie.get("session")?.value);
   const name = session?.name ?? "Usuário";
   const chatbotId = process.env.CHATBASE_CHATBOT_ID;
-  const feedbacks = (await getFeedbacks()).data;
-  const context = feedbacks.map((f) => ({
-    content: `TESTE: ${f.assessment.title}\nRESULTADO/DEVOLUTIVA: ${f.text}`,
+  const results = (await getResults()).data;
+  const context = results.map((r) => ({
+    content: `TESTE: ${r.assessment.title}\nRESULTADO/DEVOLUTIVA: ${r.feedback}`,
     role: "user",
   })) as ChatMessage[];
 

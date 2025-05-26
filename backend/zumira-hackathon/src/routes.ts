@@ -24,6 +24,8 @@ import { CreateResultController } from "./controllers/assessment/CreateResultCon
 import { AssessmentDetailForAdminController } from "./controllers/assessment/AssessmentDetailForAdminController";
 import { UpdateAssessmentController } from "./controllers/admin/assessments/UpdateAssessmentController";
 import { UpdateQuestionsController } from "./controllers/assessment/UpdateQuestionsController";
+import { GenerateUserFeedbackController } from "./controllers/assessment/GenerateUserFeedbackController";
+import { GenerateCompanyFeedbackController } from "./controllers/assessment/GenerateCompanyFeedbackController";
 
 import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
 
@@ -32,15 +34,13 @@ import { ListAllSelfMonitoringBlocksController } from "./controllers/admin/self-
 import { CreateSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/CreateSelfMonitoringBlockController";
 import { EditSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/EditSelfMonitoringBlockController";
 import { FindSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindSelfMonitoringBlockController";
-import { GenerateUserFeedbackController } from "./controllers/assessment/GenerateUserFeedbackController";
-import { GenerateCompanyFeedbackController } from "./controllers/assessment/GenerateCompanyFeedbackController";
-import { DetailUserFeedbackController } from "./controllers/selfMonitoringBlock/DetailUserFeedbackController";
+import { ListSelfMonitoringBlockResultsController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlockResultsController";
 
 import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
 import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
-import { FindDimensionByBlockController } from "./controllers/admin/dimensions/FindBySelfMonitoringController";
 import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
-import { ListFeedbacksController } from "./controllers/assessment/feedback/ListFeedbacksController";
+
+import { FindDimensionByBlockController } from "./controllers/admin/dimensions/FindBySelfMonitoringController";
 import { FindDimensionController } from "./controllers/admin/dimensions/FindDimensionController";
 import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
 
@@ -55,6 +55,14 @@ import { DeleteNotificationController } from "./controllers/admin/notifications/
 import { FindAllNotificationsController } from "./controllers/admin/notifications/FindAllNotificationsController";
 import { FindAllTypesController } from "./controllers/admin/notifications/FindAllTypesController";
 import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAllFeedbacksController";
+import { ListResultsController } from "./controllers/assessment/ListResultsController";
+import { UpdateResultRatingsController } from "./controllers/admin/assessments/UpdateResultRatingsController";
+import { FindResultRatingsByAssessmentController } from "./controllers/admin/assessments/FindResultRatingsByAssessmentController";
+import { DetailResultController } from "./controllers/assessment/DetailResultController";
+import { FindFilteredResultsController } from "./controllers/admin/assessments/FindFilteredResultsController";
+import { FindNotificationTypeController } from "./controllers/admin/notifications/FindNotificationTypeController";
+import { CreateNotificationTypeController } from "./controllers/admin/notifications/CreateNotificationTypeController";
+import { UpdateNotificationTypeController } from "./controllers/admin/notifications/UpdateNotificationTypeController";
 
 const router = Router();
 
@@ -78,21 +86,29 @@ router.get("/dimensions", isAuthenticated, new FindAllDimensionsController().han
 router.get("/dimensions/:psychologicalDimensionId", isAuthenticated, new FindDimensionController().handle);
 router.put("/dimensions/:psychologicalDimensionId", isAuthenticated, new EditDimensionController().handle);
 
+// ROTAS RESULTS
+router.get("/assessments/results", isAuthenticated, new ListResultsController().handle);
+router.get("/assessments/results/admin", isAuthenticated, new FindFilteredResultsController().handle);
+router.get("/assessments/results/:id", isAuthenticated, new DetailResultController().handle);
+router.post("/assessments/results", isAuthenticated, new CreateResultController().handle);
+
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
-router.get("/assessments/feedback", isAuthenticated, new ListFeedbacksController().handle);
 router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
 router.get("/assessments/admin/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
 router.post("/assessments", isAuthenticated, new CreateAssessmentController().handle);
-router.post("/assessments/questions", isAuthenticated, new CreateQuestionController().handle);
-router.post("/assessments/results", isAuthenticated, new CreateResultController().handle);
-router.put("/assessments/questions/:id", isAuthenticated, new UpdateQuestionsController().handle);
-router.put("/assessments/:id", isAuthenticated, new UpdateAssessmentController().handle);
 router.post("/assessments/feedback/users/:id", isAuthenticated, new GenerateUserFeedbackController().handle);
 router.post("/assessments/feedback/companies/:id", isAuthenticated, new GenerateCompanyFeedbackController().handle);
+router.put("/assessments/:id", isAuthenticated, new UpdateAssessmentController().handle);
 
 // ROTAS QUESTIONS
-router.get("/questions/:assessmentId", isAuthenticated, new FindQuestionByAssessmentController().handle);
+router.post("/assessments/questions", isAuthenticated, new CreateQuestionController().handle);
+router.put("/assessments/questions/:id", isAuthenticated, new UpdateQuestionsController().handle);
+router.get("/assessments/questions/:assessmentId", isAuthenticated, new FindQuestionByAssessmentController().handle);
+
+// ROTAS RESULT RATINGS
+router.get("/assessments/ratings/:id", isAuthenticated, new FindResultRatingsByAssessmentController().handle);
+router.put("/assessments/ratings/:id", isAuthenticated, new UpdateResultRatingsController().handle);
 
 // ROTAS SELF MONITORING
 router.get("/self-monitoring", isAuthenticated, new ListSelfMonitoringBlocksController().handle);
@@ -100,7 +116,11 @@ router.get("/self-monitoring/admin", isAuthenticated, new ListAllSelfMonitoringB
 router.post("/self-monitoring/admin", isAuthenticated, new CreateSelfMonitoringBlocksController().handle);
 router.put("/self-monitoring/admin/:id", isAuthenticated, new EditSelfMonitoringBlocksController().handle);
 router.get("/self-monitoring/admin/:id", isAuthenticated, new FindSelfMonitoringBlocksController().handle);
-router.get("/self-monitoring/feedback/:id", isAuthenticated, new DetailUserFeedbackController().handle);
+router.get(
+  "/self-monitoring/results/:selfMonitoringBlockId",
+  isAuthenticated,
+  new ListSelfMonitoringBlockResultsController().handle
+);
 router.get(
   "/self-monitoring/dimensions/:selfMonitoringBlockId",
   isAuthenticated,
@@ -120,10 +140,13 @@ router.get("/nationalities", isAuthenticated, new ListNationalitiesController().
 router.get("/notifications", isAuthenticated, new ListNotificationsController().handle);
 router.get("/notifications/admin", isAuthenticated, new FindAllNotificationsController().handle);
 router.get("/notifications/admin/types", isAuthenticated, new FindAllTypesController().handle);
+router.get("/notifications/admin/types/:id", isAuthenticated, new FindNotificationTypeController().handle);
 router.get("/notifications/:notificationId", isAuthenticated, new DetailNotificationController().handle);
 router.put("/notifications/:notificationId", isAuthenticated, new UpdateNotificationController().handle);
 router.put("/notifications/:notificationId/read", isAuthenticated, new ReadNotificationController().handle);
+router.put("/notifications/admin/types/:id", isAuthenticated, new UpdateNotificationTypeController().handle);
 router.post("/notifications", isAuthenticated, new CreateNotificationController().handle);
+router.post("/notifications/admin/types", isAuthenticated, new CreateNotificationTypeController().handle);
 router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
 
 export { router };

@@ -30,10 +30,11 @@ export function DimensionForm({ data, blocks }: FormProps) {
 
   const [formData, setFormData] = useState<ManageDimension>(parsedUser ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
 
   const handleSubmit = async () => {
+    setLoading(true);
     setErrors(null);
     const validation = ManageDimensionSchema.safeParse(formData);
 
@@ -51,6 +52,7 @@ export function DimensionForm({ data, blocks }: FormProps) {
     if (response) {
       setFormError(response);
     }
+    setLoading(false);
   };
 
   const handleCancel = useCallback(() => {
@@ -117,7 +119,7 @@ export function DimensionForm({ data, blocks }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit}>
+        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
           Salvar
         </Button>
       </div>

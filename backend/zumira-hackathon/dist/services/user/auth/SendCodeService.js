@@ -7,9 +7,10 @@ exports.SendCodeService = void 0;
 const prisma_1 = __importDefault(require("../../../prisma"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const crypto_1 = require("crypto");
+const devLog_1 = require("../../../utils/devLog");
 async function sendEmail(user, code) {
     const transporter = nodemailer_1.default.createTransport({
-        host: "email-ssl.com.br",
+        host: process.env.EMAIL_HOST,
         port: 587,
         secure: false,
         auth: {
@@ -73,8 +74,7 @@ class SendCodeService {
                 expiresAt: expiresAt,
             },
         });
-        if (process.env.PRODUCTION !== "true")
-            console.log(`Sent code ${code} to ${email}`);
+        (0, devLog_1.devLog)(`Sent code ${code} to ${email}`);
         return {};
     }
 }

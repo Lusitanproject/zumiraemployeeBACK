@@ -28,7 +28,7 @@ export async function saveDimension(data: Payload) {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

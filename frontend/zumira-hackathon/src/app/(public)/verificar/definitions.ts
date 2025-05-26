@@ -7,17 +7,22 @@ export const VerifyCodeFormSchema = z.object({
 
 export type FormState =
   | {
-      errors?: {
-        email?: string[];
-        code?: string[];
+      errors: {
+        input?: boolean;
+        code?: string;
       };
     }
   | undefined;
 
-export type AuthResponse = {
-  type: "SUCCESS";
-  data: Authenticated;
-};
+export type AuthResponse =
+  | {
+      status: "SUCCESS";
+      data: Authenticated;
+    }
+  | {
+      status: "ERROR";
+      message: string;
+    };
 
 export type Authenticated = {
   name: string;

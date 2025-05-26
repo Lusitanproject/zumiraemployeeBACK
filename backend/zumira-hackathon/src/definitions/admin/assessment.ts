@@ -23,5 +23,25 @@ export const UpdateAssessmentSchema = z.object({
   nationalityId: z.string().cuid(),
 });
 
+export const UpdateRatingsSchema = z.object({
+  ratings: z.array(
+    z.object({
+      id: z.string().uuid().optional(),
+      risk: z.string().nonempty(),
+      profile: z.string().nonempty(),
+      color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
+        message: "Color value must be in hexadecimal (#RRGGBB)",
+      }),
+    })
+  ),
+});
+
+export const FindFilteredResultsSchema = z.object({
+  assessmentId: z.string().cuid(),
+  companyId: z.string().cuid().optional(),
+});
+
 export type CreateAssessment = z.infer<typeof CreateAssessmentSchema>;
 export type UpdateAssessment = z.infer<typeof UpdateAssessmentSchema>;
+export type UpdateRatingsRequest = z.infer<typeof UpdateRatingsSchema> & { assessmentId: string };
+export type FindFilteredAlertsRequest = z.infer<typeof FindFilteredResultsSchema>;

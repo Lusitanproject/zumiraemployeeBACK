@@ -6,7 +6,7 @@ const notification_1 = require("../../definitions/notification");
 const parseZodError_1 = require("../../utils/parseZodError");
 class ListNotificationsController {
     async handle(req, res) {
-        const { success, data, error } = notification_1.ListNotificationsSchema.safeParse(req.body);
+        const { success, data, error } = notification_1.ListNotificationsSchema.safeParse(req.query);
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const userId = req.user.id;

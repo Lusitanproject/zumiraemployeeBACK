@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { decrypt, deleteSession } from "@/app/_lib/session";
 
-const protectedRoutes = ["/chat", "/autoconhecimento", "/autogestao", "/biblioteca", "/rede-apoio", "/admin"];
+const protectedRoutes = ["/chat", "/autoconhecimento", "/autoconhecimento", "/biblioteca", "/rede-apoio", "/admin"];
 const publicRoutes = ["/", "/entrar", "/verificar"];
 
 export default async function middleware(req: NextRequest) {

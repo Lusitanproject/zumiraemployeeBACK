@@ -1,18 +1,24 @@
-export type Feedback = {
+export type Result = {
   id: string;
-  text: string;
+  feedback: string;
+  resultRatingId: null;
+  userId: string;
+  assessmentId: string;
   assessment: {
+    id: string;
     title: string;
     summary: string;
-    description: string;
   };
 };
 
-export type GetFeedback =
+export type GetResults =
   | {
       status: "SUCCESS";
       data: {
-        items: Feedback[];
+        items: Result[];
       };
     }
-  | { status: "ERROR"; message: string };
+  | {
+      status: "ERROR";
+      message: string;
+    };

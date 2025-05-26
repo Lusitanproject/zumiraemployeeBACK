@@ -24,7 +24,7 @@ export async function getDimensions(): Promise<Dimension[]> {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,
       },
-    }),
+    })
   );
 
   if (error) {

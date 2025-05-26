@@ -6,12 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssessmentQuestionAdminService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class AssessmentQuestionAdminService {
-    async find(assessmentQuestionId) {
-        const question = await prisma_1.default.assessmentQuestion.findUnique({
-            where: { id: assessmentQuestionId },
-        });
-        return question;
-    }
     async findByAssessment(assessmentId) {
         const questions = await prisma_1.default.assessmentQuestion.findMany({
             where: { assessmentId },
@@ -39,10 +33,6 @@ class AssessmentQuestionAdminService {
             },
         });
         return questions;
-    }
-    async create(data) {
-        const company = await prisma_1.default.company.create({ data });
-        return company;
     }
 }
 exports.AssessmentQuestionAdminService = AssessmentQuestionAdminService;

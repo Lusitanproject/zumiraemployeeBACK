@@ -1,24 +1,39 @@
+export type NotificationType = {
+  id: string;
+  name: string;
+  priority: number;
+  color: string;
+};
+
 export type Notification = {
   id: string;
   title: string;
   summary: string;
-  content: string;
-  notificationType: {
-    id: string;
-    name: string;
-    priority: number;
-    color: string;
-  };
+  content?: string;
+  actionUrl?: string;
+  notificationType: NotificationType;
 };
 
-export type GetNotificationsSuccess = {
-  status: "SUCCESS";
-  data: {
-    notifications: Notification[];
-  };
-};
+export type GetNotifications =
+  | {
+      status: "SUCCESS";
+      data: {
+        notifications: Notification[];
+      };
+    }
+  | {
+      status: "ERROR";
+      message: string;
+    };
 
-export type GetNotificationsError = {
-  status: "ERROR";
-  message: string;
-};
+export type GetNotificationTypes =
+  | {
+      status: "SUCCESS";
+      data: {
+        items: NotificationType[];
+      };
+    }
+  | {
+      status: "ERROR";
+      message: string;
+    };

@@ -11,9 +11,9 @@ export async function verifyCode(state: FormState, formData: FormData): Promise<
 
   const mail = cookie.get("session:verify")?.value;
 
-  // if (!mail) {
-  //   redirect("/entrar", RedirectType.replace)
-  // }
+  if (!mail) {
+    redirect("/entrar", RedirectType.replace);
+  }
 
   const validationResult = VerifyCodeFormSchema.safeParse({
     email: mail,
@@ -21,9 +21,7 @@ export async function verifyCode(state: FormState, formData: FormData): Promise<
   });
 
   if (!validationResult.success) {
-    return {
-      errors: validationResult.error.flatten().fieldErrors,
-    };
+    return { errors: { input: true } };
   }
 
   const { email, code } = validationResult.data;
@@ -37,24 +35,22 @@ export async function verifyCode(state: FormState, formData: FormData): Promise<
       headers: {
         "Content-Type": "application/json",
       },
-    }),
+    })
   );
 
   if (error) {
-    return {
-      errors: {
-        email: [error.message],
-      },
-    };
+    return { errors: { code: error.message } };
   }
 
-  if (response.ok) {
+  const res = (await response.json()) as AuthResponse;
+  if (res.status === "SUCCESS") {
     cookie.delete("session:verify");
-    const res = (await response.json()) as AuthResponse;
     await createSession(res.data);
 
     const route = res.data.role === "admin" ? "/admin/testes" : "/chat";
     redirect(route, RedirectType.replace);
+  } else {
+    return { errors: { code: res.message, input: true } };
   }
 }
 

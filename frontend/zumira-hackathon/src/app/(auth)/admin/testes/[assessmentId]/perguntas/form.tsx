@@ -5,14 +5,13 @@ import { ArrowDown, ArrowUp, Copy, Trash2 } from "lucide-react";
 import { AssessmentQuestion, ManageQuestionSchema } from "./definitions";
 import { Dimension } from "../../../dimensoes/definitions";
 import { translateQuestions } from "./methods";
-import { Header } from "./header";
+import { Header } from "../components/header";
 import { Description } from "./components/description";
 import { reducer } from "./context/reducer";
 import { AssessmentSummary } from "../definitions";
 import { ButtonIcon } from "./components/button-icon";
 import { DimensionField } from "./components/dimension";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
 import { ChoiceField } from "./components/choice";
 import { updateAssessmentQuestions } from "./actions";
 
@@ -30,10 +29,6 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
   const [error, setError] = useState<string | null>(null);
 
   const sorted = state.questions.sort((a, b) => a.index - b.index);
-
-  const handleCancel = useCallback(() => {
-    redirect(`/admin/testes/${data.id}`);
-  }, []);
 
   const handleUpdateQuestions = useCallback(async () => {
     setLoading(true);
@@ -60,7 +55,7 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
     }
 
     setLoading(false);
-  }, [state]);
+  }, [state, data]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -76,7 +71,11 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
 
   return (
     <div className="flex flex-col w-full">
-      <Header dispatch={dispatch} title={data.title} />
+      <Header
+        onAddItem={() => dispatch({ type: "ADD-QUESTION" })}
+        title="Editar perguntas"
+        addItemButtonText="Cadastrar nova pergunta"
+      />
       <div className="w-full flex flex-col gap-3 overflow-y-auto flex-1 pt-4 pb-20">
         {sorted.map((item, idx) => (
           <div
@@ -138,11 +137,8 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
       </div>
       <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
         <span className="text-error-500">{error}</span>
-        <Button size="xl" variant="outline" onClick={handleCancel}>
-          Cancelar
-        </Button>
-        <Button size="xl" variant="primary" onClick={handleUpdateQuestions} disabled={loading}>
-          {loading ? "Salvando..." : "Salvar"}
+        <Button size="xl" variant="primary" onClick={handleUpdateQuestions} disabled={loading} loading={loading}>
+          Salvar perguntas
         </Button>
       </div>
     </div>

@@ -1,8 +1,14 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
+
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { Spinner } from "../custom/spinner";
+
+interface ButtonProps {
+  loading?: boolean;
+}
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -31,22 +37,35 @@ const buttonVariants = cva(
       variant: "outline",
       size: "md",
     },
-  },
+  }
 );
 
 function Button({
   className,
+  loading,
   variant,
   size,
   asChild = false,
   ...props
-}: React.ComponentProps<"button"> &
+}: ButtonProps &
+  React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   }) {
   const Comp = asChild ? Slot : "button";
 
-  return <Comp data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props} />;
+  return (
+    <Comp data-slot="button" className={cn(buttonVariants({ variant, size, className }), "cursor-pointer")} {...props}>
+      <span className="relative">
+        <span className={cn("flex flex-row items-center justify-center", loading ? "opacity-0" : "opacity-100")}>
+          {props.children}
+        </span>
+        <span className={cn("absolute flex top-1/2 left-1/2 -translate-1/2", loading ? "opacity-100" : "opacity-0")}>
+          <Spinner size={size} />
+        </span>
+      </span>
+    </Comp>
+  );
 }
 
 export { Button, buttonVariants };

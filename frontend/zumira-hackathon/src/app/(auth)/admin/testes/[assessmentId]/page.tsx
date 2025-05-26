@@ -1,4 +1,5 @@
 import { getMonitoringBlocks, getNationalities } from "../../autoconhecimento/actions";
+import { Header } from "./components/header";
 import { getAssessmentData } from "./actions";
 import { AssessmentForm } from "./form";
 
@@ -10,9 +11,7 @@ export default async function ManageAssessment({ params }: { params: Promise<{ a
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex items-center justify-between py-4 border-b border-gray-100">
-        <h3 className="font-bold text-2xl text-gray-700">{assessmentId === "novo" ? "Novo " : "Editar "}Teste</h3>
-      </div>
+      <Header title="Editar detalhes do teste" />
       <AssessmentForm data={data} blocks={blocks} nationalities={nationalities} />
     </div>
   );
