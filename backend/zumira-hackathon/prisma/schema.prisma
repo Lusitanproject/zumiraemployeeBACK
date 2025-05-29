@@ -24,21 +24,23 @@ enum ConversationRole {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  name          String
-  occupation    String?
-  birthdate     DateTime?
-  gender        String?
-  nationalityId String?   @map("nationality_id")
-  roleId        String    @map("role_id")
-  companyId     String?   @map("company_id")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  name                String
+  occupation          String?
+  birthdate           DateTime?
+  gender              String?
+  nationalityId       String?   @map("nationality_id")
+  roleId              String    @map("role_id")
+  companyId           String?   @map("company_id")
+  currentActChatbotId String?   @map("current_act_chatbot_id")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
 
   nationality               Nationality?               @relation(fields: [nationalityId], references: [id])
   company                   Company?                   @relation(fields: [companyId], references: [id])
   role                      Role                       @relation(fields: [roleId], references: [id])
+  currentActChatbot         ActChatbot?                @relation(fields: [currentActChatbotId], references: [id])
   codes                     AuthCode[]
   assessmentResults         AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
@@ -331,16 +333,19 @@ model Alert {
 }
 
 model ActChatbot {
-  id           String   @id @default(cuid())
-  name         String
-  description  String
-  icon         String
-  instructions String
-  index        Int      @unique
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id               String   @id @default(cuid())
+  name             String
+  description      String
+  icon             String
+  instructions     String
+  nextActChatbotId String?  @map("next_act_chatbot_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
+  nextActChatbot   ActChatbot?       @relation("ActChatbotChain", fields: [nextActChatbotId], references: [id])
+  prevActChatbots  ActChatbot[]      @relation("ActChatbotChain")
   actConversations ActConversation[]
+  currentUsers     User[]
 
   @@map("act_chatbots")
 }
