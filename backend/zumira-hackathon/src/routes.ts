@@ -66,6 +66,11 @@ import { UpdateNotificationTypeController } from "./controllers/admin/notificati
 import { ListAlertsController } from "./controllers/alert/ListAlertsController";
 import { ReadAlertController } from "./controllers/alert/ReadAlertController";
 
+import { CreateActChatbotController } from "./controllers/admin/act-chatbots/CreateActChatbotController";
+import { FindActChatbotController } from "./controllers/admin/act-chatbots/FindActChatbotController";
+import { UpdateActChatbotController } from "./controllers/admin/act-chatbots/UpdateActChatbotController";
+import { ReorderActChatbotsController } from "./controllers/admin/act-chatbots/ReorderActChatbotsController";
+
 const router = Router();
 
 // ROTAS AUTH
@@ -154,5 +159,11 @@ router.put("/notifications/admin/types/:id", isAuthenticated, new UpdateNotifica
 router.post("/notifications", isAuthenticated, new CreateNotificationController().handle);
 router.post("/notifications/admin/types", isAuthenticated, new CreateNotificationTypeController().handle);
 router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
+
+// ROTAS ACTS
+router.post("/acts/admin", isAuthenticated, new CreateActChatbotController().handle);
+router.put("/acts/admin/reorder", isAuthenticated, new ReorderActChatbotsController().handle);
+router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().handle);
+router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);
 
 export { router };
