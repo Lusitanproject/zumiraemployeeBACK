@@ -22,7 +22,6 @@ export function SearchBar() {
     } else {
       params.delete("busca");
     }
-    console.log("a");
 
     debouncedSearch(`${pathname}?${params.toString()}`);
   };

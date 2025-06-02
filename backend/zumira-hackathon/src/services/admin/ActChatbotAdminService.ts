@@ -5,6 +5,7 @@ import {
   UpdateActChatbotRequest,
 } from "../../definitions/admin/act-chatbot";
 import prismaClient from "../../prisma";
+import { getFirstActChatbot } from "../../utils/getFirstActChatbot";
 
 class ActChatbotAdminService {
   async find(id: string) {
@@ -14,6 +15,7 @@ class ActChatbotAdminService {
       },
 
       select: {
+        id: true,
         name: true,
         description: true,
         icon: true,
@@ -42,6 +44,38 @@ class ActChatbotAdminService {
         nextActChatbotId: bot.id,
       },
     });
+
+    // Garantir que todo usuário sem ato é atualizado quando o primeiro bot é criado
+    const first = await getFirstActChatbot();
+    if (first) {
+      const noActUsers = await prismaClient.user.findMany({
+        where: {
+          currentActChatbotId: null,
+        },
+      });
+
+      await Promise.all([
+        prismaClient.user.updateMany({
+          where: {
+            id: {
+              in: noActUsers.map((u) => u.id),
+            },
+          },
+          data: {
+            currentActChatbotId: first.id,
+          },
+        }),
+
+        ...noActUsers.map((user) =>
+          prismaClient.actConversation.create({
+            data: {
+              actChatbotId: first.id,
+              userId: user.id,
+            },
+          })
+        ),
+      ]);
+    }
 
     return bot;
   }

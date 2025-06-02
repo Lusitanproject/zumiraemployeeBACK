@@ -352,6 +352,7 @@ model ActChatbot {
 
 model ActConversation {
   id           String   @id @default(cuid())
+  title        String   @default("Novo capítulo")
   actChatbotId String   @map("act_chatbot_id")
   userId       String   @map("user_id")
   createdAt    DateTime @default(now()) @map("created_at")

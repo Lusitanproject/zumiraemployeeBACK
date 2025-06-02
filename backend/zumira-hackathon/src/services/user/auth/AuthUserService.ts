@@ -46,6 +46,7 @@ class AuthUserService {
 
     return {
       name: user.name,
+      act: user.currentActChatbotId,
       role: user.role.slug,
       token: token,
       expiresAt: expiresAt,

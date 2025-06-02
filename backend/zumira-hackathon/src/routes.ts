@@ -70,6 +70,11 @@ import { CreateActChatbotController } from "./controllers/admin/act-chatbots/Cre
 import { FindActChatbotController } from "./controllers/admin/act-chatbots/FindActChatbotController";
 import { UpdateActChatbotController } from "./controllers/admin/act-chatbots/UpdateActChatbotController";
 import { ReorderActChatbotsController } from "./controllers/admin/act-chatbots/ReorderActChatbotsController";
+import { CreateActConversationController } from "./controllers/actChatbot/CreateActConversationController";
+import { GetActConversationController } from "./controllers/actChatbot/GetActConversationController";
+import { GetActsDataController } from "./controllers/actChatbot/GetActsDataController";
+import { MessageActChatbotController } from "./controllers/actChatbot/MessageActChatbotController";
+import { MoveToNextActController } from "./controllers/actChatbot/MoveToNextActController";
 
 const router = Router();
 
@@ -161,9 +166,14 @@ router.post("/notifications/admin/types", isAuthenticated, new CreateNotificatio
 router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
 
 // ROTAS ACTS
-router.post("/acts/admin", isAuthenticated, new CreateActChatbotController().handle);
-router.put("/acts/admin/reorder", isAuthenticated, new ReorderActChatbotsController().handle);
 router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().handle);
+router.put("/acts/admin/reorder", isAuthenticated, new ReorderActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);
+router.post("/acts/admin", isAuthenticated, new CreateActChatbotController().handle);
+router.get("/acts", isAuthenticated, new GetActsDataController().handle);
+router.get("/acts/conversations", isAuthenticated, new GetActConversationController().handle);
+router.put("/acts/next", isAuthenticated, new MoveToNextActController().handle);
+router.post("/acts/message", isAuthenticated, new MessageActChatbotController().handle);
+router.post("/acts/new-conversation", isAuthenticated, new CreateActConversationController().handle);
 
 export { router };
