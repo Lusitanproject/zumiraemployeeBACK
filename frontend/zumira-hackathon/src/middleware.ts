@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { decrypt, deleteSession } from "@/app/_lib/session";
 
 const protectedRoutes = ["/chat", "/autoconhecimento", "/autoconhecimento", "/biblioteca", "/rede-apoio", "/admin"];
-const publicRoutes = ["/", "/entrar", "/verificar"];
+const publicRoutes = ["/", "/entrar", "/verificar", "/registrar"];
 
 export default async function middleware(req: NextRequest) {
   const cookie = await cookies();

@@ -23,19 +23,25 @@ enum ConversationRole {
   SYSTEM
 }
 
+enum UserGender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 model User {
-  id                  String    @id @default(uuid())
-  email               String    @unique
+  id                  String      @id @default(uuid())
+  email               String      @unique
   name                String
   occupation          String?
   birthdate           DateTime?
-  gender              String?
-  nationalityId       String?   @map("nationality_id")
-  roleId              String    @map("role_id")
-  companyId           String?   @map("company_id")
-  currentActChatbotId String?   @map("current_act_chatbot_id")
-  createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @updatedAt @map("updated_at")
+  gender              UserGender?
+  nationalityId       String?     @map("nationality_id")
+  roleId              String      @map("role_id")
+  companyId           String?     @map("company_id")
+  currentActChatbotId String?     @map("current_act_chatbot_id")
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @updatedAt @map("updated_at")
 
   nationality               Nationality?               @relation(fields: [nationalityId], references: [id])
   company                   Company?                   @relation(fields: [companyId], references: [id])

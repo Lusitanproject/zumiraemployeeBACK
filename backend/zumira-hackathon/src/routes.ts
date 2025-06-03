@@ -5,7 +5,8 @@ import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 
-import { CreateUserController } from "./controllers/admin/users/CreateUserController";
+import { CreateUserController as AdminCreateUserController } from "./controllers/admin/users/CreateUserController";
+import { CreateUserController } from "./controllers/user/CreateUserController";
 import { ListUsersByCompanyController } from "./controllers/admin/users/ListUsersByCompanyController";
 import { ListAllUsersController } from "./controllers/admin/users/ListAllUsersController";
 import { FindUserController } from "./controllers/admin/users/FindUserController";
@@ -83,8 +84,9 @@ router.post("/auth/email", new SendCodeController().handle);
 router.post("/auth/verify", new AuthUserController().handle);
 
 // ROTAS USERS
-router.post("/users", isAuthenticated, new CreateUserController().handle);
-router.put("/users/:id", isAuthenticated, new UpdateUserController().handle);
+router.post("/users", new CreateUserController().handle);
+router.post("/users/admin", isAuthenticated, new AdminCreateUserController().handle);
+router.put("/users/admin/:id", isAuthenticated, new UpdateUserController().handle);
 router.get("/users", isAuthenticated, new ListAllUsersController().handle);
 router.get("/users/:userId", isAuthenticated, new FindUserController().handle);
 router.get("/users/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);
@@ -150,7 +152,7 @@ router.get("/companies/:companyId", isAuthenticated, new FindCompanyController()
 router.post("/companies", isAuthenticated, new CreateCompanyController().handle);
 
 // ROTAS NATIONALITY
-router.get("/nationalities", isAuthenticated, new ListNationalitiesController().handle);
+router.get("/nationalities", new ListNationalitiesController().handle);
 
 // ROTAS NOTIFICATION
 router.get("/notifications", isAuthenticated, new ListNotificationsController().handle);
