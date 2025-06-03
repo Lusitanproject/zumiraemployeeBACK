@@ -13,31 +13,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Operation {
+enum AssessmentOperation {
   SUM
   AVERAGE
 }
 
+enum ConversationRole {
+  USER
+  SYSTEM
+}
+
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  name          String
-  occupation    String?
-  birthdate     DateTime?
-  gender        String?
-  nationalityId String?   @map("nationality_id")
-  roleId        String    @map("role_id")
-  companyId     String?   @map("company_id")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  name                String
+  occupation          String?
+  birthdate           DateTime?
+  gender              String?
+  nationalityId       String?   @map("nationality_id")
+  roleId              String    @map("role_id")
+  companyId           String?   @map("company_id")
+  currentActChatbotId String?   @map("current_act_chatbot_id")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
 
   nationality               Nationality?               @relation(fields: [nationalityId], references: [id])
   company                   Company?                   @relation(fields: [companyId], references: [id])
   role                      Role                       @relation(fields: [roleId], references: [id])
+  currentActChatbot         ActChatbot?                @relation(fields: [currentActChatbotId], references: [id])
   codes                     AuthCode[]
   assessmentResults         AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
   notificationRecipients    NotificationRecipient[]
+  actConversations          ActConversation[]
 
   @@map("users")
 }
@@ -110,7 +118,7 @@ model Nationality {
   acronymn  String   @unique
   name      String
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") // TODO: remove default in next migration
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   assessments Assessment[]
   users       User[]
@@ -119,17 +127,17 @@ model Nationality {
 }
 
 model Assessment {
-  id                          String    @id @default(cuid())
+  id                          String              @id @default(cuid())
   title                       String
   summary                     String
   description                 String?
-  userFeedbackInstructions    String?   @map("user_feedback_instructions")
-  companyFeedbackInstructions String?   @map("company_feedback_instructions")
-  operationType               Operation @default(AVERAGE) @map("operation_type")
-  selfMonitoringBlockId       String    @map("self_monitoring_block_id")
-  nationalityId               String    @map("nationality_id")
-  createdAt                   DateTime  @default(now()) @map("created_at")
-  updatedAt                   DateTime  @updatedAt @map("updated_at")
+  userFeedbackInstructions    String?             @map("user_feedback_instructions")
+  companyFeedbackInstructions String?             @map("company_feedback_instructions")
+  operationType               AssessmentOperation @default(AVERAGE) @map("operation_type")
+  selfMonitoringBlockId       String              @map("self_monitoring_block_id")
+  nationalityId               String              @map("nationality_id")
+  createdAt                   DateTime            @default(now()) @map("created_at")
+  updatedAt                   DateTime            @updatedAt @map("updated_at")
 
   selfMonitoringBlock        SelfMonitoringBlock         @relation(fields: [selfMonitoringBlockId], references: [id])
   nationality                Nationality                 @relation(fields: [nationalityId], references: [id])
@@ -144,7 +152,7 @@ model Assessment {
 model AssessmentResult {
   id                       String   @id @default(uuid())
   feedback                 String?
-  assessmentResultRatingId String?
+  assessmentResultRatingId String?  @map("assessment_result_rating_id")
   userId                   String   @map("user_id")
   assessmentId             String   @map("assessment_id")
   createdAt                DateTime @default(now()) @map("created_at")
@@ -322,4 +330,50 @@ model Alert {
   assessmentResultRating AssessmentResultRating @relation(fields: [assessmentResultRatingId], references: [id], onDelete: Cascade)
 
   @@map("alerts")
+}
+
+model ActChatbot {
+  id               String   @id @default(cuid())
+  name             String
+  description      String
+  icon             String
+  instructions     String
+  nextActChatbotId String?  @map("next_act_chatbot_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  nextActChatbot   ActChatbot?       @relation("ActChatbotChain", fields: [nextActChatbotId], references: [id])
+  prevActChatbots  ActChatbot[]      @relation("ActChatbotChain")
+  actConversations ActConversation[]
+  currentUsers     User[]
+
+  @@map("act_chatbots")
+}
+
+model ActConversation {
+  id           String   @id @default(cuid())
+  title        String   @default("Novo capítulo")
+  actChatbotId String   @map("act_chatbot_id")
+  userId       String   @map("user_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  actChatbot ActChatbot               @relation(fields: [actChatbotId], references: [id])
+  user       User                     @relation(fields: [userId], references: [id])
+  messages   ActConversationMessage[]
+
+  @@map("act_conversations")
+}
+
+model ActConversationMessage {
+  id                String           @id @default(cuid())
+  actConversationId String           @map("act_conversation_id")
+  content           String
+  role              ConversationRole
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  actConversation ActConversation @relation(fields: [actConversationId], references: [id])
+
+  @@map("act_conversation_messages")
 }
