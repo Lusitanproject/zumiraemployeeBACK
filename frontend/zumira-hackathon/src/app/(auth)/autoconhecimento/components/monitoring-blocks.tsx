@@ -29,6 +29,7 @@ export function MonitoringBlocks({ data }: MonitoringBlocksProps) {
     } else {
       setSelectedId(monitoringId);
       params.set("avaliacao", monitoringId);
+      params.delete("busca");
     }
 
     replace(`${pathname}?${params.toString()}`);

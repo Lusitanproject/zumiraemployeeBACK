@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -30,6 +30,12 @@ export function SearchBar() {
     startHolyLoader();
     replace(href);
   }, 500);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    const search = params.get("busca");
+    setSearch(search);
+  }, [searchParams]);
 
   return (
     <div className="pt-4 mb-8">
