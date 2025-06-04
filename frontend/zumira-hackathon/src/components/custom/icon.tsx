@@ -1,3 +1,4 @@
+import { DynamicIcon } from "lucide-react/dynamic";
 import { ComponentProps } from "react";
 
 export const ICONS = [
@@ -12,6 +13,11 @@ export const ICONS = [
   "accomplishment",
   "purpose",
   "self",
+  "leaf",
+  "star",
+  "file-heart",
+  "drama",
+  "loader",
 ] as const;
 type AllIcons = typeof ICONS;
 export type IconName = AllIcons[number];
@@ -155,5 +161,8 @@ export function CustomIcon({ name, className }: IconProps) {
           </svg>
         </div>
       );
+
+    default:
+      return <DynamicIcon name={name} />;
   }
 }

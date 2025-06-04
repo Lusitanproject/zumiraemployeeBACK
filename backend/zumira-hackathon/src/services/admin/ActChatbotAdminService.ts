@@ -20,10 +20,32 @@ class ActChatbotAdminService {
         description: true,
         icon: true,
         instructions: true,
+        nextActChatbotId: true,
       },
     });
 
     return bot;
+  }
+
+  async findAll() {
+    const bots = await prismaClient.actChatbot.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        icon: true,
+        nextActChatbotId: true,
+      },
+    });
+
+    const items = [];
+    let aux = bots.find((b) => !b.nextActChatbotId);
+    while (aux) {
+      items.unshift(aux);
+      aux = bots.find((b) => b.nextActChatbotId === aux?.id);
+    }
+
+    return { items };
   }
 
   async create(data: CreateActChatbotRequest) {

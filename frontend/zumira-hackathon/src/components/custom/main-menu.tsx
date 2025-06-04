@@ -1,20 +1,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { cn } from "@/lib/utils";
 
-export type MenuIcon =
-  | "house"
-  | "chart-no-axes-column-increasing"
-  | "square-pen"
-  | "users"
-  | "layout-grid"
-  | "clipboard-list"
-  | "building-2"
-  | "brain"
-  | "mails"
-  | "circle-alert";
+export type MenuIcon = IconName;
 
 export type MenuLink = {
   href: string;

@@ -76,6 +76,7 @@ import { GetActConversationController } from "./controllers/actChatbot/GetActCon
 import { GetActsDataController } from "./controllers/actChatbot/GetActsDataController";
 import { MessageActChatbotController } from "./controllers/actChatbot/MessageActChatbotController";
 import { MoveToNextActController } from "./controllers/actChatbot/MoveToNextActController";
+import { FindAllActChatbotsController } from "./controllers/admin/act-chatbots/FindAllActChatbotsController";
 
 const router = Router();
 
@@ -168,6 +169,7 @@ router.post("/notifications/admin/types", isAuthenticated, new CreateNotificatio
 router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
 
 // ROTAS ACTS
+router.get("/acts/admin", isAuthenticated, new FindAllActChatbotsController().handle);
 router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().handle);
 router.put("/acts/admin/reorder", isAuthenticated, new ReorderActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);

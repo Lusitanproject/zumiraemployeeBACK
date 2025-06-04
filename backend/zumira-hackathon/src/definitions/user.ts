@@ -1,3 +1,4 @@
+import { UserGender } from "@prisma/client";
 import { z } from "zod";
 
 export const CreateUserSchema = z.object({
@@ -8,7 +9,7 @@ export const CreateUserSchema = z.object({
     .refine((val) => !isNaN(Date.parse(val)))
     .transform((val) => new Date(val)),
   nationalityId: z.string().cuid(),
-  gender: z.enum(["MALE", "FEMALE", "OTHER"] as const).optional(),
+  gender: z.nativeEnum(UserGender).optional(),
   occupation: z.string().nonempty().optional(),
 });
 

@@ -8,7 +8,6 @@ export async function getSidebarContent() {
 
   const links = [
     { href: "/chat", label: "Início", icon: "house", role: "user" },
-    // { href: "/autoconhecimento", label: "Autoconhecimento", icon: "chart-no-axes-column-increasing", role: "user" },
     { href: "/autoconhecimento", label: "Autoconhecimento", icon: "square-pen", role: "user" },
     { href: "/rede-apoio", label: "Rede de Apoio", icon: "users", role: "user" },
     { href: "/biblioteca", label: "Biblioteca", icon: "layout-grid", role: "user" },
@@ -24,6 +23,7 @@ export async function getSidebarContent() {
     { href: "/admin/empresas", label: "Empresas", role: "admin", icon: "building-2" },
     { href: "/admin/notificacoes", label: "Notificações", role: "admin", icon: "mails" },
     { href: "/admin/alertas", label: "Alertas", role: "admin", icon: "circle-alert" },
+    { href: "/admin/atos", label: "Atos", role: "admin", icon: "messages-square" },
   ] as const;
 
   const menu: MenuLink[] = links
