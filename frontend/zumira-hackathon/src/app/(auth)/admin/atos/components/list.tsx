@@ -86,7 +86,7 @@ export function ActsList({ data }: ActsListProps) {
             <Button
               className="bg-gray-100"
               size="icon"
-              disabled={index + 1 === data.length}
+              disabled={index + 1 === chatbots.length}
               onClick={() => moveDown(index)}
             >
               <ChevronDown className="size-6" />
