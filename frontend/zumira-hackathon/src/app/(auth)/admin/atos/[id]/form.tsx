@@ -16,7 +16,7 @@ type FormProps = {
   data: ActChatbot | null;
 };
 
-export function ActChatbotProps({ data }: FormProps) {
+export function ActChatbotForm({ data }: FormProps) {
   const [formData, setFormData] = useState<ManageActChatbot>(data ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
   const [loading, setLoading] = useState<boolean>(false);
