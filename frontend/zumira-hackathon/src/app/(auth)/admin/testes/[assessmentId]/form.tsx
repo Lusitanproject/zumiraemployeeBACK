@@ -18,6 +18,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { saveAssessment } from "./form-actions";
 import { Nationality } from "../../autoconhecimento/definitions";
 import { RichTextArea } from "@/components/ui/rich-text-area";
+import { toast } from "sonner";
+import { duplicateAssessment } from "./actions";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type FormProps = {
   data: AssessmentSummary | null;
@@ -42,11 +45,11 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
   const [formData, setFormData] = useState<ManageAssessment>(parsedData ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
   const [formError, setFormError] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<{ save: boolean; duplicate: boolean }>({ save: false, duplicate: false });
 
   const handleSubmit = async () => {
     setErrors(null);
-    setLoading(true);
+    setLoading((prev) => ({ ...prev, save: true }));
     const validation = CreateAssessmentSchema.safeParse(formData);
     if (!validation.success) {
       setErrors(validation.error.flatten().fieldErrors);
@@ -62,8 +65,24 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
     if (response) {
       setFormError(response);
     }
-    setLoading(false);
+    setLoading((prev) => ({ ...prev, save: false }));
   };
+
+  async function handleDuplicate() {
+    if (!data?.id) return;
+
+    setLoading((prev) => ({ ...prev, duplicate: true }));
+
+    try {
+      await duplicateAssessment(data.id);
+    } catch (err) {
+      if (!isRedirectError(err)) {
+        toast.error("Erro ao duplicar o teste");
+      }
+    } finally {
+      setLoading((prev) => ({ ...prev, duplicate: false }));
+    }
+  }
 
   return (
     <div className="w-full py-4 md:pt-4 md:pb-24">
@@ -213,9 +232,20 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         {!!formError && <span className="text-sm text-error-500">{formError}</span>}
       </div>
       <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
-        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading.save} loading={loading.save}>
           Salvar detalhes
         </Button>
+        {data?.id && (
+          <Button
+            size="xl"
+            variant="secondary"
+            onClick={handleDuplicate}
+            disabled={loading.duplicate}
+            loading={loading.duplicate}
+          >
+            Duplicar
+          </Button>
+        )}
       </div>
     </div>
   );

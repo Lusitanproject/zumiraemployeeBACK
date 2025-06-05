@@ -77,6 +77,7 @@ import { GetActsDataController } from "./controllers/actChatbot/GetActsDataContr
 import { MessageActChatbotController } from "./controllers/actChatbot/MessageActChatbotController";
 import { MoveToNextActController } from "./controllers/actChatbot/MoveToNextActController";
 import { FindAllActChatbotsController } from "./controllers/admin/act-chatbots/FindAllActChatbotsController";
+import { DuplicateAssessmentController } from "./controllers/admin/assessments/DuplicateAssessmentController";
 
 const router = Router();
 
@@ -125,6 +126,7 @@ router.get("/assessments", isAuthenticated, new ListAssessmentsController().hand
 router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
 router.get("/assessments/admin/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
 router.post("/assessments", isAuthenticated, new CreateAssessmentController().handle);
+router.post("/assessments/admin/duplicate/:id", isAuthenticated, new DuplicateAssessmentController().handle);
 router.post("/assessments/feedback/users/:id", isAuthenticated, new GenerateUserFeedbackController().handle);
 router.post("/assessments/feedback/companies/:id", isAuthenticated, new GenerateCompanyFeedbackController().handle);
 router.put("/assessments/:id", isAuthenticated, new UpdateAssessmentController().handle);

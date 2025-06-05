@@ -116,13 +116,13 @@ export function ManageRatingsForm({ data, ratings }: ManageRatingsFormProps) {
                   <Input
                     maxLength={7}
                     id="color"
-                    placeholder="#RRGGBB"
+                    type="color"
                     onChange={(e) => {
                       const value = e.target.value;
                       dispatch({ type: "CHANGE-COLOR", payload: { ratingKey: item.key, color: value } });
                       if (value.length >= 6) reflow((p) => !p);
                     }}
-                    defaultValue={item.color}
+                    value={item.color}
                   />
                 </div>
               </div>

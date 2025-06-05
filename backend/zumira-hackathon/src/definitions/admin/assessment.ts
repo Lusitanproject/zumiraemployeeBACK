@@ -14,6 +14,7 @@ export const CreateAssessmentSchema = z.object({
 
 export const UpdateAssessmentSchema = z.object({
   id: z.string().cuid(),
+  title: z.string().nonempty(),
   summary: z.string().min(1).optional(),
   description: z.string().optional(),
   selfMonitoringBlockId: z.string().cuid().optional(),

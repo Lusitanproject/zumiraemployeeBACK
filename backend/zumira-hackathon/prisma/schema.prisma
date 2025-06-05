@@ -165,8 +165,8 @@ model AssessmentResult {
   updatedAt                DateTime @updatedAt @map("updated_at")
 
   user                      User                       @relation(fields: [userId], references: [id])
-  assessment                Assessment                 @relation(fields: [assessmentId], references: [id])
-  assessmentResultRating    AssessmentResultRating?    @relation(fields: [assessmentResultRatingId], references: [id])
+  assessment                Assessment                 @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  assessmentResultRating    AssessmentResultRating?    @relation(fields: [assessmentResultRatingId], references: [id], onDelete: Cascade)
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
   alerts                    Alert[]
 
@@ -198,7 +198,7 @@ model AssessmentQuestion {
   createdAt                DateTime @default(now()) @map("created_at")
   updatedAt                DateTime @updatedAt @map("updated_at")
 
-  assessment                Assessment                 @relation(fields: [assessmentId], references: [id])
+  assessment                Assessment                 @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   psychologicalDimension    PsychologicalDimension     @relation(fields: [psychologicalDimensionId], references: [id])
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
   assessmentQuestionChoices AssessmentQuestionChoice[]
@@ -276,7 +276,7 @@ model CompanyAssessmentFeedback {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   company    Company    @relation(fields: [companyId], references: [id])
-  assessment Assessment @relation(fields: [assessmentId], references: [id])
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 
   @@map("company_assessment_feedback")
 }
