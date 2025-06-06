@@ -6,6 +6,7 @@ const isAuthenticated_1 = require("./middlewares/isAuthenticated");
 const SendCodeController_1 = require("./controllers/user/auth/SendCodeController");
 const AuthUserController_1 = require("./controllers/user/auth/AuthUserController");
 const CreateUserController_1 = require("./controllers/admin/users/CreateUserController");
+const CreateUserController_2 = require("./controllers/user/CreateUserController");
 const ListUsersByCompanyController_1 = require("./controllers/admin/users/ListUsersByCompanyController");
 const ListAllUsersController_1 = require("./controllers/admin/users/ListAllUsersController");
 const FindUserController_1 = require("./controllers/admin/users/FindUserController");
@@ -56,14 +57,26 @@ const CreateNotificationTypeController_1 = require("./controllers/admin/notifica
 const UpdateNotificationTypeController_1 = require("./controllers/admin/notifications/UpdateNotificationTypeController");
 const ListAlertsController_1 = require("./controllers/alert/ListAlertsController");
 const ReadAlertController_1 = require("./controllers/alert/ReadAlertController");
+const CreateActChatbotController_1 = require("./controllers/admin/act-chatbots/CreateActChatbotController");
+const FindActChatbotController_1 = require("./controllers/admin/act-chatbots/FindActChatbotController");
+const UpdateActChatbotController_1 = require("./controllers/admin/act-chatbots/UpdateActChatbotController");
+const ReorderActChatbotsController_1 = require("./controllers/admin/act-chatbots/ReorderActChatbotsController");
+const CreateActConversationController_1 = require("./controllers/actChatbot/CreateActConversationController");
+const GetActConversationController_1 = require("./controllers/actChatbot/GetActConversationController");
+const GetActsDataController_1 = require("./controllers/actChatbot/GetActsDataController");
+const MessageActChatbotController_1 = require("./controllers/actChatbot/MessageActChatbotController");
+const MoveToNextActController_1 = require("./controllers/actChatbot/MoveToNextActController");
+const FindAllActChatbotsController_1 = require("./controllers/admin/act-chatbots/FindAllActChatbotsController");
+const DuplicateAssessmentController_1 = require("./controllers/admin/assessments/DuplicateAssessmentController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
 router.post("/auth/email", new SendCodeController_1.SendCodeController().handle);
 router.post("/auth/verify", new AuthUserController_1.AuthUserController().handle);
 // ROTAS USERS
-router.post("/users", isAuthenticated_1.isAuthenticated, new CreateUserController_1.CreateUserController().handle);
-router.put("/users/:id", isAuthenticated_1.isAuthenticated, new UpdateUserController_1.UpdateUserController().handle);
+router.post("/users", new CreateUserController_2.CreateUserController().handle);
+router.post("/users/admin", isAuthenticated_1.isAuthenticated, new CreateUserController_1.CreateUserController().handle);
+router.put("/users/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateUserController_1.UpdateUserController().handle);
 router.get("/users", isAuthenticated_1.isAuthenticated, new ListAllUsersController_1.ListAllUsersController().handle);
 router.get("/users/:userId", isAuthenticated_1.isAuthenticated, new FindUserController_1.FindUserController().handle);
 router.get("/users/company/:companyId", isAuthenticated_1.isAuthenticated, new ListUsersByCompanyController_1.ListUsersByCompanyController().handle);
@@ -94,6 +107,7 @@ router.get("/assessments", isAuthenticated_1.isAuthenticated, new ListAssessment
 router.get("/assessments/:id", isAuthenticated_1.isAuthenticated, new DetailAssessmentController_1.DetailAssessmentController().handle);
 router.get("/assessments/admin/:id", isAuthenticated_1.isAuthenticated, new AssessmentDetailForAdminController_1.AssessmentDetailForAdminController().handle);
 router.post("/assessments", isAuthenticated_1.isAuthenticated, new CreateAssessmentController_1.CreateAssessmentController().handle);
+router.post("/assessments/admin/duplicate/:id", isAuthenticated_1.isAuthenticated, new DuplicateAssessmentController_1.DuplicateAssessmentController().handle);
 router.post("/assessments/feedback/users/:id", isAuthenticated_1.isAuthenticated, new GenerateUserFeedbackController_1.GenerateUserFeedbackController().handle);
 router.post("/assessments/feedback/companies/:id", isAuthenticated_1.isAuthenticated, new GenerateCompanyFeedbackController_1.GenerateCompanyFeedbackController().handle);
 router.put("/assessments/:id", isAuthenticated_1.isAuthenticated, new UpdateAssessmentController_1.UpdateAssessmentController().handle);
@@ -111,7 +125,7 @@ router.get("/companies/feedback", isAuthenticated_1.isAuthenticated, new FindAll
 router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
 router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
 // ROTAS NATIONALITY
-router.get("/nationalities", isAuthenticated_1.isAuthenticated, new ListNationalitiesController_1.ListNationalitiesController().handle);
+router.get("/nationalities", new ListNationalitiesController_1.ListNationalitiesController().handle);
 // ROTAS NOTIFICATION
 router.get("/notifications", isAuthenticated_1.isAuthenticated, new ListNotificationsController_1.ListNotificationsController().handle);
 router.get("/notifications/admin", isAuthenticated_1.isAuthenticated, new FindAllNotificationsController_1.FindAllNotificationsController().handle);
@@ -124,3 +138,14 @@ router.put("/notifications/admin/types/:id", isAuthenticated_1.isAuthenticated, 
 router.post("/notifications", isAuthenticated_1.isAuthenticated, new CreateNotificationController_1.CreateNotificationController().handle);
 router.post("/notifications/admin/types", isAuthenticated_1.isAuthenticated, new CreateNotificationTypeController_1.CreateNotificationTypeController().handle);
 router.delete("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new DeleteNotificationController_1.DeleteNotificationController().handle);
+// ROTAS ACTS
+router.get("/acts/admin", isAuthenticated_1.isAuthenticated, new FindAllActChatbotsController_1.FindAllActChatbotsController().handle);
+router.get("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new FindActChatbotController_1.FindActChatbotController().handle);
+router.put("/acts/admin/reorder", isAuthenticated_1.isAuthenticated, new ReorderActChatbotsController_1.ReorderActChatbotsController().handle);
+router.put("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateActChatbotController_1.UpdateActChatbotController().handle);
+router.post("/acts/admin", isAuthenticated_1.isAuthenticated, new CreateActChatbotController_1.CreateActChatbotController().handle);
+router.get("/acts", isAuthenticated_1.isAuthenticated, new GetActsDataController_1.GetActsDataController().handle);
+router.get("/acts/conversations", isAuthenticated_1.isAuthenticated, new GetActConversationController_1.GetActConversationController().handle);
+router.put("/acts/next", isAuthenticated_1.isAuthenticated, new MoveToNextActController_1.MoveToNextActController().handle);
+router.post("/acts/message", isAuthenticated_1.isAuthenticated, new MessageActChatbotController_1.MessageActChatbotController().handle);
+router.post("/acts/new-conversation", isAuthenticated_1.isAuthenticated, new CreateActConversationController_1.CreateActConversationController().handle);

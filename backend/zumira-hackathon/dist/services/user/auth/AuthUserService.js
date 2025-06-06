@@ -40,6 +40,7 @@ class AuthUserService {
         const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30); // Expiração em 30 dias
         return {
             name: user.name,
+            act: user.currentActChatbotId,
             role: user.role.slug,
             token: token,
             expiresAt: expiresAt,

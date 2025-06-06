@@ -29,6 +29,7 @@ async function getUserData(userId) {
         id: user.id,
         role: user.role.slug,
         permissions: user.role.rolePermissions.map((p) => p.permission.slug),
+        currentChatbotId: user.currentActChatbotId,
     };
 }
 async function isAuthenticated(req, res, next) {
