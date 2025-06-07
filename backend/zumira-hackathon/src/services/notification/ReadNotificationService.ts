@@ -1,5 +1,6 @@
 import { ReadNotificationRequest } from "../../definitions/notification";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class ReadNotificationService {
   async execute({ userId, notificationId }: ReadNotificationRequest) {
@@ -16,7 +17,7 @@ class ReadNotificationService {
         },
       });
     } catch {
-      throw new Error("Recipient does not exist");
+      throw new PublicError("Destinatário não existe");
     }
   }
 }

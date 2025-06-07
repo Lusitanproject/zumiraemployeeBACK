@@ -4,6 +4,7 @@ import {
   UpdateNotificationRequest,
 } from "../../definitions/notification";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class NotificationAdminService {
   async findAll() {
@@ -62,7 +63,7 @@ class NotificationAdminService {
 
     const fetchedUsersIds = users.map((u) => u.id);
     for (const id of userIds) {
-      if (!fetchedUsersIds.includes(id)) throw new Error("One or more users does not exist");
+      if (!fetchedUsersIds.includes(id)) throw new PublicError("Um ou mais usuários não existem");
     }
 
     const notification = await prismaClient.notification.create({
@@ -102,7 +103,7 @@ class NotificationAdminService {
 
       return notification;
     } catch {
-      throw new Error("Notification does not exist");
+      throw new PublicError("Notificação não existe");
     }
   }
 
@@ -114,7 +115,7 @@ class NotificationAdminService {
         },
       });
     } catch {
-      throw new Error("Notification does not exist");
+      throw new PublicError("Notificação não existe");
     }
   }
 }

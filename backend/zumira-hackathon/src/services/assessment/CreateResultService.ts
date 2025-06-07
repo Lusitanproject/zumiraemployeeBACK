@@ -1,4 +1,5 @@
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 interface ResultRequest {
   userId: string;
@@ -54,21 +55,21 @@ class CreateResultService {
         id: userId,
       },
     });
-    if (!userExists) throw new Error("User does not exist");
+    if (!userExists) throw new PublicError("Usuário não existe");
 
     const assessmentExists = await prismaClient.assessment.findFirst({
       where: {
         id: assessmentId,
       },
     });
-    if (!assessmentExists) throw new Error("Assessment does not exist");
+    if (!assessmentExists) throw new PublicError("Avaliação não existe");
 
     if (!allQuestionsExist(answers.map((a) => a.assessmentQuestionId))) {
-      throw new Error("One or more questions do not exist");
+      throw new PublicError("Uma ou mais perguntas não existem");
     }
 
     if (!allChoicesExist(answers.map((a) => a.assessmentQuestionChoiceId))) {
-      throw new Error("One or more choices do not exist");
+      throw new PublicError("Uma ou mais opções não existem");
     }
 
     const result = await prismaClient.assessmentResult.create({

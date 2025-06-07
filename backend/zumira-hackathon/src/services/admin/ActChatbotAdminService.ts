@@ -6,6 +6,7 @@ import {
 } from "../../definitions/admin/act-chatbot";
 import prismaClient from "../../prisma";
 import { getFirstActChatbot } from "../../utils/getFirstActChatbot";
+import { PublicError } from "../../error";
 
 class ActChatbotAdminService {
   async find(id: string) {
@@ -113,7 +114,7 @@ class ActChatbotAdminService {
   async reorder({ chatbots }: ReorderActChatbotsRequest) {
     const bots = await prismaClient.actChatbot.findMany();
 
-    if (chatbots.length !== bots.length) throw new Error("All chatbots must be sent");
+    if (chatbots.length !== bots.length) throw new PublicError("Todos os chatbots devem ser enviados");
 
     const botsMap = new Map<string | null, string>();
     chatbots.forEach((cb) => botsMap.set(cb.nextActChatbotId, cb.id));
@@ -126,7 +127,7 @@ class ActChatbotAdminService {
       aux = botsMap.get(aux);
     } while (aux !== undefined);
 
-    if (count < chatbots.length) throw new Error("Chatbots must all be linked continuously");
+    if (count < chatbots.length) throw new PublicError("Os chatbots devem estar todos conectados continuamente");
 
     const queryString = Prisma.sql`
       UPDATE act_chatbots

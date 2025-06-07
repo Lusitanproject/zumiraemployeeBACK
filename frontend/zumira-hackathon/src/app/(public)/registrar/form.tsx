@@ -40,8 +40,11 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
     try {
       const result = await register(formData);
       setState(result);
-    } finally {
+
+      if (result?.errors) return;
+
       toast.success("Cadastro realizado com sucesso");
+    } finally {
       setLoading(false);
     }
   }

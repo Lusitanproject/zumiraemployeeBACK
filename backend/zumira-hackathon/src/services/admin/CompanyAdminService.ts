@@ -2,6 +2,7 @@ import { z } from "zod";
 import prismaClient from "../../prisma";
 import { CreateCompanySchema } from "../../definitions/admin/company";
 import { CompanyAssessmentFeedback } from "@prisma/client";
+import { PublicError } from "../../error";
 
 type CreateCompany = z.infer<typeof CreateCompanySchema>;
 
@@ -28,7 +29,7 @@ class CompanyAdminService {
       },
     });
 
-    if (!user?.companyId) throw new Error("User is not associated with a company");
+    if (!user?.companyId) throw new PublicError("Usuário não está associado a uma empresa");
 
     const allFeedbacks = await prismaClient.companyAssessmentFeedback.findMany({
       where: {

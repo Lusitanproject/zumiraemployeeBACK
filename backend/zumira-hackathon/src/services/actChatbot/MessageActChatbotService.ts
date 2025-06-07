@@ -1,6 +1,7 @@
 import { MessageActChatbotRequest } from "../../definitions/actChatbot";
 import prismaClient from "../../prisma";
 import { generateOpenAiResponse, GenerateOpenAiResponseRequest } from "../../utils/generateOpenAiResponse";
+import { PublicError } from "../../error";
 
 class MessageActChatbotService {
   async execute({ content, actConversationId, userId }: MessageActChatbotRequest) {
@@ -14,7 +15,7 @@ class MessageActChatbotService {
       },
     });
 
-    if (!conv) throw new Error("Conversation does not exist");
+    if (!conv) throw new PublicError("Conversa não existe");
 
     await prismaClient.actConversationMessage.create({
       data: {

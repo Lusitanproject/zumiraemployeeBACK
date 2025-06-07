@@ -1,4 +1,5 @@
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class MoveToNextActService {
   async execute(userId: string) {
@@ -12,9 +13,9 @@ class MoveToNextActService {
       },
     });
 
-    if (!user) throw new Error("User not found");
-    if (!user.currentActChatbot) throw new Error("User is not assigned to any acts");
-    if (!user.currentActChatbot.nextActChatbotId) throw new Error("No more acts remaining");
+    if (!user) throw new PublicError("Usuário não encontrado");
+    if (!user.currentActChatbot) throw new PublicError("Usuário não está atribuído a nenhum ato");
+    if (!user.currentActChatbot.nextActChatbotId) throw new PublicError("Não há mais atos restantes");
 
     const currentActMessages = await prismaClient.actConversationMessage.findMany({
       where: {
@@ -25,7 +26,7 @@ class MoveToNextActService {
       },
     });
 
-    if (!currentActMessages.length) throw new Error("User has not started the current act");
+    if (!currentActMessages.length) throw new PublicError("Usuário não iniciou o ato atual");
 
     await prismaClient.user.update({
       where: {

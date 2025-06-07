@@ -1,5 +1,6 @@
 import { ListAssessmentsRequest } from "../../definitions/assessment";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 class ListAssessmentsService {
   async execute({ userId, nationalityId }: ListAssessmentsRequest) {
     const userExists = await prismaClient.user.findFirst({
@@ -8,7 +9,7 @@ class ListAssessmentsService {
       },
     });
 
-    if (!userExists) throw new Error("User does not exist");
+    if (!userExists) throw new PublicError("Usuário não existe");
 
     const assessments = await prismaClient.assessment.findMany({
       where: {

@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import { randomInt } from "crypto";
 import { User } from "@prisma/client";
 import { devLog } from "../../../utils/devLog";
+import { PublicError } from "../../../error";
 
 async function sendEmail(user: User, code: string) {
   const transporter = nodemailer.createTransport({
@@ -45,22 +46,20 @@ async function sendEmail(user: User, code: string) {
       html: html,
     });
   } catch (err) {
-    if (err instanceof Error) console.log("Error sending email", err.message);
-    throw new Error("Error sending email");
+    if (err instanceof Error) devLog(`Error sending email to ${user.email}`, err.message);
+    throw new Error("Erro ao enviar e-mail");
   }
 }
 
 class SendCodeService {
   async execute(email: string) {
-    if (!email) throw new Error("Email is missing");
-
     const user = await prismaClient.user.findUnique({
       where: {
         email: email,
       },
     });
 
-    if (!user) throw new Error("Email is not registered");
+    if (!user) throw new PublicError("Email não cadastrado");
 
     const code = randomInt(100000, 999999).toString();
 

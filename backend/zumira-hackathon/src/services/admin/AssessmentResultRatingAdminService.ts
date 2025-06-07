@@ -1,6 +1,7 @@
 import equal from "fast-deep-equal";
 import prismaClient from "../../prisma";
 import { UpdateRatingsRequest } from "../../definitions/admin/assessment";
+import { PublicError } from "../../error";
 
 class AssessmentResultRatingAdminService {
   async findByAssessment(assessmentId: string) {
@@ -22,7 +23,7 @@ class AssessmentResultRatingAdminService {
       where: { id: data.assessmentId },
       include: { assessmentResultRatings: true },
     });
-    if (!assessment) throw new Error("Assessment does not exist");
+    if (!assessment) throw new PublicError("Avaliação não existe");
 
     const newRatings = data.ratings.filter((r) => !r.id);
     const deletedRatings = assessment.assessmentResultRatings.filter(

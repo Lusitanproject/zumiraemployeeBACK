@@ -1,5 +1,6 @@
 import { UpdateAssessment } from "../../definitions/admin/assessment";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class AssessmentAdminService {
   async find(assessmentId: string) {
@@ -41,7 +42,7 @@ class AssessmentAdminService {
       },
     });
 
-    if (!assessment) throw new Error("Assessment does not exist");
+    if (!assessment) throw new PublicError("Avaliação não existe");
 
     const originalTitle = assessment.title.replace(/\s\(\d+\)$/, ""); // Remove o número de clone "(x)"
 

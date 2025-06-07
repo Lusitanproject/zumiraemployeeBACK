@@ -1,5 +1,6 @@
 import { CreateUserRequest } from "../../definitions/user";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class CreateUserService {
   async execute(data: CreateUserRequest) {
@@ -8,14 +9,14 @@ class CreateUserService {
         email: data.email,
       },
     });
-    if (userExists) throw new Error("User already exists");
+    if (userExists) throw new PublicError("Usuário já existe");
 
     const role = await prismaClient.role.findFirst({
       where: {
         slug: "user",
       },
     });
-    if (!role) throw new Error("Internal error");
+    if (!role) throw new Error("Cargo usuario não encontrado");
 
     const user = await prismaClient.user.create({
       data: {

@@ -1,4 +1,5 @@
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 interface DetailAssessmentRequest {
   userId: string;
@@ -56,7 +57,7 @@ class DetailAssessmentService {
       },
     });
 
-    if (!assessment) throw new Error("Assessment does not exist");
+    if (!assessment) throw new PublicError("Avaliação não existe");
 
     const formattedAssesment = {
       id: assessment.id,

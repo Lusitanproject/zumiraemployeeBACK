@@ -1,5 +1,6 @@
 import { DetailNotificationRequest } from "../../definitions/notification";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class DetailNotificationService {
   async execute({ notificationId }: DetailNotificationRequest) {
@@ -27,7 +28,7 @@ class DetailNotificationService {
       },
     });
 
-    if (!notification) throw new Error("Notification does not exist");
+    if (!notification) throw new PublicError("Notificação não existe");
 
     return notification;
   }

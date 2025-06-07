@@ -1,6 +1,7 @@
 import prismaClient from "../../prisma";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
+import { PublicError } from "../../error";
 
 interface GenerateCompanyFeedbackRequest {
   userId: string;
@@ -67,7 +68,7 @@ class GenerateCompanyFeedbackService {
       },
     });
 
-    if (!company) throw new Error("User was not found or has no associated company.");
+    if (!company) throw new PublicError("Usuário não encontrado ou sem empresa associada.");
 
     const allResults = await prismaClient.assessmentResult.findMany({
       where: {
@@ -91,7 +92,7 @@ class GenerateCompanyFeedbackService {
       },
     });
 
-    if (!allResults.length) throw new Error("This company has no results for this assessment");
+    if (!allResults.length) throw new PublicError("Esta empresa não possui resultados para esta avaliação");
 
     const exampleResult = allResults[0];
     const assessment = exampleResult.assessment;
@@ -142,7 +143,7 @@ class GenerateCompanyFeedbackService {
       })
       .join(", ");
 
-    if (!message) throw new Error("No values to send");
+    if (!message) throw new PublicError("Nenhum valor para enviar");
 
     const response = await sendMessage(assessment.companyFeedbackInstructions, message);
 

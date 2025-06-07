@@ -1,5 +1,6 @@
 import { ReadAlertRequest } from "../../definitions/alert";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class ReadAlertService {
   async execute({ id }: ReadAlertRequest) {
@@ -22,7 +23,7 @@ class ReadAlertService {
       },
     });
 
-    if (!alert) throw new Error("Alert does not exist");
+    if (!alert) throw new PublicError("Alerta não existe");
 
     await prismaClient.alert.updateMany({
       where: {
