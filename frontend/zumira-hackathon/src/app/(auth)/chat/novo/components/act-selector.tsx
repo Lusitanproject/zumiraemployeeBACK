@@ -54,23 +54,25 @@ export function ActSelector({ data }: ActSelectorProps) {
                 : "opacity-0 pointer-events-none -translate-y-2"
             )}
           >
-            {data.chatbots.map((bot) => (
-              <div
-                className="flex flex-row gap-2 items-center w-full text-center text-lg hover:bg-black/5 px-3 py-1.5 cursor-pointer text-gray-500 text-nowrap"
-                key={bot.id}
-                onClick={() => {
-                  setSelected(bot);
-                  setOpenDropdown(false);
-                }}
-              >
-                <DynamicIcon className="size-4" name={bot.icon as IconName} />
-                <span>{bot.name}</span>
-              </div>
-            ))}
+            {data.chatbots
+              .filter((c) => c.id !== selected.id)
+              .map((bot) => (
+                <div
+                  className="flex flex-row gap-2 items-center w-full text-center text-lg hover:bg-black/5 px-3 py-1.5 cursor-pointer text-gray-500 text-nowrap"
+                  key={bot.id}
+                  onClick={() => {
+                    setSelected(bot);
+                    setOpenDropdown(false);
+                  }}
+                >
+                  <DynamicIcon className="size-4" name={bot.icon as IconName} />
+                  <span>{bot.name}</span>
+                </div>
+              ))}
           </div>
         </div>
 
-        <span className="text-gray-500">{selected.description}</span>
+        <span className="text-gray-500 text-center">{selected.description}</span>
       </div>
       {/* <MessageInput placeholder="Comece a escrever seu próximo capítulo" /> */}
       <Button variant="primary" size="xxl" onClick={handleConfirm} disabled={loading} loading={loading}>
