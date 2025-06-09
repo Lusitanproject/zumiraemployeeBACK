@@ -20,7 +20,7 @@ class MessageActChatbotService {
     await prismaClient.actConversationMessage.create({
       data: {
         actConversationId,
-        role: "USER",
+        role: "user",
         content,
       },
     });
@@ -36,7 +36,7 @@ class MessageActChatbotService {
     });
 
     const historyAndInput = messages.map((m) => ({
-      role: m.role === "SYSTEM" ? "assistant" : "user",
+      role: m.role,
       content: m.content,
     })) as GenerateOpenAiResponseRequest["messages"];
 
@@ -49,7 +49,7 @@ class MessageActChatbotService {
       prismaClient.actConversationMessage.create({
         data: {
           actConversationId,
-          role: "SYSTEM",
+          role: "assistant",
           content: response.output_text,
         },
       }),

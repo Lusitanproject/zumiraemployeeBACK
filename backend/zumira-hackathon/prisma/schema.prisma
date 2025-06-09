@@ -19,8 +19,8 @@ enum AssessmentOperation {
 }
 
 enum ConversationRole {
-  USER
-  SYSTEM
+  user
+  assistant
 }
 
 enum UserGender {

@@ -20,12 +20,8 @@ export function Chat({ children, username, chatbotId, context }: AssistantChatPr
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  async function handleSubmit(formData: FormData) {
-    const content = formData.get("message") as string;
-
-    if (!content.trim()) return;
-
-    const message = { content, role: "user" } as ChatMessage;
+  async function sendMessage(text: string) {
+    const message = { content: text, role: "user" } as ChatMessage;
     const newMessages = [...messages, message];
 
     // Forçar a re-renderização
@@ -79,7 +75,7 @@ export function Chat({ children, username, chatbotId, context }: AssistantChatPr
         {children}
       </div>
 
-      <MessageInput placeholder="Pergunte alguma coisa" action={handleSubmit} />
+      <MessageInput placeholder="Pergunte alguma coisa" onSend={sendMessage} />
     </div>
   );
 }

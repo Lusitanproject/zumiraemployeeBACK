@@ -9,7 +9,14 @@ class GetActConversationService {
         select: {
           id: true,
           title: true,
-          actChatbotId: true,
+          actChatbot: {
+            select: {
+              id: true,
+              description: true,
+              icon: true,
+              name: true,
+            },
+          },
         },
       }),
 
@@ -34,7 +41,7 @@ class GetActConversationService {
       }),
     ]);
 
-    return { conversation, messages };
+    return { ...conversation, messages };
   }
 }
 
