@@ -8,6 +8,7 @@ const client_1 = require("@prisma/client");
 const prisma_1 = __importDefault(require("../../prisma"));
 const openai_1 = __importDefault(require("openai"));
 const devLog_1 = require("../../utils/devLog");
+const error_1 = require("../../error");
 const assessmentResultInclude = client_1.Prisma.validator()({
     include: {
         assessment: {
@@ -145,10 +146,10 @@ class GenerateUserFeedbackService {
             },
         });
         if (!result)
-            throw new Error("No results for this assessment");
+            throw new error_1.PublicError("Nenhum resultado para esta avaliação");
         const message = createMessage(result);
         if (!message)
-            throw new Error("No values to send");
+            throw new error_1.PublicError("Nenhum valor para enviar");
         (0, devLog_1.devLog)("Message: ", message);
         const response = await generateResponse(assessmentId, result.assessment.userFeedbackInstructions, message, result.assessment.assessmentResultRatings);
         // Workaround para a tipagem desatualizada da resposta da openai (nao tem .arguments)
@@ -158,7 +159,7 @@ class GenerateUserFeedbackService {
         const ratings = result.assessment.assessmentResultRatings;
         const rating = ratings.find((r) => r.risk === args.identifiedRating);
         if (!rating && ratings.length !== 0) {
-            throw new Error(`Rating "${args.identifiedRating}" does not exist`);
+            throw new error_1.PublicError(`Classificação "${args.identifiedRating}" não existe`);
         }
         await storeFeedback(result, args.feedback, rating);
         if (args.generateAlert && rating)

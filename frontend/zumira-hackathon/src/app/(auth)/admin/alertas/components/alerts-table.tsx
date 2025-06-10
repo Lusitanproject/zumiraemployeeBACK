@@ -1,5 +1,6 @@
 import { Spinner } from "@/components/custom/spinner";
 import { Result } from "../definitions";
+import { MeatballsMenu } from "./meatballs-menu";
 
 interface AlertsTableProps {
   results?: Result[];
@@ -30,8 +31,8 @@ export function AlertsTable({ results, loading }: AlertsTableProps) {
   const sample = results.length ? results[0] : null;
 
   return (
-    <div className="rounded-xl border-1 border-gray-300 overflow-hidden">
-      <table className="min-w-full text-sm text-center rounded-xl">
+    <div className="rounded-xl border-1 border-gray-300">
+      <table className="min-w-full text-sm text-center rounded-xl overflow-clip">
         <thead className="bg-gray-100 text-gray-500 font-semibold">
           <tr>
             <th className="p-2">Código</th>
@@ -44,6 +45,7 @@ export function AlertsTable({ results, loading }: AlertsTableProps) {
               ))}
             <th className="p-2">Ultima avaliação</th>
             <th className="p-2">Status</th>
+            <th />
           </tr>
         </thead>
         <tbody>
@@ -54,7 +56,7 @@ export function AlertsTable({ results, loading }: AlertsTableProps) {
                 <td className="p-2">{result.assessmentResultRating.profile}</td>
                 {result.scores.map((score) => (
                   <td key={score.dimension.id} className="p-2">
-                    {score.value}
+                    {score.value.toFixed(2)}
                   </td>
                 ))}
                 <td className="p-2">{formatDate(new Date(result.createdAt))}</td>
@@ -65,6 +67,9 @@ export function AlertsTable({ results, loading }: AlertsTableProps) {
                   />
                   {result.assessmentResultRating.risk}
                   <div className="size-2 flex-none" />
+                </td>
+                <td className="pr-2">
+                  <MeatballsMenu username={result.user.name} email={result.user.email} />
                 </td>
               </tr>
             );

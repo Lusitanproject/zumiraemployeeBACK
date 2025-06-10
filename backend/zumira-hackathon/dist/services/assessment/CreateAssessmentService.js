@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateAssessmentService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
+const error_1 = require("../../error");
 class CreateAssessmentService {
     async execute(data) {
         const block = await prisma_1.default.selfMonitoringBlock.findFirst({
@@ -13,7 +14,7 @@ class CreateAssessmentService {
             },
         });
         if (!block)
-            throw new Error("Self monitoring block does not exist");
+            throw new error_1.PublicError("Bloco de auto monitoramento não existe");
         const assessment = await prisma_1.default.assessment.create({
             data: {
                 ...data,

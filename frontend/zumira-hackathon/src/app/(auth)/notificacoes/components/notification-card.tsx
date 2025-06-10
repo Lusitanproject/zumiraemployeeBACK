@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 import Markdown from "react-markdown";
 import { Notification } from "../definitions";
 import { useEffect, useRef, useState } from "react";
-import { isMobile } from "@/utils/is-mobile";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface NotificationCardProps {
   notification: Notification;
@@ -31,10 +32,6 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
     return `${day}/${month}/${year} às ${hours}:${minutes}`;
   }
 
-  function handleRedirect(href: string) {
-    window.open(href, "_blank", "noopener,noreferrer");
-  }
-
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.offsetHeight);
@@ -44,13 +41,6 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
   return (
     <section
       id={id}
-      onClick={() => {
-        if (notification.actionUrl) {
-          handleRedirect(notification.actionUrl);
-        } else {
-          if (isMobile() && !open) onOpen?.(notification.id);
-        }
-      }}
       className={cn(
         "relative flex flex-col gap-1 p-3 rounded-md border-1 duration-200",
         open ? "border-primary-300" : "border-gray-100 hover:bg-[#E7F8EA]"
@@ -61,8 +51,22 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
       <p className="text-gray-700 text-sm leading-5 text-start">{notification.summary}</p>
 
       <div className="relative flex duration-300 overflow-clip" style={{ height: open ? contentHeight : 0 }}>
-        <div ref={contentRef} className="absolute prose markdown">
-          <Markdown>{notification.content}</Markdown>
+        <div
+          ref={contentRef}
+          className={cn("absolute flex w-full", {
+            "prose markdown": notification.content,
+            "justify-center": notification.actionUrl,
+          })}
+        >
+          {notification.actionUrl ? (
+            <Link href={notification.actionUrl}>
+              <Button className="mt-4" variant="secondary" size="lg">
+                Ir para detalhes
+              </Button>
+            </Link>
+          ) : (
+            <Markdown>{notification.content}</Markdown>
+          )}
         </div>
       </div>
 
@@ -72,15 +76,9 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
 
       <button
         className="w-fit text-xs leading-[18px] text-gray-400 text-start cursor-pointer underline"
-        onClick={() =>
-          notification.actionUrl
-            ? handleRedirect(notification.actionUrl)
-            : open
-            ? onClose?.(notification.id)
-            : onOpen?.(notification.id)
-        }
+        onClick={() => (open ? onClose?.(notification.id) : onOpen?.(notification.id))}
       >
-        Ver {open && !notification.actionUrl ? "menos" : "mais"}
+        Ver {open ? "menos" : "mais"}
       </button>
 
       {!notification.read && (

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssessmentResultRatingAdminService = void 0;
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const prisma_1 = __importDefault(require("../../prisma"));
+const error_1 = require("../../error");
 class AssessmentResultRatingAdminService {
     async findByAssessment(assessmentId) {
         const ratings = await prisma_1.default.assessmentResultRating.findMany({
@@ -25,7 +26,7 @@ class AssessmentResultRatingAdminService {
             include: { assessmentResultRatings: true },
         });
         if (!assessment)
-            throw new Error("Assessment does not exist");
+            throw new error_1.PublicError("Avaliação não existe");
         const newRatings = data.ratings.filter((r) => !r.id);
         const deletedRatings = assessment.assessmentResultRatings.filter((r1) => !data.ratings.some((r2) => r1.id === r2.id));
         const updatedRatings = data.ratings.filter((r1) => {

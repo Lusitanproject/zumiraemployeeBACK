@@ -10,17 +10,18 @@ exports.CreateAssessmentSchema = zod_1.z.object({
     selfMonitoringBlockId: zod_1.z.string().cuid(),
     userFeedbackInstructions: zod_1.z.string().optional(),
     companyFeedbackInstructions: zod_1.z.string().optional(),
-    operationType: zod_1.z.nativeEnum(client_1.Operation),
+    operationType: zod_1.z.nativeEnum(client_1.AssessmentOperation),
     nationalityId: zod_1.z.string().cuid(),
 });
 exports.UpdateAssessmentSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
+    title: zod_1.z.string().nonempty(),
     summary: zod_1.z.string().min(1).optional(),
     description: zod_1.z.string().optional(),
     selfMonitoringBlockId: zod_1.z.string().cuid().optional(),
     userFeedbackInstructions: zod_1.z.string().optional(),
     companyFeedbackInstructions: zod_1.z.string().optional(),
-    operationType: zod_1.z.nativeEnum(client_1.Operation),
+    operationType: zod_1.z.nativeEnum(client_1.AssessmentOperation),
     nationalityId: zod_1.z.string().cuid(),
 });
 exports.UpdateRatingsSchema = zod_1.z.object({

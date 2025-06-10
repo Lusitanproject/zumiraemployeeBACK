@@ -27,9 +27,12 @@ export function AssessmentCard({ id, title, summary, completed }: AssessmentCard
   return (
     <div
       onClick={completed ? goToFeedback : toggleModal}
-      className={cn("rounded-xl bg-gray-100 p-[1.375rem] flex flex-col h-[12.375rem] text-left cursor-pointer", {
-        "bg-primary-25/50": completed,
-      })}
+      className={cn(
+        "rounded-xl bg-gray-100 hover:bg-gray-200 p-[1.375rem] flex flex-col h-[12.375rem] text-left cursor-pointer",
+        {
+          "bg-primary-25/50 hover:bg-primary-25/70": completed,
+        }
+      )}
     >
       <div className="flex w-full mb-3">
         <div className="flex items-center justify-center bg-primary-50 rounded-xl w-[50px] h-[50px]">

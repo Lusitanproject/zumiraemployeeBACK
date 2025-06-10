@@ -1,20 +1,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { cn } from "@/lib/utils";
 
-export type MenuIcon =
-  | "house"
-  | "chart-no-axes-column-increasing"
-  | "square-pen"
-  | "users"
-  | "layout-grid"
-  | "clipboard-list"
-  | "building-2"
-  | "brain"
-  | "mails"
-  | "circle-alert";
+export type MenuIcon = IconName;
 
 export type MenuLink = {
   href: string;
@@ -38,11 +28,11 @@ export function MainMenu({ expanded, menu }: MainMenuProps) {
             key={item.href}
             href={item.href}
             className={cn(
-              "w-full flex items-center justify-start rounded-xl text-gray-400 font-semibold overflow-hidden",
+              "w-full flex items-center justify-start rounded-xl text-gray-400 hover:bg-black/5 font-semibold overflow-hidden",
               {
                 "px-5 h-11 gap-x-2 grid grid-cols-[20px_minmax(96px,_1fr)_20px]": expanded,
                 "h-12 items-center justify-center": !expanded,
-                "border-b border-gray-100/20 rounded-none pr-0": pathname.indexOf(item.href) !== 0,
+                "border-b border-gray-100/20 pr-0": pathname.indexOf(item.href) !== 0,
                 "text-gray-500": pathname.indexOf(item.href) === 0,
               }
             )}

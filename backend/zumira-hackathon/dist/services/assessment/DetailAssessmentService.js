@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DetailAssessmentService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
+const error_1 = require("../../error");
 class DetailAssessmentService {
     async execute({ userId, assessmentId }) {
         const assessment = await prisma_1.default.assessment.findFirst({
@@ -56,7 +57,7 @@ class DetailAssessmentService {
             },
         });
         if (!assessment)
-            throw new Error("Assessment does not exist");
+            throw new error_1.PublicError("Avaliação não existe");
         const formattedAssesment = {
             id: assessment.id,
             title: assessment.title,

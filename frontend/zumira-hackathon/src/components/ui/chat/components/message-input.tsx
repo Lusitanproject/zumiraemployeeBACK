@@ -6,10 +6,10 @@ import { useRef } from "react";
 interface MessageInputProps {
   placeholder?: string;
   disabled?: boolean;
-  action?: (formData: FormData) => void;
+  onSend?: (text: string) => void;
 }
 
-export function MessageInput({ placeholder, disabled, action }: MessageInputProps) {
+export function MessageInput({ placeholder, disabled, onSend }: MessageInputProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -33,10 +33,15 @@ export function MessageInput({ placeholder, disabled, action }: MessageInputProp
     }
   }
 
-  function innerAction(formData: FormData) {
-    action?.(formData);
-    if (textareaRef.current && !disabled) {
-      textareaRef.current.value = "";
+  function handleSubmit(formData: FormData) {
+    const text = formData.get("message") as string;
+
+    if (text?.trim()) {
+      onSend?.(text);
+
+      if (textareaRef.current && !disabled) {
+        textareaRef.current.value = "";
+      }
     }
   }
 
@@ -44,7 +49,7 @@ export function MessageInput({ placeholder, disabled, action }: MessageInputProp
     <form
       ref={formRef}
       className="flex flex-row w-full min-h-[3.125rem] max-h-32 border-gray-300 border-1 rounded-xl overflow-clip"
-      action={innerAction}
+      action={handleSubmit}
     >
       <div className="flex size-full py-2.5">
         <textarea

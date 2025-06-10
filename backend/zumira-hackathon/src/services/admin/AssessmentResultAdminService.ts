@@ -23,6 +23,7 @@ class AssessmentResultAdminService {
         user: {
           select: {
             id: true,
+            name: true,
             email: true,
             companyId: true,
           },
@@ -38,9 +39,17 @@ class AssessmentResultAdminService {
       },
     });
 
-    const scores = await calculateResultScores(results.map((r) => r.id));
+    const aux: Record<string, (typeof results)[0]> = {};
+    for (const result of results) {
+      if (!aux[result.user.id] || new Date(aux[result.user.id].createdAt) < new Date(result.createdAt)) {
+        aux[result.user.id] = result;
+      }
+    }
+    const lastResults = Object.values(aux);
 
-    const processedData = results.map((r) => ({
+    const scores = await calculateResultScores(lastResults.map((r) => r.id));
+
+    const processedData = lastResults.map((r) => ({
       ...r,
       scores: scores.find((s) => s.assessmentResultId === r.id)?.scores,
     }));

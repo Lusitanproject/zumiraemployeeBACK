@@ -1,5 +1,6 @@
 import { DetailResultRequest } from "../../definitions/assessment";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class DetailResultService {
   async execute({ userId, assessmentId }: DetailResultRequest) {
@@ -78,7 +79,7 @@ class DetailResultService {
       },
     });
 
-    if (!result) throw new Error("No results for this assessment");
+    if (!result) throw new PublicError("Nenhum resultado para esta avaliação");
 
     const dimensions: Record<
       string,

@@ -1,5 +1,6 @@
 import prismaClient from "../../../prisma";
 import { sign } from "jsonwebtoken";
+import { PublicError } from "../../../error";
 
 interface AuthRequest {
   email: string;
@@ -8,8 +9,6 @@ interface AuthRequest {
 
 class AuthUserService {
   async execute({ email, code }: AuthRequest) {
-    if (!email || !code) throw new Error("Required data is missing");
-
     const user = await prismaClient.user.findUnique({
       where: {
         email: email,
@@ -19,7 +18,7 @@ class AuthUserService {
       },
     });
 
-    if (!user) throw new Error("Email is not registered");
+    if (!user) throw new PublicError("E-mail não cadastrado");
 
     const storedCode = await prismaClient.authCode.findFirst({
       where: {
@@ -28,8 +27,7 @@ class AuthUserService {
       },
     });
 
-    if (!storedCode) throw new Error("Invalid code");
-    if (storedCode.expiresAt < new Date()) throw new Error("Expired code");
+    if (!storedCode || storedCode.expiresAt < new Date()) throw new PublicError("Código inválido ou expirado");
 
     const token = sign(
       {
@@ -46,6 +44,7 @@ class AuthUserService {
 
     return {
       name: user.name,
+      act: user.currentActChatbotId,
       role: user.role.slug,
       token: token,
       expiresAt: expiresAt,

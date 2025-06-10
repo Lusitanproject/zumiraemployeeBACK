@@ -23,12 +23,18 @@ export default function Entrar() {
         </p>
       </div>
       <SignUpForm />
-      <p className="text-sm leading-4 mt-8 text-gray-900">
+      <span className="text-sm leading-4 mt-8 text-gray-900">
         Ao utilizar a plataforma, você concorda com os nossos{" "}
         <Link className="text-primary-600 underline" href="/termos">
           Termos de Uso
         </Link>
-      </p>
+      </span>
+      <span className="text-center text-gray-500 font-semibold mt-8">
+        Não tem uma conta?{" "}
+        <Link className="underline" href="/registrar">
+          Cadastre-se
+        </Link>
+      </span>
     </div>
   );
 }

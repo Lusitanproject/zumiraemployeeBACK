@@ -9,7 +9,7 @@ export function reducer(state: ManageRatingState, action: ManageRatingAction): M
         key: v4(),
         risk: "",
         profile: "",
-        color: "",
+        color: "#AAAAAA",
       };
 
       return { ratings: [...state.ratings, empty] };

@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DetailNotificationService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
+const error_1 = require("../../error");
 class DetailNotificationService {
     async execute({ notificationId }) {
         const notification = await prisma_1.default.notification.findFirst({
@@ -31,7 +32,7 @@ class DetailNotificationService {
             },
         });
         if (!notification)
-            throw new Error("Notification does not exist");
+            throw new error_1.PublicError("Notificação não existe");
         return notification;
     }
 }

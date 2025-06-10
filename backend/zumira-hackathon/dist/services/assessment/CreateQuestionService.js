@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateQuestionService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
+const error_1 = require("../../error");
 class CreateQuestionService {
     async execute({ description, assessmentId, index, psychologicalDimensionId, choices }) {
         const assessmentExists = await prisma_1.default.assessment.findFirst({
@@ -13,14 +14,14 @@ class CreateQuestionService {
             },
         });
         if (!assessmentExists)
-            throw new Error("Assessment does not exist");
+            throw new error_1.PublicError("Avaliação não existe");
         const dimensionExists = await prisma_1.default.psychologicalDimension.findFirst({
             where: {
                 id: psychologicalDimensionId,
             },
         });
         if (!dimensionExists)
-            throw new Error("Psychological dimension does not exist");
+            throw new error_1.PublicError("Dimensão psicológica não existe");
         const question = await prisma_1.default.assessmentQuestion.create({
             data: {
                 description,

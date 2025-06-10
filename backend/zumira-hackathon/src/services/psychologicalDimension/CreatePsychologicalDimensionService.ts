@@ -1,4 +1,5 @@
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 interface PsychologicalDimensionRequest {
   acronym: string;
@@ -15,7 +16,7 @@ class CreatePsychologicalDimensionService {
       },
     });
 
-    if (dimensionExists) throw new Error("Dimension already exists");
+    if (dimensionExists) throw new PublicError("Dimensão já existe");
 
     const newDimension = await prismaClient.psychologicalDimension.create({
       data: {

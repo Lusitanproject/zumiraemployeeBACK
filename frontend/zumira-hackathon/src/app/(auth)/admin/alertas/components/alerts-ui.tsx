@@ -29,7 +29,7 @@ export function AlertsUI({ assessments, companies }: AlertsUIProps) {
           assessments={assessments}
           companies={companies}
           onChangeFilters={fetchResults}
-          totalResults={Number(results?.length)}
+          totalResults={results?.length}
         />
       </div>
       <div className="flex flex-col gap-2">

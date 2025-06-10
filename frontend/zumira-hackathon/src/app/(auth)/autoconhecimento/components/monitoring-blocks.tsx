@@ -5,6 +5,7 @@ import { SelfMonitoringBlock } from "../definitions";
 import { Badge } from "./badge";
 import { startHolyLoader } from "holy-loader";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 type MonitoringBlocksProps = {
   data: SelfMonitoringBlock[];
@@ -28,6 +29,7 @@ export function MonitoringBlocks({ data }: MonitoringBlocksProps) {
     } else {
       setSelectedId(monitoringId);
       params.set("avaliacao", monitoringId);
+      params.delete("busca");
     }
 
     replace(`${pathname}?${params.toString()}`);
@@ -36,7 +38,12 @@ export function MonitoringBlocks({ data }: MonitoringBlocksProps) {
   return (
     <div className="flex flex-nowrap overflow-x-auto gap-x-3 mb-8 scrollbar-hide">
       {data.map((item) => (
-        <Badge key={item.id} selected={selectedId === item.id} onClick={() => handleSelect(item.id)}>
+        <Badge
+          key={item.id}
+          className={cn("hover:bg-primary-25/70", { "hover:bg-gray-200": selectedId !== item.id })}
+          selected={selectedId === item.id}
+          onClick={() => handleSelect(item.id)}
+        >
           <span>{item.title}</span>
           {selectedId === item.id && <X className="size-3 text-primary-500" />}
         </Badge>

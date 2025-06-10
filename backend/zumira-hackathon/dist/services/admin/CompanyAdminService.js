@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompanyAdminService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
+const error_1 = require("../../error");
 class CompanyAdminService {
     async find(companyId) {
         const company = await prisma_1.default.company.findFirst({
@@ -26,7 +27,7 @@ class CompanyAdminService {
             },
         });
         if (!(user === null || user === void 0 ? void 0 : user.companyId))
-            throw new Error("User is not associated with a company");
+            throw new error_1.PublicError("Usuário não está associado a uma empresa");
         const allFeedbacks = await prisma_1.default.companyAssessmentFeedback.findMany({
             where: {
                 companyId: user.companyId,

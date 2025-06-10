@@ -1,4 +1,5 @@
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 interface QuestionRequest {
   description: string;
@@ -20,7 +21,7 @@ class CreateQuestionService {
       },
     });
 
-    if (!assessmentExists) throw new Error("Assessment does not exist");
+    if (!assessmentExists) throw new PublicError("Avaliação não existe");
 
     const dimensionExists = await prismaClient.psychologicalDimension.findFirst({
       where: {
@@ -28,7 +29,7 @@ class CreateQuestionService {
       },
     });
 
-    if (!dimensionExists) throw new Error("Psychological dimension does not exist");
+    if (!dimensionExists) throw new PublicError("Dimensão psicológica não existe");
 
     const question = await prismaClient.assessmentQuestion.create({
       data: {

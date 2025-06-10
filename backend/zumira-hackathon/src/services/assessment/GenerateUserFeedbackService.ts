@@ -3,6 +3,7 @@ import prismaClient from "../../prisma";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
 import { devLog } from "../../utils/devLog";
+import { PublicError } from "../../error";
 
 interface GenerateUserFeedbackRequest {
   userId: string;
@@ -165,10 +166,10 @@ class GenerateUserFeedbackService {
         createdAt: "desc",
       },
     });
-    if (!result) throw new Error("No results for this assessment");
+    if (!result) throw new PublicError("Nenhum resultado para esta avaliação");
 
     const message = createMessage(result);
-    if (!message) throw new Error("No values to send");
+    if (!message) throw new PublicError("Nenhum valor para enviar");
     devLog("Message: ", message);
 
     const response = await generateResponse(
@@ -191,7 +192,7 @@ class GenerateUserFeedbackService {
     const ratings = result.assessment.assessmentResultRatings;
     const rating = ratings.find((r) => r.risk === args.identifiedRating);
     if (!rating && ratings.length !== 0) {
-      throw new Error(`Rating "${args.identifiedRating}" does not exist`);
+      throw new PublicError(`Classificação "${args.identifiedRating}" não existe`);
     }
 
     await storeFeedback(result, args.feedback, rating);

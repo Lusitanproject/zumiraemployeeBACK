@@ -1,16 +1,18 @@
 "use client";
 
-import { Notification, NotificationFull } from "../definitions";
+import { Alert, Notification, NotificationFull } from "../definitions";
 import { cn } from "@/lib/utils";
 import { NotificationCard } from "./notification-card";
 import { useEffect, useState } from "react";
+import { AlertCard } from "./alert-card";
 
 interface NotificationsListProps {
-  data: Notification[];
+  notifications: Notification[];
+  alerts: Alert[];
   current?: NotificationFull;
 }
 
-export function NotificationsAccordion({ data, current }: NotificationsListProps) {
+export function NotificationsAccordion({ notifications, alerts, current }: NotificationsListProps) {
   const [openItem, setOpenItem] = useState<string | null>(current?.id ?? null);
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export function NotificationsAccordion({ data, current }: NotificationsListProps
     }
   }, [current]);
 
-  if (!data.length) {
+  if (!(notifications.length + alerts.length)) {
     return (
       <div className="flex size-full justify-center items-center">
         <p className="text-center text-gray-500">
@@ -32,8 +34,28 @@ export function NotificationsAccordion({ data, current }: NotificationsListProps
   }
 
   return (
-    <div className={cn("flex flex-col pt-1.5 gap-3 overflow-scroll w-full")}>
-      {data
+    <div className={cn("flex flex-col pt-1.5 gap-3 overflow-scroll w-full scrollbar-hide")}>
+      {alerts
+        .toSorted((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        .map((alerts) => {
+          const isCurrent = alerts.id === current?.id;
+          if (isCurrent) {
+            alerts.read = true;
+          }
+
+          return (
+            <AlertCard
+              id={alerts.id}
+              key={alerts.id}
+              alert={alerts}
+              open={alerts.id === openItem}
+              onOpen={(id) => setOpenItem(id)}
+              onClose={(id) => setOpenItem((prev) => (prev === id ? null : prev))}
+            />
+          );
+        })}
+
+      {notifications
         .toSorted(
           (a, b) =>
             b.notificationType.priority - a.notificationType.priority ||

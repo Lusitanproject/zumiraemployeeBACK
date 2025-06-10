@@ -38,6 +38,7 @@ export interface Result {
   id: string;
   user: {
     id: string;
+    name: string;
     email: string;
     companyId: string;
   };

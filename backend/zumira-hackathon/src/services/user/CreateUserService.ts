@@ -1,41 +1,27 @@
+import { CreateUserRequest } from "../../definitions/user";
 import prismaClient from "../../prisma";
-
-interface UserRequest {
-  name: string;
-  email: string;
-  role: "user" | "company" | "admin";
-  companyId?: string;
-}
+import { PublicError } from "../../error";
 
 class CreateUserService {
-  async execute({ name, email, role, companyId }: UserRequest) {
+  async execute(data: CreateUserRequest) {
     const userExists = await prismaClient.user.findFirst({
       where: {
-        email: email,
+        email: data.email,
       },
     });
-    if (userExists) throw new Error("User already exists");
+    if (userExists) throw new PublicError("Usuário já existe");
 
-    const companyExists = await prismaClient.company.findFirst({
+    const role = await prismaClient.role.findFirst({
       where: {
-        id: companyId,
+        slug: "user",
       },
     });
-    if (!companyExists) throw new Error("Company does not exist");
-
-    const roleExists = await prismaClient.role.findFirst({
-      where: {
-        slug: role,
-      },
-    });
-    if (!roleExists) throw new Error(`Role does not exist`);
+    if (!role) throw new Error("Cargo usuario não encontrado");
 
     const user = await prismaClient.user.create({
       data: {
-        name,
-        email,
-        roleId: roleExists.id,
-        companyId,
+        ...data,
+        roleId: role.id,
       },
     });
 

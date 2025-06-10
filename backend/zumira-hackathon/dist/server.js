@@ -8,13 +8,14 @@ require("express-async-errors");
 const cors_1 = __importDefault(require("cors"));
 const kleur_1 = __importDefault(require("kleur"));
 const routes_1 = require("./routes");
+const error_1 = require("./error");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use(routes_1.router);
 app.use((err, req, res, next) => {
     console.error(`${kleur_1.default.red(req.url)}: ${err.message}`);
-    if (err instanceof Error) {
+    if (err instanceof error_1.PublicError) {
         return res.status(400).json({
             status: "ERROR",
             message: err.message,
@@ -22,7 +23,7 @@ app.use((err, req, res, next) => {
     }
     return res.status(500).json({
         status: "ERROR",
-        message: "Internal server error.",
+        message: "Erro interno",
     });
 });
 app.listen(process.env.PORT, () => {

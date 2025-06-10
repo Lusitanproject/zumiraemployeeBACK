@@ -24,8 +24,8 @@ export function Filters({ assessments, companies, totalResults, onChangeFilters 
   return (
     <div className="bg-gray-100 p-3 pt-2 rounded-xl border-1 border-gray-300">
       <span className="text-lg font-semibold text-gray-400">Filtros</span>
-      <div className="flex flex-row w-full justify-between items-end">
-        <div className="flex flex-row gap-2 items-center">
+      <div className="flex flex-row w-full justify-between items-end flex-wrap">
+        <div className="flex flex-row gap-2 items-center flex-wrap">
           <div>
             <Label htmlFor="company">Empresa</Label>
             <Select
@@ -73,7 +73,7 @@ export function Filters({ assessments, companies, totalResults, onChangeFilters 
             </Select>
           </div>
         </div>
-        <span className="text-gray-500 text-sm">Mostrando {Number(totalResults)} resultados</span>
+        <span className="text-gray-500 text-sm">Mostrando {totalResults ?? 0} resultados</span>
       </div>
     </div>
   );

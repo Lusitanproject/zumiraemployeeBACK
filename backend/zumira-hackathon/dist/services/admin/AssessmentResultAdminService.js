@@ -26,6 +26,7 @@ class AssessmentResultAdminService {
                 user: {
                     select: {
                         id: true,
+                        name: true,
                         email: true,
                         companyId: true,
                     },
@@ -40,8 +41,15 @@ class AssessmentResultAdminService {
                 createdAt: true,
             },
         });
-        const scores = await (0, calculateResultScores_1.calculateResultScores)(results.map((r) => r.id));
-        const processedData = results.map((r) => {
+        const aux = {};
+        for (const result of results) {
+            if (!aux[result.user.id] || new Date(aux[result.user.id].createdAt) < new Date(result.createdAt)) {
+                aux[result.user.id] = result;
+            }
+        }
+        const lastResults = Object.values(aux);
+        const scores = await (0, calculateResultScores_1.calculateResultScores)(lastResults.map((r) => r.id));
+        const processedData = lastResults.map((r) => {
             var _a;
             return ({
                 ...r,

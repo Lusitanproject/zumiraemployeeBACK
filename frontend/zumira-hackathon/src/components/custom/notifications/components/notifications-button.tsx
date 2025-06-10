@@ -2,24 +2,17 @@
 
 import { Bell } from "lucide-react";
 import { NotificationsDropdown } from "./notifications-dropdown";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Notification } from "../definitions";
-import { usePathname } from "next/navigation";
+import { Alert, Notification } from "../definitions";
 
 interface NotificationsButtonProps {
-  data: Notification[];
+  notifications: Notification[];
+  alerts: Alert[];
 }
 
-export function NotificationsButton({ data }: NotificationsButtonProps) {
-  const path = usePathname();
+export function NotificationsButton({ notifications, alerts }: NotificationsButtonProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (path === "/notificacoes") {
-      setIsDropdownOpen(false);
-    }
-  }, [path]);
 
   return (
     <div className="relative">
@@ -32,7 +25,9 @@ export function NotificationsButton({ data }: NotificationsButtonProps) {
       >
         <Bell size={24} className="text-gray-400" />
       </button>
-      {isDropdownOpen && <NotificationsDropdown data={data} onClose={() => setIsDropdownOpen(false)} />}
+      {isDropdownOpen && (
+        <NotificationsDropdown notifications={notifications} alerts={alerts} onClose={() => setIsDropdownOpen(false)} />
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { CreateAssessment } from "../../definitions/admin/assessment";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 class CreateAssessmentService {
   async execute(data: CreateAssessment) {
@@ -9,7 +10,7 @@ class CreateAssessmentService {
       },
     });
 
-    if (!block) throw new Error("Self monitoring block does not exist");
+    if (!block) throw new PublicError("Bloco de auto monitoramento não existe");
 
     const assessment = await prismaClient.assessment.create({
       data: {

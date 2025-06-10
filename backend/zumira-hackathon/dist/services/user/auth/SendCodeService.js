@@ -8,6 +8,7 @@ const prisma_1 = __importDefault(require("../../../prisma"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const crypto_1 = require("crypto");
 const devLog_1 = require("../../../utils/devLog");
+const error_1 = require("../../../error");
 async function sendEmail(user, code) {
     const transporter = nodemailer_1.default.createTransport({
         host: process.env.EMAIL_HOST,
@@ -48,21 +49,19 @@ async function sendEmail(user, code) {
     }
     catch (err) {
         if (err instanceof Error)
-            console.log("Error sending email", err.message);
-        throw new Error("Error sending email");
+            (0, devLog_1.devLog)(`Error sending email to ${user.email}`, err.message);
+        throw new Error("Erro ao enviar e-mail");
     }
 }
 class SendCodeService {
     async execute(email) {
-        if (!email)
-            throw new Error("Email is missing");
         const user = await prisma_1.default.user.findUnique({
             where: {
                 email: email,
             },
         });
         if (!user)
-            throw new Error("Email is not registered");
+            throw new error_1.PublicError("Email não cadastrado");
         const code = (0, crypto_1.randomInt)(100000, 999999).toString();
         const now = new Date().getTime();
         const expiresAt = new Date(now + 5 * 60 * 1000); // Expiração em 5 minutos

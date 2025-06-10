@@ -1,4 +1,4 @@
-import { Operation } from "@prisma/client";
+import { AssessmentOperation } from "@prisma/client";
 import { z } from "zod";
 
 export const CreateAssessmentSchema = z.object({
@@ -8,18 +8,19 @@ export const CreateAssessmentSchema = z.object({
   selfMonitoringBlockId: z.string().cuid(),
   userFeedbackInstructions: z.string().optional(),
   companyFeedbackInstructions: z.string().optional(),
-  operationType: z.nativeEnum(Operation),
+  operationType: z.nativeEnum(AssessmentOperation),
   nationalityId: z.string().cuid(),
 });
 
 export const UpdateAssessmentSchema = z.object({
   id: z.string().cuid(),
+  title: z.string().nonempty(),
   summary: z.string().min(1).optional(),
   description: z.string().optional(),
   selfMonitoringBlockId: z.string().cuid().optional(),
   userFeedbackInstructions: z.string().optional(),
   companyFeedbackInstructions: z.string().optional(),
-  operationType: z.nativeEnum(Operation),
+  operationType: z.nativeEnum(AssessmentOperation),
   nationalityId: z.string().cuid(),
 });
 

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenerateCompanyFeedbackService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 const openai_1 = __importDefault(require("openai"));
+const error_1 = require("../../error");
 async function sendMessage(instructions, message) {
     const openai = new openai_1.default({
         apiKey: process.env.OPENAI_API_KEY,
@@ -62,7 +63,7 @@ class GenerateCompanyFeedbackService {
             },
         });
         if (!company)
-            throw new Error("User was not found or has no associated company.");
+            throw new error_1.PublicError("Usuário não encontrado ou sem empresa associada.");
         const allResults = await prisma_1.default.assessmentResult.findMany({
             where: {
                 assessmentId,
@@ -85,7 +86,7 @@ class GenerateCompanyFeedbackService {
             },
         });
         if (!allResults.length)
-            throw new Error("This company has no results for this assessment");
+            throw new error_1.PublicError("Esta empresa não possui resultados para esta avaliação");
         const exampleResult = allResults[0];
         const assessment = exampleResult.assessment;
         // Manter somente os resultados mais recentes
@@ -128,7 +129,7 @@ class GenerateCompanyFeedbackService {
         })
             .join(", ");
         if (!message)
-            throw new Error("No values to send");
+            throw new error_1.PublicError("Nenhum valor para enviar");
         const response = await sendMessage(assessment.companyFeedbackInstructions, message);
         const assessmentFeeedback = await prisma_1.default.companyAssessmentFeedback.create({
             data: {

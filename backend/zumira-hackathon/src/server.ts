@@ -4,6 +4,7 @@ import cors from "cors";
 import kleur from "kleur";
 
 import { router } from "./routes";
+import { PublicError } from "./error";
 
 const app = express();
 app.use(express.json());
@@ -14,7 +15,7 @@ app.use(router);
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(`${kleur.red(req.url)}: ${err.message}`);
 
-  if (err instanceof Error) {
+  if (err instanceof PublicError) {
     return res.status(400).json({
       status: "ERROR",
       message: err.message,
@@ -23,7 +24,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
   return res.status(500).json({
     status: "ERROR",
-    message: "Internal server error.",
+    message: "Erro interno",
   });
 });
 
