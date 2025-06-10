@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { parseZodError } from "../../utils/parseZodError";
+
 import { DetailAssessmentService } from "../../services/assessment/DetailAssessmentService";
 import { assertPermissions } from "../../utils/assertPermissions";
+import { parseZodError } from "../../utils/parseZodError";
 
 const CreateIdSchema = z.object({
   id: z.string().cuid(),

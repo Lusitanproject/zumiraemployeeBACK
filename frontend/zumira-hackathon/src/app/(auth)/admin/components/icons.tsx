@@ -1,6 +1,7 @@
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
+
 import { Label } from "@/components/custom/label";
 import { cn } from "@/lib/utils";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
 
 export type IconFieldProps = {
   value: IconName | null;
@@ -24,7 +25,7 @@ export function IconField({ value, onChange, icons }: IconFieldProps) {
             )}
             onClick={() => onChange(icon)}
           >
-            <DynamicIcon name={icon} className="size-5" />
+            <DynamicIcon className="size-5" name={icon} />
           </button>
         ))}
       </div>

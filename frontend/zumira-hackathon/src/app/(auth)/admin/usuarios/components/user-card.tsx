@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { User } from "../definitions";
 
 export type CardProps = {
@@ -7,7 +8,7 @@ export type CardProps = {
 
 export function UserCard({ data }: CardProps) {
   return (
-    <Link href={`/admin/usuarios/${data.id}`} className="p-[1.375rem] rounded-xl bg-gray-100">
+    <Link className="p-[1.375rem] rounded-xl bg-gray-100" href={`/admin/usuarios/${data.id}`}>
       <div className="flex h-[50px] justify-start mb-3">
         <div className="w-[50px] h-[50px] rounded-xl bg-primary-50 flex items-center justify-center font-bold">
           {data.name

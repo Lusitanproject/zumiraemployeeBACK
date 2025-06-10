@@ -1,14 +1,15 @@
 "use client";
 
-import { Fragment } from "react";
 import Link from "next/link";
+import { Fragment } from "react";
+
 import { Alert, Notification } from "../definitions";
-import { NotificationCard } from "./notification-card";
 import { AlertCard } from "./alert-card";
+import { NotificationCard } from "./notification-card";
 
 interface NotificationsDropdownProps {
-  notifications: Notification[];
   alerts: Alert[];
+  notifications: Notification[];
   onClose: () => void;
 }
 

@@ -1,6 +1,6 @@
 import { ListAssessmentsRequest } from "../../definitions/assessment";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 class ListAssessmentsService {
   async execute({ userId, nationalityId }: ListAssessmentsRequest) {
     const userExists = await prismaClient.user.findFirst({

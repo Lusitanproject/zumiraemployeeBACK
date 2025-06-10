@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+
 import { ReadAlertSchema } from "../../definitions/alert";
-import { parseZodError } from "../../utils/parseZodError";
 import { ReadAlertService } from "../../services/alert/ReadAlertService";
+import { parseZodError } from "../../utils/parseZodError";
 
 class ReadAlertController {
   async handle(req: Request, res: Response) {

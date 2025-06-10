@@ -1,8 +1,10 @@
 import { headers } from "next/headers";
-import { MenuLink } from "@/components/custom/main-menu";
-import { decrypt } from "@/app/_lib/session";
-import { catchError } from "@/utils/error";
 import { cookies } from "next/headers";
+
+import { decrypt } from "@/app/_lib/session";
+import { MenuLink } from "@/components/custom/main-menu";
+import { catchError } from "@/utils/error";
+
 import { GetActsDataResponse } from "./definitions";
 
 export async function getSidebarContent() {

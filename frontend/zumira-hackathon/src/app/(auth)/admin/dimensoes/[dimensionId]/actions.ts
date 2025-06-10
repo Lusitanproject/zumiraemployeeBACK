@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Dimension, MonitoringBlock, GetDimensionResponse, GetMonitoringResponse } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { Dimension, GetDimensionResponse, GetMonitoringResponse, MonitoringBlock } from "./definitions";
 
 export async function getDimensionData(dimensionId: string | null): Promise<Dimension | null> {
   if (dimensionId === null) {

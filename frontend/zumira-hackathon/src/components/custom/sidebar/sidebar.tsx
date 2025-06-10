@@ -1,10 +1,12 @@
 "use client";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { MainMenu, MenuLink } from "../main-menu";
-import { Button } from "@/components/ui/button";
-import { ActsData } from "@/types/acts";
 import { usePathname } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ActsData } from "@/types/acts";
+
+import { MainMenu, MenuLink } from "../main-menu";
 import { ActsMenu } from "./components/acts-menu";
 
 type SidebarProps = {
@@ -27,7 +29,7 @@ export function Sidebar({ menuItems, data }: SidebarProps) {
         <MainMenu expanded={true} menu={menuItems} />
       </div>
       {!isAdminRoute && (
-        <Button variant="alternate" size="xxl" className={cn({ hidden: false })}>
+        <Button className={cn({ hidden: false })} size="xxl" variant="alternate">
           <Link href={"#"}>Exibir planos</Link>
         </Button>
       )}

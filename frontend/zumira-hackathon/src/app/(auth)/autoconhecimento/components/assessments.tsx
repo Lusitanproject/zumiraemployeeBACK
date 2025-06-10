@@ -1,10 +1,11 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useFilteredAssessments } from "../lib";
+
 import { Assessment, SelfMonitoringBlock } from "../definitions";
+import { useFilteredAssessments } from "../lib";
+import { AssessmentList } from "./assessment-list";
 import { MonitoringBlocks } from "./monitoring-blocks";
 import { SearchBar } from "./search-bar";
-import { AssessmentList } from "./assessment-list";
 
 type AssessmentsProps = {
   assessments: Assessment[];
@@ -29,8 +30,8 @@ export function Assessments({ assessments, blocks }: AssessmentsProps) {
       <div className="flex flex-col border-t border-gray-200 pt-8 mt-8  md:border-0">
         {available.length || completed.length ? (
           <>
-            <AssessmentList title="Avaliações a realizar" data={available} />
-            <AssessmentList title="Minhas avaliações" data={completed} completed />
+            <AssessmentList data={available} title="Avaliações a realizar" />
+            <AssessmentList completed data={completed} title="Minhas avaliações" />
           </>
         ) : (
           <span className="text-gray-600 text-center">Não foram encontrados resultados para a sua busca</span>

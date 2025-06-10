@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { SelfMonitoringBlockSchema } from "@/schemas";
 
 export type MonitoringBlock = z.infer<typeof SelfMonitoringBlockSchema>;

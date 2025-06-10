@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 import { borel } from "@/app/fonts";
 
 import image from "../images/zumira-picture2.png";
@@ -13,7 +14,7 @@ export function Connect() {
           <p className="text-left text-lg leading-normal mb-4 text-white font-medium">Nossa IA é programada na abordagem <span className={`${borel.className} tracking-normal`}>Life Design</span> de compreensão de vida e carreira, uma metodologia de intervenção psicológica válida nos 5 continentes.</p>
         </div>
         <div className="overflow-hidden order-2 sm:order-1">
-          <Image src={image} alt="" className="rounded"  />
+          <Image alt="" className="rounded" src={image}  />
         </div>
       </div>
     </section>

@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { User } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { User } from "./definitions";
 
 type GetUsers = {
   status: "SUCCESS";

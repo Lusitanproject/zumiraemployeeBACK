@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+
 import { decrypt, deleteSession } from "@/app/_lib/session";
 
 const protectedRoutes = ["/chat", "/autoconhecimento", "/autoconhecimento", "/biblioteca", "/rede-apoio", "/admin"];

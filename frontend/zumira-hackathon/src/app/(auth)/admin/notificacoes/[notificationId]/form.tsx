@@ -1,23 +1,25 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { useCallback, useState } from "react";
+
+import { Label } from "@/components/custom/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RichTextArea } from "@/components/ui/rich-text-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { Notification } from "../definitions";
 import {
-  NotificationType,
   FormErrors,
   INITIAL_VALUE,
   ManageNotification,
   ManageNotificationSchema,
+  NotificationType,
   User,
 } from "./definitions";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/custom/label";
-import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
 import { saveNotification } from "./form-actions";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Notification } from "../definitions";
-import { RichTextArea } from "@/components/ui/rich-text-area";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type FormProps = {
   data: Notification | null;
@@ -159,8 +161,8 @@ export function NotificationForm({ data, types, users }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="notificationTypeId">Categoria</Label>
           <Select
-            name="notificationTypeId"
             defaultValue={formData.notificationTypeId}
+            name="notificationTypeId"
             onValueChange={(value) =>
               setFormData((current) => ({
                 ...current,
@@ -187,7 +189,7 @@ export function NotificationForm({ data, types, users }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar
         </Button>
       </div>

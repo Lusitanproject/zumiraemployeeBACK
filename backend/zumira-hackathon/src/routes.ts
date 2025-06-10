@@ -1,83 +1,71 @@
 import { Router } from "express";
 
-import { isAuthenticated } from "./middlewares/isAuthenticated";
-
-import { SendCodeController } from "./controllers/user/auth/SendCodeController";
-import { AuthUserController } from "./controllers/user/auth/AuthUserController";
-
-import { CreateUserController as AdminCreateUserController } from "./controllers/admin/users/CreateUserController";
-import { CreateUserController } from "./controllers/user/CreateUserController";
-import { ListUsersByCompanyController } from "./controllers/admin/users/ListUsersByCompanyController";
-import { ListAllUsersController } from "./controllers/admin/users/ListAllUsersController";
-import { FindUserController } from "./controllers/admin/users/FindUserController";
-import { UpdateUserController } from "./controllers/admin/users/UpdateUserController";
-
-import { FindAllRolesController } from "./controllers/admin/roles/FindAllRolesController";
-
-import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
-import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
-
-import { CreateAssessmentController } from "./controllers/assessment/CreateAssessmentController";
-import { CreateQuestionController } from "./controllers/assessment/CreateQuestionController";
-import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
-import { DetailAssessmentController } from "./controllers/assessment/DetailAssessmentController";
-import { CreateResultController } from "./controllers/assessment/CreateResultController";
-import { AssessmentDetailForAdminController } from "./controllers/assessment/AssessmentDetailForAdminController";
-import { UpdateAssessmentController } from "./controllers/admin/assessments/UpdateAssessmentController";
-import { UpdateQuestionsController } from "./controllers/assessment/UpdateQuestionsController";
-import { GenerateUserFeedbackController } from "./controllers/assessment/GenerateUserFeedbackController";
-import { GenerateCompanyFeedbackController } from "./controllers/assessment/GenerateCompanyFeedbackController";
-
-import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
-
-import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlocksController";
-import { ListAllSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindAllSelfMonitoringBlocksController";
-import { CreateSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/CreateSelfMonitoringBlockController";
-import { EditSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/EditSelfMonitoringBlockController";
-import { FindSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindSelfMonitoringBlockController";
-import { ListSelfMonitoringBlockResultsController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlockResultsController";
-
-import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
-import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
-import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
-
-import { FindDimensionByBlockController } from "./controllers/admin/dimensions/FindBySelfMonitoringController";
-import { FindDimensionController } from "./controllers/admin/dimensions/FindDimensionController";
-import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
-
-import { ListNationalitiesController } from "./controllers/nationality/ListNationalitiesController";
-
-import { ListNotificationsController } from "./controllers/notification/ListNotificationsController";
-import { ReadNotificationController } from "./controllers/notification/ReadNotificationController";
-import { DetailNotificationController } from "./controllers/notification/DetailNotificationController";
-import { CreateNotificationController } from "./controllers/admin/notifications/CreateNotificationController";
-import { UpdateNotificationController } from "./controllers/admin/notifications/UpdateNotificationController";
-import { DeleteNotificationController } from "./controllers/admin/notifications/DeleteNotificationController";
-import { FindAllNotificationsController } from "./controllers/admin/notifications/FindAllNotificationsController";
-import { FindAllTypesController } from "./controllers/admin/notifications/FindAllTypesController";
-import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAllFeedbacksController";
-import { ListResultsController } from "./controllers/assessment/ListResultsController";
-import { UpdateResultRatingsController } from "./controllers/admin/assessments/UpdateResultRatingsController";
-import { FindResultRatingsByAssessmentController } from "./controllers/admin/assessments/FindResultRatingsByAssessmentController";
-import { DetailResultController } from "./controllers/assessment/DetailResultController";
-import { FindFilteredResultsController } from "./controllers/admin/assessments/FindFilteredResultsController";
-import { FindNotificationTypeController } from "./controllers/admin/notifications/FindNotificationTypeController";
-import { CreateNotificationTypeController } from "./controllers/admin/notifications/CreateNotificationTypeController";
-import { UpdateNotificationTypeController } from "./controllers/admin/notifications/UpdateNotificationTypeController";
-import { ListAlertsController } from "./controllers/alert/ListAlertsController";
-import { ReadAlertController } from "./controllers/alert/ReadAlertController";
-
-import { CreateActChatbotController } from "./controllers/admin/act-chatbots/CreateActChatbotController";
-import { FindActChatbotController } from "./controllers/admin/act-chatbots/FindActChatbotController";
-import { UpdateActChatbotController } from "./controllers/admin/act-chatbots/UpdateActChatbotController";
-import { ReorderActChatbotsController } from "./controllers/admin/act-chatbots/ReorderActChatbotsController";
 import { CreateActConversationController } from "./controllers/actChatbot/CreateActConversationController";
 import { GetActConversationController } from "./controllers/actChatbot/GetActConversationController";
 import { GetActsDataController } from "./controllers/actChatbot/GetActsDataController";
 import { MessageActChatbotController } from "./controllers/actChatbot/MessageActChatbotController";
 import { MoveToNextActController } from "./controllers/actChatbot/MoveToNextActController";
+import { CreateActChatbotController } from "./controllers/admin/act-chatbots/CreateActChatbotController";
+import { FindActChatbotController } from "./controllers/admin/act-chatbots/FindActChatbotController";
 import { FindAllActChatbotsController } from "./controllers/admin/act-chatbots/FindAllActChatbotsController";
+import { ReorderActChatbotsController } from "./controllers/admin/act-chatbots/ReorderActChatbotsController";
+import { UpdateActChatbotController } from "./controllers/admin/act-chatbots/UpdateActChatbotController";
 import { DuplicateAssessmentController } from "./controllers/admin/assessments/DuplicateAssessmentController";
+import { FindFilteredResultsController } from "./controllers/admin/assessments/FindFilteredResultsController";
+import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
+import { FindResultRatingsByAssessmentController } from "./controllers/admin/assessments/FindResultRatingsByAssessmentController";
+import { UpdateAssessmentController } from "./controllers/admin/assessments/UpdateAssessmentController";
+import { UpdateResultRatingsController } from "./controllers/admin/assessments/UpdateResultRatingsController";
+import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
+import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAllFeedbacksController";
+import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
+import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
+import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
+import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
+import { FindDimensionByBlockController } from "./controllers/admin/dimensions/FindBySelfMonitoringController";
+import { FindDimensionController } from "./controllers/admin/dimensions/FindDimensionController";
+import { CreateNotificationController } from "./controllers/admin/notifications/CreateNotificationController";
+import { CreateNotificationTypeController } from "./controllers/admin/notifications/CreateNotificationTypeController";
+import { DeleteNotificationController } from "./controllers/admin/notifications/DeleteNotificationController";
+import { FindAllNotificationsController } from "./controllers/admin/notifications/FindAllNotificationsController";
+import { FindAllTypesController } from "./controllers/admin/notifications/FindAllTypesController";
+import { FindNotificationTypeController } from "./controllers/admin/notifications/FindNotificationTypeController";
+import { UpdateNotificationController } from "./controllers/admin/notifications/UpdateNotificationController";
+import { UpdateNotificationTypeController } from "./controllers/admin/notifications/UpdateNotificationTypeController";
+import { FindAllRolesController } from "./controllers/admin/roles/FindAllRolesController";
+import { CreateSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/CreateSelfMonitoringBlockController";
+import { EditSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/EditSelfMonitoringBlockController";
+import { ListAllSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindAllSelfMonitoringBlocksController";
+import { FindSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindSelfMonitoringBlockController";
+import { CreateUserController as AdminCreateUserController } from "./controllers/admin/users/CreateUserController";
+import { FindUserController } from "./controllers/admin/users/FindUserController";
+import { ListAllUsersController } from "./controllers/admin/users/ListAllUsersController";
+import { ListUsersByCompanyController } from "./controllers/admin/users/ListUsersByCompanyController";
+import { UpdateUserController } from "./controllers/admin/users/UpdateUserController";
+import { ListAlertsController } from "./controllers/alert/ListAlertsController";
+import { ReadAlertController } from "./controllers/alert/ReadAlertController";
+import { AssessmentDetailForAdminController } from "./controllers/assessment/AssessmentDetailForAdminController";
+import { CreateAssessmentController } from "./controllers/assessment/CreateAssessmentController";
+import { CreateQuestionController } from "./controllers/assessment/CreateQuestionController";
+import { CreateResultController } from "./controllers/assessment/CreateResultController";
+import { DetailAssessmentController } from "./controllers/assessment/DetailAssessmentController";
+import { DetailResultController } from "./controllers/assessment/DetailResultController";
+import { GenerateCompanyFeedbackController } from "./controllers/assessment/GenerateCompanyFeedbackController";
+import { GenerateUserFeedbackController } from "./controllers/assessment/GenerateUserFeedbackController";
+import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
+import { ListResultsController } from "./controllers/assessment/ListResultsController";
+import { UpdateQuestionsController } from "./controllers/assessment/UpdateQuestionsController";
+import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
+import { ListNationalitiesController } from "./controllers/nationality/ListNationalitiesController";
+import { DetailNotificationController } from "./controllers/notification/DetailNotificationController";
+import { ListNotificationsController } from "./controllers/notification/ListNotificationsController";
+import { ReadNotificationController } from "./controllers/notification/ReadNotificationController";
+import { ListSelfMonitoringBlockResultsController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlockResultsController";
+import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlocksController";
+import { AuthUserController } from "./controllers/user/auth/AuthUserController";
+import { SendCodeController } from "./controllers/user/auth/SendCodeController";
+import { CreateUserController } from "./controllers/user/CreateUserController";
+import { isAuthenticated } from "./middlewares/isAuthenticated";
 
 const router = Router();
 

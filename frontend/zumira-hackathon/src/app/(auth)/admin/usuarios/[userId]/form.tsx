@@ -1,13 +1,15 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { useCallback, useState } from "react";
-import { Company, FormErrors, INITIAL_VALUE, ManageUser, ManageUserSchema, Role, User } from "./definitions";
-import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
-import { saveUser } from "./form-actions";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { Company, FormErrors, INITIAL_VALUE, ManageUser, ManageUserSchema, Role, User } from "./definitions";
+import { saveUser } from "./form-actions";
 
 type FormProps = {
   data: User | null;
@@ -85,8 +87,8 @@ export function UserForm({ data, companies, roles }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="companyId">Empresa</Label>
           <Select
-            name="companyId"
             defaultValue={formData.companyId}
+            name="companyId"
             onValueChange={(value) =>
               setFormData((current) => ({
                 ...current,
@@ -110,8 +112,8 @@ export function UserForm({ data, companies, roles }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="roleId">Perfil</Label>
           <Select
-            name="roleId"
             defaultValue={formData.roleId}
+            name="roleId"
             onValueChange={(value) =>
               setFormData((current) => ({
                 ...current,
@@ -138,7 +140,7 @@ export function UserForm({ data, companies, roles }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar
         </Button>
       </div>

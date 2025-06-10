@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+
 import { MenuLink } from "@/components/custom/main-menu";
 
 export async function getSidebarContent() {

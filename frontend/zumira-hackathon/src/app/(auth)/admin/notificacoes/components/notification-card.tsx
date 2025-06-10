@@ -1,6 +1,8 @@
-import Link from "next/link";
 import { Mail } from "lucide-react";
+import Link from "next/link";
+
 import { cn } from "@/lib/utils";
+
 import { Notification } from "../definitions";
 
 interface NotificationCardProps {
@@ -10,8 +12,8 @@ interface NotificationCardProps {
 export function NotificationCard({ data }: NotificationCardProps) {
   return (
     <Link
-      href={`/admin/notificacoes/${data.id}`}
       className={cn("relative rounded-xl bg-gray-100 p-[1.375rem] flex flex-col h-[12.375rem]")}
+      href={`/admin/notificacoes/${data.id}`}
     >
       <div
         className="absolute rounded-full size-3 right-0 top-0 -translate-x-4 translate-y-4"

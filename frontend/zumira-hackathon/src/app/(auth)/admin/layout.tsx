@@ -1,9 +1,11 @@
+import { cookies } from "next/headers";
 import { ReactNode } from "react";
+
+import { decrypt } from "@/app/_lib/session";
+
 import { verifyUserRole } from "./actions";
 import { getCompanyFeedbacks } from "./components/assistant/actions";
 import { Assistant } from "./components/assistant/assistant";
-import { decrypt } from "@/app/_lib/session";
-import { cookies } from "next/headers";
 
 type LayoutProps = {
   children: ReactNode;
@@ -21,7 +23,7 @@ export default async function AdminLayout({ children }: LayoutProps) {
   return (
     <>
       <div>{children}</div>
-      <Assistant companyFeedbacks={feedbacks.data} chatbotId={chatbotId} username={session?.name ?? ""} />
+      <Assistant chatbotId={chatbotId} companyFeedbacks={feedbacks.data} username={session?.name ?? ""} />
     </>
   );
 }

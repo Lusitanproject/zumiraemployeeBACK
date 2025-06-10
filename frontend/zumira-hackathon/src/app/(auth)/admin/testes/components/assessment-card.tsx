@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { User } from "lucide-react";
+import Link from "next/link";
+
 import { cn } from "@/lib/utils";
 
 type AssessmentCardProps = {
@@ -11,8 +12,8 @@ type AssessmentCardProps = {
 export function AssessmentCard({ id, title, summary }: AssessmentCardProps) {
   return (
     <Link
-      href={`/admin/testes/${id}`}
       className={cn("rounded-xl bg-gray-100 p-[1.375rem] flex flex-col h-[12.375rem]")}
+      href={`/admin/testes/${id}`}
     >
       <div className="flex w-full mb-3">
         <div className="flex items-center justify-center bg-primary-50 rounded-xl w-[50px] h-[50px]">

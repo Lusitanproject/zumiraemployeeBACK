@@ -1,9 +1,11 @@
 "use server";
 
-import { catchError } from "@/utils/error";
-import { Assessment, Company, Filters, GetAssessments, GetCompanies, GetResults } from "./definitions";
 import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
+import { catchError } from "@/utils/error";
+
+import { Assessment, Company, Filters, GetAssessments, GetCompanies, GetResults } from "./definitions";
 
 export async function getFilteredResults(filters: Filters) {
   const cookie = await cookies();

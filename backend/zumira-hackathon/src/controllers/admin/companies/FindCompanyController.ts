@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { parseZodError } from "../../../utils/parseZodError";
 import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
+import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParam = z.object({
   companyId: z.string().cuid(),

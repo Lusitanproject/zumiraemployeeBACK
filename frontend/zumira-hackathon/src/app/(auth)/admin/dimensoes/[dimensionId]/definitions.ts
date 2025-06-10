@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { PsychologicalDimensionSchema, SelfMonitoringBlockSchema } from "@/schemas";
 
 export type Dimension = z.infer<typeof PsychologicalDimensionSchema>;

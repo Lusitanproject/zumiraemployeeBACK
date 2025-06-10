@@ -1,9 +1,11 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Alert } from "../definitions";
 import Link from "next/link";
+
+import { cn } from "@/lib/utils";
+
 import { readAlert } from "../actions";
+import { Alert } from "../definitions";
 
 interface AlertCardProps {
   alert: Alert;

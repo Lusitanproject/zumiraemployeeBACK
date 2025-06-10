@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 import { borel } from "@/app/fonts";
 
 import image from "../images/zumira-picture3.png";
@@ -13,7 +14,7 @@ export function TellYourStory() {
         </div>
         
         <div className="overflow-hidden w-full sm:max-w-[30rem] pt-28">
-          <Image src={image} alt="" className=""  />
+          <Image alt="" className="" src={image}  />
         </div>
       </div>
     </section>

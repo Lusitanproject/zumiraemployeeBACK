@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Company, GetCompaniesResponse, GetRolesResponse, GetUserResponse, Role, User } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { Company, GetCompaniesResponse, GetRolesResponse, GetUserResponse, Role, User } from "./definitions";
 
 export async function getUserData(userId: string | null): Promise<User | null> {
   if (userId === null) {

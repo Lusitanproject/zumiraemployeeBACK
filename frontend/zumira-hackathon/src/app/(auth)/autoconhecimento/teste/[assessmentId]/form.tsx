@@ -1,15 +1,15 @@
 "use client";
 
+import { redirect, RedirectType } from "next/navigation";
 import { useActionState, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
-import { AssessmentDetail } from "./definitions";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import { saveAnswersAction } from "./actions/form-handler";
 import { getFormAnswersData } from "./actions/util";
-
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "@/components/ui/button";
-import { redirect, RedirectType } from "next/navigation";
-import ReactMarkdown from "react-markdown";
+import { AssessmentDetail } from "./definitions";
 
 type AssessmentFormProps = {
   data: AssessmentDetail;
@@ -47,10 +47,10 @@ export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
         )}
       </div>
 
-      <form className="w-full flex flex-col flex-1 md:pb-24" action={handleSumbit}>
-        <input type="hidden" value={assessmentId} name="assessmentId" />
+      <form action={handleSumbit} className="w-full flex flex-col flex-1 md:pb-24">
+        <input name="assessmentId" type="hidden" value={assessmentId} />
         {data.assessmensQuestions.map((item, index) => (
-          <div id={item.id} key={item.id} className="w-full mb-4 border-b border-gray-100 pt-6 pb-8">
+          <div key={item.id} className="w-full mb-4 border-b border-gray-100 pt-6 pb-8" id={item.id}>
             <p className="font-medium text-gray-700 mb-6">
               <span
                 className={`font-bold duration-500 ${
@@ -66,8 +66,8 @@ export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
                 {item.assessmentQuestionChoices
                   ?.sort((a, b) => a.index - b.index)
                   .map((choice) => (
-                    <div className="flex items-center gap-x-3" key={choice.id}>
-                      <RadioGroupItem value={`${choice.id}`} id={choice.id} />
+                    <div key={choice.id} className="flex items-center gap-x-3">
+                      <RadioGroupItem id={choice.id} value={`${choice.id}`} />
                       <label htmlFor={choice.id}>{choice.label}</label>
                     </div>
                   ))}
@@ -78,13 +78,13 @@ export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
         <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
           <Button
             size="xl"
-            variant="outline"
             type="button"
+            variant="outline"
             onClick={() => redirect("/autoconhecimento", RedirectType.replace)}
           >
             Cancelar
           </Button>
-          <Button size="xl" variant="primary" type="submit" disabled={pending}>
+          <Button disabled={pending} size="xl" type="submit" variant="primary">
             Enviar respostas
           </Button>
         </div>

@@ -1,5 +1,5 @@
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 interface PsychologicalDimensionRequest {
   acronym: string;

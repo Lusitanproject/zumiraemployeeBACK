@@ -1,5 +1,5 @@
 import { getDimensions } from "./actions";
-import { Header, DimensionList } from "./components";
+import { DimensionList, Header } from "./components";
 
 export default async function Dimensoes() {
   const result = await getDimensions();

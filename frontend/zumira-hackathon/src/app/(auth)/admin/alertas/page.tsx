@@ -9,7 +9,7 @@ export default async function Alertas() {
   return (
     <div className="flex flex-col gap-2">
       <Header title="Alertas" />
-      <AlertsUI companies={companies} assessments={assessments} />
+      <AlertsUI assessments={assessments} companies={companies} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
+import { z } from "zod";
 
 import { SelfMonitoringAdminService } from "../../../services/admin/SelfMonitoringService";
-import { z } from "zod";
 import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParam = z.object({

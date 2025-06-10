@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { ListNotificationsService } from "../../services/notification/ListNotificationsService";
+
 import { ListNotificationsSchema } from "../../definitions/notification";
+import { ListNotificationsService } from "../../services/notification/ListNotificationsService";
 import { parseZodError } from "../../utils/parseZodError";
 
 class ListNotificationsController {

@@ -1,16 +1,18 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { FormErrors, INITIAL_VALUE, ManageActChatbot, ManageActChatbotSchema } from "./definitions";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/custom/label";
-import { Textarea } from "@/components/ui/textarea";
-import { IconField } from "../../components/icons";
-import { Button } from "@/components/ui/button";
-import { saveActChatbot } from "./form-actions";
-import { redirect } from "next/navigation";
-import { ActChatbot } from "../definitions";
 import { IconName } from "lucide-react/dynamic";
+import { redirect } from "next/navigation";
+import { useCallback, useState } from "react";
+
+import { Label } from "@/components/custom/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+import { IconField } from "../../components/icons";
+import { ActChatbot } from "../definitions";
+import { FormErrors, INITIAL_VALUE, ManageActChatbot, ManageActChatbotSchema } from "./definitions";
+import { saveActChatbot } from "./form-actions";
 
 type FormProps = {
   data: ActChatbot | null;
@@ -67,32 +69,32 @@ export function ActChatbotForm({ data }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="description">Descrição</Label>
           <Textarea
+            className="h-28"
             id="description"
             name="description"
             value={formData.description ?? ""}
             onChange={(e) => {
               setFormData((current) => ({ ...current, description: e.target.value }));
             }}
-            className="h-28"
           />
           {!!errors?.description && <span className="text-sm text-error-500">{errors.description}</span>}
         </div>
         <div className="pb-3">
           <Label htmlFor="instructions">Instruções</Label>
           <Textarea
+            className="h-28"
             id="instructions"
             name="instructions"
             value={formData.instructions ?? ""}
             onChange={(e) => {
               setFormData((current) => ({ ...current, instructions: e.target.value }));
             }}
-            className="h-28"
           />
           {!!errors?.instructions && <span className="text-sm text-error-500">{errors.instructions}</span>}
         </div>
         <IconField
-          value={formData.icon as IconName}
           icons={["leaf", "star", "file-heart", "drama", "loader"]}
+          value={formData.icon as IconName}
           onChange={(e) => {
             setFormData((current) => ({ ...current, icon: e }));
           }}
@@ -103,7 +105,7 @@ export function ActChatbotForm({ data }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar
         </Button>
       </div>

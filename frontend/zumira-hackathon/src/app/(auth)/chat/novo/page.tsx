@@ -1,7 +1,9 @@
+import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
+
 import { getActsData } from "../../actions";
 import { ActSelector } from "./components/act-selector";
-import { cookies } from "next/headers";
 
 export default async function Novo() {
   const data = await getActsData();
@@ -14,5 +16,5 @@ export default async function Novo() {
     );
   }
 
-  return <ActSelector data={data} currentAct={session.act} />;
+  return <ActSelector currentAct={session.act} data={data} />;
 }

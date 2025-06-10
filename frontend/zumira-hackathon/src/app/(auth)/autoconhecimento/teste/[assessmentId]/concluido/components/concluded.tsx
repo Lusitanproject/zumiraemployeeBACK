@@ -1,7 +1,9 @@
 "use client";
 
-import { DottedSpinner } from "@/components/custom/dotted-spinner";
 import { useEffect } from "react";
+
+import { DottedSpinner } from "@/components/custom/dotted-spinner";
+
 import { generateFeedback } from "../actions";
 
 interface ConcludedProps {

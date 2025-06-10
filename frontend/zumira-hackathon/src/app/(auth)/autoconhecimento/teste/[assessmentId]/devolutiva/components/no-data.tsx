@@ -1,9 +1,10 @@
 "use client";
 
-import { HeadImage } from "@/components/custom/head-image";
-import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { redirect } from "next/navigation";
+
+import { HeadImage } from "@/components/custom/head-image";
+import { Button } from "@/components/ui/button";
 
 interface NoDataProps {
   assessmentId: string;
@@ -23,9 +24,9 @@ export function NoData({ assessmentId }: NoDataProps) {
           </p>
         </div>
         <Button
-          variant="primary"
-          size="xxl"
           className="w-full mt-8"
+          size="xxl"
+          variant="primary"
           onClick={() => redirect(`/autoconhecimento/teste/${assessmentId}`)}
         >
           <span>Fazer Avaliação</span>

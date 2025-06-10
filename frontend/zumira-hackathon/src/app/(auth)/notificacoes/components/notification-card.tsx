@@ -1,18 +1,20 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import Markdown from "react-markdown";
-import { Notification } from "../definitions";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+import { Notification } from "../definitions";
 
 interface NotificationCardProps {
   notification: Notification;
   id?: string;
   open?: boolean;
-  onOpen?: (id: string) => void;
   onClose?: (id: string) => void;
+  onOpen?: (id: string) => void;
 }
 
 export function NotificationCard({ notification, id, open, onOpen, onClose }: NotificationCardProps) {
@@ -40,11 +42,11 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
 
   return (
     <section
-      id={id}
       className={cn(
         "relative flex flex-col gap-1 p-3 rounded-md border-1 duration-200",
         open ? "border-primary-300" : "border-gray-100 hover:bg-[#E7F8EA]"
       )}
+      id={id}
     >
       <h1 className="text-gray-500 text-xs leading-[1.125rem] text-start">{notification.title}</h1>
       <hr className="text-gray-200" />
@@ -60,7 +62,7 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
         >
           {notification.actionUrl ? (
             <Link href={notification.actionUrl}>
-              <Button className="mt-4" variant="secondary" size="lg">
+              <Button className="mt-4" size="lg" variant="secondary">
                 Ir para detalhes
               </Button>
             </Link>

@@ -1,8 +1,8 @@
 import prismaClient from "../../prisma";
 
 interface CompanyRequest {
-  name: string;
   email: string;
+  name: string;
 }
 
 class CreateCompanyService {

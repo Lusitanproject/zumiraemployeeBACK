@@ -1,9 +1,10 @@
 import { z } from "zod";
-import prismaClient from "../../prisma";
+
 import {
   CreateSelfMonitoringBlockSchema,
   EditSelfMonitoringBlockSchema,
 } from "../../definitions/admin/self-monitoring";
+import prismaClient from "../../prisma";
 
 type CreateBlock = z.infer<typeof CreateSelfMonitoringBlockSchema>;
 type UpdateBlock = z.infer<typeof EditSelfMonitoringBlockSchema>;

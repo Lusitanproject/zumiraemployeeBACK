@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { UserAdminService } from "../../../services/admin/UserAdminService";
 
 class ListAllUsersController {

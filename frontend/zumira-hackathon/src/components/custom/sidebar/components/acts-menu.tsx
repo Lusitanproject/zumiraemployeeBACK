@@ -1,10 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { ActsData } from "@/types/acts";
 import { Plus } from "lucide-react";
-import { ActItem } from "./act-item";
-import { usePathname } from "next/navigation";
 import { IconName } from "lucide-react/dynamic";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { ActsData } from "@/types/acts";
+
+import { ActItem } from "./act-item";
 
 interface ActsMenuProps {
   data: ActsData;
@@ -30,12 +32,12 @@ export function ActsMenu({ data }: ActsMenuProps) {
       <div className="flex flex-col gap-1">
         {data.chatbots.map((c) => (
           <ActItem
-            currentConversationId={currentConversationId}
             key={c.id}
+            conversations={data.conversations.filter((conv) => conv.actChatbotId === c.id)}
+            currentConversationId={currentConversationId}
+            defaultOpen={c.id === currentActId}
             icon={c.icon as IconName}
             name={c.name}
-            defaultOpen={c.id === currentActId}
-            conversations={data.conversations.filter((conv) => conv.actChatbotId === c.id)}
           />
         ))}
       </div>

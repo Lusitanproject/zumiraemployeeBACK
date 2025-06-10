@@ -1,11 +1,12 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 interface MeatballsMenuProps {
-  username: string;
   email: string;
+  username: string;
 }
 
 export function MeatballsMenu({ username, email }: MeatballsMenuProps) {
@@ -28,10 +29,10 @@ export function MeatballsMenu({ username, email }: MeatballsMenuProps) {
   return (
     <div className="relative">
       <button
-        onClick={() => setIsModalOpen(true)}
         className={cn(
           "flex flex-row gap-0.5 border-1 p-1 size-5 justify-center items-center rounded-md border-gray-300 shadow-sm cursor-pointer hover:bg-gray-50 flex-none"
         )}
+        onClick={() => setIsModalOpen(true)}
       >
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex flex-none size-0.5 bg-gray-700 rounded-full" />

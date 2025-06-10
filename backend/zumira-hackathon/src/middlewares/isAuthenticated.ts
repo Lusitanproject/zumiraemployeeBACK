@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
+
 import prismaClient from "../prisma";
 
 interface Payload {

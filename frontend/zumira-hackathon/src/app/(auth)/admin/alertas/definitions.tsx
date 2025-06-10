@@ -35,19 +35,13 @@ export type GetAssessments =
     };
 
 export interface Result {
-  id: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    companyId: string;
-  };
   assessmentResultRating: {
     risk: string;
     profile: string;
     color: string;
   };
   createdAt: Date;
+  id: string;
   scores: {
     dimension: {
       id: string;
@@ -56,6 +50,12 @@ export interface Result {
     };
     value: number;
   }[];
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    companyId: string;
+  };
 }
 
 export interface Filters {
@@ -64,10 +64,10 @@ export interface Filters {
 }
 
 export interface Company {
+  createdAt: Date;
+  email: string;
   id: string;
   name: string;
-  email: string;
-  createdAt: Date;
   updatedAt: Date;
 }
 

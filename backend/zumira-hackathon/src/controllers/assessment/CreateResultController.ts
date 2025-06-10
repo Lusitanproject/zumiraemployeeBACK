@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { parseZodError } from "../../utils/parseZodError";
+
 import { CreateResultService } from "../../services/assessment/CreateResultService";
 import { assertPermissions } from "../../utils/assertPermissions";
+import { parseZodError } from "../../utils/parseZodError";
 
 const CreateResultSchema = z.object({
   assessmentId: z.string().cuid(),

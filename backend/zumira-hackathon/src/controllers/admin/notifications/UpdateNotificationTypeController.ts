@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { parseZodError } from "../../../utils/parseZodError";
-import { NotificationTypeAdminService } from "../../../services/admin/NotificationTypeAdminService";
+
 import { UpdateNotificationTypeSchema } from "../../../definitions/admin/notification";
+import { NotificationTypeAdminService } from "../../../services/admin/NotificationTypeAdminService";
+import { parseZodError } from "../../../utils/parseZodError";
 
 class UpdateNotificationTypeController {
   async handle(req: Request, res: Response) {

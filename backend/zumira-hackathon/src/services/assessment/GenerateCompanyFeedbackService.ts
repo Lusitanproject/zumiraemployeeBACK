@@ -1,11 +1,12 @@
-import prismaClient from "../../prisma";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
+
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 interface GenerateCompanyFeedbackRequest {
-  userId: string;
   assessmentId: string;
+  userId: string;
 }
 
 async function sendMessage(instructions: string | null, message: string) {

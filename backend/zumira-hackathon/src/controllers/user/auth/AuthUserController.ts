@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { AuthUserService } from "../../../services/user/auth/AuthUserService";
 import { z } from "zod";
+
+import { AuthUserService } from "../../../services/user/auth/AuthUserService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 const CreateAuthSchema = z.object({

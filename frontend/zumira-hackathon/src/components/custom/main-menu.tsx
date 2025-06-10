@@ -1,7 +1,8 @@
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import { cn } from "@/lib/utils";
 
 export type MenuIcon = IconName;
@@ -26,7 +27,6 @@ export function MainMenu({ expanded, menu }: MainMenuProps) {
         {menu.map((item) => (
           <Link
             key={item.href}
-            href={item.href}
             className={cn(
               "w-full flex items-center justify-start rounded-xl text-gray-400 hover:bg-black/5 font-semibold overflow-hidden",
               {
@@ -36,8 +36,9 @@ export function MainMenu({ expanded, menu }: MainMenuProps) {
                 "text-gray-500": pathname.indexOf(item.href) === 0,
               }
             )}
+            href={item.href}
           >
-            <DynamicIcon name={item.icon} size={20} className="flex-shrink-0" />
+            <DynamicIcon className="flex-shrink-0" name={item.icon} size={20} />
             <span
               className={cn("whitespace-nowrap text-sm text-ellipsis overflow-hidden", {
                 hidden: !expanded,
@@ -46,10 +47,10 @@ export function MainMenu({ expanded, menu }: MainMenuProps) {
               {item.label}
             </span>
             <ChevronRight
-              size={20}
               className={cn("text-gray-500", {
                 hidden: pathname.indexOf(item.href) !== 0 || !expanded,
               })}
+              size={20}
             />
           </Link>
         ))}

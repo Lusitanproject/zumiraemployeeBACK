@@ -1,7 +1,9 @@
 "use client";
 import { useCallback, useRef, useState } from "react";
-import { AvatarDropdown } from "./avatar-dropdown";
+
 import { cn } from "@/lib/utils";
+
+import { AvatarDropdown } from "./avatar-dropdown";
 
 type AvatarThumb = {
   user: string;
@@ -36,7 +38,7 @@ export function AvatarThumb({ user, role }: AvatarThumb) {
             .map((item) => item[0])}
         </span>
       </div>
-      <AvatarDropdown userRole={role} open={open} onClose={handleClickOutside} />
+      <AvatarDropdown open={open} userRole={role} onClose={handleClickOutside} />
     </div>
   );
 }

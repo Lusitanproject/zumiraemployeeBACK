@@ -1,5 +1,7 @@
 import Link from "next/link";
+
 import { cn } from "@/lib/utils";
+
 import { NotificationType } from "../definitions";
 
 interface CategoryCardProps {
@@ -9,8 +11,8 @@ interface CategoryCardProps {
 export function CategoryCard({ data }: CategoryCardProps) {
   return (
     <Link
-      href={`/admin/notificacoes/categorias/${data.id}`}
       className={cn("rounded-xl bg-gray-100 p-4 flex flex-row items-center h-fit")}
+      href={`/admin/notificacoes/categorias/${data.id}`}
     >
       <div className="flex flex-row gap-2 w-full">
         <div

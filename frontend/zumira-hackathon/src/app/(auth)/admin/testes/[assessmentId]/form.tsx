@@ -1,7 +1,18 @@
 "use client";
 
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useState } from "react";
+import { toast } from "sonner";
 
+import { Label } from "@/components/custom/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { RichTextArea } from "@/components/ui/rich-text-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+
+import { Nationality } from "../../autoconhecimento/definitions";
+import { duplicateAssessment } from "./actions";
 import {
   AssessmentSummary,
   CreateAssessmentSchema,
@@ -10,17 +21,7 @@ import {
   ManageAssessment,
   MonitoringBlock,
 } from "./definitions";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/custom/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { saveAssessment } from "./form-actions";
-import { Nationality } from "../../autoconhecimento/definitions";
-import { RichTextArea } from "@/components/ui/rich-text-area";
-import { toast } from "sonner";
-import { duplicateAssessment } from "./actions";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type FormProps = {
   data: AssessmentSummary | null;
@@ -102,13 +103,13 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="summary">Resumo</Label>
           <Textarea
+            className="h-20"
             id="summary"
             name="summary"
             value={formData.summary ?? ""}
             onChange={(e) => {
               setFormData((current) => ({ ...current, summary: e.target.value }));
             }}
-            className="h-20"
           />
           {!!errors?.summary && <span className="text-sm text-error-500">{errors.summary}</span>}
         </div>
@@ -126,8 +127,8 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="nationality">Nacionalidade</Label>
           <Select
-            name="nationality"
             defaultValue={formData.nationalityId}
+            name="nationality"
             onValueChange={(value) =>
               setFormData((current) => ({
                 ...current,
@@ -151,13 +152,13 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="instructions-u">Instruções para IA de devolutiva individual</Label>
           <Textarea
+            className="h-40"
             id="instructions-u"
             name="instructions-u"
             value={formData.userFeedbackInstructions ?? ""}
             onChange={(e) => {
               setFormData((current) => ({ ...current, userFeedbackInstructions: e.target.value }));
             }}
-            className="h-40"
           />
           {!!errors?.userFeedbackInstructions && (
             <span className="text-sm text-error-500">{errors.userFeedbackInstructions}</span>
@@ -166,13 +167,13 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="instructions-g">Instruções para IA de devolutiva de grupo</Label>
           <Textarea
+            className="h-40"
             id="instructions-g"
             name="instructions-g"
             value={formData.companyFeedbackInstructions ?? ""}
             onChange={(e) => {
               setFormData((current) => ({ ...current, companyFeedbackInstructions: e.target.value }));
             }}
-            className="h-40"
           />
           {!!errors?.companyFeedbackInstructions && (
             <span className="text-sm text-error-500">{errors.companyFeedbackInstructions}</span>
@@ -182,8 +183,8 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           <div>
             <Label htmlFor="selfMonitoringBlockId">Bloco de Autoconhecimento</Label>
             <Select
-              name="selfMonitoringBlockId"
               defaultValue={formData.selfMonitoringBlockId}
+              name="selfMonitoringBlockId"
               onValueChange={(value) =>
                 setFormData((current) => ({
                   ...current,
@@ -209,8 +210,8 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           <div>
             <Label htmlFor="operation">Tipo de operação</Label>
             <Select
-              name="operation"
               defaultValue={data?.operationType || "AVERAGE"}
+              name="operation"
               onValueChange={(value) =>
                 setFormData((current) => ({
                   ...current,
@@ -232,16 +233,16 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         {!!formError && <span className="text-sm text-error-500">{formError}</span>}
       </div>
       <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
-        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading.save} loading={loading.save}>
+        <Button disabled={loading.save} loading={loading.save} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar detalhes
         </Button>
         {data?.id && (
           <Button
+            disabled={loading.duplicate}
+            loading={loading.duplicate}
             size="xl"
             variant="secondary"
             onClick={handleDuplicate}
-            disabled={loading.duplicate}
-            loading={loading.duplicate}
           >
             Duplicar
           </Button>

@@ -6,11 +6,11 @@ export default function CalendlyWidget() {
   return (
     <div>
       <PopupWidget
-        url="https://calendly.com/fabiana-borges-zumira/demostracao-zumira"
+        color="#36ad71"
         rootElement={document.body}
         text="Agendar demonstração"
-        color="#36ad71"
         textColor="#ffffff"
+        url="https://calendly.com/fabiana-borges-zumira/demostracao-zumira"
       />
     </div>
   )

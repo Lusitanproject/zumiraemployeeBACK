@@ -1,15 +1,17 @@
 "use client";
 
-import { ActChatbot } from "../definitions";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { useDebouncedCallback } from "use-debounce";
-import { reorderChatbots } from "../actions";
-import { toast } from "sonner";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useDebouncedCallback } from "use-debounce";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+import { reorderChatbots } from "../actions";
+import { ActChatbot } from "../definitions";
 
 type ActsListProps = {
   data: ActChatbot[];
@@ -69,7 +71,7 @@ export function ActsList({ data }: ActsListProps) {
             <span className="text-gray-400 text-lg">#{index + 1}</span>
             <div className="flex justify-start">
               <div className="size-[50px] rounded-xl bg-primary-50 flex items-center justify-center">
-                <DynamicIcon name={item.icon as IconName} className="size-6" />
+                <DynamicIcon className="size-6" name={item.icon as IconName} />
               </div>
             </div>
             <div className="flex flex-col">
@@ -80,13 +82,13 @@ export function ActsList({ data }: ActsListProps) {
             </div>
           </Link>
           <div className="flex flex-col gap-1">
-            <Button className="bg-gray-100" size="icon" disabled={index === 0} onClick={() => moveUp(index)}>
+            <Button className="bg-gray-100" disabled={index === 0} size="icon" onClick={() => moveUp(index)}>
               <ChevronUp className="size-6" />
             </Button>
             <Button
               className="bg-gray-100"
-              size="icon"
               disabled={index + 1 === chatbots.length}
+              size="icon"
               onClick={() => moveDown(index)}
             >
               <ChevronDown className="size-6" />

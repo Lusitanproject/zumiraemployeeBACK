@@ -1,6 +1,7 @@
 import { z } from "zod";
-import prismaClient from "../../prisma";
+
 import { CreateUserSchema, UpdateUserSchema } from "../../definitions/admin/users";
+import prismaClient from "../../prisma";
 
 type CreateUser = z.infer<typeof CreateUserSchema>;
 type UpdateUser = z.infer<typeof UpdateUserSchema>;

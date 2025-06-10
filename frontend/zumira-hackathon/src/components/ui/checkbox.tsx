@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import * as React from "react";
+
+import { cn } from "@/lib/utils";
 
 type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -14,8 +15,8 @@ function Checkbox({ className, ...props }: CheckboxProps) {
       )}
     >
       <input
-        type="checkbox"
         className="peer absolute opacity-0 w-full h-full cursor-pointer disabled:cursor-not-allowed"
+        type="checkbox"
         {...props}
       />
       <span

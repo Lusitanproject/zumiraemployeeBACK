@@ -1,10 +1,12 @@
 "use server";
 
-import { catchError } from "@/utils/error";
-import { AuthResponse, FormState, VerifyCodeFormSchema } from "./definitions";
-import { redirect, RedirectType } from "next/navigation";
 import { cookies } from "next/headers";
+import { redirect, RedirectType } from "next/navigation";
+
 import { createSession } from "@/app/_lib/session";
+import { catchError } from "@/utils/error";
+
+import { AuthResponse, FormState, VerifyCodeFormSchema } from "./definitions";
 
 export async function verifyCode(state: FormState, formData: FormData): Promise<FormState> {
   const cookie = await cookies();

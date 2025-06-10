@@ -1,14 +1,16 @@
 import Image from "next/image";
-import logo from "../../../../public/logo--green.svg";
-import { SignUpForm } from "./form";
+import Link from "next/link";
+
 import { borel } from "@/app/fonts";
 import { HeadImage } from "@/components/custom/head-image";
-import Link from "next/link";
+
+import logo from "../../../../public/logo--green.svg";
+import { SignUpForm } from "./form";
 
 export default function Entrar() {
   return (
     <div className="w-full md:w-96 mx-auto flex flex-col items-center">
-      <Image src={logo} width={127} height={40} alt="Logo Zumira" className="mb-12 md:mb-14" unoptimized />
+      <Image unoptimized alt="Logo Zumira" className="mb-12 md:mb-14" height={40} src={logo} width={127} />
 
       {/* IMAGEM CASO SEJA EM TELAS MENORES */}
       <div className="md:hidden flex">

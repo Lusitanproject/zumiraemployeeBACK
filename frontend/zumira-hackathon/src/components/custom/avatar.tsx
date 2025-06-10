@@ -1,5 +1,7 @@
-import { decrypt } from "@/app/_lib/session";
 import { cookies } from "next/headers";
+
+import { decrypt } from "@/app/_lib/session";
+
 import { AvatarThumb } from "./avatar-thumb";
 
 export async function Avatar() {
@@ -12,7 +14,7 @@ export async function Avatar() {
 
   return (
     <div className="w-12 h-12">
-      <AvatarThumb user={session.name} role={session.role} />
+      <AvatarThumb role={session.role} user={session.name} />
     </div>
   );
 }

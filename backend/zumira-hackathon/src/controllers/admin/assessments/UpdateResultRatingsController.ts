@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { parseZodError } from "../../../utils/parseZodError";
-import { AssessmentResultRatingAdminService } from "../../../services/admin/AssessmentResultRatingAdminService";
 import { z } from "zod";
+
 import { UpdateRatingsSchema } from "../../../definitions/admin/assessment";
+import { AssessmentResultRatingAdminService } from "../../../services/admin/AssessmentResultRatingAdminService";
+import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParamSchema = z.object({
   id: z.string().cuid(),

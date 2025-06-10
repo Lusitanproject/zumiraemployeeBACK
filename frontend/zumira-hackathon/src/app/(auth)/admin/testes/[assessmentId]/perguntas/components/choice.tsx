@@ -1,16 +1,18 @@
 "use client";
 
+import { CirclePlus, Trash2 } from "lucide-react";
 import { ActionDispatch } from "react";
+
+import { Label } from "@/components/custom/label";
+import { Input } from "@/components/ui/input";
+
 import { ManageQuestionAction } from "../context/types";
 import { ManageQuestion } from "../definitions";
-import { Label } from "@/components/custom/label";
-import { CirclePlus, Trash2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { ButtonIcon } from "./button-icon";
 
 interface ChoiceFieldProps {
-  question: ManageQuestion;
   dispatch: ActionDispatch<[action: ManageQuestionAction]>;
+  question: ManageQuestion;
 }
 
 export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
@@ -34,15 +36,15 @@ export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
           <CirclePlus className="size-5 text-gray-300" />
         </ButtonIcon>
       </div>
-      <div id="choices" className="flex flex-col gap-2 items-center">
+      <div className="flex flex-col gap-2 items-center" id="choices">
         {sorted.map((c, i) => (
           <div key={c.key} className="flex flex-col items-start gap-1 w-full">
             <span className="flex w-fit font-bold text-xs text-gray-700">Opção {i + 1}</span>
             <div className="flex flex-row gap-2 w-full items-center">
               <Input
-                type="text"
                 defaultValue={c.label}
                 placeholder="Texto"
+                type="text"
                 onChange={(e) =>
                   dispatch({
                     type: "SET-CHOICE-LABEL",
@@ -56,9 +58,9 @@ export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
               />
               <div className="flex w-24">
                 <Input
-                  type="number"
                   defaultValue={c.value}
                   placeholder="Valor"
+                  type="number"
                   onChange={(e) =>
                     dispatch({
                       type: "SET-CHOICE-VALUE",

@@ -1,10 +1,12 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
-import { cookies } from "next/headers";
+
 import { NewConversationResponse } from "./definitions";
-import { redirect } from "next/navigation";
 
 export async function newConversation(actChatbotId: string) {
   const cookie = await cookies();

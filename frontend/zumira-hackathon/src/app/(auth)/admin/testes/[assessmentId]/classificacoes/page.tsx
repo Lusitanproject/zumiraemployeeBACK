@@ -1,7 +1,8 @@
+import { TriangleAlert } from "lucide-react";
+
+import { getAssessmentData } from "../actions";
 import { getAssessmentRatings } from "./actions";
 import { ManageRatingsForm } from "./form";
-import { getAssessmentData } from "../actions";
-import { TriangleAlert } from "lucide-react";
 
 export default async function ManageAssessmentQuestions({ params }: { params: Promise<{ assessmentId: string }> }) {
   const assessmentId = (await params).assessmentId;
@@ -26,7 +27,7 @@ export default async function ManageAssessmentQuestions({ params }: { params: Pr
 
   return (
     <div className="flex flex-col w-full">
-      <ManageRatingsForm ratings={ratings} data={data} />
+      <ManageRatingsForm data={data} ratings={ratings} />
     </div>
   );
 }

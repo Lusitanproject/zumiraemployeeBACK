@@ -1,8 +1,9 @@
 "use client";
-import { logout } from "@/app/_lib/auth";
 import { CircleCheck, Ellipsis } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { logout } from "@/app/_lib/auth";
 
 type AvatarDropdownProps = {
   open: boolean;
@@ -59,8 +60,8 @@ export function AvatarDropdown({ open, userRole, onClose }: AvatarDropdownProps)
       <div className="absolute right-0 top-14 shadow-2xl bg-white border border-gray-200 w-[20.5rem] py-1 z-40 rounded-lg overflow-hidden">
         {userRole === "admin" && (
           <>
-            <DropdownNavItem label="Gestão" url="/admin/testes" onClose={onClose} isCurrent={isAdminPath} />
-            <DropdownNavItem label="Conta pessoal" url="/chat" onClose={onClose} isCurrent={!isAdminPath} />
+            <DropdownNavItem isCurrent={isAdminPath} label="Gestão" url="/admin/testes" onClose={onClose} />
+            <DropdownNavItem isCurrent={!isAdminPath} label="Conta pessoal" url="/chat" onClose={onClose} />
             <hr className="text-gray-300 mx-2" />
           </>
         )}

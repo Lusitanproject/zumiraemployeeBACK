@@ -1,9 +1,9 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { decrypt } from "@/app/_lib/session";
-
 import { redirect } from "next/navigation";
+
+import { decrypt } from "@/app/_lib/session";
 
 export async function verifyUserRole(): Promise<void> {
   const cookie = await cookies();
