@@ -1,4 +1,4 @@
-import { Brain } from "lucide-react";
+import { Earth } from "lucide-react";
 import Link from "next/link";
 
 import { Nationality } from "@/types/nationality";
@@ -12,7 +12,7 @@ export function NationalityCard({ data }: CardProps) {
     <Link className="p-[1.375rem] rounded-xl bg-gray-100" href={`/admin/nacionalidades/${data.id}`}>
       <div className="flex h-[50px] justify-start mb-3">
         <div className="w-[50px] h-[50px] rounded-xl bg-primary-50 flex items-center justify-center font-bold">
-          <Brain className="size-5" />
+          <Earth className="size-5" />
         </div>
       </div>
       <div className="flex flex-col">
