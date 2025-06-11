@@ -1,8 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Fragment, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
+
+import { cn } from "@/lib/utils";
+
 import { Message } from "../definitions";
 
 interface MessagesProps {
@@ -31,8 +33,8 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
   return (
     <div
       ref={divRef}
-      onScroll={handleScroll}
       className="flex flex-col size-full py-[1.375rem] gap-[1.375rem] overflow-y-scroll overflow-x-hidden px-5"
+      onScroll={handleScroll}
     >
       {messages.map((m, i) => (
         <Fragment key={i}>

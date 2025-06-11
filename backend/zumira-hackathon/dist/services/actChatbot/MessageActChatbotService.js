@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageActChatbotService = void 0;
+const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
 const generateOpenAiResponse_1 = require("../../utils/generateOpenAiResponse");
-const error_1 = require("../../error");
 class MessageActChatbotService {
     async execute({ content, actConversationId, userId }) {
         const conv = await prisma_1.default.actConversation.findFirst({

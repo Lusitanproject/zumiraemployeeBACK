@@ -1,9 +1,11 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Notification } from "../definitions";
 import Link from "next/link";
+
+import { cn } from "@/lib/utils";
+
 import { readNotification } from "../actions";
+import { Notification } from "../definitions";
 
 interface NotificationCardProps {
   notification: Notification;

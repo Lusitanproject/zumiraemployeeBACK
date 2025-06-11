@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { assertPermissions } from "../../utils/assertPermissions";
+
 import { ListCompaniesService } from "../../services/company/ListCompaniesService";
+import { assertPermissions } from "../../utils/assertPermissions";
 
 class ListCompaniesController {
   async handle(req: Request, res: Response) {

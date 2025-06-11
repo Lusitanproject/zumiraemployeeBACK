@@ -1,7 +1,8 @@
 import { TriangleAlert } from "lucide-react";
+
+import { getAssessmentData } from "../actions";
 // import { getMonitoringBlocks } from "../../autoconhecimento/actions"
 import { getAssessmentQuestions, getDimensionsByBlock } from "./actions";
-import { getAssessmentData } from "../actions";
 import { ManageQuestionsForm } from "./form";
 
 export default async function ManageAssessmentQuestions({ params }: { params: Promise<{ assessmentId: string }> }) {
@@ -29,7 +30,7 @@ export default async function ManageAssessmentQuestions({ params }: { params: Pr
 
   return (
     <div className="flex flex-col w-full">
-      <ManageQuestionsForm data={data} questions={questions.data.questions} dimensions={dimensions} />
+      <ManageQuestionsForm data={data} dimensions={dimensions} questions={questions.data.questions} />
     </div>
   );
 }

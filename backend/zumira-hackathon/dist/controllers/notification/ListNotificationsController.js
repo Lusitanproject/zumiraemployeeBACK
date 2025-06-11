@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListNotificationsController = void 0;
-const ListNotificationsService_1 = require("../../services/notification/ListNotificationsService");
 const notification_1 = require("../../definitions/notification");
+const ListNotificationsService_1 = require("../../services/notification/ListNotificationsService");
 const parseZodError_1 = require("../../utils/parseZodError");
 class ListNotificationsController {
     async handle(req, res) {

@@ -1,6 +1,6 @@
 import { DetailResultRequest } from "../../definitions/assessment";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class DetailResultService {
   async execute({ userId, assessmentId }: DetailResultRequest) {
@@ -29,7 +29,7 @@ class DetailResultService {
             nationality: {
               select: {
                 name: true,
-                acronymn: true,
+                acronym: true,
               },
             },
             selfMonitoringBlock: {

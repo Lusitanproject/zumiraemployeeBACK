@@ -1,6 +1,6 @@
-import { ComponentProps } from "react"
-import Link from "next/link"
 import { cva, type VariantProps } from "class-variance-authority"
+import Link from "next/link"
+import { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -32,10 +32,10 @@ function AppLink({
   VariantProps<typeof linkVariants>) {
 
   return (
-    <Link href={href || ""} passHref legacyBehavior>
+    <Link legacyBehavior passHref href={href || ""}>
       <a
-        data-slot="button"
         className={cn(linkVariants({ variant, className }))}
+        data-slot="button"
         {...props}
       />
     </Link>

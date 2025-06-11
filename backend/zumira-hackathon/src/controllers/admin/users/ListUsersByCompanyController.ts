@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { assertPermissions } from "../../../utils/assertPermissions";
-import { parseZodError } from "../../../utils/parseZodError";
+import { z } from "zod";
 
 import { UserAdminService } from "../../../services/admin/UserAdminService";
-import { z } from "zod";
+import { assertPermissions } from "../../../utils/assertPermissions";
+import { parseZodError } from "../../../utils/parseZodError";
 
 const FindByCompanySchema = z.object({
   companyId: z.string().cuid(),

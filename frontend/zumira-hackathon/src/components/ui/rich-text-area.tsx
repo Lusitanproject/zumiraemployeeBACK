@@ -1,18 +1,20 @@
 "use client";
 
-import React, { ReactNode, useEffect, useRef, useState } from "react";
 import Highlight from "@tiptap/extension-highlight";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Typography from "@tiptap/extension-typography";
+import Underline from "@tiptap/extension-underline";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import { Bold, Italic, List, ListOrdered, Minus, Type, UnderlineIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import Underline from "@tiptap/extension-underline";
-import { Divider } from "../custom/divider";
+import { marked } from "marked";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import TurndownService from "turndown";
 import { useDebouncedCallback } from "use-debounce";
-import { marked } from "marked";
+
+import { cn } from "@/lib/utils";
+
+import { Divider } from "../custom/divider";
 
 interface RichTextAreaProps {
   id?: string;
@@ -27,16 +29,16 @@ interface OverflowButton {
 }
 
 interface EditorButtonProps {
-  highlight?: boolean;
   icon: React.ElementType;
+  highlight?: boolean;
   onClick?: () => void;
 }
 
 function EditorButton({ highlight, icon: Icon, onClick }: EditorButtonProps) {
   return (
     <button
-      onClick={onClick}
       className={cn(highlight ? "text-gray-700" : "text-gray-400", "cursor-pointer hover:text-gray-500")}
+      onClick={onClick}
     >
       <Icon className="size-4.5" />
     </button>
@@ -110,58 +112,58 @@ export function RichTextArea({ id, value, onChange }: RichTextAreaProps) {
 
   return (
     <div
-      id={id}
       className="relative overflow-clip w-full flex flex-col rounded-xl border border-gray-300 bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground focus-within:border-primary-300 focus-within:shadow-focus-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+      id={id}
     >
       <div className="flex flex-row items-center p-2 gap-2 bg-gray-100 h-10 border-b border-gray-300">
         <EditorButton
-          onClick={() => editor?.chain().focus().toggleBold().run()}
           highlight={editor?.isActive("bold")}
           icon={Bold}
+          onClick={() => editor?.chain().focus().toggleBold().run()}
         />
         <EditorButton
-          onClick={() => editor?.chain().focus().toggleItalic().run()}
           highlight={editor?.isActive("italic")}
           icon={Italic}
+          onClick={() => editor?.chain().focus().toggleItalic().run()}
         />
         <EditorButton
-          onClick={() => editor?.chain().focus().toggleUnderline().run()}
           highlight={editor?.isActive("underline")}
           icon={UnderlineIcon}
+          onClick={() => editor?.chain().focus().toggleUnderline().run()}
         />
         <Divider />
         <EditorButton
-          onClick={() => editor?.chain().focus().toggleBulletList().run()}
           highlight={editor?.isActive("bulletList")}
           icon={List}
+          onClick={() => editor?.chain().focus().toggleBulletList().run()}
         />
         <EditorButton
-          onClick={() => editor?.chain().focus().toggleOrderedList().run()}
           highlight={editor?.isActive("orderedList")}
           icon={ListOrdered}
+          onClick={() => editor?.chain().focus().toggleOrderedList().run()}
         />
         <Divider />
         <CollapsedContent editor={editor} icon={Type}>
           <EditorButton
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
             highlight={editor?.isActive("heading", { level: 1 })}
             icon={() => <span className="font-semibold text-center size-4.5">H1</span>}
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
           />
           <EditorButton
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
             highlight={editor?.isActive("heading", { level: 2 })}
             icon={() => <span className="font-semibold text-center size-4.5">H2</span>}
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
           />
           <EditorButton
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
             highlight={editor?.isActive("heading", { level: 3 })}
             icon={() => <span className="font-semibold text-center size-4.5">H3</span>}
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
           />
         </CollapsedContent>
         <Divider />
-        <EditorButton onClick={() => editor?.chain().focus().setHorizontalRule().run()} icon={Minus} />
+        <EditorButton icon={Minus} onClick={() => editor?.chain().focus().setHorizontalRule().run()} />
       </div>
-      <EditorContent editor={editor} className="prose markdown w-full focus:outline-none min-h-40" />
+      <EditorContent className="prose markdown w-full focus:outline-none min-h-40" editor={editor} />
     </div>
   );
 }

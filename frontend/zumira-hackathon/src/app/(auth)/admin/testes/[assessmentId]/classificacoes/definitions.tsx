@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export interface AssessmentRating {
-  id: string;
-  risk: string;
-  profile: string;
   color: string;
+  id: string;
+  profile: string;
+  risk: string;
 }
 
 export type GetAssessmentRatings =

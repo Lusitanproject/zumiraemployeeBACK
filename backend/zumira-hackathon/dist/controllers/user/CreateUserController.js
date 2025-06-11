@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserController = void 0;
-const parseZodError_1 = require("../../utils/parseZodError");
-const CreateUserService_1 = require("../../services/user/CreateUserService");
 const user_1 = require("../../definitions/user");
+const CreateUserService_1 = require("../../services/user/CreateUserService");
+const parseZodError_1 = require("../../utils/parseZodError");
 class CreateUserController {
     async handle(req, res) {
         const { success, data, error } = user_1.CreateUserSchema.safeParse(req.body);

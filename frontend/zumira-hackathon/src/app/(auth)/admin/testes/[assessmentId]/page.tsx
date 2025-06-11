@@ -1,6 +1,6 @@
 import { getMonitoringBlocks, getNationalities } from "../../autoconhecimento/actions";
-import { Header } from "./components/header";
 import { getAssessmentData } from "./actions";
+import { Header } from "./components/header";
 import { AssessmentForm } from "./form";
 
 export default async function ManageAssessment({ params }: { params: Promise<{ assessmentId: string }> }) {
@@ -12,7 +12,7 @@ export default async function ManageAssessment({ params }: { params: Promise<{ a
   return (
     <div className="flex flex-col w-full">
       <Header title="Editar detalhes do teste" />
-      <AssessmentForm data={data} blocks={blocks} nationalities={nationalities} />
+      <AssessmentForm blocks={blocks} data={data} nationalities={nationalities} />
     </div>
   );
 }

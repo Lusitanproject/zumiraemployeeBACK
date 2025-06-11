@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindDimensionByBlockController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../../utils/parseZodError");
 const DimensionAdminService_1 = require("../../../services/admin/DimensionAdminService");
 const SelfMonitoringService_1 = require("../../../services/admin/SelfMonitoringService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParam = zod_1.z.object({
     selfMonitoringBlockId: zod_1.z.string().cuid(),
 });

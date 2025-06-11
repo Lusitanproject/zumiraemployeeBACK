@@ -7,7 +7,7 @@ export default async function Autoconhecimento() {
 
   return (
     <div className="flex flex-col w-full">
-      <Header title="Atos" create={{ href: "/admin/atos/novo", text: "Criar novo ato" }} />
+      <Header create={{ href: "/admin/atos/novo", text: "Criar novo ato" }} title="Atos" />
       <ActsList data={result} />
     </div>
   );

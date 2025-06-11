@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { parseZodError } from "../../utils/parseZodError";
+
 import { GenerateCompanyFeedbackService } from "../../services/assessment/GenerateCompanyFeedbackService";
+import { parseZodError } from "../../utils/parseZodError";
 
 const GenerateFeedbackSchema = z.object({
   id: z.string().cuid(),

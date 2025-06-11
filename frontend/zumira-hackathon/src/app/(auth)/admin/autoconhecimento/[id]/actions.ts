@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { MonitoringBlock, SelfMonitoringResponse } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { MonitoringBlock, SelfMonitoringResponse } from "./definitions";
 
 export async function loadSelfMonitoringBlock(id: string | null): Promise<MonitoringBlock | null> {
   if (id === null) {

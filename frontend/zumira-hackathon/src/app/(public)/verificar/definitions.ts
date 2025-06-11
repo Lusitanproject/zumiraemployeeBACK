@@ -26,6 +26,7 @@ export type AuthResponse =
 
 export type Authenticated = {
   name: string;
+  act: string;
   role: string;
   token: string;
   expiresAt: Date;

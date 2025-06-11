@@ -1,13 +1,13 @@
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 interface ResultRequest {
-  userId: string;
-  assessmentId: string;
   answers: {
     assessmentQuestionId: string;
     assessmentQuestionChoiceId: string;
   }[];
+  assessmentId: string;
+  userId: string;
 }
 
 async function allQuestionsExist(ids: string[]) {

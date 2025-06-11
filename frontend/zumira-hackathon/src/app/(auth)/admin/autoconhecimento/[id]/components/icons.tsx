@@ -20,7 +20,7 @@ export function IconField({ value, onChange }: IconFieldProps) {
             })}
             onClick={() => onChange(icon)}
           >
-            <CustomIcon name={icon} className="size-5" />
+            <CustomIcon className="size-5" name={icon} />
           </button>
         ))}
       </div>

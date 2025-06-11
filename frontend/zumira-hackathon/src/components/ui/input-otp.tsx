@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { OTPInput, OTPInputContext } from "input-otp";
 import { MinusIcon } from "lucide-react";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -15,16 +15,16 @@ function InputOTP({
 }) {
   return (
     <OTPInput
-      data-slot="input-otp"
-      containerClassName={cn("flex items-center gap-2 has-disabled:opacity-50", containerClassName)}
       className={cn("disabled:cursor-not-allowed", className)}
+      containerClassName={cn("flex items-center gap-2 has-disabled:opacity-50", containerClassName)}
+      data-slot="input-otp"
       {...props}
     />
   );
 }
 
 function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="input-otp-group" className={cn("flex items-center gap-x-3", className)} {...props} />;
+  return <div className={cn("flex items-center gap-x-3", className)} data-slot="input-otp-group" {...props} />;
 }
 
 function InputOTPSlot({
@@ -39,12 +39,12 @@ function InputOTPSlot({
 
   return (
     <div
-      data-slot="input-otp-slot"
-      data-active={isActive}
       className={cn(
         "border-input data-[active=true]:border-ring data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40 aria-invalid:border-destructive data-[active=true]:aria-invalid:border-destructive relative flex h-11 w-11 items-center justify-center border border-gray-300 focus-visible:border-primary-300 focus-visible:shadow-focus-ring data-[active=true]:border-primary-300 rounded-xl text-sm shadow-xs transition-all outline-none data-[active=true]:z-10 data-[active=true]:shadow-focus-ring",
         className,
       )}
+      data-active={isActive}
+      data-slot="input-otp-slot"
       {...props}
     >
       {char}

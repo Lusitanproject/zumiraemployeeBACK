@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback } from "react";
 import { ChevronRight, SquareX, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { redirect, RedirectType } from "next/navigation";
+import { useCallback } from "react";
+
+import { Button } from "@/components/ui/button";
 
 export type AssessmentModalProps = {
   id: string;
@@ -20,10 +21,10 @@ export function AssessmentModal({ id, title, summary, open, onClose }: Assessmen
 
   return (
     <div
-      onClick={onClose}
       className={`fixed flex justify-center items-center inset-0 z-50 p-4 bg-black/50 duration-200 ${
         open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       }`}
+      onClick={onClose}
     >
       <section
         className={`flex flex-col bg-white sm:max-w-lg w-full rounded-lg p-6 gap-4 duration-200 ${
@@ -32,8 +33,8 @@ export function AssessmentModal({ id, title, summary, open, onClose }: Assessmen
       >
         <header className="relative flex flex-col pt-16 gap-2">
           <button
-            onClick={onClose}
             className="absolute top-0 left-0 size-8 flex items-center justify-center border-0 cursor-pointer"
+            onClick={onClose}
           >
             <SquareX className="size-6 text-gray-400" />
           </button>
@@ -44,7 +45,7 @@ export function AssessmentModal({ id, title, summary, open, onClose }: Assessmen
           <p className="text-sm leading-5 text-center text-gray-700 mb-8">{summary}</p>
         </header>
         <footer className="!justify-center flex">
-          <Button variant="primary" size="lg" className="w-full" onClick={handleOpenAssessment}>
+          <Button className="w-full" size="lg" variant="primary" onClick={handleOpenAssessment}>
             <span>Iniciar</span>
             <ChevronRight className="size-5" />
           </Button>

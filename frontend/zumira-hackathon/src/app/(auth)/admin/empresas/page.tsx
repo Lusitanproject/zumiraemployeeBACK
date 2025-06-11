@@ -1,6 +1,6 @@
 import { getCompanies } from "./actions";
-import { Header } from "./components/header";
 import { CompaniesList } from "./components/companies-list";
+import { Header } from "./components/header";
 
 export default async function Empresas() {
   const result = await getCompanies();

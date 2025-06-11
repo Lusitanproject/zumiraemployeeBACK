@@ -4,8 +4,8 @@ import { Send } from "lucide-react";
 import { useRef } from "react";
 
 interface MessageInputProps {
-  placeholder?: string;
   disabled?: boolean;
+  placeholder?: string;
   onSend?: (text: string) => void;
 }
 
@@ -48,16 +48,16 @@ export function MessageInput({ placeholder, disabled, onSend }: MessageInputProp
   return (
     <form
       ref={formRef}
-      className="flex flex-row w-full min-h-[3.125rem] max-h-32 border-gray-300 border-1 rounded-xl overflow-clip"
       action={handleSubmit}
+      className="flex flex-row w-full min-h-[3.125rem] max-h-32 border-gray-300 border-1 rounded-xl overflow-clip"
     >
       <div className="flex size-full py-2.5">
         <textarea
           ref={textareaRef}
           className="flex w-full focus:outline-none focus:ring-transparent px-3.5 field-sizing-content resize-none"
-          style={{ overflowWrap: "anywhere" }}
-          placeholder={placeholder}
           name="message"
+          placeholder={placeholder}
+          style={{ overflowWrap: "anywhere" }}
           onKeyDown={handleKeyDown}
         />
       </div>

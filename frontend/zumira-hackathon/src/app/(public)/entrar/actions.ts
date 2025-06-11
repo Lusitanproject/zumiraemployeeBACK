@@ -1,10 +1,12 @@
 "use server";
 
 import { addMinutes } from "date-fns";
-import { catchError } from "@/utils/error";
-import { EmailAuthResponse, FormState, SignupFormSchema } from "./definitions";
-import { redirect, RedirectType } from "next/navigation";
 import { cookies } from "next/headers";
+import { redirect, RedirectType } from "next/navigation";
+
+import { catchError } from "@/utils/error";
+
+import { EmailAuthResponse, FormState, SignupFormSchema } from "./definitions";
 
 export async function signup(state: FormState, formData: FormData): Promise<FormState> {
   const cookie = await cookies();

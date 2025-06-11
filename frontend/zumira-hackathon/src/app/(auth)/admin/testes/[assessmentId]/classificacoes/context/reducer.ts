@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
-import { ManageRatingAction, ManageRatingState } from "./types";
+
 import { ManageRating } from "../definitions";
+import { ManageRatingAction, ManageRatingState } from "./types";
 
 export function reducer(state: ManageRatingState, action: ManageRatingAction): ManageRatingState {
   switch (action.type) {

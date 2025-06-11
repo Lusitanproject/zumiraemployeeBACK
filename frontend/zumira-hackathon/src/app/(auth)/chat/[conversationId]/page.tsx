@@ -5,5 +5,5 @@ export default async function Chat({ params }: { params: Promise<{ conversationI
   const conversationId = (await params).conversationId;
   const conversation = await getActConversation(conversationId);
 
-  return <ChatUi oldMessages={conversation.messages} actConversation={conversation} />;
+  return <ChatUi actConversation={conversation} oldMessages={conversation.messages} />;
 }

@@ -1,6 +1,6 @@
 import { CreateAssessment } from "../../definitions/admin/assessment";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class CreateAssessmentService {
   async execute(data: CreateAssessment) {

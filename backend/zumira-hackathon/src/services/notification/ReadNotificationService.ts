@@ -1,6 +1,6 @@
 import { ReadNotificationRequest } from "../../definitions/notification";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class ReadNotificationService {
   async execute({ userId, notificationId }: ReadNotificationRequest) {

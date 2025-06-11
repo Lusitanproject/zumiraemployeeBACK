@@ -1,10 +1,12 @@
 "use server";
 
-import { decrypt } from "@/app/_lib/session";
-import { catchError } from "@/utils/error";
 import { cookies } from "next/headers";
-import { GetNotificationsError, GetNotificationsSuccess, GetAlerts } from "./definitions";
+
+import { decrypt } from "@/app/_lib/session";
 import { DetailNotificationError, DetailNotificationSuccess } from "@/app/(auth)/notificacoes/definitions";
+import { catchError } from "@/utils/error";
+
+import { GetAlerts, GetNotificationsError, GetNotificationsSuccess } from "./definitions";
 
 export async function getNotifications() {
   const cookie = await cookies();

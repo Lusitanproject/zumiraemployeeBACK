@@ -11,9 +11,9 @@ export function HeroCompany() {
           <h2 className="text-4xl font-bold leading-[1.25] sm:text-5xl sm:leading-[1.2] mb-6 text-slate-800">Cuidar das pessoas é estratégico. <br />Medir e transformar o clima emocional<br/>da sua empresa também</h2>
           <p className="text-lg leading-normal mb-8 text-slate-700 font-medium max-w-[720px]">Zumira é uma plataforma inteligente com base científica que atua como uma assistente psicológica, promovendo a autoconsciência, rastreando riscos psicossociais e fornecendo às instituições dados confiáveis sobre a saúde mental e o bem-estar dos colaboradores de forma anônima, ética e segura.</p>
           <AppLink
-            variant="primary"
             className="w-fit"
             href="/entrar"
+            variant="primary"
           >
             <span className="leading-none mb-1">Acessar plataforma</span>
             <ChevronRight className="size-5 text-white" />

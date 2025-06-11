@@ -16,10 +16,10 @@ export function Footer() {
           <p className="font-medium text-lg text-white">Siga-nos em:</p>
           <div className="flex gap-x-3 pt-4 mb-2">
             <a
-              href="https://lnkd.in/djnYmhqV"
-              target="_blank"
-              rel="noopener noreferer"
               className="w-8 h-8 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white/60 flex items-center justify-center"
+              href="https://lnkd.in/djnYmhqV"
+              rel="noopener noreferer"
+              target="_blank"
             >
               <LinkedInLogo />
             </a>

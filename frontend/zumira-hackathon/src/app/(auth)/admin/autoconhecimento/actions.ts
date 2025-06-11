@@ -1,14 +1,16 @@
 "use server";
 
 import { cookies } from "next/headers";
+
+import { decrypt } from "@/app/_lib/session";
+import { catchError } from "@/utils/error";
+
 import {
-  GetNationalities as ImportedGetNationalities,
   GetSelfMonitoringBlocks,
+  GetNationalities as ImportedGetNationalities,
   MonitoringBlock,
   Nationality,
 } from "./definitions";
-import { decrypt } from "@/app/_lib/session";
-import { catchError } from "@/utils/error";
 
 type GetMonitoringBlocks = {
   status: "SUCCESS" | "ERROR";

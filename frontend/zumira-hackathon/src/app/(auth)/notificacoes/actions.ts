@@ -1,7 +1,9 @@
+import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
-import { cookies } from "next/headers";
-import { GetNotificationsError, GetNotificationsSuccess, GetAlerts } from "./definitions";
+
+import { GetAlerts, GetNotificationsError, GetNotificationsSuccess } from "./definitions";
 
 export async function getNotifications() {
   const cookie = await cookies();

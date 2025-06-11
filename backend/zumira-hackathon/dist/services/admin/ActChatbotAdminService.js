@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActChatbotAdminService = void 0;
 const client_1 = require("@prisma/client");
+const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
 const getFirstActChatbot_1 = require("../../utils/getFirstActChatbot");
-const error_1 = require("../../error");
 class ActChatbotAdminService {
     async find(id) {
         const bot = await prisma_1.default.actChatbot.findFirst({

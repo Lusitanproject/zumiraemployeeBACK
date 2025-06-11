@@ -1,7 +1,9 @@
 "use client";
 import { useCallback, useRef, useState } from "react";
-import { AvatarDropdown } from "./avatar-dropdown";
+
 import { cn } from "@/lib/utils";
+
+import { AvatarDropdown } from "./avatar-dropdown";
 
 type AvatarThumb = {
   user: string;
@@ -24,7 +26,7 @@ export function AvatarThumb({ user, role }: AvatarThumb) {
     <div ref={ref} className="relative w-12 h-12 md:w-11 md:h-11">
       <div
         className={cn(
-          "overflow-hidden rounded-full w-12 h-12 md:w-11 md:h-11 md:border-2 md:border-white md:shadow-lg bg-primary-400 flex items-center justify-center relative",
+          "overflow-hidden cursor-pointer rounded-full w-12 h-12 md:w-11 md:h-11 md:border-2 md:border-white md:shadow-lg bg-primary-400 flex items-center justify-center relative",
           open ? "z-50" : "z-auto"
         )}
         onClick={handleToggleDropdown}
@@ -36,7 +38,7 @@ export function AvatarThumb({ user, role }: AvatarThumb) {
             .map((item) => item[0])}
         </span>
       </div>
-      <AvatarDropdown userRole={role} open={open} onClose={handleClickOutside} />
+      <AvatarDropdown open={open} userRole={role} onClose={handleClickOutside} />
     </div>
   );
 }

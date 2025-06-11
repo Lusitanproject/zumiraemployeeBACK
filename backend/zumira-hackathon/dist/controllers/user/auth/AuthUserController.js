@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthUserController = void 0;
-const AuthUserService_1 = require("../../../services/user/auth/AuthUserService");
 const zod_1 = require("zod");
+const AuthUserService_1 = require("../../../services/user/auth/AuthUserService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const CreateAuthSchema = zod_1.z.object({
     email: zod_1.z.string().email(),

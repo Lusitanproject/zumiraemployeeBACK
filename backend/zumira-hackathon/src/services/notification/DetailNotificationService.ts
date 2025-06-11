@@ -1,6 +1,6 @@
 import { DetailNotificationRequest } from "../../definitions/notification";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class DetailNotificationService {
   async execute({ notificationId }: DetailNotificationRequest) {

@@ -1,23 +1,48 @@
 "use client";
 
-import { ActsData } from "@/types/acts";
 import { ChevronDown } from "lucide-react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { newConversation } from "../actions";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ActsData } from "@/types/acts";
+
+import { newConversation } from "../actions";
 
 interface ActSelectorProps {
+  currentAct: string;
   data: ActsData;
 }
 
-export function ActSelector({ data }: ActSelectorProps) {
+export function ActSelector({ data, currentAct }: ActSelectorProps) {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
-  const [selected, setSelected] = useState<ActsData["chatbots"][0]>(data.chatbots[0]!);
+  const [selected, setSelected] = useState<ActsData["chatbots"][0]>(
+    data.chatbots.find((c) => c.id === currentAct) ?? data.chatbots[0]!
+  );
   const [loading, setLoading] = useState<boolean>(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(false);
+      }
+    }
+
+    if (openDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openDropdown]);
 
   async function handleConfirm() {
     setLoading(true);
@@ -47,8 +72,9 @@ export function ActSelector({ data }: ActSelectorProps) {
           </div>
 
           <div
+            ref={dropdownRef}
             className={cn(
-              "absolute flex flex-col justify-center items-center -translate-x-1/2 left-1/2 top-[110%] rounded-xl bg-white border-1 border-gray-300 w-fit overflow-clip duration-200 shadow-md py-2",
+              "absolute flex flex-col justify-center items-center z-30 -translate-x-1/2 left-1/2 top-[110%] rounded-xl bg-white border-1 border-gray-300 w-fit overflow-clip duration-200 shadow-md py-2",
               openDropdown
                 ? "opacity-100 pointer-events-auto translate-y-0"
                 : "opacity-0 pointer-events-none -translate-y-2"
@@ -58,8 +84,8 @@ export function ActSelector({ data }: ActSelectorProps) {
               .filter((c) => c.id !== selected.id)
               .map((bot) => (
                 <div
-                  className="flex flex-row gap-2 items-center w-full text-center text-lg hover:bg-black/5 px-3 py-1.5 cursor-pointer text-gray-500 text-nowrap"
                   key={bot.id}
+                  className="flex flex-row gap-2 items-center w-full text-center text-lg hover:bg-gray-50 px-3 py-1.5 cursor-pointer text-gray-500 text-nowrap"
                   onClick={() => {
                     setSelected(bot);
                     setOpenDropdown(false);
@@ -75,7 +101,7 @@ export function ActSelector({ data }: ActSelectorProps) {
         <span className="text-gray-500 text-center">{selected.description}</span>
       </div>
       {/* <MessageInput placeholder="Comece a escrever seu próximo capítulo" /> */}
-      <Button variant="primary" size="xxl" onClick={handleConfirm} disabled={loading} loading={loading}>
+      <Button disabled={loading} loading={loading} size="xxl" variant="primary" onClick={handleConfirm}>
         Iniciar capítulo
       </Button>
     </div>

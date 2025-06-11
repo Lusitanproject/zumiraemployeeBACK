@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReadAlertController = void 0;
 const alert_1 = require("../../definitions/alert");
-const parseZodError_1 = require("../../utils/parseZodError");
 const ReadAlertService_1 = require("../../services/alert/ReadAlertService");
+const parseZodError_1 = require("../../utils/parseZodError");
 class ReadAlertController {
     async handle(req, res) {
         const { success, data, error } = alert_1.ReadAlertSchema.safeParse(req.params);

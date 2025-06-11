@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Dimension } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { Dimension } from "./definitions";
 
 type GetDimensions = {
   status: "SUCCESS";

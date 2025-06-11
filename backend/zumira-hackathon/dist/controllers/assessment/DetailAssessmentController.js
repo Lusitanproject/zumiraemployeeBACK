@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DetailAssessmentController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../utils/parseZodError");
 const DetailAssessmentService_1 = require("../../services/assessment/DetailAssessmentService");
 const assertPermissions_1 = require("../../utils/assertPermissions");
+const parseZodError_1 = require("../../utils/parseZodError");
 const CreateIdSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
 });

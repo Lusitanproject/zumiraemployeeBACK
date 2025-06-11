@@ -101,7 +101,7 @@ model AuthCode {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id],  onDelete: Cascade)
 
   @@map("auth_codes")
 }
@@ -121,7 +121,7 @@ model Company {
 
 model Nationality {
   id        String   @id @default(cuid())
-  acronymn  String   @unique
+  acronym  String   @unique
   name      String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -164,7 +164,7 @@ model AssessmentResult {
   createdAt                DateTime @default(now()) @map("created_at")
   updatedAt                DateTime @updatedAt @map("updated_at")
 
-  user                      User                       @relation(fields: [userId], references: [id])
+  user                      User                       @relation(fields: [userId], references: [id],  onDelete: Cascade)
   assessment                Assessment                 @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   assessmentResultRating    AssessmentResultRating?    @relation(fields: [assessmentResultRatingId], references: [id], onDelete: Cascade)
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
@@ -218,7 +218,7 @@ model AssessmentQuestionAnswer {
   assessmentQuestion       AssessmentQuestion       @relation(fields: [assessmentQuestionId], references: [id], onDelete: Cascade)
   assessmentQuestionChoice AssessmentQuestionChoice @relation(fields: [assessmentQuestionChoiceId], references: [id], onDelete: Cascade)
   assessmentResult         AssessmentResult         @relation(fields: [assessmentResultId], references: [id])
-  user                     User                     @relation(fields: [userId], references: [id])
+  user                     User                     @relation(fields: [userId], references: [id],  onDelete: Cascade)
 
   @@map("assessment_question_answers")
 }
@@ -317,7 +317,7 @@ model NotificationRecipient {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  user         User         @relation(fields: [userId], references: [id])
+  user         User         @relation(fields: [userId], references: [id],  onDelete: Cascade)
   notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, notificationId])
@@ -365,7 +365,7 @@ model ActConversation {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   actChatbot ActChatbot               @relation(fields: [actChatbotId], references: [id])
-  user       User                     @relation(fields: [userId], references: [id])
+  user       User                     @relation(fields: [userId], references: [id],  onDelete: Cascade)
   messages   ActConversationMessage[]
 
   @@map("act_conversations")

@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateQuestionController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../utils/parseZodError");
 const CreateQuestionService_1 = require("../../services/assessment/CreateQuestionService");
 const assertPermissions_1 = require("../../utils/assertPermissions");
+const parseZodError_1 = require("../../utils/parseZodError");
 const CreateQuestionSchema = zod_1.z.object({
     description: zod_1.z.string(),
     index: zod_1.z.number().int(),

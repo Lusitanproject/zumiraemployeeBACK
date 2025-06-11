@@ -1,11 +1,13 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { startHolyLoader } from "holy-loader";
 import { X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+
+import { cn } from "@/lib/utils";
+
 import { SelfMonitoringBlock } from "../definitions";
 import { Badge } from "./badge";
-import { startHolyLoader } from "holy-loader";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
 
 type MonitoringBlocksProps = {
   data: SelfMonitoringBlock[];

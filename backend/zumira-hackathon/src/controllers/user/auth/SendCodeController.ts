@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { SendCodeService } from "../../../services/user/auth/SendCodeService";
 import { z } from "zod";
+
+import { SendCodeService } from "../../../services/user/auth/SendCodeService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 const CreateCodeSchema = z.object({

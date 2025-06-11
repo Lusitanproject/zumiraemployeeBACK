@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListUsersByCompanyController = void 0;
+const zod_1 = require("zod");
+const UserAdminService_1 = require("../../../services/admin/UserAdminService");
 const assertPermissions_1 = require("../../../utils/assertPermissions");
 const parseZodError_1 = require("../../../utils/parseZodError");
-const UserAdminService_1 = require("../../../services/admin/UserAdminService");
-const zod_1 = require("zod");
 const FindByCompanySchema = zod_1.z.object({
     companyId: zod_1.z.string().cuid(),
 });

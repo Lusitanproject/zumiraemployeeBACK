@@ -1,17 +1,22 @@
 import Image from "next/image";
-import logo from "../../../../public/logo--green.svg";
-import { RegisterForm } from "./form";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
 import { borel } from "@/app/fonts";
 import { HeadImage } from "@/components/custom/head-image";
+
+import logo from "../../../../public/logo--green.svg";
 import { getNationalities } from "./actions";
-import Link from "next/link";
+import { RegisterForm } from "./form";
 
 export default async function Registrar() {
   const nationalities = await getNationalities();
 
+  if (process.env.ENABLE_REGISTER !== "true") redirect("/entrar");
+
   return (
     <div className="w-full md:w-96 mx-auto flex flex-col items-center">
-      <Image src={logo} width={127} height={40} alt="Logo Zumira" className="mb-12 md:mb-14" unoptimized />
+      <Image unoptimized alt="Logo Zumira" className="mb-12 md:mb-14" height={40} src={logo} width={127} />
 
       {/* IMAGEM CASO SEJA EM TELAS MENORES */}
       <div className="md:hidden flex">

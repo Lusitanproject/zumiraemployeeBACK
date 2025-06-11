@@ -1,11 +1,13 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { useCallback, useState } from "react";
-import { Company, FormErrors, INITIAL_VALUE, ManageCompany, ManageCompanySchema } from "./definitions";
-import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
+import { Input } from "@/components/ui/input";
+
+import { Company, FormErrors, INITIAL_VALUE, ManageCompany, ManageCompanySchema } from "./definitions";
 import { saveCompany } from "./form-actions";
 
 type FormProps = {
@@ -84,7 +86,7 @@ export function CompanyForm({ data }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit} loading={loading} disabled={loading}>
+        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar
         </Button>
       </div>

@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindNotificationTypeController = void 0;
-const parseZodError_1 = require("../../../utils/parseZodError");
 const zod_1 = require("zod");
 const NotificationTypeAdminService_1 = require("../../../services/admin/NotificationTypeAdminService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParam = zod_1.z.object({
     id: zod_1.z.string().cuid(),
 });

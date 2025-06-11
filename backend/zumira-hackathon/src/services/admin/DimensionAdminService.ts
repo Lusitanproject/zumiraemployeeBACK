@@ -1,6 +1,7 @@
 import { z } from "zod";
-import prismaClient from "../../prisma";
+
 import { CreateDimensionSchema, EditDimensionSchema } from "../../definitions/admin/dimension";
+import prismaClient from "../../prisma";
 
 type CreateDimension = z.infer<typeof CreateDimensionSchema>;
 type EditDimension = z.infer<typeof EditDimensionSchema>;

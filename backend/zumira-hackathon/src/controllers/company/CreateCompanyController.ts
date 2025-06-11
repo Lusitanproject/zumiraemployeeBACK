@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
+
+import { CreateCompanyService } from "../../services/company/CreateCompanyService";
 import { assertPermissions } from "../../utils/assertPermissions";
 import { parseZodError } from "../../utils/parseZodError";
-import { CreateCompanyService } from "../../services/company/CreateCompanyService";
 
 const CreateCompanySchema = z.object({
   name: z.string(),

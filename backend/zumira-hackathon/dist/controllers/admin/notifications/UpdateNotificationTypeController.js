@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateNotificationTypeController = void 0;
-const parseZodError_1 = require("../../../utils/parseZodError");
-const NotificationTypeAdminService_1 = require("../../../services/admin/NotificationTypeAdminService");
 const notification_1 = require("../../../definitions/admin/notification");
+const NotificationTypeAdminService_1 = require("../../../services/admin/NotificationTypeAdminService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 class UpdateNotificationTypeController {
     async handle(req, res) {
         const { data, success, error } = notification_1.UpdateNotificationTypeSchema.safeParse({ ...req.body, ...req.params });

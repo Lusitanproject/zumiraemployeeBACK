@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AssessmentDetailForAdminController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../utils/parseZodError");
-const assertPermissions_1 = require("../../utils/assertPermissions");
 const AssessmentAdminService_1 = require("../../services/admin/AssessmentAdminService");
+const assertPermissions_1 = require("../../utils/assertPermissions");
+const parseZodError_1 = require("../../utils/parseZodError");
 const GetAssessmentDetailForAdminSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
 });

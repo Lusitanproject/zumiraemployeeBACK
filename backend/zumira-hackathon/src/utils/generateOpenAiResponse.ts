@@ -1,11 +1,11 @@
 import OpenAI from "openai";
 
 export interface GenerateOpenAiResponseRequest {
-  instructions?: string;
   messages: {
     role: "user" | "assistant";
     content: string;
   }[];
+  instructions?: string;
 }
 
 export async function generateOpenAiResponse({ instructions, messages }: GenerateOpenAiResponseRequest) {

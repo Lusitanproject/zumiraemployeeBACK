@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateResultService = void 0;
-const prisma_1 = __importDefault(require("../../prisma"));
 const error_1 = require("../../error");
+const prisma_1 = __importDefault(require("../../prisma"));
 async function allQuestionsExist(ids) {
     const questions = await prisma_1.default.assessmentQuestion.findMany({
         where: {

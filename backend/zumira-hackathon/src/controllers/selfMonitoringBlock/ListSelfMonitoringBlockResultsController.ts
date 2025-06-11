@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { parseZodError } from "../../utils/parseZodError";
+
 import { ListSelfMonitoringBlockResultsSchema } from "../../definitions/selfMonitoringBlock";
 import { ListSelfMonitoringBlockResultsService } from "../../services/selfMonitoringBlock/ListSelfMonitoringBlockResultsService";
+import { parseZodError } from "../../utils/parseZodError";
 
 class ListSelfMonitoringBlockResultsController {
   async handle(req: Request, res: Response) {

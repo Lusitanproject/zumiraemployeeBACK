@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DetailAssessmentService = void 0;
-const prisma_1 = __importDefault(require("../../prisma"));
 const error_1 = require("../../error");
+const prisma_1 = __importDefault(require("../../prisma"));
 class DetailAssessmentService {
     async execute({ userId, assessmentId }) {
         const assessment = await prisma_1.default.assessment.findFirst({
@@ -50,7 +50,7 @@ class DetailAssessmentService {
                 },
                 nationality: {
                     select: {
-                        acronymn: true,
+                        acronym: true,
                         name: true,
                     },
                 },

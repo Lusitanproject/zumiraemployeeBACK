@@ -1,6 +1,6 @@
 import { ReadAlertRequest } from "../../definitions/alert";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class ReadAlertService {
   async execute({ id }: ReadAlertRequest) {

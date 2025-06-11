@@ -1,8 +1,10 @@
 "use server";
 
 import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
 import { Notification } from "../definitions";
 import { GetNotificationResponse, GetNotificationTypesResponse, GetUsers, NotificationType, User } from "./definitions";
 

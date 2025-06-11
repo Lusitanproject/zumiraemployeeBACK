@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { ListSelfMonitoringBlocksService } from "../../services/selfMonitoringBlock/ListSelfMonitoringBlocksService";
 
 class ListSelfMonitoringBlocksController {

@@ -1,6 +1,9 @@
 "use server";
 
+import { redirect, RedirectType } from "next/navigation";
+
 import { catchError } from "@/utils/error";
+
 import {
   FormState,
   GetNationalitiesResponse,
@@ -8,7 +11,6 @@ import {
   RegisterFormState,
   RegisterResponse,
 } from "./definitions";
-import { redirect, RedirectType } from "next/navigation";
 
 export async function register(state: RegisterFormState): Promise<FormState> {
   const validationResult = RegisterFormSchema.safeParse(state);

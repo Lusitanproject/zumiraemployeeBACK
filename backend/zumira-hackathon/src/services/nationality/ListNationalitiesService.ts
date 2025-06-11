@@ -5,7 +5,7 @@ class ListNationalitiesService {
     const nationalities = await prismaClient.nationality.findMany({
       select: {
         id: true,
-        acronymn: true,
+        acronym: true,
         name: true,
       },
     });

@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenerateCompanyFeedbackService = void 0;
-const prisma_1 = __importDefault(require("../../prisma"));
 const openai_1 = __importDefault(require("openai"));
 const error_1 = require("../../error");
+const prisma_1 = __importDefault(require("../../prisma"));
 async function sendMessage(instructions, message) {
     const openai = new openai_1.default({
         apiKey: process.env.OPENAI_API_KEY,

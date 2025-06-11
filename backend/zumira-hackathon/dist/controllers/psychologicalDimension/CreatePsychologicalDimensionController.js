@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatePsychologicalDimensionController = void 0;
-const CreatePsychologicalDimensionService_1 = require("../../services/psychologicalDimension/CreatePsychologicalDimensionService");
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../utils/parseZodError");
+const CreatePsychologicalDimensionService_1 = require("../../services/psychologicalDimension/CreatePsychologicalDimensionService");
 const assertPermissions_1 = require("../../utils/assertPermissions");
+const parseZodError_1 = require("../../utils/parseZodError");
 const CreateDimensionSchema = zod_1.z.object({
     acronym: zod_1.z.string(),
     name: zod_1.z.string(),

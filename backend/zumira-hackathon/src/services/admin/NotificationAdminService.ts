@@ -3,8 +3,8 @@ import {
   DeleteNotificationRequest,
   UpdateNotificationRequest,
 } from "../../definitions/notification";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class NotificationAdminService {
   async findAll() {

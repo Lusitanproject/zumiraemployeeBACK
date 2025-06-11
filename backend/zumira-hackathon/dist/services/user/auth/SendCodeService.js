@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendCodeService = void 0;
-const prisma_1 = __importDefault(require("../../../prisma"));
-const nodemailer_1 = __importDefault(require("nodemailer"));
 const crypto_1 = require("crypto");
-const devLog_1 = require("../../../utils/devLog");
+const nodemailer_1 = __importDefault(require("nodemailer"));
 const error_1 = require("../../../error");
+const prisma_1 = __importDefault(require("../../../prisma"));
+const devLog_1 = require("../../../utils/devLog");
 async function sendEmail(user, code) {
     const transporter = nodemailer_1.default.createTransport({
         host: process.env.EMAIL_HOST,

@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EditSelfMonitoringBlocksController = void 0;
-const SelfMonitoringService_1 = require("../../../services/admin/SelfMonitoringService");
-const self_monitoring_1 = require("../../../definitions/admin/self-monitoring");
-const parseZodError_1 = require("../../../utils/parseZodError");
 const zod_1 = require("zod");
+const self_monitoring_1 = require("../../../definitions/admin/self-monitoring");
+const SelfMonitoringService_1 = require("../../../services/admin/SelfMonitoringService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParamSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
 });

@@ -1,6 +1,6 @@
 import { CreateUserRequest } from "../../definitions/user";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class CreateUserService {
   async execute(data: CreateUserRequest) {

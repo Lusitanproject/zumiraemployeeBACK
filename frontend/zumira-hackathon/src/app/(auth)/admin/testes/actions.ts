@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Assessment, GetAssessmentsError, GetAssessmentsSuccess } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { Assessment, GetAssessmentsError, GetAssessmentsSuccess } from "./definitions";
 
 export async function getAssessments(): Promise<Assessment[]> {
   const cookie = await cookies();

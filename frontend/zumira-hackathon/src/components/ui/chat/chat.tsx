@@ -1,11 +1,13 @@
 "use client";
 
-import { MessageInput } from "@/components/ui/chat/components/message-input";
-import { Messages } from "@/components/ui/chat/components/messages";
 import { ReactNode, useEffect, useState } from "react";
 import { flushSync } from "react-dom";
-import { ChatMessage } from "./definitions";
+
+import { MessageInput } from "@/components/ui/chat/components/message-input";
+import { Messages } from "@/components/ui/chat/components/messages";
+
 import { messageChatbot } from "./actions";
+import { ChatMessage } from "./definitions";
 
 interface AssistantChatProps {
   chatbotId: string;
@@ -65,7 +67,7 @@ export function Chat({ children, username, chatbotId, context }: AssistantChatPr
 
   return (
     <div className="relative flex flex-col size-full p-4 pt-0">
-      <Messages messages={messages} loadingResponse={loading} />
+      <Messages loadingResponse={loading} messages={messages} />
 
       <div
         className={`absolute size-full duration-200 pointer-events-none left-0 top-0 ${

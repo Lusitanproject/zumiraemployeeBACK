@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { assertPermissions } from "../../../utils/assertPermissions";
-import { parseZodError } from "../../../utils/parseZodError";
+import { z } from "zod";
 
+import { UpdateUserSchema } from "../../../definitions/admin/users";
+import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
 import { RoleAdminService } from "../../../services/admin/RoleAdminService";
 import { UserAdminService } from "../../../services/admin/UserAdminService";
-import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
-import { UpdateUserSchema } from "../../../definitions/admin/users";
-import { z } from "zod";
+import { assertPermissions } from "../../../utils/assertPermissions";
+import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParams = z.object({
   id: z.string().uuid(),

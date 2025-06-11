@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { NotificationAdminService } from "../../../services/admin/NotificationAdminService";
 
 class FindAllNotificationsController {

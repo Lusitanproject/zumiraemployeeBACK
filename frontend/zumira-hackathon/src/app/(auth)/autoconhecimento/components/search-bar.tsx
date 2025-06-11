@@ -1,11 +1,12 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useDebouncedCallback } from "use-debounce";
 import { startHolyLoader } from "holy-loader";
+import { Search } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
+
+import { Input } from "@/components/ui/input";
 
 export function SearchBar() {
   const searchParams = useSearchParams();
@@ -41,11 +42,11 @@ export function SearchBar() {
     <div className="pt-4 mb-8">
       <div className="w-full relative">
         <Input
+          hasIcon
           id="search"
           name="search"
-          value={search ?? ""}
-          hasIcon
           placeholder="Busque por testes"
+          value={search ?? ""}
           onChange={handleSearch}
         />
         <div className="absolute pointer-events-none top-3 left-3">

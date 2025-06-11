@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindQuestionByAssessmentController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../../utils/parseZodError");
 const AssessmentQuestionAdminService_1 = require("../../../services/admin/AssessmentQuestionAdminService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParam = zod_1.z.object({
     assessmentId: zod_1.z.string().cuid(),
 });

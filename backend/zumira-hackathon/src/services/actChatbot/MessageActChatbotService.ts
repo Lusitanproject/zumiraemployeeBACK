@@ -1,7 +1,7 @@
 import { MessageActChatbotRequest } from "../../definitions/actChatbot";
+import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { generateOpenAiResponse, GenerateOpenAiResponseRequest } from "../../utils/generateOpenAiResponse";
-import { PublicError } from "../../error";
 
 class MessageActChatbotService {
   async execute({ content, actConversationId, userId }: MessageActChatbotRequest) {

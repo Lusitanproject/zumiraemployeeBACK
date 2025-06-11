@@ -1,8 +1,10 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
-import { cookies } from "next/headers";
+
 import { GetResults } from "./definitions";
 
 export async function getResult(assessmentId: string): Promise<GetResults> {

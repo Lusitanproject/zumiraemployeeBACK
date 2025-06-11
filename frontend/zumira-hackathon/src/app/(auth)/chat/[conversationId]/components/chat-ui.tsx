@@ -1,11 +1,13 @@
 "use client";
 
-import { MessageInput } from "@/components/ui/chat/components/message-input";
-import { ActConversation, Message } from "../definitions";
 import { useState } from "react";
-import { Messages } from "./messages";
-import { generateResponse } from "../actions";
 import { flushSync } from "react-dom";
+
+import { MessageInput } from "@/components/ui/chat/components/message-input";
+
+import { generateResponse } from "../actions";
+import { ActConversation, Message } from "../definitions";
+import { Messages } from "./messages";
 
 interface ChatUiProps {
   actConversation: ActConversation;
@@ -37,7 +39,7 @@ export function ChatUi({ actConversation, oldMessages }: ChatUiProps) {
     <section className="relative flex flex-col size-full p-4 pt-0">
       <h1 className="text-gray-300 text-lg font-semibold mb-2">{actConversation.actChatbot.name}</h1>
       {showRule && <hr className="text-gray-200 bottom-0 w-full" />}
-      <Messages messages={messages} loadingResponse={loading} onScroll={setShowRule} />
+      <Messages loadingResponse={loading} messages={messages} onScroll={setShowRule} />
       <MessageInput placeholder="Pergunte alguma coisa" onSend={sendMessage} />
     </section>
   );

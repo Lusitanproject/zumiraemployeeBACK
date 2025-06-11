@@ -1,5 +1,7 @@
 import { z } from "zod";
+
 import { NotificationTypeSchema, UserSchema } from "@/schemas";
+
 import { Notification } from "../definitions";
 
 export type User = z.infer<typeof UserSchema>;

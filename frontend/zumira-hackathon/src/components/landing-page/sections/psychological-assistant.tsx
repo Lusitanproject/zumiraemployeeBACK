@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 import { borel } from "@/app/fonts";
 
 import image from "../images/zumira-picture4.png";
@@ -13,7 +14,7 @@ export function PsychologicalAssistant() {
           <p className="text-left text-lg leading-normal mb-4 text-slate-700 font-medium">Nascida de uma pesquisa de mestrado aprofundada sobre desenvolvimento pessoal e identidade vocacional, a Zumira fornece suporte acessível e empático para aqueles que enfrentam desafios emocionais e profissionais. Utilizando a narrativa autobiográfica como base, nossa IA é projetada para ajudar você a construir uma visão positiva e coerente de si mesmo, especialmente em tempos de incerteza.</p>
         </div>
         <div className="overflow-hidden order-2 sm:order-1 sm:w-1/3">
-          <Image src={image} alt=""  />
+          <Image alt="" src={image}  />
         </div>
       </div>
     </section>

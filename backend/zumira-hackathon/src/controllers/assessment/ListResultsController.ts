@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { ListResultsService } from "../../services/assessment/ListResultsService";
 
 class ListResultsController {

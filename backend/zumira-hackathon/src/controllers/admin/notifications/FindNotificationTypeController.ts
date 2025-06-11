@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { parseZodError } from "../../../utils/parseZodError";
 import { z } from "zod";
+
 import { NotificationTypeAdminService } from "../../../services/admin/NotificationTypeAdminService";
+import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParam = z.object({
   id: z.string().cuid(),

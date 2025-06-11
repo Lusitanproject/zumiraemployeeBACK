@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Notification, GetNotifications, GetNotificationTypes } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { GetNotifications, GetNotificationTypes, Notification } from "./definitions";
 
 export async function getNotifications(): Promise<Notification[]> {
   const cookie = await cookies();

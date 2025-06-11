@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetActConversationController = void 0;
 const actChatbot_1 = require("../../definitions/actChatbot");
-const parseZodError_1 = require("../../utils/parseZodError");
 const GetActConversationService_1 = require("../../services/actChatbot/GetActConversationService");
+const parseZodError_1 = require("../../utils/parseZodError");
 class GetActConversationController {
     async handle(req, res) {
         const { success, data, error } = actChatbot_1.GetActConversationSchema.safeParse(req.query);

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+import { z } from "zod";
+
 import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
-import { z } from "zod";
 
 const RequestParams = z.object({
   id: z.string().cuid(),

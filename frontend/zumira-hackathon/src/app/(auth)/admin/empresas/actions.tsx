@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Company } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { Company } from "./definitions";
 
 type GetCompanies = {
   status: "SUCCESS";

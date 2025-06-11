@@ -1,7 +1,8 @@
 import equal from "fast-deep-equal";
-import prismaClient from "../../prisma";
+
 import { UpdateRatingsRequest } from "../../definitions/admin/assessment";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class AssessmentResultRatingAdminService {
   async findByAssessment(assessmentId: string) {

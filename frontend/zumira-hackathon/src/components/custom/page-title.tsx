@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+
 import { getPageName } from "@/utils/pages";
 
 export function PageTitle() {

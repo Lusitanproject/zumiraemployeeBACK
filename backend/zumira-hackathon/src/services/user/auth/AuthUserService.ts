@@ -1,10 +1,11 @@
-import prismaClient from "../../../prisma";
 import { sign } from "jsonwebtoken";
+
 import { PublicError } from "../../../error";
+import prismaClient from "../../../prisma";
 
 interface AuthRequest {
-  email: string;
   code: string;
+  email: string;
 }
 
 class AuthUserService {

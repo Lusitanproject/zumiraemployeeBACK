@@ -1,10 +1,12 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
-import { cookies } from "next/headers";
-import { GetAssessmentRatings, UpdateAssessmentRatings } from "./definitions";
+
 import { ManageRatingState } from "./context/types";
+import { GetAssessmentRatings, UpdateAssessmentRatings } from "./definitions";
 
 export async function getAssessmentRatings(assessmentId: string) {
   const cookie = await cookies();

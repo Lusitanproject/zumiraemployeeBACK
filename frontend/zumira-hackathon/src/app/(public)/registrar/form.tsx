@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import { ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { register } from "./actions";
-
+import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/custom/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { register } from "./actions";
 import { FormState, Nationality, RegisterFormState } from "./definitions";
-import { toast } from "sonner";
 
 interface RegisterFormProps {
   nationalities: Nationality[];
@@ -54,10 +54,10 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
       <div>
         <Label htmlFor="name"> Nome completo</Label>
         <Input
-          name="name"
-          id="name"
-          placeholder="Digite seu nome completo"
           hasError={!!state?.errors?.name}
+          id="name"
+          name="name"
+          placeholder="Digite seu nome completo"
           value={formData.name}
           onChange={handleChange}
         />
@@ -66,10 +66,10 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
       <div>
         <Label htmlFor="email">E-mail</Label>
         <Input
-          name="email"
-          id="email"
-          placeholder="Digite seu email"
           hasError={!!state?.errors?.email}
+          id="email"
+          name="email"
+          placeholder="Digite seu email"
           value={formData.email}
           onChange={handleChange}
         />
@@ -78,12 +78,12 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
       <div>
         <Label htmlFor="birthdate">Data de Nascimento</Label>
         <Input
-          name="birthdate"
-          id="birthdate"
-          type="date"
           hasError={!!state?.errors?.birthdate}
-          onChange={handleChange}
+          id="birthdate"
+          name="birthdate"
+          type="date"
           value={String(formData.birthdate)}
+          onChange={handleChange}
         />
         {state?.errors?.birthdate && <span className="mt-3 mb-8 text-sm text-red-400">{state.errors.birthdate}</span>}
       </div>
@@ -95,7 +95,7 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
           onValueChange={(value) => setFormData((prev) => ({ ...prev, nationalityId: value }))}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Selecione" className="text-muted-foreground" />
+            <SelectValue className="text-muted-foreground" placeholder="Selecione" />
           </SelectTrigger>
           <SelectContent>
             {nationalities.map((nationality) => (
@@ -121,7 +121,7 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
           }}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Selecione" className="text-muted-foreground" />
+            <SelectValue className="text-muted-foreground" placeholder="Selecione" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="MALE">Masculino</SelectItem>
@@ -134,17 +134,17 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
       <div>
         <Label htmlFor="occupation">Profissão (Opcional)</Label>
         <Input
-          name="occupation"
-          id="occupation"
-          placeholder="Digite sua profissão"
           hasError={!!state?.errors?.occupation}
+          id="occupation"
+          name="occupation"
+          placeholder="Digite sua profissão"
           value={formData.occupation}
           onChange={handleChange}
         />
         {state?.errors?.occupation && <span className="mt-3 mb-8 text-sm text-red-400">{state.errors.occupation}</span>}
       </div>
       {state?.errors?.response && <span className="text-sm text-red-400">{state.errors.response}</span>}
-      <Button variant="primary" size="xxl" className="w-full mt-8" loading={loading}>
+      <Button className="w-full mt-8" loading={loading} size="xxl" variant="primary">
         <span>Criar conta</span>
         <ChevronRight className="size-6" />
       </Button>

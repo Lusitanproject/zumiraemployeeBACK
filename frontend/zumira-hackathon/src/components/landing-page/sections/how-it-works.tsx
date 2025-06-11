@@ -13,7 +13,7 @@ export function HowItWorks() {
           <p className="sm:max-w-[600px] text-slate-600">Você recebe acesso a um Dashboard Corporativo exclusivo, que permite acompanhar de forma anonimizada e ética, os principais indicadores de riscos psicossociais e saúde emocional de seus colaboradores, entre muitas outras funcionalidades estratégicas para a gestão de saúde mental e bem estar da sua organização.</p>
         </div>
         <div className="w-full md:w-1/2">
-          <Image src={image} alt="" />
+          <Image alt="" src={image} />
         </div>
       </div>
     </section>

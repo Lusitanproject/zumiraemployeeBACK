@@ -1,13 +1,14 @@
-import Image from "next/image";
 import { Mail } from "lucide-react";
+import Image from "next/image";
+
 import logo from "../../../../public/logo--green.svg";
-import { VerifyCodeForm } from "./form";
 import { ResendButton } from "./components/resend-button";
+import { VerifyCodeForm } from "./form";
 
 export default function Verificar() {
   return (
     <div className="w-full md:w-96 mx-auto flex flex-col items-center">
-      <Image src={logo} width={127} height={40} alt="Logo Zumira" className="mb-12 md:mb-14" />
+      <Image alt="Logo Zumira" className="mb-12 md:mb-14" height={40} src={logo} width={127} />
       <div className="mb-8 text-center">
         <div className="w-28 h-28 rounded-full border-4 border-primary-25 mx-auto mb-8 flex items-center justify-center">
           <Mail className="size-14 text-primary-600" />

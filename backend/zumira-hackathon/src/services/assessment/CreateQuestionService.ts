@@ -1,16 +1,16 @@
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 interface QuestionRequest {
-  description: string;
-  index: number;
   assessmentId: string;
-  psychologicalDimensionId: string;
   choices: {
     label: string;
     value: number;
     index: number;
   }[];
+  description: string;
+  index: number;
+  psychologicalDimensionId: string;
 }
 
 class CreateQuestionService {
