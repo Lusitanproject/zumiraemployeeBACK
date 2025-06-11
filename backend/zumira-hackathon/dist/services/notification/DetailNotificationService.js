@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DetailNotificationService = void 0;
-const prisma_1 = __importDefault(require("../../prisma"));
 const error_1 = require("../../error");
+const prisma_1 = __importDefault(require("../../prisma"));
 class DetailNotificationService {
     async execute({ notificationId }) {
         const notification = await prisma_1.default.notification.findFirst({

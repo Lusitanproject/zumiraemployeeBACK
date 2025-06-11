@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { parseZodError } from "../../utils/parseZodError";
-import { CreateAssessmentService } from "../../services/assessment/CreateAssessmentService";
+
 import { CreateAssessmentSchema } from "../../definitions/admin/assessment";
+import { CreateAssessmentService } from "../../services/assessment/CreateAssessmentService";
+import { parseZodError } from "../../utils/parseZodError";
 
 class CreateAssessmentController {
   async handle(req: Request, res: Response) {

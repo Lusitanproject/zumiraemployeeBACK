@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { parseZodError } from "../../../utils/parseZodError";
+
 import { DimensionAdminService } from "../../../services/admin/DimensionAdminService";
+import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParam = z.object({
   psychologicalDimensionId: z.string().uuid(),

@@ -1,9 +1,9 @@
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
+
 import { Spinner } from "../custom/spinner";
 
 interface ButtonProps {
@@ -55,7 +55,7 @@ function Button({
   const Comp = asChild ? Slot : "button";
 
   return (
-    <Comp data-slot="button" className={cn(buttonVariants({ variant, size, className }), "cursor-pointer")} {...props}>
+    <Comp className={cn(buttonVariants({ variant, size, className }), "cursor-pointer")} data-slot="button" {...props}>
       <span className="relative">
         <span className={cn("flex flex-row items-center justify-center", loading ? "opacity-0" : "opacity-100")}>
           {props.children}

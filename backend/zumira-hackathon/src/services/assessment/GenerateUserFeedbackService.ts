@@ -1,13 +1,14 @@
 import { AssessmentResultRating, Prisma } from "@prisma/client";
-import prismaClient from "../../prisma";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
-import { devLog } from "../../utils/devLog";
+
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
+import { devLog } from "../../utils/devLog";
 
 interface GenerateUserFeedbackRequest {
-  userId: string;
   assessmentId: string;
+  userId: string;
 }
 
 const assessmentResultInclude = Prisma.validator<Prisma.AssessmentResultDefaultArgs>()({

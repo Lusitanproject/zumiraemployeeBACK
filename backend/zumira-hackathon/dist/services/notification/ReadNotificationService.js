@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReadNotificationService = void 0;
-const prisma_1 = __importDefault(require("../../prisma"));
 const error_1 = require("../../error");
+const prisma_1 = __importDefault(require("../../prisma"));
 class ReadNotificationService {
     async execute({ userId, notificationId }) {
         try {

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { parseZodError } from "../../../utils/parseZodError";
+
 import { NotificationIdSchema } from "../../../definitions/notification";
 import { NotificationAdminService } from "../../../services/admin/NotificationAdminService";
+import { parseZodError } from "../../../utils/parseZodError";
 
 class DeleteNotificationController {
   async handle(req: Request, res: Response) {

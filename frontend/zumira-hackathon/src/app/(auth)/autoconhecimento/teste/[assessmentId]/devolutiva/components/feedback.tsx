@@ -1,11 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ChevronRight, X } from "lucide-react";
+import { redirect } from "next/navigation";
 import React, { useState } from "react";
 import Markdown from "react-markdown";
+
+import { Button } from "@/components/ui/button";
+
 import { Result } from "../definitions";
-import { redirect } from "next/navigation";
 
 interface FeedbackProps {
   data: Result;
@@ -51,7 +53,7 @@ export function Feedback({ data }: FeedbackProps) {
             showAll ? "translate-y-full pointer-events-none opacity-0" : "translate-y-0 pointer-events-auto opacity-100"
           }`}
         >
-          <Button variant="primary" size="xxl" className={`w-full mt-8`} onClick={() => setShowAll(true)}>
+          <Button className={`w-full mt-8`} size="xxl" variant="primary" onClick={() => setShowAll(true)}>
             <span>Quero a devolutiva completa</span>
             <ChevronRight className="size-6" />
           </Button>

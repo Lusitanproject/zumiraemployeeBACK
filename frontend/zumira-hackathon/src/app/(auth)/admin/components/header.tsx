@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { CirclePlus } from "lucide-react";
+import Link from "next/link";
 
 interface HeaderProps {
   title: string;
@@ -15,8 +15,8 @@ export function Header({ title, create }: HeaderProps) {
       <h3 className="font-bold text-2xl text-gray-700">{title}</h3>
       {create && (
         <Link
-          href={create.href}
           className="bg-white hover:bg-gray-50 border border-transparent hover:border-gray-100 flex items-center gap-x-3 px-3 py-2 rounded-xl"
+          href={create.href}
         >
           <CirclePlus className="text-gray-300 size-6" />
           <span className="text-sm text-gray-500 font-medium">{create.text}</span>

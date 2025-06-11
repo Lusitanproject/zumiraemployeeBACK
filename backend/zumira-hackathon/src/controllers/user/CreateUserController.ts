@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { parseZodError } from "../../utils/parseZodError";
-import { CreateUserService } from "../../services/user/CreateUserService";
+
 import { CreateUserSchema } from "../../definitions/user";
+import { CreateUserService } from "../../services/user/CreateUserService";
+import { parseZodError } from "../../utils/parseZodError";
 
 class CreateUserController {
   async handle(req: Request, res: Response) {

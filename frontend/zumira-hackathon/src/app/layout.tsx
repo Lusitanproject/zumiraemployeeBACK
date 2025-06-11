@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+
 import "./globals.css";
-import { rawline } from "./fonts";
+
 import { Toaster } from "sonner";
+
+import { rawline } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Zumira",

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { ListPsychologicalDimensionsService } from "../../services/psychologicalDimension/ListPsychologicalDimensionsService";
 
 class ListPsychologicalDimensionsController {

@@ -1,14 +1,16 @@
 "use client";
 
-import { Alert, Notification, NotificationFull } from "../definitions";
-import { cn } from "@/lib/utils";
-import { NotificationCard } from "./notification-card";
 import { useEffect, useState } from "react";
+
+import { cn } from "@/lib/utils";
+
+import { Alert, Notification, NotificationFull } from "../definitions";
 import { AlertCard } from "./alert-card";
+import { NotificationCard } from "./notification-card";
 
 interface NotificationsListProps {
-  notifications: Notification[];
   alerts: Alert[];
+  notifications: Notification[];
   current?: NotificationFull;
 }
 
@@ -45,12 +47,12 @@ export function NotificationsAccordion({ notifications, alerts, current }: Notif
 
           return (
             <AlertCard
-              id={alerts.id}
               key={alerts.id}
               alert={alerts}
+              id={alerts.id}
               open={alerts.id === openItem}
-              onOpen={(id) => setOpenItem(id)}
               onClose={(id) => setOpenItem((prev) => (prev === id ? null : prev))}
+              onOpen={(id) => setOpenItem(id)}
             />
           );
         })}
@@ -69,12 +71,12 @@ export function NotificationsAccordion({ notifications, alerts, current }: Notif
 
           return (
             <NotificationCard
-              id={notification.id}
               key={notification.id}
+              id={notification.id}
               notification={notification}
               open={notification.id === openItem}
-              onOpen={(id) => setOpenItem(id)}
               onClose={(id) => setOpenItem((prev) => (prev === id ? null : prev))}
+              onOpen={(id) => setOpenItem(id)}
             />
           );
         })}

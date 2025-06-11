@@ -1,6 +1,6 @@
 import { UpdateAssessment } from "../../definitions/admin/assessment";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 class AssessmentAdminService {
   async find(assessmentId: string) {

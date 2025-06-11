@@ -1,9 +1,11 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
 import { GetCompanyFeedbacks } from "./definitions";
-import { cookies } from "next/headers";
 
 export async function getCompanyFeedbacks() {
   const cookie = await cookies();

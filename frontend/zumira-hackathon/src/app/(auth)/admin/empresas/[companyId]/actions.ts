@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Company, GetCompanyResponse } from "./definitions";
+
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+
+import { Company, GetCompanyResponse } from "./definitions";
 
 export async function getCompanyData(companyId: string | null): Promise<Company | null> {
   if (companyId === null) {

@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { CreatePsychologicalDimensionService } from "../../services/psychologicalDimension/CreatePsychologicalDimensionService";
 import { z } from "zod";
-import { parseZodError } from "../../utils/parseZodError";
+
+import { CreatePsychologicalDimensionService } from "../../services/psychologicalDimension/CreatePsychologicalDimensionService";
 import { assertPermissions } from "../../utils/assertPermissions";
+import { parseZodError } from "../../utils/parseZodError";
 
 const CreateDimensionSchema = z.object({
   acronym: z.string(),

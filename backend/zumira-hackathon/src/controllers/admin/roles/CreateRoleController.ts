@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
+import { RoleAdminService } from "../../../services/admin/RoleAdminService";
 import { assertPermissions } from "../../../utils/assertPermissions";
 import { parseZodError } from "../../../utils/parseZodError";
-
-import { RoleAdminService } from "../../../services/admin/RoleAdminService";
 
 export const CreateRoleSchema = z.object({
   slug: z.string(),

@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserController = void 0;
-const assertPermissions_1 = require("../../../utils/assertPermissions");
-const parseZodError_1 = require("../../../utils/parseZodError");
+const users_1 = require("../../../definitions/admin/users");
+const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
 const RoleAdminService_1 = require("../../../services/admin/RoleAdminService");
 const UserAdminService_1 = require("../../../services/admin/UserAdminService");
-const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
-const users_1 = require("../../../definitions/admin/users");
+const assertPermissions_1 = require("../../../utils/assertPermissions");
+const parseZodError_1 = require("../../../utils/parseZodError");
 class CreateUserController {
     async handle(req, res) {
         (0, assertPermissions_1.assertPermissions)(req.user, "manage-users");

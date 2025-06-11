@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateDimensionController = void 0;
-const parseZodError_1 = require("../../../utils/parseZodError");
 const dimension_1 = require("../../../definitions/admin/dimension");
-const SelfMonitoringService_1 = require("../../../services/admin/SelfMonitoringService");
 const DimensionAdminService_1 = require("../../../services/admin/DimensionAdminService");
+const SelfMonitoringService_1 = require("../../../services/admin/SelfMonitoringService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 class CreateDimensionController {
     async handle(req, res) {
         const { success, data, error } = dimension_1.CreateDimensionSchema.safeParse(req.body);

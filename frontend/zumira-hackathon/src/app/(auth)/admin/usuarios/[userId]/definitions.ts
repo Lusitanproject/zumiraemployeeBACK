@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { CompanySchema, RoleSchema, UserSchema } from "@/schemas";
 
 export type User = z.infer<typeof UserSchema>;

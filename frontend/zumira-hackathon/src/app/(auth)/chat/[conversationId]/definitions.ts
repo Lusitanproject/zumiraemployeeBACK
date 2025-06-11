@@ -1,20 +1,20 @@
 export interface Message {
   content: string;
-  role: "user" | "assistant";
   createdAt: Date;
+  role: "user" | "assistant";
   updatedAt: Date;
 }
 
 export interface ActConversation {
-  id: string;
-  title: string;
   actChatbot: {
     id: string;
     description: string;
     icon: string;
     name: string;
   };
+  id: string;
   messages: Message[];
+  title: string;
 }
 
 export enum Role {

@@ -1,10 +1,11 @@
 import { ReactNode } from "react";
+
 import { Tabs } from "../../components/tabs";
 import { getAssessmentData } from "./actions";
 
 interface LayoutProps {
-  params: Promise<{ assessmentId: string }>;
   children: ReactNode;
+  params: Promise<{ assessmentId: string }>;
 }
 
 export default async function AssessmentLayout({ params, children }: LayoutProps) {

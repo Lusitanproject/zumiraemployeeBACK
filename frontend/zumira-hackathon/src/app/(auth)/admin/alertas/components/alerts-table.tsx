@@ -1,10 +1,11 @@
 import { Spinner } from "@/components/custom/spinner";
+
 import { Result } from "../definitions";
 import { MeatballsMenu } from "./meatballs-menu";
 
 interface AlertsTableProps {
-  results?: Result[];
   loading?: boolean;
+  results?: Result[];
 }
 
 export function AlertsTable({ results, loading }: AlertsTableProps) {
@@ -15,7 +16,7 @@ export function AlertsTable({ results, loading }: AlertsTableProps) {
   if (loading || results === undefined) {
     return (
       <span className="flex w-full text-center justify-center text-gray-500 bg-gray-100 rounded-xl p-1.5 border-1 border-gray-300">
-        <Spinner size="xl" color="var(--color-gray-300)" />
+        <Spinner color="var(--color-gray-300)" size="xl" />
       </span>
     );
   }
@@ -69,7 +70,7 @@ export function AlertsTable({ results, loading }: AlertsTableProps) {
                   <div className="size-2 flex-none" />
                 </td>
                 <td className="pr-2">
-                  <MeatballsMenu username={result.user.name} email={result.user.email} />
+                  <MeatballsMenu email={result.user.email} username={result.user.name} />
                 </td>
               </tr>
             );

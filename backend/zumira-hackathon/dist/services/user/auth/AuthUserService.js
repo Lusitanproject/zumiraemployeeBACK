@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthUserService = void 0;
-const prisma_1 = __importDefault(require("../../../prisma"));
 const jsonwebtoken_1 = require("jsonwebtoken");
 const error_1 = require("../../../error");
+const prisma_1 = __importDefault(require("../../../prisma"));
 class AuthUserService {
     async execute({ email, code }) {
         const user = await prisma_1.default.user.findUnique({

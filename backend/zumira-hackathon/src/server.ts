@@ -1,10 +1,10 @@
-import express, { NextFunction, Request, Response } from "express";
-import "express-async-errors";
 import cors from "cors";
+import "express-async-errors";
+import express, { NextFunction, Request, Response } from "express";
 import kleur from "kleur";
 
-import { router } from "./routes";
 import { PublicError } from "./error";
+import { router } from "./routes";
 
 const app = express();
 app.use(express.json());
@@ -12,7 +12,7 @@ app.use(cors());
 
 app.use(router);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   console.error(`${kleur.red(req.url)}: ${err.message}`);
 
   if (err instanceof PublicError) {

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendCodeController = void 0;
-const SendCodeService_1 = require("../../../services/user/auth/SendCodeService");
 const zod_1 = require("zod");
+const SendCodeService_1 = require("../../../services/user/auth/SendCodeService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const CreateCodeSchema = zod_1.z.object({
     email: zod_1.z.string().email(),

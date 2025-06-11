@@ -12,7 +12,7 @@ export function DimensionField({ value, onChange, options }: DimensionProps) {
   return (
     <div className="pb-3">
       <Label htmlFor="psychologicalDimensionId">Dimensão psicológica</Label>
-      <Select name="psychologicalDimensionId" defaultValue={value} onValueChange={onChange}>
+      <Select defaultValue={value} name="psychologicalDimensionId" onValueChange={onChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue />
         </SelectTrigger>

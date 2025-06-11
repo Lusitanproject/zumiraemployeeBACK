@@ -1,7 +1,9 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Assessment, Company, Filters as FiltersType } from "../definitions";
 import { useEffect, useRef } from "react";
+
 import { Label } from "@/components/custom/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { Assessment, Company, Filters as FiltersType } from "../definitions";
 
 interface FiltersProps {
   assessments: Assessment[];

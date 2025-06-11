@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+
+import { getFilteredResults } from "../actions";
 import { Assessment, Company, Filters as FiltersType, Result } from "../definitions";
 import { AlertsTable } from "./alerts-table";
 import { Filters } from "./filters";
-import { getFilteredResults } from "../actions";
 
 interface AlertsUIProps {
   assessments: Assessment[];
@@ -28,12 +29,12 @@ export function AlertsUI({ assessments, companies }: AlertsUIProps) {
         <Filters
           assessments={assessments}
           companies={companies}
-          onChangeFilters={fetchResults}
           totalResults={results?.length}
+          onChangeFilters={fetchResults}
         />
       </div>
       <div className="flex flex-col gap-2">
-        <AlertsTable results={results} loading={loading} />
+        <AlertsTable loading={loading} results={results} />
       </div>
     </div>
   );

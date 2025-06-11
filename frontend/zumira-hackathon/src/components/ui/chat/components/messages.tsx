@@ -1,8 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Fragment, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
+
+import { cn } from "@/lib/utils";
+
 import { ChatMessage } from "../definitions";
 
 interface MessagesProps {

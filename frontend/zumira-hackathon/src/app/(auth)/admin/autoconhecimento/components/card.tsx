@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { CustomIcon, IconName } from "@/components/custom/icon";
 
 type CardProps = {
@@ -13,7 +14,7 @@ export function Card({ id, title, summary, icon }: CardProps) {
     <Link className="p-[1.375rem] rounded-xl bg-gray-100" href={`/admin/autoconhecimento/${id}`}>
       <div className="flex h-[50px] justify-start mb-3">
         <div className="w-[50px] h-[50px] rounded-xl bg-primary-50 flex items-center justify-center">
-          {!!icon && <CustomIcon name={icon as IconName} className="size-6" />}
+          {!!icon && <CustomIcon className="size-6" name={icon as IconName} />}
         </div>
       </div>
       <div className="flex flex-col">

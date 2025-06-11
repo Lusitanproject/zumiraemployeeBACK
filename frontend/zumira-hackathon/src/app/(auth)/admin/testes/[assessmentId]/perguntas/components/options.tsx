@@ -1,6 +1,7 @@
+import { ChangeEventHandler } from "react";
+
 import { Label } from "@/components/custom/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChangeEventHandler } from "react";
 
 type DescriptionProps = {
   value: string;

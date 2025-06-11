@@ -1,8 +1,10 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { catchError } from "@/utils/error";
+
 import { decrypt } from "@/app/_lib/session";
+import { catchError } from "@/utils/error";
+
 import { GenerateResponseResponse, GetActConversationResponse } from "./definitions";
 
 export async function getActConversation(conversationId: string) {

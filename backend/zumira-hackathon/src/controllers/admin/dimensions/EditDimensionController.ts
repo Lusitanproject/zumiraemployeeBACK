@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+
 import { EditDimensionSchema } from "../../../definitions/admin/dimension";
-import { parseZodError } from "../../../utils/parseZodError";
 import { DimensionAdminService } from "../../../services/admin/DimensionAdminService";
+import { parseZodError } from "../../../utils/parseZodError";
 
 class EditDimensionController {
   async handle(req: Request, res: Response) {

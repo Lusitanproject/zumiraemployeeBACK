@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindCompanyController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../../utils/parseZodError");
 const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParam = zod_1.z.object({
     companyId: zod_1.z.string().cuid(),
 });

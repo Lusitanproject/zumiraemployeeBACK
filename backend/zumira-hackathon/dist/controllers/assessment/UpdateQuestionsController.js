@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateQuestionsController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../utils/parseZodError");
 const UpdateQuestionsService_1 = require("../../services/assessment/UpdateQuestionsService");
+const parseZodError_1 = require("../../utils/parseZodError");
 const RequestParamSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
 });

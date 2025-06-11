@@ -1,6 +1,12 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { useCallback, useState } from "react";
+
+import { Label } from "@/components/custom/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 import {
   FormErrors,
   INITIAL_VALUE,
@@ -9,10 +15,6 @@ import {
   NotificationType,
 } from "./definitions";
 import { saveNotificationType } from "./form-actions";
-import { redirect } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/custom/label";
-import { Button } from "@/components/ui/button";
 
 type FormProps = {
   data: NotificationType | null;
@@ -78,10 +80,10 @@ export function NotificationTypeForm({ data }: FormProps) {
             <Label htmlFor="color">Prioridade</Label>
             <Input
               id="priority"
-              name="priority"
-              type="number"
               inputMode="numeric"
+              name="priority"
               pattern="\d*"
+              type="number"
               value={formData.priority}
               onChange={(e) => {
                 const raw = e.target.value;
@@ -114,7 +116,7 @@ export function NotificationTypeForm({ data }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar
         </Button>
       </div>

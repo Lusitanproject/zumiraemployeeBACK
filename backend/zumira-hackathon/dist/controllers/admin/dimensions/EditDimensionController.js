@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EditDimensionController = void 0;
 const dimension_1 = require("../../../definitions/admin/dimension");
-const parseZodError_1 = require("../../../utils/parseZodError");
 const DimensionAdminService_1 = require("../../../services/admin/DimensionAdminService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 class EditDimensionController {
     async handle(req, res) {
         const { success, data, error } = dimension_1.EditDimensionSchema.safeParse(req.body);

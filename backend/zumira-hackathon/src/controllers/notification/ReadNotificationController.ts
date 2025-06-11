@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+
 import { NotificationIdSchema } from "../../definitions/notification";
-import { parseZodError } from "../../utils/parseZodError";
 import { ReadNotificationService } from "../../services/notification/ReadNotificationService";
+import { parseZodError } from "../../utils/parseZodError";
 
 class ReadNotificationController {
   async handle(req: Request, res: Response) {

@@ -1,33 +1,33 @@
 export interface Result {
-  id: string;
-  feedback: string;
-  assessmentResultRating: AssessmentResultRating;
   assessment: Assessment;
   assessmentQuestionAnswers: AssessmentQuestionAnswer[];
+  assessmentResultRating: AssessmentResultRating;
   createdAt: Date;
+  feedback: string;
+  id: string;
   psychologicalDimensions: PsychologicalDimension[];
 }
 
 interface Assessment {
-  id: string;
-  title: string;
-  summary: string;
   description: string;
+  id: string;
   nationality: Nationality;
   selfMonitoringBlock: SelfMonitoringBlock;
+  summary: string;
+  title: string;
 }
 
 interface Nationality {
+  acronym: string;
   name: string;
-  acronymn: string;
 }
 
 interface SelfMonitoringBlock {
-  id: string;
   icon: string;
-  title: string;
-  summary: string;
+  id: string;
   psychologicalDimensions: PsychologicalDimension[];
+  summary: string;
+  title: string;
 }
 
 interface PsychologicalDimension {
@@ -36,8 +36,8 @@ interface PsychologicalDimension {
 }
 
 interface AssessmentQuestionAnswer {
-  assessmentQuestionChoice: AssessmentQuestionChoice;
   assessmentQuestion: AssessmentQuestion;
+  assessmentQuestionChoice: AssessmentQuestionChoice;
 }
 
 interface AssessmentQuestion {
@@ -47,9 +47,9 @@ interface AssessmentQuestion {
 }
 
 interface AssessmentQuestionChoice {
+  index: number;
   label: string;
   value: number;
-  index: number;
 }
 
 interface AssessmentResultRating {

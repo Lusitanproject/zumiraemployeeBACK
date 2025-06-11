@@ -1,18 +1,20 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+
 import logo from "../../../../public/logo--green.svg";
 
 export default function Termos() {
   return (
     <article className="relative max-w-4xl mx-auto px-4 font-sans text-gray-700">
       <div className="flex w-full justify-center">
-        <Image src={logo} width={127} height={40} alt="Logo Zumira" className="mb-12 md:mb-14" unoptimized />
+        <Image unoptimized alt="Logo Zumira" className="mb-12 md:mb-14" height={40} src={logo} width={127} />
       </div>
 
       <Link
-        href="/entrar"
         className="absolute top-0 -translate-y-full inline-block mb-8 text-primary-600 hover:text-primary-700 transition-colors text-sm font-medium"
+        href="/entrar"
       >
         ← Voltar
       </Link>
@@ -99,7 +101,7 @@ export default function Termos() {
           </ul>
           <p className="mt-4 text-sm leading-6 text-gray-700">
             Esses direitos podem ser exercidos por meio de solicitações para:{" "}
-            <a href="mailto:support@zumira.ai" className="text-primary-600 underline hover:text-primary-700">
+            <a className="text-primary-600 underline hover:text-primary-700" href="mailto:support@zumira.ai">
               support@zumira.ai
             </a>
             .
@@ -240,7 +242,7 @@ export default function Termos() {
         </div>
 
         <Link className="flex w-full justify-center" href={"/entrar"}>
-          <Button variant={"primary"} size={"xl"}>
+          <Button size={"xl"} variant={"primary"}>
             Voltar para o login
           </Button>
         </Link>

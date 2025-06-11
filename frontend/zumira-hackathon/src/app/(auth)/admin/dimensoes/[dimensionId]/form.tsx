@@ -1,6 +1,13 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { useCallback, useState } from "react";
+
+import { Label } from "@/components/custom/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import {
   Dimension,
   FormErrors,
@@ -9,12 +16,7 @@ import {
   ManageDimensionSchema,
   MonitoringBlock,
 } from "./definitions";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/custom/label";
-import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
 import { saveDimension } from "./form-actions";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type FormProps = {
   data: Dimension | null;
@@ -89,8 +91,8 @@ export function DimensionForm({ data, blocks }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="companyId">Bloco de Autoconhecimento</Label>
           <Select
-            name="selfMonitoringBlockId"
             defaultValue={formData.selfMonitoringBlockId}
+            name="selfMonitoringBlockId"
             onValueChange={(value) =>
               setFormData((current) => ({
                 ...current,
@@ -119,7 +121,7 @@ export function DimensionForm({ data, blocks }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar
         </Button>
       </div>

@@ -1,5 +1,5 @@
-import localFont from "next/font/local";
 import { Borel } from "next/font/google";
+import localFont from "next/font/local";
 
 export const borel = Borel({
   weight: "400",

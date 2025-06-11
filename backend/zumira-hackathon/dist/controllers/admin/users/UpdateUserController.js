@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateUserController = void 0;
-const assertPermissions_1 = require("../../../utils/assertPermissions");
-const parseZodError_1 = require("../../../utils/parseZodError");
+const zod_1 = require("zod");
+const users_1 = require("../../../definitions/admin/users");
+const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
 const RoleAdminService_1 = require("../../../services/admin/RoleAdminService");
 const UserAdminService_1 = require("../../../services/admin/UserAdminService");
-const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
-const users_1 = require("../../../definitions/admin/users");
-const zod_1 = require("zod");
+const assertPermissions_1 = require("../../../utils/assertPermissions");
+const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParams = zod_1.z.object({
     id: zod_1.z.string().uuid(),
 });

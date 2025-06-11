@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 type CreateSessionProps = {
   name: string;
+  act: string;
   role: string;
   token: string;
   expiresAt: Date;

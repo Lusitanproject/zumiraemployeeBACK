@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListSelfMonitoringBlockResultsController = void 0;
-const parseZodError_1 = require("../../utils/parseZodError");
 const selfMonitoringBlock_1 = require("../../definitions/selfMonitoringBlock");
 const ListSelfMonitoringBlockResultsService_1 = require("../../services/selfMonitoringBlock/ListSelfMonitoringBlockResultsService");
+const parseZodError_1 = require("../../utils/parseZodError");
 class ListSelfMonitoringBlockResultsController {
     async handle(req, res) {
         const { success, data, error } = selfMonitoringBlock_1.ListSelfMonitoringBlockResultsSchema.safeParse(req.params);

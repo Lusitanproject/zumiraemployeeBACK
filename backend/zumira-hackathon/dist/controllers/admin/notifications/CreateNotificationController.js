@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateNotificationController = void 0;
 const notification_1 = require("../../../definitions/notification");
-const parseZodError_1 = require("../../../utils/parseZodError");
 const NotificationAdminService_1 = require("../../../services/admin/NotificationAdminService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 class CreateNotificationController {
     async handle(req, res) {
         const { success, data, error } = notification_1.CreateNotificationSchema.safeParse(req.body);

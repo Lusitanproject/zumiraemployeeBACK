@@ -1,18 +1,18 @@
 import prismaClient from "../../prisma";
 
 interface Choice {
-  id?: string;
+  index: number;
   label: string;
   value: number;
-  index: number;
+  id?: string;
 }
 
 interface Question {
-  id?: string;
+  choices: Choice[];
   description: string;
   index: number;
   psychologicalDimensionId: string;
-  choices: Choice[];
+  id?: string;
 }
 
 interface UpdateQuestionsRequest {

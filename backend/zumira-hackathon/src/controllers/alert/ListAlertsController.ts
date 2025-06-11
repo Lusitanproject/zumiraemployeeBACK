@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { ListAlertsService } from "../../services/alert/ListAlertsService";
 
 class ListAlertsController {

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindUserController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../../utils/parseZodError");
 const UserAdminService_1 = require("../../../services/admin/UserAdminService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParam = zod_1.z.object({
     userId: zod_1.z.string().uuid(),
 });

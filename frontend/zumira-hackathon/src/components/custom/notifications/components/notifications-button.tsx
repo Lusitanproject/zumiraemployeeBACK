@@ -1,14 +1,16 @@
 "use client";
 
 import { Bell } from "lucide-react";
-import { NotificationsDropdown } from "./notifications-dropdown";
 import { useState } from "react";
+
 import { cn } from "@/lib/utils";
+
 import { Alert, Notification } from "../definitions";
+import { NotificationsDropdown } from "./notifications-dropdown";
 
 interface NotificationsButtonProps {
-  notifications: Notification[];
   alerts: Alert[];
+  notifications: Notification[];
 }
 
 export function NotificationsButton({ notifications, alerts }: NotificationsButtonProps) {
@@ -17,16 +19,16 @@ export function NotificationsButton({ notifications, alerts }: NotificationsButt
   return (
     <div className="relative">
       <button
-        onClick={() => setIsDropdownOpen((prev) => !prev)}
         className={cn(
           "flex justify-center items-center w-11 h-11 cursor-pointer rounded-full bg-white relative",
           isDropdownOpen ? "z-50" : "z-auto"
         )}
+        onClick={() => setIsDropdownOpen((prev) => !prev)}
       >
-        <Bell size={24} className="text-gray-400" />
+        <Bell className="text-gray-400" size={24} />
       </button>
       {isDropdownOpen && (
-        <NotificationsDropdown notifications={notifications} alerts={alerts} onClose={() => setIsDropdownOpen(false)} />
+        <NotificationsDropdown alerts={alerts} notifications={notifications} onClose={() => setIsDropdownOpen(false)} />
       )}
     </div>
   );

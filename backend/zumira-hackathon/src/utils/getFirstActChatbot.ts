@@ -1,4 +1,5 @@
 import { ActChatbot } from "@prisma/client";
+
 import prismaClient from "../prisma";
 
 export async function getFirstActChatbot(): Promise<ActChatbot | undefined> {

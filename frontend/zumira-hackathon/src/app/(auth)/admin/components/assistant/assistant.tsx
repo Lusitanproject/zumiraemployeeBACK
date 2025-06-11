@@ -1,18 +1,20 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { BotMessageSquare, Maximize2, Minimize2, X } from "lucide-react";
-import { CompanyFeedback } from "./definitions";
-import { Chat } from "@/components/ui/chat/chat";
 import Image from "next/image";
-import icon from "../../../../icon.png";
+import { useState } from "react";
+
+import { Chat } from "@/components/ui/chat/chat";
 import { ChatMessage } from "@/components/ui/chat/definitions";
+import { cn } from "@/lib/utils";
+
+import icon from "../../../../icon.png";
+import { CompanyFeedback } from "./definitions";
 
 interface AssistantProps {
+  chatbotId: string;
   companyFeedbacks: CompanyFeedback[];
   username: string;
-  chatbotId: string;
 }
 
 export function Assistant({ companyFeedbacks, username, chatbotId }: AssistantProps) {
@@ -32,11 +34,11 @@ export function Assistant({ companyFeedbacks, username, chatbotId }: AssistantPr
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
       <div
-        onClick={() => setOpen((prev) => !prev)}
         className={cn(
           "absolute flex bottom-0 right-0 md:-translate-x-5 -translate-x-2 size-18 rounded-full pointer-events-auto bg-primary-300 justify-center items-center cursor-pointer shadow-xl duration-300",
           open ? "md:translate-y-1/12 -translate-y-24 opacity-0" : "md:-translate-y-5 -translate-y-32 opacity-100"
         )}
+        onClick={() => setOpen((prev) => !prev)}
       >
         <BotMessageSquare className="size-9 text-white" />
       </div>
@@ -55,8 +57,8 @@ export function Assistant({ companyFeedbacks, username, chatbotId }: AssistantPr
           </button>
           <h1 className="font-bold">Zumira analytics</h1>
           <button
-            onClick={() => setMaximize((prev) => !prev)}
             className="opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto"
+            onClick={() => setMaximize((prev) => !prev)}
           >
             {maximize ? (
               <Minimize2 className="size-6 cursor-pointer" />
@@ -66,11 +68,11 @@ export function Assistant({ companyFeedbacks, username, chatbotId }: AssistantPr
           </button>
         </header>
         <div className="flex flex-col flex-1 min-h-0">
-          <Chat username={username} chatbotId={chatbotId} context={context}>
+          <Chat chatbotId={chatbotId} context={context} username={username}>
             <div className="flex flex-col justify-center items-center size-full gap-3">
               <p className="text-center text-gray-500">Consulte aqui os indicadores da sua empresa</p>
               <div className="absolute size-24">
-                <Image className="opacity-10" alt="icon zumira" src={icon} fill />
+                <Image fill alt="icon zumira" className="opacity-10" src={icon} />
               </div>
             </div>
           </Chat>

@@ -1,9 +1,9 @@
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 
 interface DetailAssessmentRequest {
-  userId: string;
   assessmentId: string;
+  userId: string;
 }
 
 class DetailAssessmentService {
@@ -50,7 +50,7 @@ class DetailAssessmentService {
         },
         nationality: {
           select: {
-            acronymn: true,
+            acronym: true,
             name: true,
           },
         },

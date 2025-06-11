@@ -41,7 +41,7 @@ export type RegisterResponse =
 
 export type Nationality = {
   id: string;
-  acronymn: string;
+  acronym: string;
   name: string;
 };
 

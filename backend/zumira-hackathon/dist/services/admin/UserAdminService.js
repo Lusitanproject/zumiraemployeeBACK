@@ -112,5 +112,8 @@ class UserAdminService {
         });
         return user;
     }
+    async delete(id) {
+        await prisma_1.default.user.delete({ where: { id } });
+    }
 }
 exports.UserAdminService = UserAdminService;

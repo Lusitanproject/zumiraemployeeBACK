@@ -1,4 +1,5 @@
 import { MouseEventHandler, ReactNode } from "react";
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type ButtonProps = {
@@ -14,8 +15,8 @@ export function ButtonIcon({ children, tooltip, onClick, disabled }: ButtonProps
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            disabled={disabled}
             className="w-10 h-10 border border-gray-300 bg-white rounded flex items-center justify-center disabled:bg-gray-25 disabled:border-gray-200 disabled:text-gray-400"
+            disabled={disabled}
             onClick={onClick}
           >
             {children}

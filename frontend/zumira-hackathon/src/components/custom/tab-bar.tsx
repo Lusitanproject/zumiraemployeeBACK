@@ -1,6 +1,4 @@
 "use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   // ChartNoAxesColumnIncreasing,
   House,
@@ -8,6 +6,9 @@ import {
   SquarePen,
   Users,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -27,11 +28,11 @@ export function TabBar() {
         {links.map((item) => (
           <Link
             key={item.href}
-            href={item.href}
             className={cn("w-fit flex items-center h-9 rounded-xl", {
               "bg-primary-300 text-primary-25 gap-x-3 px-3": pathname.indexOf(item.href) === 0,
               "text-gray-500/60": pathname.indexOf(item.href) !== 0,
             })}
+            href={item.href}
           >
             <item.icon size={24} />
             <span

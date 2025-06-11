@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils";
 import React from "react";
+
+import { cn } from "@/lib/utils";
 
 type SpinnerSize = "sm" | "md" | "lg" | "xl" | "xxl" | "icon" | null | undefined;
 

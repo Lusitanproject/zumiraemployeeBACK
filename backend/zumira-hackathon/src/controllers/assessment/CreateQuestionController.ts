@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { parseZodError } from "../../utils/parseZodError";
+
 import { CreateQuestionService } from "../../services/assessment/CreateQuestionService";
 import { assertPermissions } from "../../utils/assertPermissions";
+import { parseZodError } from "../../utils/parseZodError";
 
 const CreateQuestionSchema = z.object({
   description: z.string(),

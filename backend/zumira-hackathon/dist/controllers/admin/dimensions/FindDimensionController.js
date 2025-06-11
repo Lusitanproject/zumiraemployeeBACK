@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindDimensionController = void 0;
 const zod_1 = require("zod");
-const parseZodError_1 = require("../../../utils/parseZodError");
 const DimensionAdminService_1 = require("../../../services/admin/DimensionAdminService");
+const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParam = zod_1.z.object({
     psychologicalDimensionId: zod_1.z.string().uuid(),
 });

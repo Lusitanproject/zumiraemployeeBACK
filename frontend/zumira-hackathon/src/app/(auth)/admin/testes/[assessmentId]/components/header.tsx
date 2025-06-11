@@ -14,8 +14,8 @@ export function Header({ title, addItemButtonText, onAddItem }: HeaderProps) {
       </div>
       {addItemButtonText && (
         <button
-          onClick={onAddItem}
           className="bg-white hover:bg-gray-50 border border-transparent hover:border-gray-100 flex items-center gap-x-3 px-3 py-2 rounded-xl"
+          onClick={onAddItem}
         >
           <CirclePlus className="text-gray-300 size-6" />
           <span className="text-sm text-gray-500 font-medium">{addItemButtonText}</span>

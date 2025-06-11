@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+
 import { MessageActChatbotSchema } from "../../definitions/actChatbot";
-import { parseZodError } from "../../utils/parseZodError";
 import { MessageActChatbotService } from "../../services/actChatbot/MessageActChatbotService";
+import { parseZodError } from "../../utils/parseZodError";
 
 class MessageActChatbotController {
   async handle(req: Request, res: Response) {

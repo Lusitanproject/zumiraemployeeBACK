@@ -1,8 +1,9 @@
 "use client";
-import { logout } from "@/app/_lib/auth";
 import { CircleCheck, Ellipsis } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { logout } from "@/app/_lib/auth";
 
 type AvatarDropdownProps = {
   open: boolean;
@@ -28,7 +29,7 @@ function DropdownNavItem({ url, label, isCurrent, onClose }: DropdownNavItemProp
 
   return (
     <button
-      className="w-full px-3 py-2 text-center bg-white hover:bg-black/5 text-sm font-medium flex flex-row items-center justify-between text-gray-400 hover:text-blue-950 disabled:text-blue-950"
+      className="cursor-pointer w-full px-3 py-2 text-center bg-white hover:bg-black/5 text-sm font-medium flex flex-row items-center justify-between text-gray-400 hover:text-blue-950 disabled:text-blue-950"
       disabled={isCurrent}
       onClick={() => handleRedirect(url)}
     >
@@ -59,13 +60,13 @@ export function AvatarDropdown({ open, userRole, onClose }: AvatarDropdownProps)
       <div className="absolute right-0 top-14 shadow-2xl bg-white border border-gray-200 w-[20.5rem] py-1 z-40 rounded-lg overflow-hidden">
         {userRole === "admin" && (
           <>
-            <DropdownNavItem label="Gestão" url="/admin/testes" onClose={onClose} isCurrent={isAdminPath} />
-            <DropdownNavItem label="Conta pessoal" url="/chat" onClose={onClose} isCurrent={!isAdminPath} />
+            <DropdownNavItem isCurrent={isAdminPath} label="Gestão" url="/admin/testes" onClose={onClose} />
+            <DropdownNavItem isCurrent={!isAdminPath} label="Conta pessoal" url="/chat" onClose={onClose} />
             <hr className="text-gray-300 mx-2" />
           </>
         )}
         <button
-          className="w-full px-3 py-2 text-center bg-white hover:bg-error-100 text-sm font-medium text-error-600 flex items-center"
+          className="cursor-pointer w-full px-3 py-2 text-center bg-white hover:bg-error-100 text-sm font-medium text-error-600 flex items-center"
           onClick={async () => {
             await logout();
           }}

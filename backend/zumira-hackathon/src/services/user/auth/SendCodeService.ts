@@ -1,9 +1,10 @@
-import prismaClient from "../../../prisma";
-import nodemailer from "nodemailer";
-import { randomInt } from "crypto";
 import { User } from "@prisma/client";
-import { devLog } from "../../../utils/devLog";
+import { randomInt } from "crypto";
+import nodemailer from "nodemailer";
+
 import { PublicError } from "../../../error";
+import prismaClient from "../../../prisma";
+import { devLog } from "../../../utils/devLog";
 
 async function sendEmail(user: User, code: string) {
   const transporter = nodemailer.createTransport({

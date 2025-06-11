@@ -1,17 +1,19 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Alert } from "../definitions";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+import { Alert } from "../definitions";
 
 interface AlertCardProps {
   alert: Alert;
   id?: string;
   open?: boolean;
-  onOpen?: (id: string) => void;
   onClose?: (id: string) => void;
+  onOpen?: (id: string) => void;
 }
 
 export function AlertCard({ alert, id, open, onOpen, onClose }: AlertCardProps) {
@@ -39,11 +41,11 @@ export function AlertCard({ alert, id, open, onOpen, onClose }: AlertCardProps) 
 
   return (
     <section
-      id={id}
       className={cn(
         "relative flex flex-col gap-1 p-3 rounded-md border-1 duration-200",
         open ? "border-primary-300" : "border-gray-100 hover:bg-[#E7F8EA]"
       )}
+      id={id}
     >
       <h1 className="text-gray-500 text-xs leading-[1.125rem] text-start">Alerta de risco</h1>
       <hr className="text-gray-200" />
@@ -54,7 +56,7 @@ export function AlertCard({ alert, id, open, onOpen, onClose }: AlertCardProps) 
       <div className="relative flex duration-300 overflow-clip" style={{ height: open ? contentHeight : 0 }}>
         <div ref={contentRef} className={cn("absolute flex w-full justify-center")}>
           <Link href={`/autoconhecimento/teste/${alert.assessmentResultRating.assessment.id}/devlutiva`}>
-            <Button className="mt-4" variant="secondary" size="lg">
+            <Button className="mt-4" size="lg" variant="secondary">
               Ir para detalhes
             </Button>
           </Link>

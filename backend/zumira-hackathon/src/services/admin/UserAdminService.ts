@@ -1,6 +1,7 @@
 import { z } from "zod";
-import prismaClient from "../../prisma";
+
 import { CreateUserSchema, UpdateUserSchema } from "../../definitions/admin/users";
+import prismaClient from "../../prisma";
 
 type CreateUser = z.infer<typeof CreateUserSchema>;
 type UpdateUser = z.infer<typeof UpdateUserSchema>;
@@ -119,6 +120,10 @@ class UserAdminService {
       data,
     });
     return user;
+  }
+
+  async delete(id: string) {
+    await prismaClient.user.delete({ where: { id } });
   }
 }
 

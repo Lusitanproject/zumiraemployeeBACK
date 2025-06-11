@@ -1,6 +1,15 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { useCallback, useState } from "react";
+
+import { IconName } from "@/components/custom/icon";
+import { Label } from "@/components/custom/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+import { IconField } from "./components/icons";
 import {
   FormErrors,
   INITIAL_VALUE,
@@ -8,14 +17,7 @@ import {
   ManageMonitoringBlockSchema,
   MonitoringBlock,
 } from "./definitions";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/custom/label";
-import { Textarea } from "@/components/ui/textarea";
-import { IconField } from "./components/icons";
-import { IconName } from "@/components/custom/icon";
-import { Button } from "@/components/ui/button";
 import { saveSelfMonitoringBlock } from "./form-actions";
-import { redirect } from "next/navigation";
 
 type FormProps = {
   data: MonitoringBlock | null;
@@ -72,13 +74,13 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
         <div className="pb-3">
           <Label htmlFor="summary">Resumo</Label>
           <Textarea
+            className="h-28"
             id="summary"
             name="summary"
             value={formData.summary ?? ""}
             onChange={(e) => {
               setFormData((current) => ({ ...current, summary: e.target.value }));
             }}
-            className="h-28"
           />
           {!!errors?.summary && <span className="text-sm text-error-500">{errors.summary}</span>}
         </div>
@@ -95,7 +97,7 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button size="xl" variant="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar
         </Button>
       </div>
