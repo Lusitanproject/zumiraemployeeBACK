@@ -31,12 +31,14 @@ export default function Entrar() {
           Termos de Uso
         </Link>
       </span>
-      <span className="text-center text-gray-500 font-semibold mt-8">
-        Não tem uma conta?{" "}
-        <Link className="underline" href="/registrar">
-          Cadastre-se
-        </Link>
-      </span>
+      {process.env.ENABLE_REGISTER === "true" && (
+        <span className="text-center text-gray-500 font-semibold mt-8">
+          Não tem uma conta?{" "}
+          <Link className="underline" href="/registrar">
+            Cadastre-se
+          </Link>
+        </span>
+      )}
     </div>
   );
 }

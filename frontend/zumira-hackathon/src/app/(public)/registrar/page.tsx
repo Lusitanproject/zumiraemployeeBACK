@@ -7,9 +7,12 @@ import { HeadImage } from "@/components/custom/head-image";
 import logo from "../../../../public/logo--green.svg";
 import { getNationalities } from "./actions";
 import { RegisterForm } from "./form";
+import { redirect } from "next/navigation";
 
 export default async function Registrar() {
   const nationalities = await getNationalities();
+
+  if (process.env.ENABLE_REGISTER !== "true") redirect("/entrar");
 
   return (
     <div className="w-full md:w-96 mx-auto flex flex-col items-center">

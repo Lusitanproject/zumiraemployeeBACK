@@ -1,7 +1,7 @@
 "use client";
 
 import { redirect } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 import { Company, FormErrors, INITIAL_VALUE, ManageUser, ManageUserSchema, Role, User } from "./definitions";
 import { saveUser } from "./form-actions";
+import { deleteUser } from "./actions";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { toast } from "sonner";
 
 type FormProps = {
   data: User | null;
@@ -27,11 +30,13 @@ export function UserForm({ data, companies, roles }: FormProps) {
 
   const [formData, setFormData] = useState<ManageUser>(parsedUser ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingSave, setLoadingSave] = useState<boolean>(false);
+  const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
+  const [waitingDeleteConfirmation, setWaitingDeleteConfirmation] = useState<boolean>(false);
 
   const handleSubmit = async () => {
-    setLoading(true);
+    setLoadingSave(true);
     setErrors(null);
     const validation = ManageUserSchema.safeParse(formData);
 
@@ -49,12 +54,38 @@ export function UserForm({ data, companies, roles }: FormProps) {
     if (response) {
       setFormError(response);
     }
-    setLoading(false);
+    setLoadingSave(false);
   };
 
   const handleCancel = useCallback(() => {
     redirect("/admin/autoconhecimento");
   }, []);
+
+  async function handleDelete() {
+    const id = data?.id;
+    if (!id) return;
+
+    if (!waitingDeleteConfirmation) {
+      setWaitingDeleteConfirmation(true);
+    } else {
+      setLoadingDelete(true);
+      try {
+        await deleteUser(id);
+      } catch (err) {
+        if (!isRedirectError(err) && err instanceof Error) toast.error(err.message);
+      } finally {
+        setWaitingDeleteConfirmation(false);
+        setLoadingDelete(false);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (waitingDeleteConfirmation) {
+      const timeoutId = setTimeout(() => setWaitingDeleteConfirmation(false), 3000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [waitingDeleteConfirmation]);
 
   return (
     <div className="w-full py-4 md:pt-4 md:pb-24">
@@ -140,9 +171,14 @@ export function UserForm({ data, companies, roles }: FormProps) {
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>
-        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
+        <Button disabled={loadingSave} loading={loadingSave} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar
         </Button>
+        {data?.id && (
+          <Button disabled={loadingDelete} loading={loadingDelete} size="xl" variant="danger" onClick={handleDelete}>
+            {!waitingDeleteConfirmation ? "Deletar" : "Confirmar"}
+          </Button>
+        )}
       </div>
     </div>
   );

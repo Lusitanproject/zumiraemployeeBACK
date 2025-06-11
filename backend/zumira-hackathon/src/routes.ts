@@ -70,6 +70,7 @@ import { CreateNationalityController } from "./controllers/admin/nationalities/C
 import { FindAllNationalitiesController } from "./controllers/admin/nationalities/FindAllNationalitiesController";
 import { FindNationalityController } from "./controllers/admin/nationalities/FindNationalityController";
 import { UpdateNationalityController } from "./controllers/admin/nationalities/UpdateNationalityController";
+import { DeleteUserController } from "./controllers/admin/users/DeleteUserController";
 
 const router = Router();
 
@@ -81,6 +82,7 @@ router.post("/auth/verify", new AuthUserController().handle);
 router.post("/users", new CreateUserController().handle);
 router.post("/users/admin", isAuthenticated, new AdminCreateUserController().handle);
 router.put("/users/admin/:id", isAuthenticated, new UpdateUserController().handle);
+router.delete("/users/:id", isAuthenticated, new DeleteUserController().handle);
 router.get("/users", isAuthenticated, new ListAllUsersController().handle);
 router.get("/users/:userId", isAuthenticated, new FindUserController().handle);
 router.get("/users/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);

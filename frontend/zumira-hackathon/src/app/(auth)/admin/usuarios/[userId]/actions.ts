@@ -6,6 +6,7 @@ import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
 
 import { Company, GetCompaniesResponse, GetRolesResponse, GetUserResponse, Role, User } from "./definitions";
+import { redirect } from "next/navigation";
 
 export async function getUserData(userId: string | null): Promise<User | null> {
   if (userId === null) {
@@ -105,4 +106,30 @@ export async function getRoles(): Promise<Role[]> {
   }
 
   return parsed.data.roles;
+}
+
+export async function deleteUser(userId: string) {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/users/${userId}`;
+
+  const [error, response] = await catchError(
+    fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error || !response.ok) {
+    throw new Error("Erro ao deletar usuário");
+  }
+
+  const parsed = await response.json();
+  if (parsed.status === "ERROR") throw new Error(parsed.message);
+
+  redirect("/admin/usuarios");
 }
