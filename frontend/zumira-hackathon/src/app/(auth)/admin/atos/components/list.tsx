@@ -7,11 +7,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
 
+import { reorderChatbots } from "@/api/acts";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-import { reorderChatbots } from "../actions";
-import { ActChatbot } from "../definitions";
+import { ActChatbot } from "@/types/acts";
 
 type ActsListProps = {
   data: ActChatbot[];

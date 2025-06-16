@@ -23,6 +23,15 @@ class ActChatbotAdminService {
         icon: true,
         instructions: true,
         nextActChatbotId: true,
+        actConversations: {
+          where: {
+            type: "ADMIN_TEST",
+          },
+          select: {
+            id: true,
+            title: true,
+          },
+        },
       },
     });
 

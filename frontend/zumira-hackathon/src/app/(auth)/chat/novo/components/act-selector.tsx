@@ -55,7 +55,7 @@ export function ActSelector({ data, currentAct }: ActSelectorProps) {
   }
 
   return (
-    <div className={cn("flex flex-col items-center justify-start w-full flex-none h-full gap-6 py-4 mt-32", "px-48")}>
+    <div className={cn("flex flex-col items-center justify-start size-full gap-6 py-4 mt-32", "px-48")}>
       <div className="flex flex-col gap-2 items-center justify-end">
         <div className="rounded-full border-2 border-gray-200 p-4 size-18 flex-none">
           <DynamicIcon className="size-full text-gray-700" name={selected.icon as IconName} />

@@ -1,5 +1,6 @@
+import { getActChatbots } from "@/api/acts";
+
 import { Header } from "../components/header";
-import { getActChatbots } from "./actions";
 import { ActsList } from "./components/list";
 
 export default async function Autoconhecimento() {

@@ -1,30 +1,35 @@
 "use client";
 
+import equal from "fast-deep-equal";
 import { IconName } from "lucide-react/dynamic";
-import { redirect } from "next/navigation";
-import { useCallback, useState } from "react";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
+import { saveActChatbot } from "@/api/acts";
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ActChatbot } from "@/types/acts";
 
 import { IconField } from "../../components/icons";
-import { ActChatbot } from "../definitions";
 import { FormErrors, INITIAL_VALUE, ManageActChatbot, ManageActChatbotSchema } from "./definitions";
-import { saveActChatbot } from "./form-actions";
 
 type FormProps = {
   data: ActChatbot | null;
+  onChange?: (formData: ManageActChatbot, storedData: ActChatbot | null) => void;
 };
 
-export function ActChatbotForm({ data }: FormProps) {
+export function ActChatbotForm({ data, onChange }: FormProps) {
+  const router = useRouter();
+  const [storedData, setStoredData] = useState(data);
   const [formData, setFormData] = useState<ManageActChatbot>(data ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
 
-  const handleSubmit = async () => {
+  async function handleSubmit() {
     setLoading(true);
     setErrors(null);
     const validation = ManageActChatbotSchema.safeParse(formData);
@@ -38,22 +43,43 @@ export function ActChatbotForm({ data }: FormProps) {
       ...formData,
     };
 
-    const response = await saveActChatbot(payload);
+    try {
+      const response = await saveActChatbot(payload);
+      setStoredData((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            name: payload.name,
+            description: payload.description,
+            icon: payload.icon,
+            instructions: payload.instructions,
+          };
+        } else {
+          return payload as ActChatbot;
+        }
+      });
 
-    if (response) {
-      setFormError(response);
+      if (!data) {
+        router.replace(`/admin/atos/${response.id}`);
+      }
+    } catch (err) {
+      if (err instanceof Error && !isRedirectError(err)) setFormError(err.message);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    setLoading(false);
-  };
+  function handleGoBack() {
+    router.push("/admin/atos");
+  }
 
-  const handleCancel = useCallback(() => {
-    redirect("/admin/atos");
-  }, []);
+  useEffect(() => {
+    onChange?.(formData, storedData);
+  }, [formData, storedData, onChange]);
 
   return (
-    <div className="w-full py-4 md:pt-4 md:pb-24">
-      <div className="w-full md:w-[30rem]">
+    <div className="flex flex-col w-full py-4 md:pt-4 md:pb-24">
+      <div className="flex flex-col w-full">
         <div className="pb-3">
           <Label htmlFor="title">Título</Label>
           <Input
@@ -101,11 +127,17 @@ export function ActChatbotForm({ data }: FormProps) {
         />
       </div>
       {!!formError && <span className="text-sm text-error-500">{formError}</span>}
-      <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
-        <Button size="xl" variant="outline" onClick={handleCancel}>
-          Cancelar
+      <div className="border-gray-100 py-4 flex items-center md:justify-start gap-x-3">
+        <Button size="xl" variant="outline" onClick={handleGoBack}>
+          Voltar
         </Button>
-        <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleSubmit}>
+        <Button
+          disabled={loading || equal(formData, storedData)}
+          loading={loading}
+          size="xl"
+          variant="primary"
+          onClick={handleSubmit}
+        >
           Salvar
         </Button>
       </div>

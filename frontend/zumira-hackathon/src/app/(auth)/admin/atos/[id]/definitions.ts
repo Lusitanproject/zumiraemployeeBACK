@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { ActChatbot } from "../definitions";
-
 export const ManageActChatbotSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().nonempty(),
@@ -24,13 +22,3 @@ export type FormErrors = {
   instructions?: string[];
   icon?: string[];
 } | null;
-
-export type GetActChatbot =
-  | {
-      status: "SUCCESS";
-      data: ActChatbot;
-    }
-  | {
-      status: "ERROR";
-      message: string;
-    };

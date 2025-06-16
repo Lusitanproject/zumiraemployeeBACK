@@ -2,13 +2,18 @@ import { CreateActConversationRequest } from "../../definitions/actChatbot";
 import prismaClient from "../../prisma";
 
 class CreateActConversationService {
-  async execute({ actChatbotId, userId }: CreateActConversationRequest) {
-    const conversation = await prismaClient.actConversation.create({
-      data: {
-        userId,
-        actChatbotId,
+  async execute(data: CreateActConversationRequest) {
+    await prismaClient.actConversation.deleteMany({
+      where: {
+        userId: data.userId,
+        messages: {
+          none: {},
+        },
       },
+    });
 
+    const conversation = await prismaClient.actConversation.create({
+      data,
       select: {
         id: true,
         actChatbot: {

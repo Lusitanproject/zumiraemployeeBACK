@@ -1,3 +1,4 @@
+import { ConversationType } from "@prisma/client";
 import { z } from "zod";
 
 export const GetActConversationSchema = z.object({
@@ -11,6 +12,7 @@ export const MessageActChatbotSchema = z.object({
 
 export const CreateActConversationSchema = z.object({
   actChatbotId: z.string().cuid(),
+  type: z.nativeEnum(ConversationType),
 });
 
 export type GetActConversationRequest = z.infer<typeof GetActConversationSchema> & { userId: string };

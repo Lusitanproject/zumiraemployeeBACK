@@ -4,8 +4,8 @@ import { BotMessageSquare, Maximize2, Minimize2, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-import { Chat } from "@/components/ui/chat/chat";
-import { ChatMessage } from "@/components/ui/chat/definitions";
+import { Chat } from "@/components/ui/chatbase-chat/chat";
+import { ChatMessage } from "@/components/ui/chatbase-chat/definitions";
 import { cn } from "@/lib/utils";
 
 import icon from "../../../../icon.png";

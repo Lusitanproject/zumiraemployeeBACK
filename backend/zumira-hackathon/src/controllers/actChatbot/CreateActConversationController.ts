@@ -6,7 +6,7 @@ import { parseZodError } from "../../utils/parseZodError";
 
 class CreateActConversationController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = CreateActConversationSchema.safeParse(req.query);
+    const { success, data, error } = CreateActConversationSchema.safeParse(req.body);
 
     if (!success) throw Error(parseZodError(error));
 

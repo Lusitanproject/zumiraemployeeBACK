@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: LayoutProps) {
 
   return (
     <>
-      <div>{children}</div>
+      <div className="flex size-full">{children}</div>
       <Assistant chatbotId={chatbotId} companyFeedbacks={feedbacks.data} username={session?.name ?? ""} />
     </>
   );

@@ -4,11 +4,10 @@ import { Fragment, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 
 import { cn } from "@/lib/utils";
-
-import { Message } from "../definitions";
+import { ActMessage } from "@/types/acts";
 
 interface MessagesProps {
-  messages: Message[];
+  messages: ActMessage[];
   loadingResponse?: boolean;
   onScroll?: (isScrolled: boolean) => void;
 }
@@ -33,7 +32,7 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
   return (
     <div
       ref={divRef}
-      className="flex flex-col size-full py-[1.375rem] gap-[1.375rem] overflow-y-scroll overflow-x-hidden px-5"
+      className="flex flex-col size-full py-[1.375rem] px-5 gap-[1.375rem] overflow-y-scroll overflow-x-clip"
       onScroll={handleScroll}
     >
       {messages.map((m, i) => (
@@ -57,7 +56,7 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
               )}
             </div>
 
-            {/* {m.error && <span className="text-md text-red-400">{m.error}</span>} */}
+            {m.error && <span className="text-md text-red-400">Erro ao processar uma resposta</span>}
           </div>
         </Fragment>
       ))}

@@ -29,6 +29,11 @@ enum UserGender {
   OTHER
 }
 
+enum ConversationType {
+  REGULAR
+  ADMIN_TEST
+}
+
 model User {
   id                  String      @id @default(uuid())
   email               String      @unique
@@ -101,7 +106,7 @@ model AuthCode {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id],  onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("auth_codes")
 }
@@ -121,7 +126,7 @@ model Company {
 
 model Nationality {
   id        String   @id @default(cuid())
-  acronym  String   @unique
+  acronym   String   @unique
   name      String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -164,7 +169,7 @@ model AssessmentResult {
   createdAt                DateTime @default(now()) @map("created_at")
   updatedAt                DateTime @updatedAt @map("updated_at")
 
-  user                      User                       @relation(fields: [userId], references: [id],  onDelete: Cascade)
+  user                      User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
   assessment                Assessment                 @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   assessmentResultRating    AssessmentResultRating?    @relation(fields: [assessmentResultRatingId], references: [id], onDelete: Cascade)
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
@@ -218,7 +223,7 @@ model AssessmentQuestionAnswer {
   assessmentQuestion       AssessmentQuestion       @relation(fields: [assessmentQuestionId], references: [id], onDelete: Cascade)
   assessmentQuestionChoice AssessmentQuestionChoice @relation(fields: [assessmentQuestionChoiceId], references: [id], onDelete: Cascade)
   assessmentResult         AssessmentResult         @relation(fields: [assessmentResultId], references: [id])
-  user                     User                     @relation(fields: [userId], references: [id],  onDelete: Cascade)
+  user                     User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("assessment_question_answers")
 }
@@ -317,7 +322,7 @@ model NotificationRecipient {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  user         User         @relation(fields: [userId], references: [id],  onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, notificationId])
@@ -357,15 +362,16 @@ model ActChatbot {
 }
 
 model ActConversation {
-  id           String   @id @default(cuid())
-  title        String   @default("Novo capítulo")
-  actChatbotId String   @map("act_chatbot_id")
-  userId       String   @map("user_id")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id           String           @id @default(cuid())
+  title        String           @default("Novo capítulo")
+  actChatbotId String           @map("act_chatbot_id")
+  userId       String           @map("user_id")
+  type         ConversationType @default(REGULAR) // TODO: Remover na próxima migration
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   actChatbot ActChatbot               @relation(fields: [actChatbotId], references: [id])
-  user       User                     @relation(fields: [userId], references: [id],  onDelete: Cascade)
+  user       User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages   ActConversationMessage[]
 
   @@map("act_conversations")

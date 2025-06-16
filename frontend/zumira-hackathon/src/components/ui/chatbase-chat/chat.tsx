@@ -3,8 +3,8 @@
 import { ReactNode, useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-import { MessageInput } from "@/components/ui/chat/components/message-input";
-import { Messages } from "@/components/ui/chat/components/messages";
+import { MessageInput } from "@/components/ui/chatbase-chat/components/message-input";
+import { Messages } from "@/components/ui/chatbase-chat/components/messages";
 
 import { messageChatbot } from "./actions";
 import { ChatMessage } from "./definitions";

@@ -7,7 +7,7 @@ export default async function Alertas() {
   const companies = await getCompanies();
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex size-full flex-col gap-2">
       <Header title="Alertas" />
       <AlertsUI assessments={assessments} companies={companies} />
     </div>

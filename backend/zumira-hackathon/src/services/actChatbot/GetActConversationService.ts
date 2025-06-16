@@ -41,6 +41,8 @@ class GetActConversationService {
       }),
     ]);
 
+    if (!conversation) throw new Error("Conversation not found");
+
     return { ...conversation, messages };
   }
 }

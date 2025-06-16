@@ -8,7 +8,7 @@ export default async function Notificacoes() {
   const types = await getNotificationTypes();
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col size-full gap-4">
       <div className="w-full pb-8 border-gray-200">
         <Header create={{ text: "Nova notificação", href: "/admin/notificacoes/novo" }} title="Notificações" />
         <NotificationList data={notifications} />
