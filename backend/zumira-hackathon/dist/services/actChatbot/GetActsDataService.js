@@ -20,6 +20,7 @@ class GetActsDataService {
             prisma_1.default.actConversation.findMany({
                 where: {
                     userId,
+                    type: "REGULAR",
                 },
                 select: {
                     id: true,

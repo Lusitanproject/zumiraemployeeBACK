@@ -6,7 +6,7 @@ const CreateActConversationService_1 = require("../../services/actChatbot/Create
 const parseZodError_1 = require("../../utils/parseZodError");
 class CreateActConversationController {
     async handle(req, res) {
-        const { success, data, error } = actChatbot_1.CreateActConversationSchema.safeParse(req.query);
+        const { success, data, error } = actChatbot_1.CreateActConversationSchema.safeParse(req.body);
         if (!success)
             throw Error((0, parseZodError_1.parseZodError)(error));
         const service = new CreateActConversationService_1.CreateActConversationService();

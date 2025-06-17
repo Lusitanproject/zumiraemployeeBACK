@@ -6,12 +6,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateActConversationService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class CreateActConversationService {
-    async execute({ actChatbotId, userId }) {
-        const conversation = await prisma_1.default.actConversation.create({
-            data: {
-                userId,
-                actChatbotId,
+    async execute(data) {
+        await prisma_1.default.actConversation.deleteMany({
+            where: {
+                userId: data.userId,
+                messages: {
+                    none: {},
+                },
             },
+        });
+        const conversation = await prisma_1.default.actConversation.create({
+            data,
             select: {
                 id: true,
                 actChatbot: {
