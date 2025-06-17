@@ -72,6 +72,7 @@ import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { CompileActChapterController } from "./controllers/actChatbot/CompileActChapterController";
+import { UpdateActChapterCompilationController } from "./controllers/actChatbot/UpdateActChapterCompilationController";
 
 const router = Router();
 
@@ -181,5 +182,6 @@ router.put("/acts/next", isAuthenticated, new MoveToNextActController().handle);
 router.post("/acts/message", isAuthenticated, new MessageActChatbotController().handle);
 router.post("/acts/new-chapter", isAuthenticated, new CreateActChapterController().handle);
 router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
+router.put("/acts/chapters/update-compilation", isAuthenticated, new UpdateActChapterCompilationController().handle);
 
 export { router };

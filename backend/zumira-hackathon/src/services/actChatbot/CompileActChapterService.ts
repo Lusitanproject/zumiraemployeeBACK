@@ -16,6 +16,8 @@ class CompileActChapterService {
       },
     });
 
+    if (!messages.length) throw new Error("No messages found to compile");
+
     const input = messages.map((m) => `${m.role}: ${m.content}`).join("\n");
 
     const response = await generateOpenAiResponse({
