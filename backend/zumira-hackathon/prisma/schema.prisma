@@ -348,7 +348,8 @@ model ActChatbot {
   name             String
   description      String
   icon             String
-  instructions     String
+  messageInstructions     String?
+  compilationInstructions String?
   nextActChatbotId String?  @map("next_act_chatbot_id")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")

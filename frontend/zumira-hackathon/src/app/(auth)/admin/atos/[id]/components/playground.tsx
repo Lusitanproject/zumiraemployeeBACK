@@ -38,7 +38,7 @@ export function Playground({ data }: PlaygroundProps) {
   function handleFormChange(formData: ManageActChatbot, storedData: ActChatbot | null) {
     if (storedData) {
       const differences = diff(formData, storedData);
-      if (differences.some((d) => d.path.some((p) => p === "instructions"))) {
+      if (differences.some((d) => d.path.some((p) => p === "messageInstructions"))) {
         setSaveWarning("Salve as alterações para atualizar as instruções do chatbot");
         return;
       }

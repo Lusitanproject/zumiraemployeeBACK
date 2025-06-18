@@ -12,7 +12,8 @@ export type SaveActChatbotRequest = {
   id: string | undefined;
   name: string;
   description: string;
-  instructions: string;
+  messageInstructions?: string;
+  compilationInstructions?: string;
   icon: string;
 };
 

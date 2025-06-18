@@ -21,7 +21,8 @@ class ActChatbotAdminService {
         name: true,
         description: true,
         icon: true,
-        instructions: true,
+        messageInstructions: true,
+        compilationInstructions: true,
         nextActChatbotId: true,
         actChapters: {
           where: {

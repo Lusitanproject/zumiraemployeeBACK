@@ -41,7 +41,7 @@ class MessageActChatbotService {
     })) as GenerateOpenAiResponseRequest["messages"];
 
     const response = await generateOpenAiResponse({
-      instructions: bot.instructions,
+      instructions: bot.messageInstructions,
       messages: historyAndInput,
     });
 

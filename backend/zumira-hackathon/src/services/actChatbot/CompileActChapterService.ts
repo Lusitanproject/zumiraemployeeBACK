@@ -4,25 +4,25 @@ import { generateOpenAiResponse } from "../../utils/generateOpenAiResponse";
 
 class CompileActChapterService {
   async execute({ actChapterId, userId }: CompileActChapterRequest) {
-    const messages = await prismaClient.actChapterMessage.findMany({
+    const chapter = await prismaClient.actChapter.findFirst({
       where: {
-        actChapter: {
-          userId,
-        },
-        actChapterId,
+        userId,
+        id: actChapterId,
       },
-      orderBy: {
-        createdAt: "asc",
+      include: {
+        messages: {
+          orderBy: { createdAt: "asc" },
+        },
+        actChatbot: true,
       },
     });
+    if (!chapter) throw new Error("Chapter not found");
 
-    if (!messages.length) throw new Error("No messages found to compile");
-
-    const input = messages.map((m) => `${m.role}: ${m.content}`).join("\n");
+    const input = chapter.messages.map((m) => `${m.role}: ${m.content}`).join("\n");
 
     const response = await generateOpenAiResponse({
       messages: [{ content: input, role: "user" }],
-      instructions: "Escreva um capítulo de livro com base nessa conversa",
+      instructions: chapter.actChatbot.compilationInstructions,
     });
 
     const data = await prismaClient.actChapter.update({

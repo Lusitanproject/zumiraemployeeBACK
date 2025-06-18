@@ -39,7 +39,8 @@ export type ActChatbot = {
   id: string;
   name: string;
   description: string;
-  instructions: string;
+  messageInstructions?: string;
+  compilationInstructions?: string;
   icon: string;
   nextActChatbotId: string | null;
   actChapters: { id: string; title: string }[];

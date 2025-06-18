@@ -3,7 +3,8 @@ import { z } from "zod";
 export const CreateActChatbotSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().nonempty(),
-  instructions: z.string().nonempty(),
+  messageInstructions: z.string().nonempty().optional(),
+  compilationInstructions: z.string().nonempty().optional(),
   icon: z.string().nonempty(),
 });
 
@@ -11,7 +12,8 @@ export const UpdateActChatbotSchema = z.object({
   id: z.string().cuid(),
   name: z.string().nonempty(),
   description: z.string().nonempty(),
-  instructions: z.string().nonempty(),
+  messageInstructions: z.string().nonempty().optional(),
+  compilationInstructions: z.string().nonempty().optional(),
   icon: z.string().nonempty(),
 });
 
