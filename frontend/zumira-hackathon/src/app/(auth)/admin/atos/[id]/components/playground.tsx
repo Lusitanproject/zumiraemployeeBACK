@@ -5,9 +5,9 @@ import { Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { getActConversation, newActConversation } from "@/api/acts";
+import { getActChapter, newActChapter } from "@/api/acts";
 import { ChatUi } from "@/components/ui/act-chat/chat-ui";
-import { ActChatbot, ActConversation } from "@/types/acts";
+import { ActChatbot, ActChapter } from "@/types/acts";
 
 import { ManageActChatbot } from "../definitions";
 import { ActChatbotForm } from "../form";
@@ -18,27 +18,27 @@ interface PlaygroundProps {
 
 export function Playground({ data }: PlaygroundProps) {
   const [saveWarning, setSaveWarning] = useState<string | undefined>();
-  const [conversation, setConversation] = useState<ActConversation>();
+  const [chapter, setChapter] = useState<ActChapter>();
 
-  const newConversation = useCallback(async () => {
+  const newChapter = useCallback(async () => {
     if (!data) return;
     try {
-      const response = await newActConversation(data.id, "ADMIN_TEST");
-      const conversation = await getActConversation(response.id);
-      setConversation(conversation);
+      const response = await newActChapter(data.id, "ADMIN_TEST");
+      const chapter = await getActChapter(response.id);
+      setChapter(chapter);
     } catch (err) {
       if (err instanceof Error) toast.error(err.message);
     }
   }, [data]);
 
   useEffect(() => {
-    newConversation();
-  }, [newConversation]);
+    newChapter();
+  }, [newChapter]);
 
   function handleFormChange(formData: ManageActChatbot, storedData: ActChatbot | null) {
     if (storedData) {
       const differences = diff(formData, storedData);
-      if (differences.some((d) => d.path.some((p) => p === "instructions"))) {
+      if (differences.some((d) => d.path.some((p) => p === "messageInstructions"))) {
         setSaveWarning("Salve as alterações para atualizar as instruções do chatbot");
         return;
       }
@@ -56,12 +56,12 @@ export function Playground({ data }: PlaygroundProps) {
         {data ? (
           <div className="flex flex-col size-full">
             <div className="flex flex-col border-1 border-gray-200 rounded-xl w-full md:h-full h-[30rem]">
-              <ChatUi actConversation={conversation} inputWarning={saveWarning} />
+              <ChatUi actChapter={chapter} inputWarning={saveWarning} />
             </div>
             <div className="flex w-full justify-center p-2 font-medium text-gray-400">
               <button
                 className="flex flex-row items-center gap-1 rounded-lg hover:bg-black/5 px-2.5 py-1 cursor-pointer"
-                onClick={newConversation}
+                onClick={newChapter}
               >
                 <Plus className="size-4" />
                 <span className="text-sm">Nova conversa</span>

@@ -5,7 +5,7 @@ export interface GenerateOpenAiResponseRequest {
     role: "user" | "assistant";
     content: string;
   }[];
-  instructions?: string;
+  instructions?: string | null;
 }
 
 export async function generateOpenAiResponse({ instructions, messages }: GenerateOpenAiResponseRequest) {
@@ -14,7 +14,7 @@ export async function generateOpenAiResponse({ instructions, messages }: Generat
   });
 
   const input = [{ role: "system", content: instructions }, ...messages].filter(
-    (item) => item.content !== undefined
+    (item) => !!item.content
   ) as OpenAI.Responses.ResponseInput;
 
   const response = await openai.responses.create({

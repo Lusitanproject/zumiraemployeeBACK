@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ActsData } from "@/types/acts";
 
-import { newConversation } from "../actions";
+import { newChapter } from "../actions";
 
 interface ActSelectorProps {
   currentAct: string;
@@ -48,7 +48,7 @@ export function ActSelector({ data, currentAct }: ActSelectorProps) {
     setLoading(true);
 
     try {
-      await newConversation(selected.id);
+      await newChapter(selected.id);
     } catch (error) {
       if (!isRedirectError(error) && error instanceof Error) toast.error(error.message);
     }

@@ -1,10 +1,12 @@
 import { Router } from "express";
 
-import { CreateActConversationController } from "./controllers/actChatbot/CreateActConversationController";
-import { GetActConversationController } from "./controllers/actChatbot/GetActConversationController";
+import { CompileActChapterController } from "./controllers/actChatbot/CompileActChapterController";
+import { CreateActChapterController } from "./controllers/actChatbot/CreateActChapterController";
+import { GetActChapterController } from "./controllers/actChatbot/GetActChapterController";
 import { GetActsDataController } from "./controllers/actChatbot/GetActsDataController";
 import { MessageActChatbotController } from "./controllers/actChatbot/MessageActChatbotController";
 import { MoveToNextActController } from "./controllers/actChatbot/MoveToNextActController";
+import { UpdateActChapterController } from "./controllers/actChatbot/UpdateActChapterController";
 import { CreateActChatbotController } from "./controllers/admin/act-chatbots/CreateActChatbotController";
 import { FindActChatbotController } from "./controllers/admin/act-chatbots/FindActChatbotController";
 import { FindAllActChatbotsController } from "./controllers/admin/act-chatbots/FindAllActChatbotsController";
@@ -175,9 +177,11 @@ router.put("/acts/admin/reorder", isAuthenticated, new ReorderActChatbotsControl
 router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);
 router.post("/acts/admin", isAuthenticated, new CreateActChatbotController().handle);
 router.get("/acts", isAuthenticated, new GetActsDataController().handle);
-router.get("/acts/conversations", isAuthenticated, new GetActConversationController().handle);
+router.get("/acts/chapters", isAuthenticated, new GetActChapterController().handle);
 router.put("/acts/next", isAuthenticated, new MoveToNextActController().handle);
 router.post("/acts/message", isAuthenticated, new MessageActChatbotController().handle);
-router.post("/acts/new-conversation", isAuthenticated, new CreateActConversationController().handle);
+router.post("/acts/new-chapter", isAuthenticated, new CreateActChapterController().handle);
+router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
+router.put("/acts/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
 
 export { router };

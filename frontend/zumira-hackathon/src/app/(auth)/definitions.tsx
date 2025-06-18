@@ -6,7 +6,7 @@ export interface ActsData {
     icon: string;
     nextActChatbotId: null | string;
   }[];
-  conversations: {
+  chapters: {
     id: string;
     title: string;
     actChatbotId: string;
