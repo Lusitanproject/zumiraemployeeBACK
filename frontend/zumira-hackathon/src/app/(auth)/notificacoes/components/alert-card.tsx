@@ -55,7 +55,7 @@ export function AlertCard({ alert, id, open, onOpen, onClose }: AlertCardProps) 
 
       <div className="relative flex duration-300 overflow-clip" style={{ height: open ? contentHeight : 0 }}>
         <div ref={contentRef} className={cn("absolute flex w-full justify-center")}>
-          <Link href={`/autoconhecimento/teste/${alert.assessmentResultRating.assessment.id}/devlutiva`}>
+          <Link href={`/autoconhecimento/teste/${alert.assessmentResultRating.assessment.id}/devolutiva`}>
             <Button className="mt-4" size="lg" variant="secondary">
               Ir para detalhes
             </Button>

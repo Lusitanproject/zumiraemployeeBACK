@@ -16,9 +16,7 @@ export function NationalityCard({ data }: CardProps) {
         </div>
       </div>
       <div className="flex flex-col">
-        <h3 className="text-base font-semibold text-gray-700 mb-1">
-          {data.name} - {data.name}
-        </h3>
+        <h3 className="text-base font-semibold text-gray-700 mb-1">{data.name}</h3>
         <span className="text-sm font-medium text-gray-600 mb-3">{data.acronym}</span>
       </div>
     </Link>
