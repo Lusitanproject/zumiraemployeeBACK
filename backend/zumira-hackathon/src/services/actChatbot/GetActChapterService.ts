@@ -9,6 +9,7 @@ class GetActChapterService {
         select: {
           id: true,
           title: true,
+          compilation: true,
           actChatbot: {
             select: {
               id: true,
