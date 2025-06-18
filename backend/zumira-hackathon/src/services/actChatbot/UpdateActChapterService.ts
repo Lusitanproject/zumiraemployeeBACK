@@ -1,8 +1,8 @@
-import { UpdateActChapterCompilationRequest } from "../../definitions/actChatbot";
+import { UpdateActChapterRequest } from "../../definitions/actChatbot";
 import prismaClient from "../../prisma";
 
-class UpdateActChapterCompilationService {
-  async execute({ userId, actChapterId, compilation }: UpdateActChapterCompilationRequest) {
+class UpdateActChapterService {
+  async execute({ userId, actChapterId, compilation, title }: UpdateActChapterRequest) {
     const chapter = await prismaClient.actChapter.findFirst({
       where: {
         id: actChapterId,
@@ -19,6 +19,7 @@ class UpdateActChapterCompilationService {
       },
       data: {
         compilation,
+        title,
       },
     });
 
@@ -26,4 +27,4 @@ class UpdateActChapterCompilationService {
   }
 }
 
-export { UpdateActChapterCompilationService };
+export { UpdateActChapterService };

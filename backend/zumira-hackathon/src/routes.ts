@@ -1,10 +1,12 @@
 import { Router } from "express";
 
+import { CompileActChapterController } from "./controllers/actChatbot/CompileActChapterController";
 import { CreateActChapterController } from "./controllers/actChatbot/CreateActChapterController";
 import { GetActChapterController } from "./controllers/actChatbot/GetActChapterController";
 import { GetActsDataController } from "./controllers/actChatbot/GetActsDataController";
 import { MessageActChatbotController } from "./controllers/actChatbot/MessageActChatbotController";
 import { MoveToNextActController } from "./controllers/actChatbot/MoveToNextActController";
+import { UpdateActChapterController } from "./controllers/actChatbot/UpdateActChapterController";
 import { CreateActChatbotController } from "./controllers/admin/act-chatbots/CreateActChatbotController";
 import { FindActChatbotController } from "./controllers/admin/act-chatbots/FindActChatbotController";
 import { FindAllActChatbotsController } from "./controllers/admin/act-chatbots/FindAllActChatbotsController";
@@ -71,8 +73,6 @@ import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
-import { CompileActChapterController } from "./controllers/actChatbot/CompileActChapterController";
-import { UpdateActChapterCompilationController } from "./controllers/actChatbot/UpdateActChapterCompilationController";
 
 const router = Router();
 
@@ -182,6 +182,6 @@ router.put("/acts/next", isAuthenticated, new MoveToNextActController().handle);
 router.post("/acts/message", isAuthenticated, new MessageActChatbotController().handle);
 router.post("/acts/new-chapter", isAuthenticated, new CreateActChapterController().handle);
 router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
-router.put("/acts/chapters/update-compilation", isAuthenticated, new UpdateActChapterCompilationController().handle);
+router.put("/acts/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
 
 export { router };

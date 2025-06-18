@@ -19,9 +19,10 @@ export const CompileActChapterSchema = z.object({
   actChapterId: z.string().cuid(),
 });
 
-export const UpdateActChapterCompilationSchema = z.object({
+export const UpdateActChapterSchema = z.object({
   actChapterId: z.string().cuid(),
-  compilation: z.string().nonempty(),
+  title: z.string().nonempty().optional(),
+  compilation: z.string().nullable().optional(),
 });
 
 export type GetActChapterRequest = z.infer<typeof GetActChapterSchema> & { userId: string };
@@ -32,4 +33,4 @@ export type CreateActChapterRequest = z.infer<typeof CreateActChapterSchema> & {
 
 export type CompileActChapterRequest = z.infer<typeof CompileActChapterSchema> & { userId: string };
 
-export type UpdateActChapterCompilationRequest = z.infer<typeof UpdateActChapterCompilationSchema> & { userId: string };
+export type UpdateActChapterRequest = z.infer<typeof UpdateActChapterSchema> & { userId: string };

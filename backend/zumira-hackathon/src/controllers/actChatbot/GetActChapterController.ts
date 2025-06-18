@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
 import { GetActChapterSchema } from "../../definitions/actChatbot";
-import { parseZodError } from "../../utils/parseZodError";
 import { GetActChapterService } from "../../services/actChatbot/GetActChapterService";
+import { parseZodError } from "../../utils/parseZodError";
 
 class GetActChapterController {
   async handle(req: Request, res: Response) {
