@@ -55,7 +55,7 @@ export function ChatUi({ actChapter, inputWarning }: ChatUiProps) {
   }, [actChapter]);
 
   return (
-    <section className="relative flex flex-col size-full p-4 pt-0">
+    <section className="relative flex flex-col size-full min-w-96 overflow-x-scroll p-4 pt-0">
       {/* <h1 className="text-gray-300 text-lg font-semibold mb-2">{actChapter.actChatbot.name}</h1> */}
       {showRule && <hr className="text-gray-200 bottom-0 w-full" />}
       <Messages loadingResponse={loading} messages={messages} onScroll={setShowRule} />

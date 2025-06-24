@@ -1,17 +1,17 @@
 export interface ActsData {
-  chatbots: {
-    id: string;
-    name: string;
-    description: string;
-    icon: string;
-    nextActChatbotId: null | string;
-  }[];
   chapters: {
     id: string;
     title: string;
     actChatbotId: string;
     createdAt: Date;
     updatedAt: Date;
+  }[];
+  chatbots: {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    nextActChatbotId: null | string;
   }[];
 }
 
