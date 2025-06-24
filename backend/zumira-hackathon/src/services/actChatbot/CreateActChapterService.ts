@@ -1,9 +1,9 @@
-import { CreateActConversationRequest } from "../../definitions/actChatbot";
+import { CreateActChapterRequest } from "../../definitions/actChatbot";
 import prismaClient from "../../prisma";
 
-class CreateActConversationService {
-  async execute(data: CreateActConversationRequest) {
-    await prismaClient.actConversation.deleteMany({
+class CreateActChapterService {
+  async execute(data: CreateActChapterRequest) {
+    await prismaClient.actChapter.deleteMany({
       where: {
         userId: data.userId,
         messages: {
@@ -12,7 +12,7 @@ class CreateActConversationService {
       },
     });
 
-    const conversation = await prismaClient.actConversation.create({
+    const chapter = await prismaClient.actChapter.create({
       data,
       select: {
         id: true,
@@ -26,8 +26,8 @@ class CreateActConversationService {
       },
     });
 
-    return conversation;
+    return chapter;
   }
 }
 
-export { CreateActConversationService };
+export { CreateActChapterService };

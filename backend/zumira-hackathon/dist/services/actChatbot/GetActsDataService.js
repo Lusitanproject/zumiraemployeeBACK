@@ -7,7 +7,7 @@ exports.GetActsDataService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class GetActsDataService {
     async execute(userId) {
-        const [chatbots, conversations] = await Promise.all([
+        const [chatbots, chapters] = await Promise.all([
             await prisma_1.default.actChatbot.findMany({
                 select: {
                     id: true,
@@ -17,7 +17,7 @@ class GetActsDataService {
                     nextActChatbotId: true,
                 },
             }),
-            prisma_1.default.actConversation.findMany({
+            prisma_1.default.actChapter.findMany({
                 where: {
                     userId,
                     type: "REGULAR",
@@ -31,7 +31,7 @@ class GetActsDataService {
                 },
             }),
         ]);
-        return { chatbots, conversations };
+        return { chatbots, chapters };
     }
 }
 exports.GetActsDataService = GetActsDataService;

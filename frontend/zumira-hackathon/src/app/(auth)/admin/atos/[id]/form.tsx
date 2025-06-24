@@ -52,7 +52,8 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
             name: payload.name,
             description: payload.description,
             icon: payload.icon,
-            instructions: payload.instructions,
+            messageInstructions: payload.messageInstructions,
+            compilationInstructions: payload.compilationInstructions,
           };
         } else {
           return payload as ActChatbot;
@@ -106,17 +107,34 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
           {!!errors?.description && <span className="text-sm text-error-500">{errors.description}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="instructions">Instruções</Label>
+          <Label htmlFor="message-instructions">Instruções para mensagens</Label>
           <Textarea
             className="h-28"
-            id="instructions"
-            name="instructions"
-            value={formData.instructions ?? ""}
+            id="message-instructions"
+            name="message-instructions"
+            value={formData.messageInstructions ?? ""}
             onChange={(e) => {
-              setFormData((current) => ({ ...current, instructions: e.target.value }));
+              setFormData((current) => ({ ...current, messageInstructions: e.target.value }));
             }}
           />
-          {!!errors?.instructions && <span className="text-sm text-error-500">{errors.instructions}</span>}
+          {!!errors?.messageInstructions && (
+            <span className="text-sm text-error-500">{errors.messageInstructions}</span>
+          )}
+        </div>
+        <div className="pb-3">
+          <Label htmlFor="compilation-instructions">Instruções para compilação da conversa</Label>
+          <Textarea
+            className="h-28"
+            id="compilation-instructions"
+            name="compilation-instructions"
+            value={formData.compilationInstructions ?? ""}
+            onChange={(e) => {
+              setFormData((current) => ({ ...current, compilationInstructions: e.target.value }));
+            }}
+          />
+          {!!errors?.compilationInstructions && (
+            <span className="text-sm text-error-500">{errors.compilationInstructions}</span>
+          )}
         </div>
         <IconField
           icons={["leaf", "star", "file-heart", "drama", "loader"]}

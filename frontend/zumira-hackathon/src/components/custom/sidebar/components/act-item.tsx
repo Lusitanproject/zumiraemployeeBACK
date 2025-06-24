@@ -9,17 +9,17 @@ import { cn } from "@/lib/utils";
 import { ActsData } from "@/types/acts";
 
 interface ActItemProps {
-  conversations: ActsData["conversations"];
-  currentConversationId: string | null;
+  chapters: ActsData["chapters"];
+  currentChapterId: string | null;
   defaultOpen: boolean;
   icon: IconName;
   name: string;
 }
 
-export function ActItem({ icon, name, conversations, defaultOpen, currentConversationId }: ActItemProps) {
+export function ActItem({ icon, name, chapters, defaultOpen, currentChapterId }: ActItemProps) {
   const [open, setOpen] = useState<boolean>(defaultOpen);
-  const isActiveConversation = conversations.some((c) => c.id === currentConversationId);
-  const textColor = isActiveConversation ? "text-gray-500" : "text-gray-400";
+  const isActiveChapter = chapters.some((c) => c.id === currentChapterId);
+  const textColor = isActiveChapter ? "text-gray-500" : "text-gray-400";
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownHeight, setDropdownHeight] = useState<number>(0);
@@ -50,12 +50,12 @@ export function ActItem({ icon, name, conversations, defaultOpen, currentConvers
       </div>
       <div className={cn("relative flex duration-300 overflow-clip")} style={{ height: dropdownHeight }}>
         <div ref={dropdownRef} className="absolute flex flex-col w-full">
-          {conversations.map((c) => (
+          {chapters.map((c) => (
             <Link
               key={c.id}
               className={cn(
                 "text-sm px-7 py-2 rounded-xl hover:bg-black/5 cursor-pointer w-full",
-                currentConversationId === c.id ? "text-gray-500 font-medium" : "text-gray-400"
+                currentChapterId === c.id ? "text-gray-500 font-medium" : "text-gray-400"
               )}
               href={`/chat/${c.id}`}
             >

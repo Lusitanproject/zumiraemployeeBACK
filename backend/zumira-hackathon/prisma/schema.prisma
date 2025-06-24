@@ -18,7 +18,7 @@ enum AssessmentOperation {
   AVERAGE
 }
 
-enum ConversationRole {
+enum MessageRole {
   user
   assistant
 }
@@ -29,7 +29,7 @@ enum UserGender {
   OTHER
 }
 
-enum ConversationType {
+enum ChapterType {
   REGULAR
   ADMIN_TEST
 }
@@ -56,7 +56,7 @@ model User {
   assessmentResults         AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
   notificationRecipients    NotificationRecipient[]
-  actConversations          ActConversation[]
+  actChapters               ActChapter[]
 
   @@map("users")
 }
@@ -348,44 +348,46 @@ model ActChatbot {
   name             String
   description      String
   icon             String
-  instructions     String
+  messageInstructions     String?
+  compilationInstructions String?
   nextActChatbotId String?  @map("next_act_chatbot_id")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
-  nextActChatbot   ActChatbot?       @relation("ActChatbotChain", fields: [nextActChatbotId], references: [id])
-  prevActChatbots  ActChatbot[]      @relation("ActChatbotChain")
-  actConversations ActConversation[]
-  currentUsers     User[]
+  nextActChatbot  ActChatbot?  @relation("ActChatbotChain", fields: [nextActChatbotId], references: [id])
+  prevActChatbots ActChatbot[] @relation("ActChatbotChain")
+  actChapters     ActChapter[]
+  currentUsers    User[]
 
   @@map("act_chatbots")
 }
 
-model ActConversation {
-  id           String           @id @default(cuid())
-  title        String           @default("Novo capítulo")
-  actChatbotId String           @map("act_chatbot_id")
-  userId       String           @map("user_id")
-  type         ConversationType @default(REGULAR) // TODO: Remover na próxima migration
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+model ActChapter {
+  id           String      @id @default(cuid())
+  title        String      @default("Novo capítulo")
+  compilation  String?
+  actChatbotId String      @map("act_chatbot_id")
+  userId       String      @map("user_id")
+  type         ChapterType
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  actChatbot ActChatbot               @relation(fields: [actChatbotId], references: [id])
-  user       User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages   ActConversationMessage[]
+  actChatbot   ActChatbot              @relation(fields: [actChatbotId], references: [id])
+  user         User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages     ActChapterMessage[]
 
-  @@map("act_conversations")
+  @@map("act_chapters")
 }
 
-model ActConversationMessage {
-  id                String           @id @default(cuid())
-  actConversationId String           @map("act_conversation_id")
-  content           String
-  role              ConversationRole
-  createdAt         DateTime         @default(now()) @map("created_at")
-  updatedAt         DateTime         @updatedAt @map("updated_at")
+model ActChapterMessage {
+  id           String      @id @default(cuid())
+  actChapterId String      @map("act_chapter_id")
+  content      String
+  role         MessageRole
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  actConversation ActConversation @relation(fields: [actConversationId], references: [id])
+  actChapter ActChapter @relation(fields: [actChapterId], references: [id])
 
-  @@map("act_conversation_messages")
+  @@map("act_chapter_messages")
 }

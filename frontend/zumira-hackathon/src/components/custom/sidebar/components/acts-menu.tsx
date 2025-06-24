@@ -15,8 +15,8 @@ interface ActsMenuProps {
 export function ActsMenu({ data }: ActsMenuProps) {
   const pathname = usePathname();
   const segments = pathname.split("/");
-  const currentConversationId = segments[2] ?? null;
-  const currentActId = data.conversations.find((c) => c.id === currentConversationId)?.actChatbotId;
+  const currentChapterId = segments[2] ?? null;
+  const currentActId = data.chapters.find((c) => c.id === currentChapterId)?.actChatbotId;
 
   return (
     <>
@@ -33,8 +33,8 @@ export function ActsMenu({ data }: ActsMenuProps) {
         {data.chatbots.map((c) => (
           <ActItem
             key={c.id}
-            conversations={data.conversations.filter((conv) => conv.actChatbotId === c.id)}
-            currentConversationId={currentConversationId}
+            chapters={data.chapters.filter((conv) => conv.actChatbotId === c.id)}
+            currentChapterId={currentChapterId}
             defaultOpen={c.id === currentActId}
             icon={c.icon as IconName}
             name={c.name}

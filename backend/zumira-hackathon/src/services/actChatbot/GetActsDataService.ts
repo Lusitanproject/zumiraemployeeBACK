@@ -2,7 +2,7 @@ import prismaClient from "../../prisma";
 
 class GetActsDataService {
   async execute(userId: string) {
-    const [chatbots, conversations] = await Promise.all([
+    const [chatbots, chapters] = await Promise.all([
       await prismaClient.actChatbot.findMany({
         select: {
           id: true,
@@ -13,7 +13,7 @@ class GetActsDataService {
         },
       }),
 
-      prismaClient.actConversation.findMany({
+      prismaClient.actChapter.findMany({
         where: {
           userId,
           type: "REGULAR",
@@ -28,7 +28,7 @@ class GetActsDataService {
       }),
     ]);
 
-    return { chatbots, conversations };
+    return { chatbots, chapters };
   }
 }
 

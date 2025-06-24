@@ -9,7 +9,7 @@ async function generateOpenAiResponse({ instructions, messages }) {
     const openai = new openai_1.default({
         apiKey: process.env.OPENAI_API_KEY,
     });
-    const input = [{ role: "system", content: instructions }, ...messages].filter((item) => item.content !== undefined);
+    const input = [{ role: "system", content: instructions }, ...messages].filter((item) => !!item.content);
     const response = await openai.responses.create({
         model: "gpt-4.1",
         input,
