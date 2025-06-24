@@ -1,16 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateActConversationSchema = exports.MessageActChatbotSchema = exports.GetActConversationSchema = void 0;
+exports.UpdateActChapterSchema = exports.CompileActChapterSchema = exports.CreateActChapterSchema = exports.MessageActChatbotSchema = exports.GetActChapterSchema = void 0;
 const client_1 = require("@prisma/client");
 const zod_1 = require("zod");
-exports.GetActConversationSchema = zod_1.z.object({
-    actConversationId: zod_1.z.string().cuid(),
+exports.GetActChapterSchema = zod_1.z.object({
+    actChapterId: zod_1.z.string().cuid(),
 });
 exports.MessageActChatbotSchema = zod_1.z.object({
-    actConversationId: zod_1.z.string().cuid(),
+    actChapterId: zod_1.z.string().cuid(),
     content: zod_1.z.string().nonempty(),
 });
-exports.CreateActConversationSchema = zod_1.z.object({
+exports.CreateActChapterSchema = zod_1.z.object({
     actChatbotId: zod_1.z.string().cuid(),
-    type: zod_1.z.nativeEnum(client_1.ConversationType),
+    type: zod_1.z.nativeEnum(client_1.ChapterType),
+});
+exports.CompileActChapterSchema = zod_1.z.object({
+    actChapterId: zod_1.z.string().cuid(),
+});
+exports.UpdateActChapterSchema = zod_1.z.object({
+    actChapterId: zod_1.z.string().cuid(),
+    title: zod_1.z.string().nonempty().optional(),
+    compilation: zod_1.z.string().nullable().optional(),
 });

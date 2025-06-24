@@ -2,11 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
 const express_1 = require("express");
-const CreateActConversationController_1 = require("./controllers/actChatbot/CreateActConversationController");
-const GetActConversationController_1 = require("./controllers/actChatbot/GetActConversationController");
+const CompileActChapterController_1 = require("./controllers/actChatbot/CompileActChapterController");
+const CreateActChapterController_1 = require("./controllers/actChatbot/CreateActChapterController");
+const GetActChapterController_1 = require("./controllers/actChatbot/GetActChapterController");
 const GetActsDataController_1 = require("./controllers/actChatbot/GetActsDataController");
 const MessageActChatbotController_1 = require("./controllers/actChatbot/MessageActChatbotController");
 const MoveToNextActController_1 = require("./controllers/actChatbot/MoveToNextActController");
+const UpdateActChapterController_1 = require("./controllers/actChatbot/UpdateActChapterController");
 const CreateActChatbotController_1 = require("./controllers/admin/act-chatbots/CreateActChatbotController");
 const FindActChatbotController_1 = require("./controllers/admin/act-chatbots/FindActChatbotController");
 const FindAllActChatbotsController_1 = require("./controllers/admin/act-chatbots/FindAllActChatbotsController");
@@ -155,7 +157,9 @@ router.put("/acts/admin/reorder", isAuthenticated_1.isAuthenticated, new Reorder
 router.put("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateActChatbotController_1.UpdateActChatbotController().handle);
 router.post("/acts/admin", isAuthenticated_1.isAuthenticated, new CreateActChatbotController_1.CreateActChatbotController().handle);
 router.get("/acts", isAuthenticated_1.isAuthenticated, new GetActsDataController_1.GetActsDataController().handle);
-router.get("/acts/conversations", isAuthenticated_1.isAuthenticated, new GetActConversationController_1.GetActConversationController().handle);
+router.get("/acts/chapters", isAuthenticated_1.isAuthenticated, new GetActChapterController_1.GetActChapterController().handle);
 router.put("/acts/next", isAuthenticated_1.isAuthenticated, new MoveToNextActController_1.MoveToNextActController().handle);
 router.post("/acts/message", isAuthenticated_1.isAuthenticated, new MessageActChatbotController_1.MessageActChatbotController().handle);
-router.post("/acts/new-conversation", isAuthenticated_1.isAuthenticated, new CreateActConversationController_1.CreateActConversationController().handle);
+router.post("/acts/new-chapter", isAuthenticated_1.isAuthenticated, new CreateActChapterController_1.CreateActChapterController().handle);
+router.post("/acts/chapters/compile", isAuthenticated_1.isAuthenticated, new CompileActChapterController_1.CompileActChapterController().handle);
+router.put("/acts/chapters/:actChapterId", isAuthenticated_1.isAuthenticated, new UpdateActChapterController_1.UpdateActChapterController().handle);
