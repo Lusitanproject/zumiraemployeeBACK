@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 
 import { decrypt } from "@/app/_lib/session";
-import { ActChatbot, ActChapter } from "@/types/acts";
+import { ActChapter, ActChatbot } from "@/types/acts";
 import { catchError } from "@/utils/error";
 
 import { ZumiraApiResponse } from "./common";
@@ -15,6 +15,11 @@ export type SaveActChatbotRequest = {
   messageInstructions?: string;
   compilationInstructions?: string;
   icon: string;
+};
+export type UpdateActChapterRequest = {
+  actChapterId: string;
+  compilation: string;
+  title: string;
 };
 
 export type GetActChapterResponse = ZumiraApiResponse<ActChapter>;
@@ -79,8 +84,12 @@ export async function generateResponse(body: { actChapterId: string; content: st
     })
   );
 
-  if (error || !response.ok) {
-    throw new Error("Couldn't generate response");
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
   }
 
   const parsed = (await response.json()) as GenerateResponseResponse;
@@ -169,8 +178,18 @@ export async function reorderChatbots(chatbots: ActChatbot[]) {
     })
   );
 
-  if (error || !response.ok || (await response.json()).status === "ERROR") {
-    throw new Error("Could not reorder acts");
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const parsed = await response.json();
+
+  if (parsed.status === "ERROR") {
+    throw new Error(parsed.message);
   }
 }
 
@@ -193,8 +212,12 @@ export async function newActChapter(actChatbotId: string, type: "REGULAR" | "ADM
     })
   );
 
-  if (error || !response.ok) {
-    throw new Error("Couldn't create new chapter");
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
   }
 
   const parsed = (await response.json()) as NewChapterResponse;
@@ -233,6 +256,72 @@ export async function saveActChatbot(data: SaveActChatbotRequest) {
   }
 
   const parsed = (await response.json()) as GetActChatbotResponse;
+
+  if (parsed.status === "ERROR") {
+    throw new Error(parsed.message);
+  }
+
+  return parsed.data;
+}
+
+export async function compileActChapter(actChapterId: string) {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/acts/chapters/compile`;
+  const [error, response] = await catchError(
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ actChapterId }),
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const parsed = (await response.json()) as GetActChapterResponse;
+
+  if (parsed.status === "ERROR") {
+    throw new Error(parsed.message);
+  }
+
+  return parsed.data;
+}
+
+export async function updateActChapter(data: UpdateActChapterRequest) {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/acts/chapters/${data.actChapterId}`;
+  const [error, response] = await catchError(
+    fetch(url, {
+      method: "PUT",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const parsed = (await response.json()) as GetActChapterResponse;
 
   if (parsed.status === "ERROR") {
     throw new Error(parsed.message);

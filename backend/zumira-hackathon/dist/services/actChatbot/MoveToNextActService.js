@@ -22,9 +22,9 @@ class MoveToNextActService {
             throw new error_1.PublicError("Usuário não está atribuído a nenhum ato");
         if (!user.currentActChatbot.nextActChatbotId)
             throw new error_1.PublicError("Não há mais atos restantes");
-        const currentActMessages = await prisma_1.default.actConversationMessage.findMany({
+        const currentActMessages = await prisma_1.default.actChapterMessage.findMany({
             where: {
-                actConversation: {
+                actChapter: {
                     userId,
                     actChatbotId: user.currentActChatbot.id,
                 },
@@ -40,10 +40,11 @@ class MoveToNextActService {
                 currentActChatbotId: user.currentActChatbot.nextActChatbotId,
             },
         });
-        const conversation = await prisma_1.default.actConversation.create({
+        const chapter = await prisma_1.default.actChapter.create({
             data: {
                 userId,
                 actChatbotId: user.currentActChatbot.nextActChatbotId,
+                type: "REGULAR",
             },
             select: {
                 id: true,
@@ -56,7 +57,7 @@ class MoveToNextActService {
                 },
             },
         });
-        return conversation;
+        return chapter;
     }
 }
 exports.MoveToNextActService = MoveToNextActService;

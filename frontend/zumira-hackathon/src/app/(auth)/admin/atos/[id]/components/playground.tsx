@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { getActChapter, newActChapter } from "@/api/acts";
 import { ChatUi } from "@/components/ui/act-chat/chat-ui";
-import { ActChatbot, ActChapter } from "@/types/acts";
+import { ActChapter, ActChatbot } from "@/types/acts";
 
 import { ManageActChatbot } from "../definitions";
 import { ActChatbotForm } from "../form";

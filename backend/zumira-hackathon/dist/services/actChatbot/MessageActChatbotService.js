@@ -8,10 +8,10 @@ const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
 const generateOpenAiResponse_1 = require("../../utils/generateOpenAiResponse");
 class MessageActChatbotService {
-    async execute({ content, actConversationId, userId }) {
-        const conv = await prisma_1.default.actConversation.findFirst({
+    async execute({ content, actChapterId, userId }) {
+        const conv = await prisma_1.default.actChapter.findFirst({
             where: {
-                id: actConversationId,
+                id: actChapterId,
                 userId,
             },
             include: {
@@ -20,17 +20,17 @@ class MessageActChatbotService {
         });
         if (!conv)
             throw new error_1.PublicError("Conversa não existe");
-        await prisma_1.default.actConversationMessage.create({
+        await prisma_1.default.actChapterMessage.create({
             data: {
-                actConversationId,
+                actChapterId,
                 role: "user",
                 content,
             },
         });
         const { actChatbot: bot } = conv;
-        const messages = await prisma_1.default.actConversationMessage.findMany({
+        const messages = await prisma_1.default.actChapterMessage.findMany({
             where: {
-                actConversationId,
+                actChapterId,
             },
             orderBy: {
                 createdAt: "asc",
@@ -41,20 +41,20 @@ class MessageActChatbotService {
             content: m.content,
         }));
         const response = await (0, generateOpenAiResponse_1.generateOpenAiResponse)({
-            instructions: bot.instructions,
+            instructions: bot.messageInstructions,
             messages: historyAndInput,
         });
         await Promise.all([
-            prisma_1.default.actConversationMessage.create({
+            prisma_1.default.actChapterMessage.create({
                 data: {
-                    actConversationId,
+                    actChapterId,
                     role: "assistant",
                     content: response.output_text,
                 },
             }),
-            prisma_1.default.actConversation.update({
+            prisma_1.default.actChapter.update({
                 where: {
-                    id: actConversationId,
+                    id: actChapterId,
                 },
                 data: {
                     updatedAt: new Date(),
