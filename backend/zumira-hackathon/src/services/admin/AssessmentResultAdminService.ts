@@ -1,7 +1,8 @@
 import { Workbook } from "exceljs";
+
+import { AssessmentByCompanyRequest } from "../../definitions/admin/assessment";
 import prismaClient from "../../prisma";
 import { calculateResultScores } from "../../utils/calculateResultScores";
-import { AssessmentByCompanyRequest } from "../../definitions/admin/assessment";
 
 class AssessmentResultAdminService {
   async findFiltered({ assessmentId, companyId }: AssessmentByCompanyRequest) {

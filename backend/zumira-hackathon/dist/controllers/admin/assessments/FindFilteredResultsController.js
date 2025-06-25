@@ -6,7 +6,7 @@ const AssessmentResultAdminService_1 = require("../../../services/admin/Assessme
 const parseZodError_1 = require("../../../utils/parseZodError");
 class FindFilteredResultsController {
     async handle(req, res) {
-        const { success, data, error } = assessment_1.FindFilteredResultsSchema.safeParse(req.query);
+        const { success, data, error } = assessment_1.AssessmentByCompanySchema.safeParse(req.query);
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const service = new AssessmentResultAdminService_1.AssessmentResultAdminService();

@@ -16,6 +16,7 @@ import { DuplicateAssessmentController } from "./controllers/admin/assessments/D
 import { FindFilteredResultsController } from "./controllers/admin/assessments/FindFilteredResultsController";
 import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
 import { FindResultRatingsByAssessmentController } from "./controllers/admin/assessments/FindResultRatingsByAssessmentController";
+import { GenerateExcelReportController } from "./controllers/admin/assessments/GenerateExcelReportController";
 import { UpdateAssessmentController } from "./controllers/admin/assessments/UpdateAssessmentController";
 import { UpdateResultRatingsController } from "./controllers/admin/assessments/UpdateResultRatingsController";
 import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
@@ -73,7 +74,6 @@ import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
-import { GenerateExcelReportController } from "./controllers/admin/assessments/GenerateExcelReportController";
 
 const router = Router();
 

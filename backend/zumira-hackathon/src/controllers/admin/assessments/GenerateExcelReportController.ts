@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
+import { AssessmentByCompanySchema } from "../../../definitions/admin/assessment";
 import { AssessmentResultAdminService } from "../../../services/admin/AssessmentResultAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
-import { AssessmentByCompanySchema } from "../../../definitions/admin/assessment";
 
 class GenerateExcelReportController {
   async handle(req: Request, res: Response) {

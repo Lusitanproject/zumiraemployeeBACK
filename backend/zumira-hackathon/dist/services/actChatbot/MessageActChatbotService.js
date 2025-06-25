@@ -16,6 +16,7 @@ class MessageActChatbotService {
             },
             include: {
                 actChatbot: true,
+                user: true,
             },
         });
         if (!conv)
@@ -41,7 +42,7 @@ class MessageActChatbotService {
             content: m.content,
         }));
         const response = await (0, generateOpenAiResponse_1.generateOpenAiResponse)({
-            instructions: bot.messageInstructions,
+            instructions: bot.messageInstructions + `\nO nome do usuário é: ${conv.user.name.split(" ")[0]}`,
             messages: historyAndInput,
         });
         await Promise.all([

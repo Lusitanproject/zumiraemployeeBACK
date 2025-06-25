@@ -18,6 +18,7 @@ const DuplicateAssessmentController_1 = require("./controllers/admin/assessments
 const FindFilteredResultsController_1 = require("./controllers/admin/assessments/FindFilteredResultsController");
 const FindQuestionByAssessmentController_1 = require("./controllers/admin/assessments/FindQuestionByAssessmentController");
 const FindResultRatingsByAssessmentController_1 = require("./controllers/admin/assessments/FindResultRatingsByAssessmentController");
+const GenerateExcelReportController_1 = require("./controllers/admin/assessments/GenerateExcelReportController");
 const UpdateAssessmentController_1 = require("./controllers/admin/assessments/UpdateAssessmentController");
 const UpdateResultRatingsController_1 = require("./controllers/admin/assessments/UpdateResultRatingsController");
 const FindAllCompaniesController_1 = require("./controllers/admin/companies/FindAllCompaniesController");
@@ -98,6 +99,7 @@ router.put("/dimensions/:psychologicalDimensionId", isAuthenticated_1.isAuthenti
 // ROTAS RESULTS
 router.get("/assessments/results", isAuthenticated_1.isAuthenticated, new ListResultsController_1.ListResultsController().handle);
 router.get("/assessments/results/admin", isAuthenticated_1.isAuthenticated, new FindFilteredResultsController_1.FindFilteredResultsController().handle);
+router.get("/assessments/results/admin/download-report", isAuthenticated_1.isAuthenticated, new GenerateExcelReportController_1.GenerateExcelReportController().handle);
 router.get("/assessments/results/:id", isAuthenticated_1.isAuthenticated, new DetailResultController_1.DetailResultController().handle);
 router.post("/assessments/results", isAuthenticated_1.isAuthenticated, new CreateResultController_1.CreateResultController().handle);
 // ROTAS QUESTIONS

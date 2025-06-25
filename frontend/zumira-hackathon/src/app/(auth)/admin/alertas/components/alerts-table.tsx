@@ -1,15 +1,16 @@
+import { Download } from "lucide-react";
+import { toast } from "sonner";
+
+import { downloadAssessmentResultsReport } from "@/api/assessments";
 import { Spinner } from "@/components/custom/spinner";
 
-import { Assessment, Filters, Result } from "../definitions";
+import { Filters, Result } from "../definitions";
 import { MeatballsMenu } from "./meatballs-menu";
-import { toast } from "sonner";
-import { downloadAssessmentResultsReport } from "@/api/assessments";
-import { Download } from "lucide-react";
 
 interface AlertsTableProps {
+  filters?: Filters;
   loading?: boolean;
   results?: Result[];
-  filters?: Filters;
 }
 
 export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
@@ -69,7 +70,7 @@ export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
             <th className="p-2">Ultima avaliação</th>
             <th className="p-2">Status</th>
             <th>
-              <button className="flex size-fit cursor-pointer" onClick={downloadReport} title="Baixar relatório">
+              <button className="flex size-fit cursor-pointer" title="Baixar relatório" onClick={downloadReport}>
                 <Download className="size-4.5" />
               </button>
             </th>

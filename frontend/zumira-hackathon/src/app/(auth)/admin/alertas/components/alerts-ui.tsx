@@ -40,7 +40,7 @@ export function AlertsUI({ assessments, companies }: AlertsUIProps) {
         />
       </div>
       <div className="flex flex-col gap-2">
-        <AlertsTable loading={loading} results={results} filters={filters.current} />
+        <AlertsTable filters={filters.current} loading={loading} results={results} />
       </div>
     </div>
   );
