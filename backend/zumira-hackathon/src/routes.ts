@@ -73,6 +73,7 @@ import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { GenerateExcelReportController } from "./controllers/admin/assessments/GenerateExcelReportController";
 
 const router = Router();
 
@@ -101,6 +102,7 @@ router.put("/dimensions/:psychologicalDimensionId", isAuthenticated, new EditDim
 // ROTAS RESULTS
 router.get("/assessments/results", isAuthenticated, new ListResultsController().handle);
 router.get("/assessments/results/admin", isAuthenticated, new FindFilteredResultsController().handle);
+router.get("/assessments/results/admin/download-report", isAuthenticated, new GenerateExcelReportController().handle);
 router.get("/assessments/results/:id", isAuthenticated, new DetailResultController().handle);
 router.post("/assessments/results", isAuthenticated, new CreateResultController().handle);
 

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 
-import { FindFilteredResultsSchema } from "../../../definitions/admin/assessment";
+import { AssessmentByCompanySchema } from "../../../definitions/admin/assessment";
 import { AssessmentResultAdminService } from "../../../services/admin/AssessmentResultAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class FindFilteredResultsController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = FindFilteredResultsSchema.safeParse(req.query);
+    const { success, data, error } = AssessmentByCompanySchema.safeParse(req.query);
 
     if (!success) throw new Error(parseZodError(error));
 

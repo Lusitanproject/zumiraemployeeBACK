@@ -37,7 +37,7 @@ export const UpdateRatingsSchema = z.object({
   ),
 });
 
-export const FindFilteredResultsSchema = z.object({
+export const AssessmentByCompanySchema = z.object({
   assessmentId: z.string().cuid(),
   companyId: z.string().cuid().optional(),
 });
@@ -45,4 +45,4 @@ export const FindFilteredResultsSchema = z.object({
 export type CreateAssessment = z.infer<typeof CreateAssessmentSchema>;
 export type UpdateAssessment = z.infer<typeof UpdateAssessmentSchema>;
 export type UpdateRatingsRequest = z.infer<typeof UpdateRatingsSchema> & { assessmentId: string };
-export type FindFilteredAlertsRequest = z.infer<typeof FindFilteredResultsSchema>;
+export type AssessmentByCompanyRequest = z.infer<typeof AssessmentByCompanySchema>;

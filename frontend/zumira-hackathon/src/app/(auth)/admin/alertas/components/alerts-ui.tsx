@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { getFilteredResults } from "../actions";
 import { Assessment, Company, Filters as FiltersType, Result } from "../definitions";
@@ -15,12 +15,18 @@ interface AlertsUIProps {
 export function AlertsUI({ assessments, companies }: AlertsUIProps) {
   const [results, setResults] = useState<Result[]>();
   const [loading, setLoading] = useState<boolean>(false);
+  const filters = useRef<FiltersType>(undefined);
 
   async function fetchResults(data: FiltersType) {
     setLoading(true);
     const newData = await getFilteredResults(data);
     setResults(newData);
     setLoading(false);
+  }
+
+  async function handleChangeFilters(data: FiltersType) {
+    filters.current = data;
+    await fetchResults(data);
   }
 
   return (
@@ -30,11 +36,11 @@ export function AlertsUI({ assessments, companies }: AlertsUIProps) {
           assessments={assessments}
           companies={companies}
           totalResults={results?.length}
-          onChangeFilters={fetchResults}
+          onChangeFilters={handleChangeFilters}
         />
       </div>
       <div className="flex flex-col gap-2">
-        <AlertsTable loading={loading} results={results} />
+        <AlertsTable loading={loading} results={results} filters={filters.current} />
       </div>
     </div>
   );
