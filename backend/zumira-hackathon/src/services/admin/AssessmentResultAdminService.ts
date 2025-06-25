@@ -105,29 +105,42 @@ class AssessmentResultAdminService {
       },
     });
 
+    const aux: Record<string, (typeof results)[0]> = {};
+    for (const result of results) {
+      if (!aux[result.user.id] || new Date(aux[result.user.id].createdAt) < new Date(result.createdAt)) {
+        aux[result.user.id] = result;
+      }
+    }
+    const lastResults = Object.values(aux);
+
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet(`Relatório ${assessment.title}`);
 
     worksheet.columns = [
       { header: "Carimbo de data", key: "date", width: 15 },
       { header: "Código", key: "code", width: 6 },
-      ...assessment.assessmentQuestions.flatMap((question) => [
-        { header: `${question.description}`, key: `question_${question.index}`, width: 50 },
-        { header: `${question.index}`, key: `index_${question.index}`, width: 3 },
-      ]),
+      ...assessment.assessmentQuestions
+        .sort((a, b) => a.index - b.index)
+        .flatMap((question) => [
+          { header: `${question.description}`, key: `question_${question.index}`, width: 50 },
+          { header: `${question.index + 1}`, key: `index_${question.index}`, width: 3 },
+        ]),
     ];
 
-    for (let i = 0; i < results.length; i++) {
-      const result = results[i];
+    const rows: Record<string, any> = {};
+
+    for (let i = 0; i < lastResults.length; i++) {
+      const result = lastResults[i];
       const row: Record<string, any> = { date: result.createdAt, code: `C-${(i + 1).toString().padStart(3, "0")}` };
 
-      for (let j = 0; j < result.assessmentQuestionAnswers.length; j++) {
-        const answer = result.assessmentQuestionAnswers[j];
-        row[`question_${answer.assessmentQuestion.index}`] = answer.assessmentQuestionChoice.label;
-        row[`index_${answer.assessmentQuestion.index}`] = answer.assessmentQuestionChoice.value;
-      }
+      result.assessmentQuestionAnswers
+        .sort((a, b) => a.assessmentQuestion.index - b.assessmentQuestion.index)
+        .forEach((answer) => {
+          row[`question_${answer.assessmentQuestion.index}`] = answer.assessmentQuestionChoice.label;
+          row[`index_${answer.assessmentQuestion.index}`] = answer.assessmentQuestionChoice.value;
+        });
 
-      worksheet.addRow(row);
+      if (!rows[result.user.id] || rows[result.user.id].date < result.createdAt) worksheet.addRow(row);
     }
 
     return workbook;
