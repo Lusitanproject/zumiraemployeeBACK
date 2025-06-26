@@ -1,5 +1,6 @@
 "use client";
 
+import equal from "fast-deep-equal";
 import { Bookmark, LogOut, Redo, RefreshCcw, Undo } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { MouseEvent } from "react";
@@ -10,7 +11,6 @@ import { compileActChapter, updateActChapter, UpdateActChapterRequest } from "@/
 import { cn } from "@/lib/utils";
 import { ActChapter } from "@/types/acts";
 import { isMacOS } from "@/utils/is-macos";
-import equal from "fast-deep-equal";
 
 interface BookProps {
   actChapter: ActChapter;
@@ -34,7 +34,7 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
   const undoStack = useRef<ActChapter[]>([]);
   const redoStack = useRef<ActChapter[]>([]);
 
-  const debouncedUpdate = useDebouncedCallback(update, 3000);
+  const debouncedUpdate = useDebouncedCallback(update, 1000);
 
   async function update() {
     if (equal(chapter, savedChapter.current)) return;
@@ -143,12 +143,6 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
-
-  useEffect(() => {
-    return () => {
-      update();
-    };
-  }, []);
 
   return (
     <div
