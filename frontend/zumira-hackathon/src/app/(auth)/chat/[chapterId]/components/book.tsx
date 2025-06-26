@@ -137,11 +137,14 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
     }
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      update(); // Garantir que conteúdo foi salvo
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [chapter]);
+
+  useEffect(() => {
+    return () => {
+      update();
+    };
+  }, []);
 
   return (
     <div
@@ -194,7 +197,7 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
             <button
               key={i}
               className={cn("flex flex-row gap-2 p-2 rounded-lg duration-50 font-medium", {
-                "opacity-20": b.disabled,
+                "opacity-30": b.disabled,
                 "hover:bg-primary-200 hover:text-white cursor-pointer": !b.disabled,
               })}
               disabled={b.disabled}
