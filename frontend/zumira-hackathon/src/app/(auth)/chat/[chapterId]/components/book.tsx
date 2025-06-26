@@ -1,15 +1,16 @@
 "use client";
 
-import { Bookmark, Edit, LogOut, Redo, RefreshCcw, Save, Undo, X } from "lucide-react";
+import { Bookmark, LogOut, Redo, RefreshCcw, Undo } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { MouseEvent } from "react";
 import { toast } from "sonner";
+import { useDebouncedCallback } from "use-debounce";
 
 import { compileActChapter, updateActChapter, UpdateActChapterRequest } from "@/api/acts";
 import { cn } from "@/lib/utils";
 import { ActChapter } from "@/types/acts";
 import { isMacOS } from "@/utils/is-macos";
-import { useDebounce, useDebouncedCallback } from "use-debounce";
+import equal from "fast-deep-equal";
 
 interface BookProps {
   actChapter: ActChapter;
@@ -26,6 +27,7 @@ interface BookButton {
 
 export function Book({ actChapter, state, onExpand }: BookProps) {
   const divRef = useRef<HTMLDivElement>(null);
+  const savedChapter = useRef<ActChapter>(actChapter);
   const [chapter, setChapter] = useState<ActChapter>(actChapter);
   const [recompiling, setRecompiling] = useState<boolean>(false);
 
@@ -35,12 +37,15 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
   const debouncedUpdate = useDebouncedCallback(update, 3000);
 
   async function update() {
+    if (equal(chapter, savedChapter.current)) return;
+
     const payload = { actChapterId: chapter.id, ...chapter } as UpdateActChapterRequest;
     console.log(payload.compilation);
 
     try {
       const result = await updateActChapter(payload);
       setChapter(result);
+      savedChapter.current = result;
     } catch (err) {
       if (err instanceof Error) toast.error(err.message);
     }
@@ -64,6 +69,7 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
     const prev = undoStack.current.pop()!;
     redoStack.current.push(chapter);
     setChapter(prev);
+    debouncedUpdate();
   }
 
   function redo() {
@@ -71,6 +77,7 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
     const next = redoStack.current.pop()!;
     undoStack.current.push(chapter);
     setChapter(next);
+    debouncedUpdate();
   }
 
   function handleChange(key: "compilation" | "title", value: string) {
@@ -85,7 +92,6 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
 
     redoStack.current = [];
     setChapter((prev) => ({ ...prev, [key]: value }));
-
     debouncedUpdate();
   }
 
@@ -113,7 +119,7 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const isMac = isMacOS();
       const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
       const target = e.target as HTMLElement;
@@ -130,15 +136,13 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
         redo();
       } else if (ctrlOrCmd && e.key.toLowerCase() === "s") {
         e.preventDefault();
-        if (redoStack.current.length) {
-          update();
-        }
+        update();
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [chapter]);
+  });
 
   useEffect(() => {
     return () => {
@@ -186,7 +190,7 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
           ) : (
             <textarea
               className={cn("flex size-full font-normal text-base resize-none", textInputClass)}
-              value={chapter.compilation}
+              value={chapter.compilation ?? ""}
               onChange={(e) => handleChange("compilation", e.target.value)}
             />
           )}
