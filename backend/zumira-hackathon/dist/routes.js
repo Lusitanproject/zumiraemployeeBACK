@@ -12,8 +12,8 @@ const UpdateActChapterController_1 = require("./controllers/actChatbot/UpdateAct
 const CreateActChatbotController_1 = require("./controllers/admin/act-chatbots/CreateActChatbotController");
 const FindActChatbotController_1 = require("./controllers/admin/act-chatbots/FindActChatbotController");
 const FindAllActChatbotsController_1 = require("./controllers/admin/act-chatbots/FindAllActChatbotsController");
-const ReorderActChatbotsController_1 = require("./controllers/admin/act-chatbots/ReorderActChatbotsController");
 const UpdateActChatbotController_1 = require("./controllers/admin/act-chatbots/UpdateActChatbotController");
+const UpdateManyActChatbotsController_1 = require("./controllers/admin/act-chatbots/UpdateManyActChatbotsController");
 const DuplicateAssessmentController_1 = require("./controllers/admin/assessments/DuplicateAssessmentController");
 const FindFilteredResultsController_1 = require("./controllers/admin/assessments/FindFilteredResultsController");
 const FindQuestionByAssessmentController_1 = require("./controllers/admin/assessments/FindQuestionByAssessmentController");
@@ -155,7 +155,7 @@ router.delete("/notifications/:notificationId", isAuthenticated_1.isAuthenticate
 // ROTAS ACTS
 router.get("/acts/admin", isAuthenticated_1.isAuthenticated, new FindAllActChatbotsController_1.FindAllActChatbotsController().handle);
 router.get("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new FindActChatbotController_1.FindActChatbotController().handle);
-router.put("/acts/admin/reorder", isAuthenticated_1.isAuthenticated, new ReorderActChatbotsController_1.ReorderActChatbotsController().handle);
+router.put("/acts/admin/update-many", isAuthenticated_1.isAuthenticated, new UpdateManyActChatbotsController_1.UpdateManyActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateActChatbotController_1.UpdateActChatbotController().handle);
 router.post("/acts/admin", isAuthenticated_1.isAuthenticated, new CreateActChatbotController_1.CreateActChatbotController().handle);
 router.get("/acts", isAuthenticated_1.isAuthenticated, new GetActsDataController_1.GetActsDataController().handle);
