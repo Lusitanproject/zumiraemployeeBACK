@@ -2,7 +2,7 @@ import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 
 class MoveToNextActService {
-  async execute(userId: string) {
+  async execute(userId: string): Promise<{ currActChatbotId: string }> {
     const user = await prismaClient.user.findFirst({
       where: {
         id: userId,
@@ -15,7 +15,6 @@ class MoveToNextActService {
 
     if (!user) throw new PublicError("Usuário não encontrado");
     if (!user.currentActChatbot) throw new PublicError("Usuário não está atribuído a nenhum ato");
-    if (!user.currentActChatbot.nextActChatbotId) throw new PublicError("Não há mais atos restantes");
 
     const currentActMessages = await prismaClient.actChapterMessage.findMany({
       where: {
@@ -28,35 +27,24 @@ class MoveToNextActService {
 
     if (!currentActMessages.length) throw new PublicError("Usuário não iniciou o ato atual");
 
+    const nextAct = await prismaClient.actChatbot.findFirst({
+      where: {
+        index: user.currentActChatbot.index + 1,
+      },
+    });
+
+    if (!nextAct) return { currActChatbotId: user.currentActChatbot.id };
+
     await prismaClient.user.update({
       where: {
         id: userId,
       },
       data: {
-        currentActChatbotId: user.currentActChatbot.nextActChatbotId,
+        currentActChatbotId: nextAct.id,
       },
     });
 
-    const chapter = await prismaClient.actChapter.create({
-      data: {
-        userId,
-        actChatbotId: user.currentActChatbot.nextActChatbotId,
-        type: "REGULAR",
-      },
-
-      select: {
-        id: true,
-        actChatbot: {
-          select: {
-            name: true,
-            icon: true,
-            description: true,
-          },
-        },
-      },
-    });
-
-    return chapter;
+    return { currActChatbotId: nextAct.id };
   }
 }
 

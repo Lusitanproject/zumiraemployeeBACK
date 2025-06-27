@@ -37,6 +37,7 @@ export function ActsMenu({ data }: ActsMenuProps) {
             currentChapterId={currentChapterId}
             defaultOpen={c.id === currentActId}
             icon={c.icon as IconName}
+            locked={c.locked}
             name={c.name}
           />
         ))}

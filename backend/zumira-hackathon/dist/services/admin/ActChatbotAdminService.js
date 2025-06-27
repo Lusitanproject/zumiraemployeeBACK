@@ -4,10 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActChatbotAdminService = void 0;
-const client_1 = require("@prisma/client");
-const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
-const getFirstActChatbot_1 = require("../../utils/getFirstActChatbot");
 class ActChatbotAdminService {
     async find(id) {
         const bot = await prisma_1.default.actChatbot.findFirst({
@@ -21,7 +18,7 @@ class ActChatbotAdminService {
                 icon: true,
                 messageInstructions: true,
                 compilationInstructions: true,
-                nextActChatbotId: true,
+                index: true,
                 actChapters: {
                     where: {
                         type: "ADMIN_TEST",
@@ -42,36 +39,24 @@ class ActChatbotAdminService {
                 name: true,
                 description: true,
                 icon: true,
-                nextActChatbotId: true,
+                index: true,
+            },
+            orderBy: {
+                index: "asc",
             },
         });
-        const items = [];
-        let aux = bots.find((b) => !b.nextActChatbotId);
-        while (aux) {
-            items.unshift(aux);
-            aux = bots.find((b) => b.nextActChatbotId === (aux === null || aux === void 0 ? void 0 : aux.id));
-        }
-        return { items };
+        return { items: bots };
     }
     async create(data) {
+        const existingBots = await prisma_1.default.actChatbot.findMany();
         const bot = await prisma_1.default.actChatbot.create({
             data: {
                 ...data,
-            },
-        });
-        await prisma_1.default.actChatbot.updateMany({
-            where: {
-                nextActChatbot: null,
-                id: {
-                    not: bot.id,
-                },
-            },
-            data: {
-                nextActChatbotId: bot.id,
+                index: existingBots.length,
             },
         });
         // Garantir que todo usuário sem ato é atualizado quando o primeiro bot é criado
-        const first = await (0, getFirstActChatbot_1.getFirstActChatbot)();
+        const first = existingBots.find((b) => b.index === 0);
         if (first) {
             const noActUsers = await prisma_1.default.user.findMany({
                 where: {
@@ -107,31 +92,14 @@ class ActChatbotAdminService {
         });
         return bot;
     }
-    async reorder({ chatbots }) {
-        const bots = await prisma_1.default.actChatbot.findMany();
-        if (chatbots.length !== bots.length)
-            throw new error_1.PublicError("Todos os chatbots devem ser enviados");
-        const botsMap = new Map();
-        chatbots.forEach((cb) => botsMap.set(cb.nextActChatbotId, cb.id));
-        // O loop tenta caminhar por todos os ids seguindo a estrutura passada na requisição para verificar se todos estão contectados linearmente
-        let count = -1;
-        let aux = null;
-        do {
-            count += 1;
-            aux = botsMap.get(aux);
-        } while (aux !== undefined);
-        if (count < chatbots.length)
-            throw new error_1.PublicError("Os chatbots devem estar todos conectados continuamente");
-        const queryString = client_1.Prisma.sql `
-      UPDATE act_chatbots
-      SET next_act_chatbot_id = CASE id
-        ${client_1.Prisma.join(chatbots.map((cb) => client_1.Prisma.sql `
-              WHEN ${cb.id} THEN ${cb.nextActChatbotId}
-            `), "\n")}
-      END
-      WHERE id IN (${client_1.Prisma.join(chatbots.map((cb) => client_1.Prisma.sql `${cb.id}`), ", ")})
-    `;
-        await prisma_1.default.$executeRaw(queryString);
+    async updateMany({ chatbots }) {
+        console.log(chatbots);
+        await Promise.all(chatbots.map((bot) => prisma_1.default.actChatbot.update({
+            where: {
+                id: bot.id,
+            },
+            data: { ...bot },
+        })));
     }
 }
 exports.ActChatbotAdminService = ActChatbotAdminService;

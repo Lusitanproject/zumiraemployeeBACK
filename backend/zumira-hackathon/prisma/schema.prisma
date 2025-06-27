@@ -344,20 +344,18 @@ model Alert {
 }
 
 model ActChatbot {
-  id               String   @id @default(cuid())
-  name             String
-  description      String
-  icon             String
-  messageInstructions     String?
-  compilationInstructions String?
-  nextActChatbotId String?  @map("next_act_chatbot_id")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  id                      String   @id @default(cuid())
+  name                    String
+  description             String
+  icon                    String
+  messageInstructions     String?  @map("message_instructions")
+  compilationInstructions String?  @map("compilation_instructions")
+  index                   Int      
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
 
-  nextActChatbot  ActChatbot?  @relation("ActChatbotChain", fields: [nextActChatbotId], references: [id])
-  prevActChatbots ActChatbot[] @relation("ActChatbotChain")
-  actChapters     ActChapter[]
-  currentUsers    User[]
+  actChapters  ActChapter[]
+  currentUsers User[]
 
   @@map("act_chatbots")
 }
@@ -372,9 +370,9 @@ model ActChapter {
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  actChatbot   ActChatbot              @relation(fields: [actChatbotId], references: [id])
-  user         User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages     ActChapterMessage[]
+  actChatbot ActChatbot          @relation(fields: [actChatbotId], references: [id])
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages   ActChapterMessage[]
 
   @@map("act_chapters")
 }

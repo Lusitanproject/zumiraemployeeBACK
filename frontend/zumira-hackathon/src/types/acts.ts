@@ -12,6 +12,9 @@ export interface ActsData {
     description: string;
     icon: string;
     nextActChatbotId: null | string;
+    index: number;
+    locked: boolean;
+    current: boolean;
   }[];
 }
 
@@ -43,6 +46,6 @@ export type ActChatbot = {
   messageInstructions?: string;
   compilationInstructions?: string;
   icon: string;
-  nextActChatbotId: string | null;
+  index: number;
   actChapters: { id: string; title: string }[];
 };

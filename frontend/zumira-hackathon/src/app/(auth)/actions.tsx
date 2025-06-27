@@ -1,11 +1,6 @@
 import { headers } from "next/headers";
-import { cookies } from "next/headers";
 
-import { decrypt } from "@/app/_lib/session";
 import { MenuLink } from "@/components/custom/main-menu";
-import { catchError } from "@/utils/error";
-
-import { GetActsDataResponse } from "./definitions";
 
 export async function getSidebarContent() {
   const heads = await headers();
@@ -40,32 +35,4 @@ export async function getSidebarContent() {
     });
 
   return menu;
-}
-
-export async function getActsData() {
-  const cookie = await cookies();
-  const session = decrypt(cookie.get("session")?.value);
-
-  const url = `${process.env.API_BASE_URL}/acts`;
-
-  const [error, response] = await catchError(
-    fetch(url, {
-      headers: {
-        "Content-Type": "Application/json",
-        Authorization: `Bearer ${session?.token}`,
-      },
-    })
-  );
-
-  if (error || !response.ok) {
-    throw new Error("Couldn't get acts data");
-  }
-
-  const parsed = (await response.json()) as GetActsDataResponse;
-
-  if (parsed.status === "ERROR") {
-    throw new Error(parsed.message);
-  }
-
-  return parsed.data;
 }

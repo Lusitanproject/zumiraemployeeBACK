@@ -1,8 +1,10 @@
 "use client";
 
 import equal from "fast-deep-equal";
-import { Bookmark, LogOut, Redo, RefreshCcw, Undo } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { startHolyLoader } from "holy-loader";
+import { Bookmark, Check, ChevronLeft, Redo, RefreshCcw, Undo } from "lucide-react";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { MouseEvent } from "react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
@@ -12,10 +14,12 @@ import { cn } from "@/lib/utils";
 import { ActChapter } from "@/types/acts";
 import { isMacOS } from "@/utils/is-macos";
 
+import { moveToNext } from "../actions";
+
 interface BookProps {
   actChapter: ActChapter;
-  state: "closed" | "open" | "expanded";
-  onExpand: () => void;
+  onClose: () => void;
+  onChangeChapter?: (chapter: ActChapter) => void;
 }
 
 interface BookButton {
@@ -25,16 +29,21 @@ interface BookButton {
   func?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 
-export function Book({ actChapter, state, onExpand }: BookProps) {
+export type BookRef = {
+  recompile: () => Promise<void>;
+};
+
+export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps, ref) {
   const divRef = useRef<HTMLDivElement>(null);
   const savedChapter = useRef<ActChapter>(actChapter);
   const [chapter, setChapter] = useState<ActChapter>(actChapter);
   const [recompiling, setRecompiling] = useState<boolean>(false);
+  const [finishing, setFinishing] = useState<boolean>(false);
 
   const undoStack = useRef<ActChapter[]>([]);
   const redoStack = useRef<ActChapter[]>([]);
 
-  const debouncedUpdate = useDebouncedCallback(update, 1000);
+  const debouncedUpdate = useDebouncedCallback(update, 3000);
 
   async function update() {
     if (equal(chapter, savedChapter.current)) return;
@@ -63,6 +72,10 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
       setRecompiling(false);
     }
   }
+
+  useImperativeHandle(ref, () => ({
+    recompile,
+  }));
 
   function undo() {
     if (undoStack.current.length === 0) return;
@@ -95,21 +108,35 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
     debouncedUpdate();
   }
 
+  async function finishAct() {
+    setFinishing(true);
+
+    try {
+      startHolyLoader();
+      await moveToNext(actChapter.actChatbot.id);
+    } catch (err) {
+      if (err instanceof Error && !isRedirectError(err)) toast.error(err.message);
+    } finally {
+      setFinishing(false);
+    }
+  }
+
   const buttons = [
     {
       icon: Undo,
       func: undo,
-      disabled: !undoStack.current.length,
+      disabled: !undoStack.current.length || finishing,
     },
     {
       icon: Redo,
       func: redo,
-      disabled: !redoStack.current.length,
+      disabled: !redoStack.current.length || finishing,
     },
     {
       label: "Recompilar",
       icon: RefreshCcw,
       func: recompile,
+      disabled: recompiling || finishing,
     },
   ] as BookButton[];
 
@@ -144,27 +171,18 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
+  useEffect(() => {
+    return () => {
+      update();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <div
-      ref={divRef}
-      className={cn("relative flex h-full left-0 top-0 duration-500 overflow-clip w-full", {
-        "w-0": state === "closed",
-      })}
-    >
-      <div
-        className={cn(
-          "absolute flex flex-col gap-4 size-full items-center justify-center border-l-5 border-gray-200 p-4 duration-500 z-10 bg-white",
-          { "border-0": state === "expanded" }
-        )}
-      >
+    <div ref={divRef} className={cn("relative flex h-full left-0 top-0 duration-500 overflow-clip w-full")}>
+      <div className={cn("absolute flex flex-col gap-4 size-full items-center justify-center p-4 z-10 bg-white")}>
         <div className="flex flex-row w-full justify-between">
-          <LogOut
-            className={cn(
-              "flex flex-none size-6 text-500 cursor-pointer",
-              state === "open" ? "rotate-180" : "rotate-0"
-            )}
-            onClick={onExpand}
-          />
+          <ChevronLeft className={cn("flex flex-none size-6 text-500 cursor-pointer")} onClick={onClose} />
           <div className="flex flex-row gap-2 items-center">
             <Bookmark className="text-green-500 size-6" />
             <h2 className="font-semibold text-xl">Sua história</h2>
@@ -176,6 +194,7 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
         <div className="flex bg-amber-50 flex-col items-start justify-start gap-2 text-start max-w-[27rem] size-full max-h-[36rem] rounded-lg shadow-lg p-2">
           <input
             className={cn("font-semibold text-xl field-sizing-content max-w-full", textInputClass)}
+            disabled={finishing}
             value={chapter.title}
             onChange={(e) => handleChange("title", e.target.value)}
           />
@@ -183,7 +202,8 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
             <span className="flex size-full text-center justify-center items-center">Recompilando...</span>
           ) : (
             <textarea
-              className={cn("flex size-full font-normal text-base resize-none", textInputClass)}
+              className={cn("flex size-full font-normal text-base resize-none scrollbar-hide", textInputClass)}
+              disabled={finishing}
               value={chapter.compilation ?? ""}
               onChange={(e) => handleChange("compilation", e.target.value)}
             />
@@ -206,7 +226,15 @@ export function Book({ actChapter, state, onExpand }: BookProps) {
             </button>
           ))}
         </div>
+
+        <button
+          className="absolute right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-green-200 cursor-pointer hover:bg-green-300 duration-200"
+          title="Finalizar capítulo"
+          onClick={finishAct}
+        >
+          <Check className="size-8 text-gray-700" />
+        </button>
       </div>
     </div>
   );
-}
+});

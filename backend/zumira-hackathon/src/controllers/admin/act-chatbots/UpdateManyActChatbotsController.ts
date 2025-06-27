@@ -1,20 +1,20 @@
 import { Request, Response } from "express";
 
-import { ReorderActChatbotsSchema } from "../../../definitions/admin/act-chatbot";
+import { UpdateManyActChatbotsSchema } from "../../../definitions/admin/act-chatbot";
 import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 
-class ReorderActChatbotsController {
+class UpdateManyActChatbotsController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = ReorderActChatbotsSchema.safeParse(req.body);
+    const { success, data, error } = UpdateManyActChatbotsSchema.safeParse(req.body);
 
     if (!success) throw new Error(parseZodError(error));
 
     const service = new ActChatbotAdminService();
-    const result = await service.reorder(data);
+    const result = await service.updateMany(data);
 
     return res.json({ status: "SUCCESS", data: result });
   }
 }
 
-export { ReorderActChatbotsController };
+export { UpdateManyActChatbotsController };
