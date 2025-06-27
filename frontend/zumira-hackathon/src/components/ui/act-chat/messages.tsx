@@ -32,7 +32,7 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
   return (
     <div
       ref={divRef}
-      className="flex flex-col size-full py-[1.375rem] px-5 gap-[1.375rem] overflow-y-scroll overflow-x-clip"
+      className="flex flex-col size-full py-[1.375rem] px-5 gap-[1.375rem] scrollbar-hide overflow-y-scroll overflow-x-clip"
       onScroll={handleScroll}
     >
       {messages.map((m, i) => (

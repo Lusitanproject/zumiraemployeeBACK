@@ -23,7 +23,7 @@ export function TabBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden border-t border-gray-200 px-6 pt-7 bg-white">
+    <nav className="md:hidden border-t border-gray-200 px-6 py-7 bg-white">
       <ul className="flex justify-between items-center">
         {links.map((item) => (
           <Link

@@ -4,6 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { ActsData } from "@/types/acts";
@@ -13,10 +14,11 @@ interface ActItemProps {
   currentChapterId: string | null;
   defaultOpen: boolean;
   icon: IconName;
+  locked: boolean;
   name: string;
 }
 
-export function ActItem({ icon, name, chapters, defaultOpen, currentChapterId }: ActItemProps) {
+export function ActItem({ icon, name, chapters, defaultOpen, currentChapterId, locked }: ActItemProps) {
   const [open, setOpen] = useState<boolean>(defaultOpen);
   const isActiveChapter = chapters.some((c) => c.id === currentChapterId);
   const textColor = isActiveChapter ? "text-gray-500" : "text-gray-400";
@@ -32,13 +34,20 @@ export function ActItem({ icon, name, chapters, defaultOpen, currentChapterId }:
     <div className="flex flex-col w-full ">
       <div
         className={cn(
-          "flex flex-row justify-between cursor-pointer items-center w-full h-11 px-5 hover:bg-black/5 rounded-xl group",
+          "flex flex-row justify-between items-center w-full h-11 px-5 rounded-xl",
+          locked ? "opacity-50 cursor-default" : "cursor-pointer hover:bg-black/5 group",
           textColor
         )}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          if (!locked) {
+            setOpen((prev) => !prev);
+          } else {
+            toast.warning("Finalize os atos anteriores para desbloquear este.");
+          }
+        }}
       >
         <div className="flex flex-row gap-2 w-full items-center overflow-hidden">
-          <DynamicIcon className={cn("size-5 flex-none", textColor)} name={icon} />
+          <DynamicIcon className={cn("size-5 flex-none", textColor)} name={locked ? "lock-keyhole" : icon} />
           <span className={cn("text-nowrap text-ellipsis overflow-hidden text-sm font-semibold")}>{name}</span>
         </div>
         <ChevronDown

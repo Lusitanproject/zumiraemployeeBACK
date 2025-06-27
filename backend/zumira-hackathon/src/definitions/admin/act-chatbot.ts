@@ -10,22 +10,18 @@ export const CreateActChatbotSchema = z.object({
 
 export const UpdateActChatbotSchema = z.object({
   id: z.string().cuid(),
-  name: z.string().nonempty(),
-  description: z.string().nonempty(),
+  name: z.string().nonempty().optional(),
+  description: z.string().nonempty().optional(),
   messageInstructions: z.string().nonempty().optional(),
   compilationInstructions: z.string().nonempty().optional(),
-  icon: z.string().nonempty(),
+  index: z.number().int().optional(),
+  icon: z.string().nonempty().optional(),
 });
 
-export const ReorderActChatbotsSchema = z.object({
-  chatbots: z.array(
-    z.object({
-      id: z.string().cuid(),
-      nextActChatbotId: z.string().cuid().nullable(),
-    })
-  ),
+export const UpdateManyActChatbotsSchema = z.object({
+  chatbots: z.array(UpdateActChatbotSchema),
 });
 
 export type CreateActChatbotRequest = z.infer<typeof CreateActChatbotSchema>;
 export type UpdateActChatbotRequest = z.infer<typeof UpdateActChatbotSchema>;
-export type ReorderActChatbotsRequest = z.infer<typeof ReorderActChatbotsSchema>;
+export type UpdateManyActChatbotsRequest = z.infer<typeof UpdateManyActChatbotsSchema>;

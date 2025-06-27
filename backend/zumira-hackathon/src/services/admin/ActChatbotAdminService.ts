@@ -1,13 +1,9 @@
-import { Prisma } from "@prisma/client";
-
 import {
   CreateActChatbotRequest,
-  ReorderActChatbotsRequest,
   UpdateActChatbotRequest,
+  UpdateManyActChatbotsRequest,
 } from "../../definitions/admin/act-chatbot";
-import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
-import { getFirstActChatbot } from "../../utils/getFirstActChatbot";
 
 class ActChatbotAdminService {
   async find(id: string) {
@@ -23,7 +19,7 @@ class ActChatbotAdminService {
         icon: true,
         messageInstructions: true,
         compilationInstructions: true,
-        nextActChatbotId: true,
+        index: true,
         actChapters: {
           where: {
             type: "ADMIN_TEST",
@@ -46,41 +42,29 @@ class ActChatbotAdminService {
         name: true,
         description: true,
         icon: true,
-        nextActChatbotId: true,
+        index: true,
+      },
+
+      orderBy: {
+        index: "asc",
       },
     });
 
-    const items = [];
-    let aux = bots.find((b) => !b.nextActChatbotId);
-    while (aux) {
-      items.unshift(aux);
-      aux = bots.find((b) => b.nextActChatbotId === aux?.id);
-    }
-
-    return { items };
+    return { items: bots };
   }
 
   async create(data: CreateActChatbotRequest) {
+    const existingBots = await prismaClient.actChatbot.findMany();
+
     const bot = await prismaClient.actChatbot.create({
       data: {
         ...data,
-      },
-    });
-
-    await prismaClient.actChatbot.updateMany({
-      where: {
-        nextActChatbot: null,
-        id: {
-          not: bot.id,
-        },
-      },
-      data: {
-        nextActChatbotId: bot.id,
+        index: existingBots.length,
       },
     });
 
     // Garantir que todo usuário sem ato é atualizado quando o primeiro bot é criado
-    const first = await getFirstActChatbot();
+    const first = existingBots.find((b) => b.index === 0);
     if (first) {
       const noActUsers = await prismaClient.user.findMany({
         where: {
@@ -123,43 +107,19 @@ class ActChatbotAdminService {
     return bot;
   }
 
-  async reorder({ chatbots }: ReorderActChatbotsRequest) {
-    const bots = await prismaClient.actChatbot.findMany();
+  async updateMany({ chatbots }: UpdateManyActChatbotsRequest) {
+    console.log(chatbots);
 
-    if (chatbots.length !== bots.length) throw new PublicError("Todos os chatbots devem ser enviados");
-
-    const botsMap = new Map<string | null, string>();
-    chatbots.forEach((cb) => botsMap.set(cb.nextActChatbotId, cb.id));
-
-    // O loop tenta caminhar por todos os ids seguindo a estrutura passada na requisição para verificar se todos estão contectados linearmente
-    let count = -1;
-    let aux: string | null | undefined = null;
-    do {
-      count += 1;
-      aux = botsMap.get(aux);
-    } while (aux !== undefined);
-
-    if (count < chatbots.length) throw new PublicError("Os chatbots devem estar todos conectados continuamente");
-
-    const queryString = Prisma.sql`
-      UPDATE act_chatbots
-      SET next_act_chatbot_id = CASE id
-        ${Prisma.join(
-          chatbots.map(
-            (cb) => Prisma.sql`
-              WHEN ${cb.id} THEN ${cb.nextActChatbotId}
-            `
-          ),
-          "\n"
-        )}
-      END
-      WHERE id IN (${Prisma.join(
-        chatbots.map((cb) => Prisma.sql`${cb.id}`),
-        ", "
-      )})
-    `;
-
-    await prismaClient.$executeRaw(queryString);
+    await Promise.all(
+      chatbots.map((bot) =>
+        prismaClient.actChatbot.update({
+          where: {
+            id: bot.id,
+          },
+          data: { ...bot },
+        })
+      )
+    );
   }
 }
 

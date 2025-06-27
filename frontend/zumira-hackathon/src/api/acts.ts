@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 
 import { decrypt } from "@/app/_lib/session";
-import { ActChapter, ActChatbot } from "@/types/acts";
+import { ActChapter, ActChatbot, ActsData } from "@/types/acts";
 import { catchError } from "@/utils/error";
 
 import { ZumiraApiResponse } from "./common";
@@ -34,6 +34,8 @@ export type NewChapterResponse = ZumiraApiResponse<{
     description: string;
   };
 }>;
+export type GetActsDataResponse = ZumiraApiResponse<ActsData>;
+export type MoveToNextActResponse = ZumiraApiResponse<{ currActChatbotId: string }>;
 
 export async function getActChapter(chapterId: string) {
   const cookie = await cookies();
@@ -161,11 +163,11 @@ export async function getActChatbots() {
   return parsed.data.items;
 }
 
-export async function reorderChatbots(chatbots: ActChatbot[]) {
+export async function updateManyActChatbots(chatbots: ActChatbot[]) {
   const cookie = await cookies();
   const session = decrypt(cookie.get("session")?.value);
 
-  const url = `${process.env.API_BASE_URL}/acts/admin/reorder`;
+  const url = `${process.env.API_BASE_URL}/acts/admin/update-many`;
 
   const [error, response] = await catchError(
     fetch(url, {
@@ -328,4 +330,65 @@ export async function updateActChapter(data: UpdateActChapterRequest) {
   }
 
   return parsed.data;
+}
+
+export async function getActsData() {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/acts`;
+
+  const [error, response] = await catchError(
+    fetch(url, {
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error || !response.ok) {
+    throw new Error("Couldn't get acts data");
+  }
+
+  const parsed = (await response.json()) as GetActsDataResponse;
+
+  if (parsed.status === "ERROR") {
+    throw new Error(parsed.message);
+  }
+
+  return parsed.data;
+}
+
+export async function moveToNextAct() {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/acts/next`;
+
+  const [error, response] = await catchError(
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error) {
+    throw new Error(error?.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const parsed = (await response.json()) as MoveToNextActResponse;
+
+  if (parsed.status === "ERROR") {
+    throw new Error(parsed.message);
+  }
+
+  return parsed.data.currActChatbotId;
 }

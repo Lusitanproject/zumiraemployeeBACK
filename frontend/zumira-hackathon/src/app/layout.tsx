@@ -27,6 +27,7 @@ export default function RootLayout({
             classNames: {
               error: "text-error-500",
               success: "text-primary-400",
+              warning: "text-primary-600",
             },
           }}
         />

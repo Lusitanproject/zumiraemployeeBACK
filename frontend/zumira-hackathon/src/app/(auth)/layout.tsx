@@ -1,12 +1,12 @@
 import HolyLoader from "holy-loader";
 import { ReactNode } from "react";
 
+import { getActsData } from "@/api/acts";
 import { Header } from "@/components/custom/header";
 import { Sidebar } from "@/components/custom/sidebar/sidebar";
 import { TabBar } from "@/components/custom/tab-bar";
 
 import { getSidebarContent } from "./action";
-import { getActsData } from "./actions";
 
 type LayoutProps = {
   children: ReactNode;
@@ -22,7 +22,7 @@ export default async function AuthLayout({ children }: LayoutProps) {
       <Sidebar data={data} menuItems={menuLinks} />
       <div className="flex flex-col h-screen w-full md:w-auto md:flex-1 bg-white overflow-clip">
         <Header />
-        <div className="relative flex size-full overflow-y-auto px-4 md:px-16">{children}</div>
+        <div className="relative flex size-full overflow-y-auto overflow-x-clip px-4 md:px-16">{children}</div>
         <TabBar />
       </div>
     </div>

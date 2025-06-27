@@ -3,6 +3,7 @@
 import { ChevronDown } from "lucide-react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -13,14 +14,15 @@ import { ActsData } from "@/types/acts";
 import { newChapter } from "../actions";
 
 interface ActSelectorProps {
-  currentAct: string;
   data: ActsData;
 }
 
-export function ActSelector({ data, currentAct }: ActSelectorProps) {
+export function ActSelector({ data }: ActSelectorProps) {
+  const searchParams = useSearchParams();
+  const defaultActId = searchParams.get("default") || undefined;
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [selected, setSelected] = useState<ActsData["chatbots"][0]>(
-    data.chatbots.find((c) => c.id === currentAct) ?? data.chatbots[0]!
+    data.chatbots.find((c) => (defaultActId ? c.id === defaultActId : c.current)) ?? data.chatbots[0]!
   );
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -64,11 +66,13 @@ export function ActSelector({ data, currentAct }: ActSelectorProps) {
         <div className="flex flex-col relative">
           <div className="flex flex-row items-end justify-center gap-2">
             <div className="flex-none size-6" />
-            <span className="text-2xl font-semibold text-gray-700">{selected.name}</span>
-            <ChevronDown
-              className="flex-none size-6 cursor-pointer text-gray-400"
+            <div
+              className="flex flex-row gap-2 items-end cursor-pointer"
               onClick={() => setOpenDropdown((prev) => !prev)}
-            />
+            >
+              <span className="text-2xl font-semibold text-gray-700">{selected.name}</span>
+              <ChevronDown className="flex-none size-6 text-gray-400" />
+            </div>
           </div>
 
           <div
@@ -80,21 +84,30 @@ export function ActSelector({ data, currentAct }: ActSelectorProps) {
                 : "opacity-0 pointer-events-none -translate-y-2"
             )}
           >
-            {data.chatbots
-              .filter((c) => c.id !== selected.id)
-              .map((bot) => (
-                <div
-                  key={bot.id}
-                  className="flex flex-row gap-2 items-center w-full text-center text-lg hover:bg-gray-50 px-3 py-1.5 cursor-pointer text-gray-500 text-nowrap"
-                  onClick={() => {
+            {data.chatbots.map((bot) => (
+              <div
+                key={bot.id}
+                className={cn(
+                  "flex flex-row gap-2 items-center w-full text-center text-lg hover:bg-gray-50 px-3 py-1.5 cursor-pointer text-gray-500 text-nowrap",
+                  { "opacity-50": bot.locked, "font-semibold": bot.id === selected.id }
+                )}
+                onClick={() => {
+                  if (!bot.locked) {
                     setSelected(bot);
                     setOpenDropdown(false);
-                  }}
-                >
-                  <DynamicIcon className="size-4" name={bot.icon as IconName} />
-                  <span>{bot.name}</span>
-                </div>
-              ))}
+                  } else {
+                    toast.warning("Finalize os atos anteriores para desbloquear este.");
+                  }
+                }}
+              >
+                <DynamicIcon
+                  className="size-4"
+                  name={bot.locked ? "lock" : (bot.icon as IconName)}
+                  strokeWidth={bot.id === selected.id ? 3 : undefined}
+                />
+                <span>{bot.name}</span>
+              </div>
+            ))}
           </div>
         </div>
 

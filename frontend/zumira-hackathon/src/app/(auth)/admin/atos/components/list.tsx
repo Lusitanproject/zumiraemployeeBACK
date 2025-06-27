@@ -7,7 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
 
-import { reorderChatbots } from "@/api/acts";
+import { updateManyActChatbots } from "@/api/acts";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ActChatbot } from "@/types/acts";
@@ -19,49 +19,49 @@ type ActsListProps = {
 export function ActsList({ data }: ActsListProps) {
   const [chatbots, setChatbots] = useState<ActChatbot[]>(data);
 
+  const orderBots = (a: ActChatbot, b: ActChatbot) => a.index - b.index;
+
   const debouncedSave = useDebouncedCallback(async (chatbots: ActChatbot[]) => {
     try {
-      await reorderChatbots(chatbots);
+      await updateManyActChatbots(chatbots.map((bot, index) => ({ ...bot, index })));
     } catch {
-      toast.error("Erro ao salvar nova ordem dos atos");
+      toast.error("Erro ao salvar nova ordem dos atos.");
     }
   }, 3000);
-
-  function updateOrder(chatbots: ActChatbot[]) {
-    for (let i = 0; i < chatbots.length; i++) {
-      const curr = chatbots[i];
-      const next = chatbots[i + 1];
-      curr.nextActChatbotId = next ? next.id : null;
-    }
-
-    debouncedSave(chatbots);
-  }
 
   function moveUp(index: number) {
     if (index <= 0) return;
 
     setChatbots((prev) => {
-      const updated = [...prev];
-      [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
-      updateOrder(updated);
+      const updated = prev.toSorted(orderBots); // Garantir que nenhum está com o index repetido (feito por conta de uma migration do banco de dados)
+
+      prev[index].index = index - 1;
+      prev[index - 1].index = index;
+
       return updated;
     });
+
+    debouncedSave(chatbots);
   }
 
   function moveDown(index: number) {
-    setChatbots((prev) => {
-      if (index >= prev.length - 1) return prev;
+    if (index >= chatbots.length - 1) return;
 
-      const updated = [...prev];
-      [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
-      updateOrder(updated);
+    setChatbots((prev) => {
+      const updated = prev.toSorted(orderBots);
+
+      prev[index].index = index + 1;
+      prev[index + 1].index = index;
+
       return updated;
     });
+
+    debouncedSave(chatbots);
   }
 
   return (
     <div className="flex flex-col py-4 gap-2.5">
-      {chatbots.map((item, index) => (
+      {chatbots.sort(orderBots).map((item, index) => (
         <div
           key={item.id}
           className={cn("flex flex-row items-center justify-between rounded-xl bg-gray-100 duration-500 p-4")}

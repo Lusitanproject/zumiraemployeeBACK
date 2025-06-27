@@ -10,8 +10,8 @@ import { UpdateActChapterController } from "./controllers/actChatbot/UpdateActCh
 import { CreateActChatbotController } from "./controllers/admin/act-chatbots/CreateActChatbotController";
 import { FindActChatbotController } from "./controllers/admin/act-chatbots/FindActChatbotController";
 import { FindAllActChatbotsController } from "./controllers/admin/act-chatbots/FindAllActChatbotsController";
-import { ReorderActChatbotsController } from "./controllers/admin/act-chatbots/ReorderActChatbotsController";
 import { UpdateActChatbotController } from "./controllers/admin/act-chatbots/UpdateActChatbotController";
+import { UpdateManyActChatbotsController } from "./controllers/admin/act-chatbots/UpdateManyActChatbotsController";
 import { DuplicateAssessmentController } from "./controllers/admin/assessments/DuplicateAssessmentController";
 import { FindFilteredResultsController } from "./controllers/admin/assessments/FindFilteredResultsController";
 import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
@@ -175,7 +175,7 @@ router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotif
 // ROTAS ACTS
 router.get("/acts/admin", isAuthenticated, new FindAllActChatbotsController().handle);
 router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().handle);
-router.put("/acts/admin/reorder", isAuthenticated, new ReorderActChatbotsController().handle);
+router.put("/acts/admin/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);
 router.post("/acts/admin", isAuthenticated, new CreateActChatbotController().handle);
 router.get("/acts", isAuthenticated, new GetActsDataController().handle);
