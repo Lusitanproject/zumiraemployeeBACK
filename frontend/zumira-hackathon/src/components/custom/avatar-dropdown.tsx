@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { logout } from "@/app/_lib/auth";
+import { startHolyLoader } from "holy-loader";
 
 type AvatarDropdownProps = {
   open: boolean;
@@ -22,6 +23,7 @@ function DropdownNavItem({ url, label, isCurrent, onClose }: DropdownNavItemProp
   const router = useRouter();
 
   function handleRedirect(url: string) {
+    startHolyLoader();
     router.push(url);
     router.refresh();
     onClose();

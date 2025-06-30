@@ -10,6 +10,10 @@ export async function moveToNext(currentActId: string) {
   const currAct = actsData.chatbots.find((bot) => bot.id === currentActId);
   const nextAct = actsData.chatbots.find((bot) => bot.index === (currAct ? currAct.index + 1 : -1));
 
-  const response = await moveToNextAct();
-  redirect(`/chat/novo?default=${nextAct?.id ?? response}`);
+  let response;
+  if (nextAct?.locked) {
+    response = await moveToNextAct();
+  }
+
+  redirect(`/chat/novo?default=${nextAct?.id ?? response ?? currentActId}`);
 }

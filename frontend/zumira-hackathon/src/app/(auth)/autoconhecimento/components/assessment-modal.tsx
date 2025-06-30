@@ -5,6 +5,7 @@ import { redirect, RedirectType } from "next/navigation";
 import { useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
+import { startHolyLoader } from "holy-loader";
 
 export type AssessmentModalProps = {
   id: string;
@@ -16,6 +17,7 @@ export type AssessmentModalProps = {
 
 export function AssessmentModal({ id, title, summary, open, onClose }: AssessmentModalProps) {
   const handleOpenAssessment = useCallback(() => {
+    startHolyLoader();
     redirect(`/autoconhecimento/teste/${id}`, RedirectType.push);
   }, [id]);
 
