@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { DottedSpinner } from "@/components/custom/dotted-spinner";
 
 import { generateFeedback } from "../actions";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { toast } from "sonner";
 
 interface ConcludedProps {
   assessmentId: string;
@@ -12,7 +14,11 @@ interface ConcludedProps {
 
 export function Concluded({ assessmentId }: ConcludedProps) {
   useEffect(() => {
-    generateFeedback(assessmentId);
+    try {
+      generateFeedback(assessmentId);
+    } catch (err) {
+      if (err instanceof Error && !isRedirectError(err)) toast.error(err.message);
+    }
   }, [assessmentId]);
 
   return (

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 import { decrypt } from "@/app/_lib/session";
 import { catchError } from "@/utils/error";
+import { ZumiraApiResponse } from "./common";
 
 export interface DownloadAssessmentResultsReportRequest {
   assessmentId: string;
@@ -48,4 +49,42 @@ export async function downloadAssessmentResultsReport({
   }
 
   return { blob, filename };
+}
+
+export async function generateFeedback(assessmentId: string) {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  catchError(
+    fetch(`${process.env.API_BASE_URL}/assessments/feedback/companies/${assessmentId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  const [error, response] = await catchError(
+    fetch(`${process.env.API_BASE_URL}/assessments/feedback/users/${assessmentId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const data = (await response.json()) as ZumiraApiResponse<any>;
+  if (data.status === "ERROR") {
+    throw new Error(data.message);
+  }
 }
