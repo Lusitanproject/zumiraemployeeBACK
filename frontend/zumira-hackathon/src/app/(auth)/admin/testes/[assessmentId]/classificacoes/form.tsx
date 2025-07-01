@@ -72,7 +72,7 @@ export function ManageRatingsForm({ data, ratings }: ManageRatingsFormProps) {
         title="Editar classificações"
         onAddItem={() => dispatch({ type: "ADD-RATING" })}
       />
-      <div className="w-full flex flex-col gap-3 overflow-y-auto flex-1 pt-4 pb-20">
+      <div className="w-full flex flex-col gap-3 overflow-y-auto flex-1 py-4">
         {state.ratings.map((item) => (
           <div
             key={item.key}
@@ -136,7 +136,7 @@ export function ManageRatingsForm({ data, ratings }: ManageRatingsFormProps) {
           </div>
         ))}
       </div>
-      <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
+      <div className="border-gray-100 py-4 flex items-center gap-x-3">
         <span className="text-error-500">{error}</span>
         <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleUpdateRatings}>
           Salvar classificações
