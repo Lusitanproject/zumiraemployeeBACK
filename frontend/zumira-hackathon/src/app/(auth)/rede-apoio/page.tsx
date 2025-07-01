@@ -1,13 +1,32 @@
+import { Activity, Brain, Users } from "lucide-react";
+
 export default function RedeApoio() {
   return (
-    <div className="flex flex-col w-full h-2/3 sm:h-fit justify-center gap-3 text-gray-600 text-center sm:text-start">
-      <h1 className="text-2xl font-bold">🤝 Estamos quase lá...</h1>
-      <div className="flex flex-col gap-2 text-lg">
-        <p>
-          A <span className="italic font-semibold">Rede de Apoio da Zumira</span> está nascendo para conectar você a
-          pessoas, grupos e profissionais que realmente entendem o que você está vivendo.
-        </p>
-        <p>Em breve, este será um espaço seguro para troca, cuidado e fortalecimento mútuo. </p>
+    <div className="flex flex-col w-full h-2/3 justify-center items-center gap-3 text-gray-600 text-center">
+      <div className="flex flex-col h-full justify-center text-center max-w-[28rem] gap-8">
+        <h1 className="text-3xl font-bold">EM BREVE</h1>
+        <div className="flex flex-col gap-2 text-lg">
+          <p>
+            Uma Rede de Apoio que conecta você a ajuda que você precisa. Estamos aqui para integrar ações que irão
+            melhorar o seu bem estar, saúde mental e qualidade de vida
+          </p>
+        </div>
+        <div className="flex flex-row gap-10 justify-between text-gray-400 mt-10 w-full">
+          <div className="flex flex-col items-center text-xs gap-2 font-semibold flex-1">
+            <Brain className="w-10 h-10 text-gray-300" />
+            <span>ATENDIMENTO PSICOLÓGICO</span>
+          </div>
+
+          <div className="flex flex-col items-center text-xs gap-2 font-semibold flex-1">
+            <Activity className="w-10 h-10 text-gray-300" />
+            <span>TREINAMENTO PARA GESTÃO DO ESTRESSE</span>
+          </div>
+
+          <div className="flex flex-col items-center text-xs gap-2 font-semibold flex-1">
+            <Users className="w-10 h-10 text-gray-300" />
+            <span>GRUPOS DE APOIO</span>
+          </div>
+        </div>
       </div>
     </div>
   );
