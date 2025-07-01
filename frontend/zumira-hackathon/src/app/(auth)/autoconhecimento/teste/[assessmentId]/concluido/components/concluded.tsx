@@ -1,12 +1,12 @@
 "use client";
 
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 import { DottedSpinner } from "@/components/custom/dotted-spinner";
 
 import { generateFeedback } from "../actions";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { toast } from "sonner";
 
 interface ConcludedProps {
   assessmentId: string;

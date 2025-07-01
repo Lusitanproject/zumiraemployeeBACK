@@ -1,8 +1,7 @@
 "use client";
-import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ActsData } from "@/types/acts";
 
@@ -21,7 +20,7 @@ export function Sidebar({ menuItems, data }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col justify-between h-screen bg-gray-200 py-12 transition-all transition-discrete overflow-scroll scrollbar-hide px-12 w-[18rem] gap-4"
+        "hidden md:flex flex-col justify-between h-screen bg-gray-200 py-12 transition-all transition-discrete overflow-y-scroll overflow-x-visible scrollbar-hide px-12 w-[18rem] gap-4"
       )}
     >
       <div className="w-full flex flex-col pt-10 gap-4">
@@ -29,9 +28,10 @@ export function Sidebar({ menuItems, data }: SidebarProps) {
         <MainMenu expanded={true} menu={menuItems} />
       </div>
       {!isAdminRoute && (
-        <Button className={cn({ hidden: false })} size="xxl" variant="alternate">
-          <Link href={"#"}>Exibir planos</Link>
-        </Button>
+        <span className="flex flex-row items-center justify-center gap-1.5 text-gray-500 font-semibold text-sm">
+          <ShieldCheck className="size-6 flex-none" />
+          <span className="text-nowrap">Espaço seguro e confidencial</span>
+        </span>
       )}
     </aside>
   );

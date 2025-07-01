@@ -1,11 +1,11 @@
 "use client";
 
+import { startHolyLoader } from "holy-loader";
 import { ChevronRight, SquareX, User } from "lucide-react";
 import { redirect, RedirectType } from "next/navigation";
 import { useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
-import { startHolyLoader } from "holy-loader";
 
 export type AssessmentModalProps = {
   id: string;
