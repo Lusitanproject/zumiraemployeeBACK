@@ -44,8 +44,10 @@ class GetActsDataService {
 
     let currAct = chatbots.find((bot) => bot.id === user.currentActChatbotId);
     if (!currAct) {
+      if (!chatbots.length) return { chatbots: [], chapters: [] };
+
       currAct = chatbots[0];
-      await prismaClient.user.update({ where: { id: userId }, data: { currentActChatbotId: currAct.id } });
+      await prismaClient.user.update({ where: { id: userId }, data: { currentActChatbotId: currAct?.id } });
     }
 
     const processedChatbots = chatbots.map((bot) => ({

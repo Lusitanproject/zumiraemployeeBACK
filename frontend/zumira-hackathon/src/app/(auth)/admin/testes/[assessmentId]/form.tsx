@@ -86,7 +86,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
   }
 
   return (
-    <div className="w-full py-4 md:pt-4 md:pb-24">
+    <div className="w-full h-full overflow-scroll py-4">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
           <Label htmlFor="title">Título</Label>
@@ -232,7 +232,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         </div>
         {!!formError && <span className="text-sm text-error-500">{formError}</span>}
       </div>
-      <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
+      <div className="border-gray-100 py-4 flex items-center gap-x-3">
         <Button disabled={loading.save} loading={loading.save} size="xl" variant="primary" onClick={handleSubmit}>
           Salvar detalhes
         </Button>

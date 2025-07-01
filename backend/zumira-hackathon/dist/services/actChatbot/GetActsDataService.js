@@ -46,8 +46,10 @@ class GetActsDataService {
             throw new Error("Usuário não encontrado");
         let currAct = chatbots.find((bot) => bot.id === user.currentActChatbotId);
         if (!currAct) {
+            if (!chatbots.length)
+                return { chatbots: [], chapters: [] };
             currAct = chatbots[0];
-            await prisma_1.default.user.update({ where: { id: userId }, data: { currentActChatbotId: currAct.id } });
+            await prisma_1.default.user.update({ where: { id: userId }, data: { currentActChatbotId: currAct === null || currAct === void 0 ? void 0 : currAct.id } });
         }
         const processedChatbots = chatbots.map((bot) => ({
             ...bot,
