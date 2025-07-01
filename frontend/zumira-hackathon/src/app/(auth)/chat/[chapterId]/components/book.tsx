@@ -18,8 +18,7 @@ import { moveToNext } from "../actions";
 
 interface BookProps {
   actChapter: ActChapter;
-  onClose: () => void;
-  onChangeChapter?: (chapter: ActChapter) => void;
+  onClose?: () => void;
 }
 
 interface BookButton {
@@ -202,7 +201,7 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
           ))}
         </div>
 
-        <div className="flex bg-[##f5f5eb] flex-col items-center justify-start gap-2 text-start w-full max-w-[33.071rem] min-h-[49.606rem] rounded-xs shadow-xl py-10 px-18">
+        <div className="flex bg-[##f5f5eb] flex-col items-center justify-start gap-2 text-start w-full max-w-[40rem] rounded-xs shadow-xl py-10 px-14">
           <input
             className={cn("font-semibold text-xl field-sizing-content max-w-full", textInputClass)}
             disabled={finishing}
@@ -210,11 +209,13 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
             onChange={(e) => handleChange("title", e.target.value)}
           />
           {recompiling ? (
-            <span className="flex size-full text-center justify-center items-center">Recompilando...</span>
+            <span className="flex size-full text-center justify-center min-h-[60rem]">
+              <span className="mt-32">Recompilando...</span>
+            </span>
           ) : (
             <textarea
               className={cn(
-                "flex size-full font-normal text-base resize-none scrollbar-hide text-justify",
+                "flex size-full min-h-[60rem] font-normal text-base resize-y field-sizing-content text-justify",
                 textInputClass
               )}
               disabled={finishing}
@@ -225,9 +226,11 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
         </div>
       </div>
 
-      <button className="absolute flex left-4 top-4 z-20">
-        <ChevronLeft className={cn("flex flex-none size-6 text-500 cursor-pointer")} onClick={onClose} />
-      </button>
+      {onClose && (
+        <button className="absolute flex left-4 top-4 z-20">
+          <ChevronLeft className={cn("flex flex-none size-6 text-500 cursor-pointer")} onClick={onClose} />
+        </button>
+      )}
 
       <button
         className="absolute z-20 right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-green-200 cursor-pointer hover:bg-green-300 duration-200"
