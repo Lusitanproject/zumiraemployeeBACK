@@ -108,8 +108,6 @@ class ActChatbotAdminService {
   }
 
   async updateMany({ chatbots }: UpdateManyActChatbotsRequest) {
-    console.log(chatbots);
-
     await Promise.all(
       chatbots.map((bot) =>
         prismaClient.actChatbot.update({

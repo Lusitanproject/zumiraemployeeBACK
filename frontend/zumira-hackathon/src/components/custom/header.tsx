@@ -5,6 +5,9 @@ import { BackButton } from "../ui/back-button";
 import { Avatar } from "./avatar";
 import { Notifications } from "./notifications/notifications";
 import { PageTitle } from "./page-title";
+import { Button } from "../ui/button";
+import { Bookmark } from "lucide-react";
+import Link from "next/link";
 
 export function Header() {
   return (
@@ -18,6 +21,14 @@ export function Header() {
       <PageTitle />
 
       <div className="flex items-center justify-end gap-x-3">
+        <Link href="/minha-historia">
+          <Button>
+            <div className="flex flex-row gap-1 items-center">
+              <Bookmark className="text-primary-400 size-4.5" />
+              <span className="text-gray-700">Minha história</span>
+            </div>
+          </Button>
+        </Link>
         <Notifications />
         <Avatar />
       </div>

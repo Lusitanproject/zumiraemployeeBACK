@@ -29,7 +29,6 @@ export function Whiteboard({ actChapter }: WhiteboardProps) {
         actChapter={actChapter}
         onChangeMessages={(m) => {
           setShowFinishButton(m.length >= MIN_MESSAGES_TO_FINISH);
-          compileOnFinish.current = true;
         }}
       />
       <button
@@ -37,7 +36,7 @@ export function Whiteboard({ actChapter }: WhiteboardProps) {
           "absolute text-xs right-5 top-1/2 -translate-y-1/2 rounded-full p-2 bg-green-200 cursor-pointer hover:bg-green-300 duration-200",
           showFinishButton ? "scale-100" : "scale-0"
         )}
-        title="Finalizar capítulo"
+        title="Recompilar capítulo"
         onClick={async () => {
           setOpenBook(true);
           if (compileOnFinish.current) {
