@@ -179,19 +179,30 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
   }, []);
 
   return (
-    <div ref={divRef} className={cn("relative flex h-full left-0 top-0 duration-500 overflow-clip w-full")}>
-      <div className={cn("absolute flex flex-col gap-4 size-full items-center justify-center p-4 z-10 bg-white")}>
-        <div className="flex flex-row w-full justify-between">
-          <ChevronLeft className={cn("flex flex-none size-6 text-500 cursor-pointer")} onClick={onClose} />
-          <div className="flex flex-row gap-2 items-center">
-            <Bookmark className="text-green-500 size-6" />
-            <h2 className="font-semibold text-xl">Sua história</h2>
-            <div className="size-6" />
-          </div>
-          <div className="size-6" />
+    <div ref={divRef} className={cn("relative flex h-full left-0 top-0 duration-500 w-full")}>
+      <div
+        className={cn(
+          "absolute flex flex-col gap-2 size-full items-center justify-start p-4 z-10 bg-white overflow-scroll"
+        )}
+      >
+        <div className="flex gap-2 text-sm">
+          {buttons.map((b, i) => (
+            <button
+              key={i}
+              className={cn("flex flex-row gap-1.5 p-1 rounded-lg duration-150 font-medium items-center", {
+                "opacity-30": b.disabled,
+                "hover:bg-primary-200 hover:text-white cursor-pointer": !b.disabled,
+              })}
+              disabled={b.disabled}
+              onClick={b.func}
+            >
+              {b.icon && <b.icon className="size-4.5" />}
+              {b.label && <span>{b.label}</span>}
+            </button>
+          ))}
         </div>
 
-        <div className="flex bg-amber-50 flex-col items-start justify-start gap-2 text-start max-w-[27rem] size-full max-h-[36rem] rounded-lg shadow-lg p-2">
+        <div className="flex bg-[##f5f5eb] flex-col items-center justify-start gap-2 text-start w-full max-w-[33.071rem] min-h-[49.606rem] rounded-xs shadow-xl py-10 px-18">
           <input
             className={cn("font-semibold text-xl field-sizing-content max-w-full", textInputClass)}
             disabled={finishing}
@@ -202,39 +213,29 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
             <span className="flex size-full text-center justify-center items-center">Recompilando...</span>
           ) : (
             <textarea
-              className={cn("flex size-full font-normal text-base resize-none scrollbar-hide", textInputClass)}
+              className={cn(
+                "flex size-full font-normal text-base resize-none scrollbar-hide text-justify",
+                textInputClass
+              )}
               disabled={finishing}
               value={chapter.compilation ?? ""}
               onChange={(e) => handleChange("compilation", e.target.value)}
             />
           )}
         </div>
-
-        <div className="flex p-2 rounded-md bg-white shadow-lg gap-5 px-6 py-4 text-sm">
-          {buttons.map((b, i) => (
-            <button
-              key={i}
-              className={cn("flex flex-row gap-2 p-2 rounded-lg duration-50 font-medium", {
-                "opacity-30": b.disabled,
-                "hover:bg-primary-200 hover:text-white cursor-pointer": !b.disabled,
-              })}
-              disabled={b.disabled}
-              onClick={b.func}
-            >
-              {b.icon && <b.icon className="size-6" />}
-              {b.label && <span>{b.label}</span>}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className="absolute right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-green-200 cursor-pointer hover:bg-green-300 duration-200"
-          title="Finalizar capítulo"
-          onClick={finishAct}
-        >
-          <Check className="size-8 text-gray-700" />
-        </button>
       </div>
+
+      <button className="absolute flex left-4 top-4 z-20">
+        <ChevronLeft className={cn("flex flex-none size-6 text-500 cursor-pointer")} onClick={onClose} />
+      </button>
+
+      <button
+        className="absolute z-20 right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-green-200 cursor-pointer hover:bg-green-300 duration-200"
+        title="Finalizar capítulo"
+        onClick={finishAct}
+      >
+        <Check className="size-8 text-gray-700" />
+      </button>
     </div>
   );
 });
