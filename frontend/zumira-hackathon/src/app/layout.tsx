@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import Script from "next/script";
+
 import "./globals.css";
 
 import { Toaster } from "sonner";
@@ -17,8 +19,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${rawline.className} antialiased dark`}>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${rawline.className} antialiased`}>
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const stored = localStorage.getItem("theme");
+                  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                  if (stored === "dark" || (!stored && prefersDark)) {
+                    document.documentElement.classList.add("dark");
+                  } else {
+                    document.documentElement.classList.remove("dark");
+                  }
+                } catch (_) {}
+              })();
+            `,
+          }}
+        />
         <Toaster
           position="bottom-right"
           toastOptions={{

@@ -41,7 +41,7 @@ export function AssessmentModal({ id, title, summary, open, onClose }: Assessmen
             <SquareX className="size-6 text-text-400" />
           </button>
           <div className="absolute -top-[84px] w-[8.25rem] h-[8.25rem] bg-primary-50 left-1/2 -translate-x-1/2 shadow-xl rounded-4xl flex flex-col items-center justify-center">
-            <User className="size-16" />
+            <User className="size-16 text-text-700" />
           </div>
           <h1 className="text-4xl w-full font-semibold text-text-700 text-center mb-2">{title}</h1>
           <p className="text-sm leading-5 text-center text-text-700 mb-8">{summary}</p>

@@ -4,7 +4,7 @@
 @plugin "@tailwindcss/typography";
 @plugin "tailwind-scrollbar-hide";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
@@ -279,11 +279,7 @@
 
   .markdown * {
     font-size: 1rem;
-    color: var(--color-text-700);
-  }
-
-  .markdown strong {
-    color: var(--color-text-900) !important;
+    color: var(--color-text-700) !important;
   }
 
   .markdown p {

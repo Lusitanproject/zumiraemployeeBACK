@@ -8,6 +8,7 @@ import { PageTitle } from "./page-title";
 import { Button } from "../ui/button";
 import { Bookmark } from "lucide-react";
 import Link from "next/link";
+import ThemeToggle from "../ui/theme-toggle";
 
 export function Header() {
   return (
@@ -31,6 +32,7 @@ export function Header() {
         </Link>
         <Notifications />
         <Avatar />
+        <ThemeToggle />
       </div>
     </header>
   );
