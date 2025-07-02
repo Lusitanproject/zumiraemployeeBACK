@@ -89,14 +89,14 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
     <div className="w-full h-full overflow-scroll py-4">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
-          <Label htmlFor="title" className="text-text-700">
+          <Label className="text-text-700" htmlFor="title">
             Título
           </Label>
           <Input
+            className="text-text-700"
             id="title"
             name="title"
             value={formData.title}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, title: e.target.value }));
             }}
@@ -104,7 +104,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           {!!errors?.title && <span className="text-sm text-error-500">{errors.title}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="summary" className="text-text-700">
+          <Label className="text-text-700" htmlFor="summary">
             Resumo
           </Label>
           <Textarea
@@ -119,7 +119,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           {!!errors?.summary && <span className="text-sm text-error-500">{errors.summary}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="description" className="text-text-700">
+          <Label className="text-text-700" htmlFor="description">
             Descrição
           </Label>
           <RichTextArea
@@ -132,7 +132,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           {!!errors?.description && <span className="text-sm text-error-500">{errors.description}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="nationality" className="text-text-700">
+          <Label className="text-text-700" htmlFor="nationality">
             Nacionalidade
           </Label>
           <Select
@@ -150,7 +150,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
             </SelectTrigger>
             <SelectContent>
               {nationalities.map((n) => (
-                <SelectItem key={n.id} value={n.id} className="text-text-700">
+                <SelectItem key={n.id} className="text-text-700" value={n.id}>
                   {n.name}
                 </SelectItem>
               ))}
@@ -159,7 +159,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           {!!errors?.nationalityId && <span className="text-sm text-error-500">{errors.nationalityId}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="instructions-u" className="text-text-700">
+          <Label className="text-text-700" htmlFor="instructions-u">
             Instruções para IA de devolutiva individual
           </Label>
           <Textarea
@@ -176,7 +176,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
           )}
         </div>
         <div className="pb-3">
-          <Label htmlFor="instructions-g" className="text-text-700">
+          <Label className="text-text-700" htmlFor="instructions-g">
             Instruções para IA de devolutiva de grupo
           </Label>
           <Textarea
@@ -194,7 +194,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         </div>
         <div className="pb-3 flex flex-row gap-10">
           <div>
-            <Label htmlFor="selfMonitoringBlockId" className="text-text-700">
+            <Label className="text-text-700" htmlFor="selfMonitoringBlockId">
               Bloco de Autoconhecimento
             </Label>
             <Select
@@ -212,7 +212,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
               </SelectTrigger>
               <SelectContent>
                 {blocks?.map((item) => (
-                  <SelectItem key={item.id} value={item.id} className="text-text-700">
+                  <SelectItem key={item.id} className="text-text-700" value={item.id}>
                     {item.title}
                   </SelectItem>
                 ))}
@@ -223,7 +223,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
             )}
           </div>
           <div>
-            <Label htmlFor="operation" className="text-text-700">
+            <Label className="text-text-700" htmlFor="operation">
               Tipo de operação
             </Label>
             <Select
@@ -240,10 +240,10 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={"AVERAGE"} className="text-text-700">
+                <SelectItem className="text-text-700" value={"AVERAGE"}>
                   Média
                 </SelectItem>
-                <SelectItem value={"SUM"} className="text-text-700">
+                <SelectItem className="text-text-700" value={"SUM"}>
                   Soma
                 </SelectItem>
               </SelectContent>

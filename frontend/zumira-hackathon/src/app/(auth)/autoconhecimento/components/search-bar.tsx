@@ -42,8 +42,8 @@ export function SearchBar() {
     <div className="pt-4 mb-8">
       <div className="w-full relative">
         <Input
-          className="text-text-700 placeholder:text-text-500"
           hasIcon
+          className="text-text-700 placeholder:text-text-500"
           id="search"
           name="search"
           placeholder="Busque por testes"

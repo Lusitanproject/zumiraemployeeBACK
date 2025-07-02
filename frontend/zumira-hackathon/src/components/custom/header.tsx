@@ -1,14 +1,14 @@
+import { Bookmark } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import logo from "../../../public/logo--green.svg";
 import { BackButton } from "../ui/back-button";
+import { Button } from "../ui/button";
+import ThemeToggle from "../ui/theme-toggle";
 import { Avatar } from "./avatar";
 import { Notifications } from "./notifications/notifications";
 import { PageTitle } from "./page-title";
-import { Button } from "../ui/button";
-import { Bookmark } from "lucide-react";
-import Link from "next/link";
-import ThemeToggle from "../ui/theme-toggle";
 
 export function Header() {
   return (

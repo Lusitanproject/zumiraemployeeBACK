@@ -42,10 +42,10 @@ export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
             <span className="flex w-fit font-bold text-xs text-text-700">Opção {i + 1}</span>
             <div className="flex flex-row gap-2 w-full items-center">
               <Input
+                className="text-text-700"
                 defaultValue={c.label}
                 placeholder="Texto"
                 type="text"
-                className="text-text-700"
                 onChange={(e) =>
                   dispatch({
                     type: "SET-CHOICE-LABEL",
@@ -59,10 +59,10 @@ export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
               />
               <div className="flex w-24">
                 <Input
+                  className="text-text-700"
                   defaultValue={c.value}
                   placeholder="Valor"
                   type="number"
-                  className="text-text-700"
                   onChange={(e) =>
                     dispatch({
                       type: "SET-CHOICE-VALUE",

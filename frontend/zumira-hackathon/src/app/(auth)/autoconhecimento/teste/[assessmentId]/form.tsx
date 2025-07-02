@@ -68,7 +68,7 @@ export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
                   .map((choice) => (
                     <div key={choice.id} className="flex items-center gap-x-3">
                       <RadioGroupItem id={choice.id} value={`${choice.id}`} />
-                      <label htmlFor={choice.id} className="text-text-700">
+                      <label className="text-text-700" htmlFor={choice.id}>
                         {choice.label}
                       </label>
                     </div>

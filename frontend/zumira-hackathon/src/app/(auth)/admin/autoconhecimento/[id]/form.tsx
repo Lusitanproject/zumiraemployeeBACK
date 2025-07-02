@@ -60,14 +60,14 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
     <div className="w-full py-4 md:pt-4 md:pb-24">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
-          <Label htmlFor="title" className="text-text-700">
+          <Label className="text-text-700" htmlFor="title">
             Título
           </Label>
           <Input
+            className="text-text-700"
             id="title"
             name="title"
             value={formData.title}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, title: e.target.value }));
             }}
@@ -75,7 +75,7 @@ export function SelfMonitoringBlockForm({ data }: FormProps) {
           {!!errors?.title && <span className="text-sm text-error-500">{errors.title}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="summary" className="text-text-700">
+          <Label className="text-text-700" htmlFor="summary">
             Resumo
           </Label>
           <Textarea

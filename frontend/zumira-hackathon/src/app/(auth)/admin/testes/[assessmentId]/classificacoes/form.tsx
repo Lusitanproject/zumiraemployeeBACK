@@ -92,43 +92,43 @@ export function ManageRatingsForm({ data, ratings }: ManageRatingsFormProps) {
               />
               <div className={`flex flex-row justify-between items-center w-full bg-background-25 gap-4`}>
                 <div className="flex w-full flex-col">
-                  <Label htmlFor="name" className="text-text-700">
+                  <Label className="text-text-700" htmlFor="name">
                     Risco
                   </Label>
                   <Input
+                    className="text-text-700"
                     defaultValue={item.risk}
                     id="risk"
                     placeholder="Classificação de risco"
-                    className="text-text-700"
                     onChange={(e) =>
                       dispatch({ type: "CHANGE-RISK", payload: { ratingKey: item.key, risk: e.target.value } })
                     }
                   />
                 </div>
                 <div className="flex w-full flex-col">
-                  <Label htmlFor="profile" className="text-text-700">
+                  <Label className="text-text-700" htmlFor="profile">
                     Perfil
                   </Label>
                   <Input
+                    className="text-text-700"
                     defaultValue={item.profile}
                     id="profile"
                     placeholder="Perfil de risco"
-                    className="text-text-700"
                     onChange={(e) =>
                       dispatch({ type: "CHANGE-PROFILE", payload: { ratingKey: item.key, profile: e.target.value } })
                     }
                   />
                 </div>
                 <div className="flex w-64 flex-col">
-                  <Label htmlFor="color" className="text-text-700">
+                  <Label className="text-text-700" htmlFor="color">
                     Cor
                   </Label>
                   <Input
+                    className="text-text-700"
                     id="color"
                     maxLength={7}
                     type="color"
                     value={item.color}
-                    className="text-text-700"
                     onChange={(e) => {
                       const value = e.target.value;
                       dispatch({ type: "CHANGE-COLOR", payload: { ratingKey: item.key, color: value } });

@@ -56,14 +56,14 @@ export function CompanyForm({ data }: FormProps) {
     <div className="w-full py-4 md:pt-4 md:pb-24">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
-          <Label htmlFor="name" className="text-text-700">
+          <Label className="text-text-700" htmlFor="name">
             Nome da empresa
           </Label>
           <Input
+            className="text-text-700"
             id="name"
             name="name"
             value={formData.name}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, name: e.target.value }));
             }}
@@ -71,15 +71,15 @@ export function CompanyForm({ data }: FormProps) {
           {!!errors?.name && <span className="text-sm text-error-500">{errors.name}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="email" className="text-text-700">
+          <Label className="text-text-700" htmlFor="email">
             E-mail
           </Label>
           <Input
+            className="text-text-700"
             id="email"
             name="email"
             type="email"
             value={formData.email}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, email: e.target.value }));
             }}

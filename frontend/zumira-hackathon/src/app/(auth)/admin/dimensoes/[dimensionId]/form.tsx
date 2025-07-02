@@ -65,14 +65,14 @@ export function DimensionForm({ data, blocks }: FormProps) {
     <div className="w-full py-4 md:pt-4 md:pb-24">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
-          <Label htmlFor="title" className="text-text-700">
+          <Label className="text-text-700" htmlFor="title">
             Sigla
           </Label>
           <Input
+            className="text-text-700"
             id="acronym"
             name="acronym"
             value={formData.acronym}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, acronym: e.target.value }));
             }}
@@ -80,14 +80,14 @@ export function DimensionForm({ data, blocks }: FormProps) {
           {!!errors?.acronym && <span className="text-sm text-error-500">{errors.acronym}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="title" className="text-text-700">
+          <Label className="text-text-700" htmlFor="title">
             Nome
           </Label>
           <Input
+            className="text-text-700"
             id="name"
             name="name"
             value={formData.name}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, name: e.target.value }));
             }}
@@ -95,7 +95,7 @@ export function DimensionForm({ data, blocks }: FormProps) {
           {!!errors?.name && <span className="text-sm text-error-500">{errors.name}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="companyId" className="text-text-700">
+          <Label className="text-text-700" htmlFor="companyId">
             Bloco de Autoconhecimento
           </Label>
           <Select
@@ -113,7 +113,7 @@ export function DimensionForm({ data, blocks }: FormProps) {
             </SelectTrigger>
             <SelectContent>
               {blocks?.map((item) => (
-                <SelectItem key={item.id} value={item.id} className="text-text-700">
+                <SelectItem key={item.id} className="text-text-700" value={item.id}>
                   {item.title}
                 </SelectItem>
               ))}

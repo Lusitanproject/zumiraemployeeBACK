@@ -88,14 +88,14 @@ export function NotificationForm({ data, types, users }: FormProps) {
     <div className="w-full py-4 md:pt-4 md:pb-24">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
-          <Label htmlFor="title" className="text-text-700">
+          <Label className="text-text-700" htmlFor="title">
             Título
           </Label>
           <Input
+            className="text-text-700"
             id="title"
             name="title"
             value={formData.title}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, title: e.target.value }));
             }}
@@ -103,14 +103,14 @@ export function NotificationForm({ data, types, users }: FormProps) {
           {!!errors?.title && <span className="text-sm text-error-500">{errors.title}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="summary" className="text-text-700">
+          <Label className="text-text-700" htmlFor="summary">
             Resumo
           </Label>
           <Input
+            className="text-text-700"
             id="summary"
             name="summary"
             value={formData.summary}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, summary: e.target.value }));
             }}
@@ -118,7 +118,7 @@ export function NotificationForm({ data, types, users }: FormProps) {
           {!!errors?.summary && <span className="text-sm text-error-500">{errors.summary}</span>}
         </div>
         <div>
-          <Label htmlFor="content" className="text-text-700">
+          <Label className="text-text-700" htmlFor="content">
             Tipo de notificação
           </Label>
           <RadioGroup
@@ -132,13 +132,13 @@ export function NotificationForm({ data, types, users }: FormProps) {
           >
             <div className="flex flex-row gap-2 items-center">
               <RadioGroupItem id="content-text" value="text" />
-              <label htmlFor="content-text" className="text-text-700">
+              <label className="text-text-700" htmlFor="content-text">
                 Conteúdo
               </label>
             </div>
             <div className="flex flex-row gap-2 items-center">
               <RadioGroupItem id="content-call-to-action" value="call-to-action" />
-              <label htmlFor="content-call-to-action" className="text-text-700">
+              <label className="text-text-700" htmlFor="content-call-to-action">
                 Call to action
               </label>
             </div>
@@ -147,7 +147,7 @@ export function NotificationForm({ data, types, users }: FormProps) {
         <div className="pb-3">
           {contentType === "text" ? (
             <>
-              <Label htmlFor="content" className="text-text-700">
+              <Label className="text-text-700" htmlFor="content">
                 Conteúdo
               </Label>
               <RichTextArea
@@ -160,13 +160,13 @@ export function NotificationForm({ data, types, users }: FormProps) {
             </>
           ) : (
             <>
-              <Label htmlFor="link" className="text-text-700">
+              <Label className="text-text-700" htmlFor="link">
                 Link de redirecionamento
               </Label>
               <Input
+                className="text-text-700"
                 id="link"
                 value={formData.actionUrl ?? ""}
-                className="text-text-700"
                 onChange={(e) => {
                   setFormData((current) => ({ ...current, actionUrl: e.target.value }));
                 }}
@@ -176,7 +176,7 @@ export function NotificationForm({ data, types, users }: FormProps) {
           {!!errors?.contentOrActionUrl && <span className="text-sm text-error-500">{errors.contentOrActionUrl}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="notificationTypeId" className="text-text-700">
+          <Label className="text-text-700" htmlFor="notificationTypeId">
             Categoria
           </Label>
           <Select
@@ -194,7 +194,7 @@ export function NotificationForm({ data, types, users }: FormProps) {
             </SelectTrigger>
             <SelectContent>
               {types?.map((item) => (
-                <SelectItem key={item.id} value={item.id} className="text-text-700">
+                <SelectItem key={item.id} className="text-text-700" value={item.id}>
                   {item.name}
                 </SelectItem>
               ))}

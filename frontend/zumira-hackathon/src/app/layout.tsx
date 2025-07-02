@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 
-import Script from "next/script";
-
 import "./globals.css";
 
 import { Toaster } from "sonner";
@@ -19,10 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html suppressHydrationWarning lang="pt-BR">
       <body className={`${rawline.className} antialiased`}>
         <script
-          id="theme-init"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -38,6 +35,7 @@ export default function RootLayout({
               })();
             `,
           }}
+          id="theme-init"
         />
         <Toaster
           position="bottom-right"

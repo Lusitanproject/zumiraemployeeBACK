@@ -91,14 +91,14 @@ export function UserForm({ data, companies, roles }: FormProps) {
     <div className="w-full py-4 md:pt-4 md:pb-24">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
-          <Label htmlFor="title" className="text-text-700">
+          <Label className="text-text-700" htmlFor="title">
             Nome
           </Label>
           <Input
+            className="text-text-700"
             id="title"
             name="title"
             value={formData.name}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, name: e.target.value }));
             }}
@@ -106,15 +106,15 @@ export function UserForm({ data, companies, roles }: FormProps) {
           {!!errors?.name && <span className="text-sm text-error-500">{errors.name}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="title" className="text-text-700">
+          <Label className="text-text-700" htmlFor="title">
             Email
           </Label>
           <Input
+            className="text-text-700"
             id="email"
             name="email"
             type="email"
             value={formData.email}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, email: e.target.value }));
             }}
@@ -122,7 +122,7 @@ export function UserForm({ data, companies, roles }: FormProps) {
           {!!errors?.email && <span className="text-sm text-error-500">{errors.email}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="companyId" className="text-text-700">
+          <Label className="text-text-700" htmlFor="companyId">
             Empresa
           </Label>
           <Select
@@ -140,7 +140,7 @@ export function UserForm({ data, companies, roles }: FormProps) {
             </SelectTrigger>
             <SelectContent>
               {companies?.map((item) => (
-                <SelectItem key={item.id} value={item.id} className="text-text-700">
+                <SelectItem key={item.id} className="text-text-700" value={item.id}>
                   {item.name}
                 </SelectItem>
               ))}
@@ -149,7 +149,7 @@ export function UserForm({ data, companies, roles }: FormProps) {
           {!!errors?.email && <span className="text-sm text-error-500">{errors.email}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="roleId" className="text-text-700">
+          <Label className="text-text-700" htmlFor="roleId">
             Perfil
           </Label>
           <Select
@@ -167,7 +167,7 @@ export function UserForm({ data, companies, roles }: FormProps) {
             </SelectTrigger>
             <SelectContent>
               {roles?.map((item) => (
-                <SelectItem key={item.id} value={item.id} className="text-text-700">
+                <SelectItem key={item.id} className="text-text-700" value={item.id}>
                   {item.slug}
                 </SelectItem>
               ))}

@@ -52,53 +52,53 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
   return (
     <form className="w-full flex flex-col gap-3" onSubmit={handleSubmit}>
       <div>
-        <Label htmlFor="name" className="text-text-700">
+        <Label className="text-text-700" htmlFor="name">
           {" "}
           Nome completo
         </Label>
         <Input
+          className="text-text-700"
           hasError={!!state?.errors?.name}
           id="name"
           name="name"
           placeholder="Digite seu nome completo"
           value={formData.name}
           onChange={handleChange}
-          className="text-text-700"
         />
         {state?.errors?.name && <span className="mt-3 mb-8 text-sm text-red-400">{state.errors.name}</span>}
       </div>
       <div>
-        <Label htmlFor="email" className="text-text-700">
+        <Label className="text-text-700" htmlFor="email">
           E-mail
         </Label>
         <Input
+          className="text-text-700"
           hasError={!!state?.errors?.email}
           id="email"
           name="email"
           placeholder="Digite seu email"
           value={formData.email}
           onChange={handleChange}
-          className="text-text-700"
         />
         {state?.errors?.email && <span className="mt-3 mb-8 text-sm text-red-400">{state.errors.email}</span>}
       </div>
       <div>
-        <Label htmlFor="birthdate" className="text-text-700">
+        <Label className="text-text-700" htmlFor="birthdate">
           Data de Nascimento
         </Label>
         <Input
+          className="text-text-700"
           hasError={!!state?.errors?.birthdate}
           id="birthdate"
           name="birthdate"
           type="date"
           value={String(formData.birthdate)}
           onChange={handleChange}
-          className="text-text-700"
         />
         {state?.errors?.birthdate && <span className="mt-3 mb-8 text-sm text-red-400">{state.errors.birthdate}</span>}
       </div>
       <div>
-        <Label htmlFor="nationality" className="text-text-700">
+        <Label className="text-text-700" htmlFor="nationality">
           Nacionalidade
         </Label>
         <Select
@@ -111,7 +111,7 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
           </SelectTrigger>
           <SelectContent>
             {nationalities.map((nationality) => (
-              <SelectItem key={nationality.id} value={nationality.id} className="text-text-700">
+              <SelectItem key={nationality.id} className="text-text-700" value={nationality.id}>
                 {nationality.name}
               </SelectItem>
             ))}
@@ -122,7 +122,7 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
         )}
       </div>
       <div>
-        <Label htmlFor="gender" className="text-text-700">
+        <Label className="text-text-700" htmlFor="gender">
           Gênero (Opicional)
         </Label>
         <Select
@@ -138,13 +138,13 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
             <SelectValue className="text-muted-foreground" placeholder="Selecione" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="MALE" className="text-text-700">
+            <SelectItem className="text-text-700" value="MALE">
               Masculino
             </SelectItem>
-            <SelectItem value="FEMALE" className="text-text-700">
+            <SelectItem className="text-text-700" value="FEMALE">
               Feminino
             </SelectItem>
-            <SelectItem value="OTHER" className="text-text-700">
+            <SelectItem className="text-text-700" value="OTHER">
               Outro
             </SelectItem>
           </SelectContent>
@@ -152,17 +152,17 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
         {state?.errors?.gender && <span className="mt-3 mb-8 text-sm text-red-400">{state.errors.gender}</span>}
       </div>
       <div>
-        <Label htmlFor="occupation" className="text-text-700">
+        <Label className="text-text-700" htmlFor="occupation">
           Profissão (Opcional)
         </Label>
         <Input
+          className="text-text-700"
           hasError={!!state?.errors?.occupation}
           id="occupation"
           name="occupation"
           placeholder="Digite sua profissão"
           value={formData.occupation}
           onChange={handleChange}
-          className="text-text-700"
         />
         {state?.errors?.occupation && <span className="mt-3 mb-8 text-sm text-red-400">{state.errors.occupation}</span>}
       </div>

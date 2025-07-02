@@ -82,14 +82,14 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
     <div className="flex flex-col w-full py-4 md:pt-4 md:pb-24">
       <div className="flex flex-col w-full">
         <div className="pb-3">
-          <Label htmlFor="title" className="text-text-700">
+          <Label className="text-text-700" htmlFor="title">
             Título
           </Label>
           <Input
+            className="text-text-700"
             id="title"
             name="title"
             value={formData.name}
-            className="text-text-700"
             onChange={(e) => {
               setFormData((current) => ({ ...current, name: e.target.value }));
             }}
@@ -97,7 +97,7 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
           {!!errors?.name && <span className="text-sm text-error-500">{errors.name}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="description" className="text-text-700">
+          <Label className="text-text-700" htmlFor="description">
             Descrição
           </Label>
           <Textarea
@@ -112,7 +112,7 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
           {!!errors?.description && <span className="text-sm text-error-500">{errors.description}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="message-instructions" className="text-text-700">
+          <Label className="text-text-700" htmlFor="message-instructions">
             Instruções para mensagens
           </Label>
           <Textarea
@@ -129,7 +129,7 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
           )}
         </div>
         <div className="pb-3">
-          <Label htmlFor="compilation-instructions" className="text-text-700">
+          <Label className="text-text-700" htmlFor="compilation-instructions">
             Instruções para compilação da conversa
           </Label>
           <Textarea
