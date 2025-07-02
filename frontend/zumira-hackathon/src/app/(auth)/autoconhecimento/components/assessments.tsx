@@ -27,14 +27,14 @@ export function Assessments({ assessments, blocks }: AssessmentsProps) {
     <div className="pt-4">
       <SearchBar />
       <MonitoringBlocks data={blocks} />
-      <div className="flex flex-col border-t border-gray-200 pt-8 mt-8  md:border-0">
+      <div className="flex flex-col border-t border-border-200 pt-8 mt-8  md:border-0">
         {available.length || completed.length ? (
           <>
             <AssessmentList data={available} title="Avaliações a realizar" />
             <AssessmentList completed data={completed} title="Minhas avaliações" />
           </>
         ) : (
-          <span className="text-gray-600 text-center">Não foram encontrados resultados para a sua busca</span>
+          <span className="text-text-600 text-center">Não foram encontrados resultados para a sua busca</span>
         )}
       </div>
     </div>

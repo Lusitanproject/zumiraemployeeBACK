@@ -8,9 +8,9 @@ export type CardProps = {
 
 export function UserCard({ data }: CardProps) {
   return (
-    <Link className="p-[1.375rem] rounded-xl bg-gray-100" href={`/admin/usuarios/${data.id}`}>
+    <Link className="p-[1.375rem] rounded-xl bg-background-100" href={`/admin/usuarios/${data.id}`}>
       <div className="flex h-[50px] justify-start mb-3">
-        <div className="w-[50px] h-[50px] rounded-xl bg-primary-50 flex items-center justify-center font-bold">
+        <div className="w-[50px] h-[50px] rounded-xl bg-primary-50 flex items-center justify-center font-bold text-text-700">
           {data.name
             .split(" ")
             .filter((_, index) => index < 2)
@@ -18,10 +18,10 @@ export function UserCard({ data }: CardProps) {
         </div>
       </div>
       <div className="flex flex-col">
-        <h3 className="text-base font-semibold text-gray-700 mb-1">{data.name}</h3>
-        <span className="text-sm font-medium text-gray-600 mb-3">{data.email}</span>
-        {data.company && <h3 className="text-base font-semibold text-gray-700 mb-1">{data.company?.name}</h3>}
-        <span className="w-fit py-1 px-2 overflow-hidden text-ellipsis text-xs font-normal text-gray-500 border border-gray-500 rounded-lg">
+        <h3 className="text-base font-semibold text-text-700 mb-1">{data.name}</h3>
+        <span className="text-sm font-medium text-text-600 mb-3">{data.email}</span>
+        {data.company && <h3 className="text-base font-semibold text-text-700 mb-1">{data.company?.name}</h3>}
+        <span className="w-fit py-1 px-2 overflow-hidden text-ellipsis text-xs font-normal text-text-500 border border-border-500 rounded-lg">
           {data.role?.slug}
         </span>
       </div>

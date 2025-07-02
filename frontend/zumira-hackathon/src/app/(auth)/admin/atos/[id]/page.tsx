@@ -8,8 +8,8 @@ export default async function SelfMonitoringEdit({ params }: { params: Promise<{
 
   return (
     <div className="flex flex-col size-full">
-      <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-        <h3 className="font-bold text-2xl text-gray-700">{chatbotId === "novo" ? "Novo " : "Editar "}Ato</h3>
+      <div className="flex items-center justify-between pb-4 border-b border-border-100">
+        <h3 className="font-bold text-2xl text-text-700">{chatbotId === "novo" ? "Novo " : "Editar "}Ato</h3>
       </div>
       <Playground data={data} />
     </div>

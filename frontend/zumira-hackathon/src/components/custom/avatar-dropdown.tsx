@@ -31,7 +31,7 @@ function DropdownNavItem({ url, label, isCurrent, onClose }: DropdownNavItemProp
 
   return (
     <button
-      className="cursor-pointer w-full px-3 py-2 text-center bg-white hover:bg-black/5 text-sm font-medium flex flex-row items-center justify-between text-gray-400 hover:text-blue-950 disabled:text-blue-950"
+      className="cursor-pointer w-full px-3 py-2 text-center bg-background-0 not-disabled:hover:bg-black/5 text-sm font-medium flex flex-row items-center justify-between text-text-400 hover:text-text-900 disabled:text-text-900"
       disabled={isCurrent}
       onClick={() => handleRedirect(url)}
     >
@@ -58,17 +58,17 @@ export function AvatarDropdown({ open, userRole, onClose }: AvatarDropdownProps)
 
   return (
     <>
-      <div className="inset-0 fixed bg-gray-500/60 z-40" onClick={onClose} />
-      <div className="absolute right-0 top-14 shadow-2xl bg-white border border-gray-200 w-[20.5rem] py-1 z-40 rounded-lg overflow-hidden">
+      <div className="inset-0 fixed bg-background-500/60 z-40" onClick={onClose} />
+      <div className="absolute right-0 top-14 shadow-2xl bg-background-0 border border-border-200 w-[20.5rem] py-1 z-40 rounded-lg overflow-hidden">
         {userRole === "admin" && (
           <>
             <DropdownNavItem isCurrent={isAdminPath} label="Gestão" url="/admin/testes" onClose={onClose} />
             <DropdownNavItem isCurrent={!isAdminPath} label="Conta pessoal" url="/chat" onClose={onClose} />
-            <hr className="text-gray-300 mx-2" />
+            <hr className="text-text-300 mx-2" />
           </>
         )}
         <button
-          className="cursor-pointer w-full px-3 py-2 text-center bg-white hover:bg-error-100 text-sm font-medium text-error-600 flex items-center"
+          className="cursor-pointer w-full px-3 py-2 text-center bg-background-0 hover:bg-error-500/5 text-sm font-medium text-error-600 dark:text-error-400 flex items-center"
           onClick={async () => {
             await logout();
           }}

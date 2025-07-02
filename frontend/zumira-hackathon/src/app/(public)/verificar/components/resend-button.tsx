@@ -30,7 +30,7 @@ export function ResendButton() {
       <button
         className={`flex w-full justify-center mt-5 bg-none  ${
           loading ? "text-primary-700 pointer-events-none" : "text-primary-600 cursor-pointer hover:text-primary-700"
-        } disabled:text-gray-400 disabled:cursor-not-allowed`}
+        } disabled:text-text-400 disabled:cursor-not-allowed`}
         disabled={counter > 0}
         onClick={handleClick}
       >

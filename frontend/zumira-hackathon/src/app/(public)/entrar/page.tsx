@@ -18,21 +18,21 @@ export default function Entrar() {
       </div>
 
       <div className="mb-8">
-        <p className="text-[1.625rem] md:text-3xl font-semibold text-center text-gray-700 tracking-tight">
+        <p className="text-[1.625rem] md:text-3xl font-semibold text-center text-text-700 tracking-tight">
           Entre e comece a desfrutar
           <br />
           de todos os <span className={`${borel.className} text-primary-500 tracking-normal`}>benefícios</span>
         </p>
       </div>
       <SignUpForm />
-      <span className="text-sm leading-4 mt-8 text-gray-900">
+      <span className="text-sm leading-4 mt-8 text-text-900">
         Ao utilizar a plataforma, você concorda com os nossos{" "}
         <Link className="text-primary-600 underline" href="/termos">
           Termos de Uso
         </Link>
       </span>
       {process.env.ENABLE_REGISTER === "true" && (
-        <span className="text-center text-gray-500 font-semibold mt-8">
+        <span className="text-center text-text-500 font-semibold mt-8">
           Não tem uma conta?{" "}
           <Link className="underline" href="/registrar">
             Cadastre-se

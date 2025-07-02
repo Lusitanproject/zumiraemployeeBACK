@@ -44,14 +44,14 @@ export function Assistant({ companyFeedbacks, username, chatbotId }: AssistantPr
       </div>
       <section
         className={cn(
-          "absolute flex flex-col bottom-0 right-0 bg-white overflow-hidden border-1 border-gray-300 duration-300",
+          "absolute flex flex-col bottom-0 right-0 bg-background-0 overflow-hidden border-1 border-border-300 duration-300",
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none translate-y-1/3",
           maximize
             ? "size-full"
             : "size-full md:h-[75vh] md:w-[26rem] md:-translate-x-5 md:-translate-y-5 md:rounded-lg"
         )}
       >
-        <header className="bg-gray-100 p-3 border-b-1 border-gray-300 flex flex-row justify-between text-gray-900">
+        <header className="bg-background-100 p-3 border-b-1 border-border-300 flex flex-row justify-between text-text-900">
           <button onClick={closeChat}>
             <X className="size-6 cursor-pointer" />
           </button>
@@ -70,7 +70,7 @@ export function Assistant({ companyFeedbacks, username, chatbotId }: AssistantPr
         <div className="flex flex-col flex-1 min-h-0">
           <Chat chatbotId={chatbotId} context={context} username={username}>
             <div className="flex flex-col justify-center items-center size-full gap-3">
-              <p className="text-center text-gray-500">Consulte aqui os indicadores da sua empresa</p>
+              <p className="text-center text-text-500">Consulte aqui os indicadores da sua empresa</p>
               <div className="absolute size-24">
                 <Image fill alt="icon zumira" className="opacity-10" src={icon} />
               </div>

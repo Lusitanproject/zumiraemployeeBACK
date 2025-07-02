@@ -42,7 +42,7 @@ export function MonitoringBlocks({ data }: MonitoringBlocksProps) {
       {data.map((item) => (
         <Badge
           key={item.id}
-          className={cn("hover:bg-primary-25/70", { "hover:bg-gray-200": selectedId !== item.id })}
+          className={cn("hover:bg-primary-25/70", { "hover:bg-background-200": selectedId !== item.id })}
           selected={selectedId === item.id}
           onClick={() => handleSelect(item.id)}
         >

@@ -76,24 +76,27 @@ export function ManageRatingsForm({ data, ratings }: ManageRatingsFormProps) {
         {state.ratings.map((item) => (
           <div
             key={item.key}
-            className={`flex flex-row rounded-xl border bg-gray-25 duration-500 overflow-hidden justify-between ${
-              invalidRatings.includes(item.key) ? "border-error-500" : "border-gray-100"
+            className={`flex flex-row rounded-xl border bg-background-25 duration-500 overflow-hidden justify-between ${
+              invalidRatings.includes(item.key) ? "border-error-500" : "border-border-100"
             }`}
             id={item.key}
           >
             <div
               className={`relative flex flex-col gap-2 px-6 py-4 w-full border-r ${
-                invalidRatings.includes(item.key) ? "border-error-500" : "border-gray-100"
+                invalidRatings.includes(item.key) ? "border-error-500" : "border-border-100"
               }`}
             >
               <X
-                className="absolute -translate-x-4.5 -translate-y-3 size-4 flex-none text-gray-400"
+                className="absolute -translate-x-4.5 -translate-y-3 size-4 flex-none text-text-400"
                 onClick={() => dispatch({ type: "REMOVE-RATING", payload: { ratingKey: item.key } })}
               />
-              <div className={`flex flex-row justify-between items-center w-full bg-gray-25 gap-4`}>
+              <div className={`flex flex-row justify-between items-center w-full bg-background-25 gap-4`}>
                 <div className="flex w-full flex-col">
-                  <Label htmlFor="name">Risco</Label>
+                  <Label className="text-text-700" htmlFor="name">
+                    Risco
+                  </Label>
                   <Input
+                    className="text-text-700"
                     defaultValue={item.risk}
                     id="risk"
                     placeholder="Classificação de risco"
@@ -103,8 +106,11 @@ export function ManageRatingsForm({ data, ratings }: ManageRatingsFormProps) {
                   />
                 </div>
                 <div className="flex w-full flex-col">
-                  <Label htmlFor="profile">Perfil</Label>
+                  <Label className="text-text-700" htmlFor="profile">
+                    Perfil
+                  </Label>
                   <Input
+                    className="text-text-700"
                     defaultValue={item.profile}
                     id="profile"
                     placeholder="Perfil de risco"
@@ -114,8 +120,11 @@ export function ManageRatingsForm({ data, ratings }: ManageRatingsFormProps) {
                   />
                 </div>
                 <div className="flex w-64 flex-col">
-                  <Label htmlFor="color">Cor</Label>
+                  <Label className="text-text-700" htmlFor="color">
+                    Cor
+                  </Label>
                   <Input
+                    className="text-text-700"
                     id="color"
                     maxLength={7}
                     type="color"
@@ -136,7 +145,7 @@ export function ManageRatingsForm({ data, ratings }: ManageRatingsFormProps) {
           </div>
         ))}
       </div>
-      <div className="border-gray-100 py-4 flex items-center gap-x-3">
+      <div className="border-border-100 py-4 flex items-center gap-x-3">
         <span className="text-error-500">{error}</span>
         <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleUpdateRatings}>
           Salvar classificações

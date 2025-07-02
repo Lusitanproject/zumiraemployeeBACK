@@ -28,12 +28,12 @@ export function MainMenu({ expanded, menu }: MainMenuProps) {
           <Link
             key={item.href}
             className={cn(
-              "w-full flex items-center justify-start rounded-xl text-gray-400 hover:bg-black/5 font-semibold overflow-hidden",
+              "w-full flex items-center justify-start rounded-xl text-text-400 hover:bg-black/5 font-semibold overflow-hidden",
               {
                 "px-5 h-11 gap-x-2 grid grid-cols-[20px_minmax(96px,_1fr)_20px]": expanded,
                 "h-12 items-center justify-center": !expanded,
-                "border-b border-gray-100/20 pr-0": pathname.indexOf(item.href) !== 0,
-                "text-gray-500": pathname.indexOf(item.href) === 0,
+                "pr-0": pathname.indexOf(item.href) !== 0,
+                "text-text-500": pathname.indexOf(item.href) === 0,
               }
             )}
             href={item.href}
@@ -47,7 +47,7 @@ export function MainMenu({ expanded, menu }: MainMenuProps) {
               {item.label}
             </span>
             <ChevronRight
-              className={cn("text-gray-500", {
+              className={cn("text-text-500", {
                 hidden: pathname.indexOf(item.href) !== 0 || !expanded,
               })}
               size={20}

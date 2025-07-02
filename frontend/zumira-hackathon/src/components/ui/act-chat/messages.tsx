@@ -37,7 +37,7 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
     >
       {messages.map((m, i) => (
         <Fragment key={i}>
-          {m.role === "assistant" && <hr className="text-gray-200 -mx-5" />}
+          {m.role === "assistant" && <hr className="text-text-200 -mx-5" />}
           <div
             className={`flex flex-col w-full ${m.role === "user" ? "items-end" : "items-start"}`}
             style={{ overflowWrap: "anywhere" }}
@@ -45,7 +45,9 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
             <div
               className={cn(
                 `flex flex-col w-auto max-w-4xl rounded-xl px-[1.375rem] py-4 markdown prose ${
-                  m.role === "user" ? "bg-gray-200 rounded-br-none ml-10" : "bg-gray-100 rounded-bl-none mr-10"
+                  m.role === "user"
+                    ? "bg-background-200 rounded-br-none ml-10"
+                    : "bg-background-100 rounded-bl-none mr-10"
                 }`
               )}
             >
@@ -64,9 +66,9 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
       {/* Chat bubble com 3 pontos flutuando */}
       {loadingResponse && (
         <>
-          <hr className="text-gray-200 -mx-5" />
+          <hr className="text-text-200 -mx-5" />
           <div className="flex flex-col w-full items-start">
-            <span className="relative flex flex-row rounded-xl px-[1.375rem] py-4 bg-gray-100 rounded-bl-none gap-1">
+            <span className="relative flex flex-row rounded-xl px-[1.375rem] py-4 bg-background-100 rounded-bl-none gap-1">
               {Array.from({ length: 3 }, (_, i) => (
                 <div
                   key={i}

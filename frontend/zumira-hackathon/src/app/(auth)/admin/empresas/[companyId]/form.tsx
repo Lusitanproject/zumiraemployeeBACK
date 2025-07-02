@@ -56,8 +56,11 @@ export function CompanyForm({ data }: FormProps) {
     <div className="w-full py-4 md:pt-4 md:pb-24">
       <div className="w-full md:w-[30rem]">
         <div className="pb-3">
-          <Label htmlFor="name">Nome da empresa</Label>
+          <Label className="text-text-700" htmlFor="name">
+            Nome da empresa
+          </Label>
           <Input
+            className="text-text-700"
             id="name"
             name="name"
             value={formData.name}
@@ -68,8 +71,11 @@ export function CompanyForm({ data }: FormProps) {
           {!!errors?.name && <span className="text-sm text-error-500">{errors.name}</span>}
         </div>
         <div className="pb-3">
-          <Label htmlFor="email">E-mail</Label>
+          <Label className="text-text-700" htmlFor="email">
+            E-mail
+          </Label>
           <Input
+            className="text-text-700"
             id="email"
             name="email"
             type="email"
@@ -82,7 +88,7 @@ export function CompanyForm({ data }: FormProps) {
         </div>
       </div>
       {!!formError && <span className="text-sm text-error-500">{formError}</span>}
-      <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
+      <div className="md:border-t border-border-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-background-50 flex items-center md:justify-start gap-x-3">
         <Button size="xl" variant="outline" onClick={handleCancel}>
           Cancelar
         </Button>

@@ -17,7 +17,7 @@ export function VerifyCodeForm() {
     <form action={action} className="w-full">
       <div className="w-fit mx-auto">
         <InputOTP className="w-fit mx-auto" maxLength={6} name="code" pattern={REGEXP_ONLY_DIGITS}>
-          <InputOTPGroup>
+          <InputOTPGroup className="text-text-700">
             <InputOTPSlot className={cn(state?.errors.input && "border-error-400")} index={0} />
             <InputOTPSlot className={cn(state?.errors.input && "border-error-400")} index={1} />
             <InputOTPSlot className={cn(state?.errors.input && "border-error-400")} index={2} />

@@ -42,7 +42,7 @@ export function ActsMenu({ data }: ActsMenuProps) {
           />
         ))}
       </div>
-      <hr className="text-gray-300" />
+      <hr className="text-text-300" />
     </>
   );
 }

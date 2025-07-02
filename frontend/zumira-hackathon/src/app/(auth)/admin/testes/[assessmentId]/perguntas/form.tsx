@@ -81,16 +81,16 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
         {sorted.map((item, idx) => (
           <div
             key={item.key}
-            className={`w-full p-4 rounded-xl border bg-gray-25 duration-500 ${
-              invalidQuestions.includes(item.key) ? "border-error-500" : "border-gray-100"
+            className={`w-full p-4 rounded-xl border bg-background-25 duration-500 ${
+              invalidQuestions.includes(item.key) ? "border-error-500" : "border-border-100"
             }`}
             id={item.key}
           >
             <div className="flex justify-between items-start">
-              <span className="flex w-fit font-bold text-xs mb-3">Pergunta {idx + 1}</span>
+              <span className="flex w-fit font-bold text-xs mb-3 text-text-700">Pergunta {idx + 1}</span>
               <div className="flex gap-x-2">
                 <ButtonIcon tooltip="Duplicar" onClick={() => dispatch({ type: "DUPLICATE", payload: item.key })}>
-                  <Copy className="size-5 text-gray-600" />
+                  <Copy className="size-5 text-text-600" />
                 </ButtonIcon>
                 <ButtonIcon
                   disabled={item.index === 0}
@@ -136,7 +136,7 @@ export function ManageQuestionsForm({ data, questions, dimensions }: ManageQuest
           </div>
         ))}
       </div>
-      <div className="border-gray-100 py-4 flex items-center gap-x-3">
+      <div className="border-border-100 py-4 flex items-center gap-x-3">
         <span className="text-error-500">{error}</span>
         <Button disabled={loading} loading={loading} size="xl" variant="primary" onClick={handleUpdateQuestions}>
           Salvar perguntas

@@ -24,8 +24,8 @@ export function Filters({ assessments, companies, totalResults, onChangeFilters 
   }, []);
 
   return (
-    <div className="bg-gray-100 p-3 pt-2 rounded-xl border-1 border-gray-300">
-      <span className="text-lg font-semibold text-gray-400">Filtros</span>
+    <div className="bg-background-100 p-3 pt-2 rounded-xl border-1 border-border-300">
+      <span className="text-lg font-semibold text-text-400">Filtros</span>
       <div className="flex flex-row w-full justify-between items-end flex-wrap">
         <div className="flex flex-row gap-2 items-center flex-wrap">
           <div>
@@ -40,7 +40,7 @@ export function Filters({ assessments, companies, totalResults, onChangeFilters 
                 }
               }}
             >
-              <SelectTrigger className="w-64 bg-white">
+              <SelectTrigger className="w-64 bg-background-0 text-text-700">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -62,7 +62,7 @@ export function Filters({ assessments, companies, totalResults, onChangeFilters 
                 onChangeFilters?.({ assessmentId: value, companyId: companyId.current });
               }}
             >
-              <SelectTrigger className="w-64 bg-white">
+              <SelectTrigger className="w-64 bg-background-0 text-text-700">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -75,7 +75,7 @@ export function Filters({ assessments, companies, totalResults, onChangeFilters 
             </Select>
           </div>
         </div>
-        <span className="text-gray-500 text-sm">Mostrando {totalResults ?? 0} resultados</span>
+        <span className="text-text-500 text-sm">Mostrando {totalResults ?? 0} resultados</span>
       </div>
     </div>
   );

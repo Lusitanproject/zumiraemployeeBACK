@@ -12,7 +12,7 @@ export function BackButton() {
         router.back();
       }}
     >
-      <ChevronLeft className="size-6 text-gray-400" />
+      <ChevronLeft className="size-6 text-text-400" />
     </button>
   );
 }

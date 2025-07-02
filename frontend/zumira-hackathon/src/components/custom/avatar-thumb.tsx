@@ -26,7 +26,7 @@ export function AvatarThumb({ user, role }: AvatarThumb) {
     <div ref={ref} className="relative w-12 h-12 md:w-11 md:h-11">
       <div
         className={cn(
-          "overflow-hidden cursor-pointer rounded-full w-12 h-12 md:w-11 md:h-11 md:border-2 md:border-white md:shadow-lg bg-primary-400 flex items-center justify-center relative",
+          "overflow-hidden cursor-pointer rounded-full w-12 h-12 md:w-11 md:h-11 md:border-2 md:border-background-0 md:shadow-lg bg-primary-400 flex items-center justify-center relative",
           open ? "z-50" : "z-auto"
         )}
         onClick={handleToggleDropdown}

@@ -51,12 +51,12 @@ export function MessageInput({ placeholder, disabled, warning, onSend }: Message
     <form
       ref={formRef}
       action={handleSubmit}
-      className="relative flex flex-row w-full min-h-[3.125rem] max-h-32 border-gray-300 border-1 rounded-xl"
+      className="relative flex flex-row w-full min-h-[3.125rem] max-h-32 border-border-100 border-1 rounded-xl"
     >
       <div className="flex size-full py-2.5">
         <textarea
           ref={textareaRef}
-          className="flex w-full focus:outline-none focus:ring-transparent px-3.5 field-sizing-content resize-none"
+          className="flex w-full focus:outline-none focus:ring-transparent px-3.5 field-sizing-content resize-none text-text-800"
           name="message"
           placeholder={placeholder}
           style={{ overflowWrap: "anywhere" }}

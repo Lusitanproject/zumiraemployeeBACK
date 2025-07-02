@@ -27,10 +27,10 @@ export function Concluded({ assessmentId }: ConcludedProps) {
         {/* <HeadImage size="small" /> */}
         <DottedSpinner />
         <div className="flex flex-col size-fit">
-          <h1 className="sm:text-4xl text-3xl font-bold text-center sm:leading-11 leading-9 text-gray-800">
+          <h1 className="sm:text-4xl text-3xl font-bold text-center sm:leading-11 leading-9 text-text-800">
             Estamos processando seus resultados
           </h1>
-          <p className="text-lg leading-7 text-center text-gray-600">
+          <p className="text-lg leading-7 text-center text-text-600">
             Em alguns instantes você será redirecionado para visualizar a sua devolutiva
           </p>
         </div>

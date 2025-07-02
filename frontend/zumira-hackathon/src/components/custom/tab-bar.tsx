@@ -23,14 +23,14 @@ export function TabBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden border-t border-gray-200 px-6 py-7 bg-white">
+    <nav className="md:hidden border-t border-border-200 px-6 py-7 bg-background-0">
       <ul className="flex justify-between items-center">
         {links.map((item) => (
           <Link
             key={item.href}
             className={cn("w-fit flex items-center h-9 rounded-xl", {
               "bg-primary-300 text-primary-25 gap-x-3 px-3": pathname.indexOf(item.href) === 0,
-              "text-gray-500/60": pathname.indexOf(item.href) !== 0,
+              "text-text-500/60": pathname.indexOf(item.href) !== 0,
             })}
             href={item.href}
           >
