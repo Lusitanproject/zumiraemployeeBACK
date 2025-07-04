@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 
-import { AlertsProvider } from "@/providers/alerts";
 import { getAssessments } from "@/api/assessments";
 import { getCompanies } from "@/api/companies";
+import { AlertsProvider } from "@/providers/alerts";
 
 interface LayoutProps {
   children: ReactNode;

@@ -1,13 +1,13 @@
 export interface Company {
+  createdAt: Date;
+  email: string;
   id: string;
   name: string;
-  email: string;
-  createdAt: Date;
   updatedAt: Date;
 }
 
 export interface CompanyFeedback {
-  text: string;
-  respondants: number;
   createdAt: Date;
+  respondants: number;
+  text: string;
 }

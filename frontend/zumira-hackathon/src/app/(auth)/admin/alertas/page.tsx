@@ -1,10 +1,12 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import { AlertsTable } from "./components/alerts-table";
-import { AlertsContext } from "@/providers/alerts";
+
 import { getAssessmentResultsFiltered } from "@/api/assessments";
+import { AlertsContext } from "@/providers/alerts";
 import { AssessmentResult } from "@/types/assessment";
+
+import { AlertsTable } from "./components/alerts-table";
 import { Filters } from "./definitions";
 
 export default function Alertas() {
@@ -27,7 +29,7 @@ export default function Alertas() {
 
   return (
     <div className="flex size-full flex-col gap-2">
-      <AlertsTable results={results} loading={loading} />
+      <AlertsTable loading={loading} results={results} />
     </div>
   );
 }

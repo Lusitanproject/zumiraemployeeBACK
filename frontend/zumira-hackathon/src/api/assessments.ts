@@ -3,10 +3,10 @@
 import { cookies } from "next/headers";
 
 import { decrypt } from "@/app/_lib/session";
+import { Assessment, AssessmentResult } from "@/types/assessment";
 import { catchError } from "@/utils/error";
 
 import { ZumiraApiResponse } from "./common";
-import { Assessment, AssessmentResult } from "@/types/assessment";
 
 export interface DownloadAssessmentResultsReportRequest {
   assessmentId: string;

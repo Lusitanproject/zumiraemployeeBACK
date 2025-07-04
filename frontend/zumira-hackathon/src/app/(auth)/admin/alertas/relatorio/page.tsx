@@ -1,10 +1,12 @@
 "use client";
 
+import { useContext, useEffect, useState } from "react";
+import Markdown from "react-markdown";
+
 import { getCompanyFeedback } from "@/api/companies";
 import { Spinner } from "@/components/custom/spinner";
 import { AlertsContext } from "@/providers/alerts";
-import { useContext, useEffect, useState } from "react";
-import Markdown from "react-markdown";
+
 import { CompanyFeedback } from "../../components/assistant/definitions";
 
 export default function Relatorio() {
@@ -12,25 +14,25 @@ export default function Relatorio() {
   const [feedback, setFeedback] = useState<CompanyFeedback | null>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  async function fetchFeedback() {
-    if (!companyId || !assessmentId) return;
-
-    setLoading(true);
-    try {
-      const feedback = await getCompanyFeedback(companyId, assessmentId);
-      if (feedback) {
-        setFeedback(feedback);
-      } else {
-        setFeedback(null);
-      }
-    } catch (err) {
-      if (err instanceof Error) throw new Error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
+    async function fetchFeedback() {
+      if (!companyId || !assessmentId) return;
+
+      setLoading(true);
+      try {
+        const feedback = await getCompanyFeedback(companyId, assessmentId);
+        if (feedback) {
+          setFeedback(feedback);
+        } else {
+          setFeedback(null);
+        }
+      } catch (err) {
+        if (err instanceof Error) throw new Error(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
     fetchFeedback();
   }, [assessmentId, companyId]);
 

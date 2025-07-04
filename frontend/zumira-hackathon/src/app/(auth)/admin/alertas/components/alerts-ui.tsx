@@ -2,10 +2,11 @@
 
 import { ReactNode } from "react";
 
-import { Filters } from "./filters";
 import { Tabs } from "@/components/ui/tabs";
 import { Assessment } from "@/types/assessment";
 import { Company } from "@/types/company";
+
+import { Filters } from "./filters";
 
 interface AlertsUIProps {
   assessments: Assessment[];

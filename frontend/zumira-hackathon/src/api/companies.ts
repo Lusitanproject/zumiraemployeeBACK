@@ -1,11 +1,13 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
+import { CompanyFeedback } from "@/app/(auth)/admin/components/assistant/definitions";
 import { Company } from "@/types/company";
 import { catchError } from "@/utils/error";
-import { cookies } from "next/headers";
+
 import { ZumiraApiResponse } from "./common";
-import { CompanyFeedback } from "@/app/(auth)/admin/components/assistant/definitions";
 
 export type GetCompaniesResponse = ZumiraApiResponse<{ companies: Company[] }>;
 export type GetCompanyFeedbackResponse = ZumiraApiResponse<CompanyFeedback>;

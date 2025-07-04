@@ -1,12 +1,12 @@
 export interface Assessment {
   id: string;
-  title: string;
-  summary: string;
+  lastCompleted: Date;
   selfMonitoring: {
     id: string;
     title: string;
   };
-  lastCompleted: Date;
+  summary: string;
+  title: string;
 }
 
 export interface AssessmentResult {

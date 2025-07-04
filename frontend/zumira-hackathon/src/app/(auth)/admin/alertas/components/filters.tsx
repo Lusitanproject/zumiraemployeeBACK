@@ -1,11 +1,8 @@
-import { useContext, useEffect, useRef } from "react";
-
-import { Label } from "@/components/custom/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-import { Filters as FiltersType } from "../definitions";
-import { AlertsContext } from "@/providers/alerts";
 import { Building2, FileCheck2 } from "lucide-react";
+import { useContext } from "react";
+
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertsContext } from "@/providers/alerts";
 import { Assessment } from "@/types/assessment";
 import { Company } from "@/types/company";
 

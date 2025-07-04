@@ -3,10 +3,10 @@ import { toast } from "sonner";
 
 import { downloadAssessmentResultsReport } from "@/api/assessments";
 import { Spinner } from "@/components/custom/spinner";
-
-import { MeatballsMenu } from "./meatballs-menu";
 import { AssessmentResult } from "@/types/assessment";
+
 import { Filters } from "../definitions";
+import { MeatballsMenu } from "./meatballs-menu";
 
 interface AlertsTableProps {
   filters?: Filters;

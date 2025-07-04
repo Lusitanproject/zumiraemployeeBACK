@@ -7,7 +7,6 @@ import { BackButton } from "../ui/back-button";
 import ThemeToggle from "../ui/theme-toggle";
 import { Avatar } from "./avatar";
 import { Notifications } from "./notifications/notifications";
-import { PageTitle } from "./page-title";
 
 export function Header() {
   return (

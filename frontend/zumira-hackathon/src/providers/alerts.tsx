@@ -2,9 +2,9 @@
 
 import { createContext, ReactNode, useState } from "react";
 
+import { AlertsUI } from "@/app/(auth)/admin/alertas/components/alerts-ui";
 import { Assessment } from "@/types/assessment";
 import { Company } from "@/types/company";
-import { AlertsUI } from "@/app/(auth)/admin/alertas/components/alerts-ui";
 
 type AlertsContextData = {
   assessmentId?: string;
