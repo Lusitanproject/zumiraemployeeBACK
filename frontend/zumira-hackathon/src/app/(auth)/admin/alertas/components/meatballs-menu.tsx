@@ -30,12 +30,12 @@ export function MeatballsMenu({ username, email }: MeatballsMenuProps) {
     <div className="relative">
       <button
         className={cn(
-          "flex flex-row gap-0.5 border-1 p-1 size-5 justify-center items-center rounded-md border-gray-300 shadow-sm cursor-pointer hover:bg-gray-50 flex-none"
+          "flex flex-row gap-0.5 border-1 p-1 size-5 justify-center items-center rounded-md border-border-300 shadow-sm cursor-pointer hover:bg-background-50 flex-none"
         )}
         onClick={() => setIsModalOpen(true)}
       >
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex flex-none size-0.5 bg-gray-700 rounded-full" />
+          <div key={i} className="flex flex-none size-0.5 bg-text-700 rounded-full" />
         ))}
       </button>
       <div
@@ -44,7 +44,7 @@ export function MeatballsMenu({ username, email }: MeatballsMenuProps) {
           isModalOpen
             ? "opacity-100 pointer-events-auto -translate-y-5"
             : "opacity-0 pointer-events-none translate-y-0",
-          "fixed px-4 py-3 flex text-nowrap duration-300 -translate-x-[103%] bg-white shadow-md border-1 border-gray-300 z-50 rounded-lg flex-col items-start gap-1"
+          "fixed px-4 py-3 flex text-nowrap duration-300 -translate-x-[103%] bg-background-0 shadow-md border-1 border-border-300 z-50 rounded-lg flex-col items-start gap-1"
         )}
       >
         <span>

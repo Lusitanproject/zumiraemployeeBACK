@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { Tabs } from "../../components/tabs";
+import { Tabs } from "../../../../../components/ui/tabs";
 import { getAssessmentData } from "./actions";
 
 interface LayoutProps {
@@ -24,7 +24,7 @@ export default async function AssessmentLayout({ params, children }: LayoutProps
 
   return (
     <div className="flex flex-col w-full">
-      <h3 className="font-semibold text-base text-gray-300">{assessmentId === "novo" ? "Novo teste" : data?.title}</h3>
+      <h3 className="font-semibold text-base text-text-300">{assessmentId === "novo" ? "Novo teste" : data?.title}</h3>
       <Tabs items={tabs} />
       {children}
     </div>

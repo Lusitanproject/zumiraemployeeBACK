@@ -20,15 +20,22 @@ export function NotificationsButton({ notifications, alerts }: NotificationsButt
     <div className="relative">
       <button
         className={cn(
-          "flex justify-center items-center w-11 h-11 cursor-pointer rounded-full bg-white relative",
+          "flex justify-center items-center w-11 h-11 cursor-pointer rounded-full bg-background-0 relative",
           isDropdownOpen ? "z-50" : "z-auto"
         )}
         onClick={() => setIsDropdownOpen((prev) => !prev)}
       >
-        <Bell className="text-gray-400" size={24} />
+        <Bell className="text-text-400" size={24} />
       </button>
       {isDropdownOpen && (
         <NotificationsDropdown alerts={alerts} notifications={notifications} onClose={() => setIsDropdownOpen(false)} />
+      )}
+      {!!(notifications.length + alerts.length) && (
+        <div
+          className={cn("absolute size-2 rounded-full bg-red-400 top-2 right-3", {
+            "z-50": isDropdownOpen,
+          })}
+        />
       )}
     </div>
   );

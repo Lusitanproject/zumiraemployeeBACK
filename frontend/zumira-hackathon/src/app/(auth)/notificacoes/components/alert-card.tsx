@@ -43,13 +43,13 @@ export function AlertCard({ alert, id, open, onOpen, onClose }: AlertCardProps) 
     <section
       className={cn(
         "relative flex flex-col gap-1 p-3 rounded-md border-1 duration-200",
-        open ? "border-primary-300" : "border-gray-100 hover:bg-[#E7F8EA]"
+        open ? "border-primary-300" : "border-border-100 hover:bg-background-50"
       )}
       id={id}
     >
-      <h1 className="text-gray-500 text-xs leading-[1.125rem] text-start">Alerta de risco</h1>
-      <hr className="text-gray-200" />
-      <p className="text-gray-700 text-sm leading-5 text-start">
+      <h1 className="text-text-500 text-xs leading-[1.125rem] text-start">Alerta de risco</h1>
+      <hr className="text-text-200" />
+      <p className="text-text-700 text-sm leading-5 text-start">
         O resultado de uma das suas avaliações gerou um alerta: <strong>{alert.assessmentResultRating.risk}</strong>
       </p>
 
@@ -63,12 +63,12 @@ export function AlertCard({ alert, id, open, onOpen, onClose }: AlertCardProps) 
         </div>
       </div>
 
-      <span className="flex w-full text-[10px] leading-[18px] text-right text-gray-400 justify-end">
+      <span className="flex w-full text-[10px] leading-[18px] text-right text-text-400 justify-end">
         {formatDate(alert.createdAt)}
       </span>
 
       <button
-        className="w-fit text-xs leading-[18px] text-gray-400 text-start cursor-pointer underline"
+        className="w-fit text-xs leading-[18px] text-text-400 text-start cursor-pointer underline"
         onClick={() => (open ? onClose?.(alert.id) : onOpen?.(alert.id))}
       >
         Ver {open ? "menos" : "mais"}

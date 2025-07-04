@@ -15,9 +15,9 @@ const FindAllActChatbotsController_1 = require("./controllers/admin/act-chatbots
 const UpdateActChatbotController_1 = require("./controllers/admin/act-chatbots/UpdateActChatbotController");
 const UpdateManyActChatbotsController_1 = require("./controllers/admin/act-chatbots/UpdateManyActChatbotsController");
 const DuplicateAssessmentController_1 = require("./controllers/admin/assessments/DuplicateAssessmentController");
-const FindFilteredResultsController_1 = require("./controllers/admin/assessments/FindFilteredResultsController");
 const FindQuestionByAssessmentController_1 = require("./controllers/admin/assessments/FindQuestionByAssessmentController");
 const FindResultRatingsByAssessmentController_1 = require("./controllers/admin/assessments/FindResultRatingsByAssessmentController");
+const FindResultsFilteredController_1 = require("./controllers/admin/assessments/FindResultsFilteredController");
 const GenerateExcelReportController_1 = require("./controllers/admin/assessments/GenerateExcelReportController");
 const UpdateAssessmentController_1 = require("./controllers/admin/assessments/UpdateAssessmentController");
 const UpdateResultRatingsController_1 = require("./controllers/admin/assessments/UpdateResultRatingsController");
@@ -66,6 +66,7 @@ const ListAssessmentsController_1 = require("./controllers/assessment/ListAssess
 const ListResultsController_1 = require("./controllers/assessment/ListResultsController");
 const UpdateQuestionsController_1 = require("./controllers/assessment/UpdateQuestionsController");
 const CreateCompanyController_1 = require("./controllers/company/CreateCompanyController");
+const FindCompanyFeedbackController_1 = require("./controllers/company/FindCompanyFeedbackController");
 const ListNationalitiesController_1 = require("./controllers/nationality/ListNationalitiesController");
 const DetailNotificationController_1 = require("./controllers/notification/DetailNotificationController");
 const ListNotificationsController_1 = require("./controllers/notification/ListNotificationsController");
@@ -98,7 +99,7 @@ router.get("/dimensions/:psychologicalDimensionId", isAuthenticated_1.isAuthenti
 router.put("/dimensions/:psychologicalDimensionId", isAuthenticated_1.isAuthenticated, new EditDimensionController_1.EditDimensionController().handle);
 // ROTAS RESULTS
 router.get("/assessments/results", isAuthenticated_1.isAuthenticated, new ListResultsController_1.ListResultsController().handle);
-router.get("/assessments/results/admin", isAuthenticated_1.isAuthenticated, new FindFilteredResultsController_1.FindFilteredResultsController().handle);
+router.get("/assessments/results/admin", isAuthenticated_1.isAuthenticated, new FindResultsFilteredController_1.FindResultsFilteredController().handle);
 router.get("/assessments/results/admin/download-report", isAuthenticated_1.isAuthenticated, new GenerateExcelReportController_1.GenerateExcelReportController().handle);
 router.get("/assessments/results/:id", isAuthenticated_1.isAuthenticated, new DetailResultController_1.DetailResultController().handle);
 router.post("/assessments/results", isAuthenticated_1.isAuthenticated, new CreateResultController_1.CreateResultController().handle);
@@ -133,6 +134,7 @@ router.get("/self-monitoring/dimensions/:selfMonitoringBlockId", isAuthenticated
 router.get("/companies", isAuthenticated_1.isAuthenticated, new FindAllCompaniesController_1.FindAllCompaniesController().handle);
 router.get("/companies/feedback", isAuthenticated_1.isAuthenticated, new FindAllFeedbacksController_1.FindAllFeedbacksController().handle);
 router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
+router.get("/companies/:id/feedback", isAuthenticated_1.isAuthenticated, new FindCompanyFeedbackController_1.FindCompanyFeedbackController().handle);
 router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController_1.ListNationalitiesController().handle);

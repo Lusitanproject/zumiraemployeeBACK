@@ -29,7 +29,7 @@ export function AssessmentModal({ id, title, summary, open, onClose }: Assessmen
       onClick={onClose}
     >
       <section
-        className={`flex flex-col bg-white sm:max-w-lg w-full rounded-lg p-6 gap-4 duration-200 ${
+        className={`flex flex-col bg-background-0 sm:max-w-lg w-full rounded-lg p-6 gap-4 duration-200 ${
           open ? "scale-100" : "scale-95"
         }`}
       >
@@ -38,13 +38,13 @@ export function AssessmentModal({ id, title, summary, open, onClose }: Assessmen
             className="absolute top-0 left-0 size-8 flex items-center justify-center border-0 cursor-pointer"
             onClick={onClose}
           >
-            <SquareX className="size-6 text-gray-400" />
+            <SquareX className="size-6 text-text-400" />
           </button>
           <div className="absolute -top-[84px] w-[8.25rem] h-[8.25rem] bg-primary-50 left-1/2 -translate-x-1/2 shadow-xl rounded-4xl flex flex-col items-center justify-center">
-            <User className="size-16" />
+            <User className="size-16 text-text-700" />
           </div>
-          <h1 className="text-4xl w-full font-semibold text-gray-700 text-center mb-2">{title}</h1>
-          <p className="text-sm leading-5 text-center text-gray-700 mb-8">{summary}</p>
+          <h1 className="text-4xl w-full font-semibold text-text-700 text-center mb-2">{title}</h1>
+          <p className="text-sm leading-5 text-center text-text-700 mb-8">{summary}</p>
         </header>
         <footer className="!justify-center flex">
           <Button className="w-full" size="lg" variant="primary" onClick={handleOpenAssessment}>

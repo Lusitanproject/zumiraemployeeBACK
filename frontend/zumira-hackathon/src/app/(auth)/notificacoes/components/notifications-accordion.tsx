@@ -26,7 +26,7 @@ export function NotificationsAccordion({ notifications, alerts, current }: Notif
   if (!(notifications.length + alerts.length)) {
     return (
       <div className="flex size-full justify-center items-center">
-        <p className="text-center text-gray-500">
+        <p className="text-center text-text-500">
           Nada por aqui ainda...
           <br />
           Te avisamos assim que chegar algo novo!

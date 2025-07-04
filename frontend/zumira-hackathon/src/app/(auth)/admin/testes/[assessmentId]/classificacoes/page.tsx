@@ -12,8 +12,8 @@ export default async function ManageAssessmentQuestions({ params }: { params: Pr
   if (!data) {
     return (
       <div className="flex flex-col w-full">
-        <div className="flex items-center justify-between py-4 border-b border-gray-100">
-          <h3 className="font-bold text-2xl text-gray-700">Editar Perguntas</h3>
+        <div className="flex items-center justify-between py-4 border-b border-border-100">
+          <h3 className="font-bold text-2xl text-text-700">Editar Perguntas</h3>
         </div>
         <div className="flex items-center gap-x-4 py-6">
           <TriangleAlert className="size-6 text-error-500" />

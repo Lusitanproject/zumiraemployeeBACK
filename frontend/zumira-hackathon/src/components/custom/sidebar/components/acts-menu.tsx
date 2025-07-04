@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { ActsData } from "@/types/acts";
+import { ActsData } from "@/types/act";
 
 import { ActItem } from "./act-item";
 
@@ -42,7 +42,7 @@ export function ActsMenu({ data }: ActsMenuProps) {
           />
         ))}
       </div>
-      <hr className="text-gray-300" />
+      <hr className="text-text-300" />
     </>
   );
 }

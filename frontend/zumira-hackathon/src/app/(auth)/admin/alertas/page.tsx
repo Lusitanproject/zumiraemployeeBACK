@@ -1,15 +1,35 @@
-import { Header } from "../components/header";
-import { getAssessments, getCompanies } from "./actions";
-import { AlertsUI } from "./components/alerts-ui";
+"use client";
 
-export default async function Alertas() {
-  const assessments = await getAssessments();
-  const companies = await getCompanies();
+import { useContext, useEffect, useState } from "react";
+
+import { getAssessmentResultsFiltered } from "@/api/assessments";
+import { AlertsContext } from "@/providers/alerts";
+import { AssessmentResult } from "@/types/assessment";
+
+import { AlertsTable } from "./components/alerts-table";
+import { Filters } from "./definitions";
+
+export default function Alertas() {
+  const { assessmentId, companyId } = useContext(AlertsContext);
+
+  const [results, setResults] = useState<AssessmentResult[]>();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  async function fetchResults(data: Filters) {
+    setLoading(true);
+    const newData = await getAssessmentResultsFiltered(data);
+    setResults(newData);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    if (!assessmentId) return;
+    fetchResults({ assessmentId, companyId });
+  }, [assessmentId, companyId]);
 
   return (
     <div className="flex size-full flex-col gap-2">
-      <Header title="Alertas" />
-      <AlertsUI assessments={assessments} companies={companies} />
+      <AlertsTable loading={loading} results={results} />
     </div>
   );
 }

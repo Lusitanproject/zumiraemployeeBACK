@@ -38,10 +38,10 @@ export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
 
   return (
     <div className="w-full flex flex-col overflow-scroll">
-      <div className="flex flex-col pt-4 pb-8 border-b border-gray-200">
-        <h2 className="text-2xl text-gray-700 font-medium mb-8">{data.title}</h2>
+      <div className="flex flex-col pt-4 pb-8 border-b border-border-200">
+        <h2 className="text-2xl text-text-700 font-medium mb-8">{data.title}</h2>
         {!!data.description && (
-          <div className="text-base leading-6 text-gray-600 prose lg:prose-xl markdown">
+          <div className="text-base leading-6 text-text-600 prose lg:prose-xl markdown">
             <ReactMarkdown>{data.description}</ReactMarkdown>
           </div>
         )}
@@ -50,11 +50,11 @@ export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
       <form action={handleSumbit} className="w-full flex flex-col flex-1 md:pb-24">
         <input name="assessmentId" type="hidden" value={assessmentId} />
         {data.assessmensQuestions.map((item, index) => (
-          <div key={item.id} className="w-full mb-4 border-b border-gray-100 pt-6 pb-8" id={item.id}>
-            <p className="font-medium text-gray-700 mb-6">
+          <div key={item.id} className="w-full mb-4 border-b border-border-100 pt-6 pb-8" id={item.id}>
+            <p className="font-medium text-text-700 mb-6">
               <span
                 className={`font-bold duration-500 ${
-                  unanswered.includes(item.id) ? "text-error-500" : "text-gray-700"
+                  unanswered.includes(item.id) ? "text-error-500" : "text-text-700"
                 }`}
               >
                 {index + 1}.
@@ -68,14 +68,16 @@ export function AssessmentForm({ assessmentId, data }: AssessmentFormProps) {
                   .map((choice) => (
                     <div key={choice.id} className="flex items-center gap-x-3">
                       <RadioGroupItem id={choice.id} value={`${choice.id}`} />
-                      <label htmlFor={choice.id}>{choice.label}</label>
+                      <label className="text-text-700" htmlFor={choice.id}>
+                        {choice.label}
+                      </label>
                     </div>
                   ))}
               </RadioGroup>
             </div>
           </div>
         ))}
-        <div className="md:border-t border-gray-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-gray-50 flex items-center md:justify-start gap-x-3">
+        <div className="md:border-t border-border-100 md:absolute md:left-0 md:right-0 md:bottom-0 py-4 md:px-16 md:bg-background-50 flex items-center md:justify-start gap-x-3">
           <Button
             size="xl"
             type="button"

@@ -43,6 +43,7 @@ export function SearchBar() {
       <div className="w-full relative">
         <Input
           hasIcon
+          className="text-text-700 placeholder:text-text-500"
           id="search"
           name="search"
           placeholder="Busque por testes"
@@ -50,7 +51,7 @@ export function SearchBar() {
           onChange={handleSearch}
         />
         <div className="absolute pointer-events-none top-3 left-3">
-          <Search className="text-gray-500 size-5" />
+          <Search className="text-text-600 size-5" />
         </div>
       </div>
     </div>

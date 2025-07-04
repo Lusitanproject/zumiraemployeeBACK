@@ -33,15 +33,16 @@ export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
             });
           }}
         >
-          <CirclePlus className="size-5 text-gray-300" />
+          <CirclePlus className="size-5 text-text-300" />
         </ButtonIcon>
       </div>
       <div className="flex flex-col gap-2 items-center" id="choices">
         {sorted.map((c, i) => (
           <div key={c.key} className="flex flex-col items-start gap-1 w-full">
-            <span className="flex w-fit font-bold text-xs text-gray-700">Opção {i + 1}</span>
+            <span className="flex w-fit font-bold text-xs text-text-700">Opção {i + 1}</span>
             <div className="flex flex-row gap-2 w-full items-center">
               <Input
+                className="text-text-700"
                 defaultValue={c.label}
                 placeholder="Texto"
                 type="text"
@@ -58,6 +59,7 @@ export function ChoiceField({ question, dispatch }: ChoiceFieldProps) {
               />
               <div className="flex w-24">
                 <Input
+                  className="text-text-700"
                   defaultValue={c.value}
                   placeholder="Valor"
                   type="number"

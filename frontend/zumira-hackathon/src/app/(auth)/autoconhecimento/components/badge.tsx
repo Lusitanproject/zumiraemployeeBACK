@@ -4,7 +4,7 @@ import { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "text-xs rounded-2xl px-2 h-[1.125rem] bg-gray-100 flex items-center flex-nowrap whitespace-nowrap gap-x-1 cursor-pointer",
+  "flex text-xs rounded-2xl px-3 py-2 h-[1.125rem] bg-background-100 text-text-500 flex items-center flex-nowrap whitespace-nowrap gap-x-1 cursor-pointer",
   {
     variants: {
       selected: {

@@ -23,8 +23,8 @@ export function Tabs({ items }: TabsProps) {
           <Link
             key={index}
             className={cn(
-              "p-2 rounded-lg font-semibold text-sm text-gray-600",
-              path === item.href ? "bg-gray-100" : "bg-transparent",
+              "p-2 rounded-lg font-semibold text-sm text-text-600",
+              path === item.href ? "bg-background-100" : "bg-transparent",
               item.disabled ? "pointer-events-none opacity-20" : "pointer-events-auto"
             )}
             href={item.href}
@@ -33,7 +33,7 @@ export function Tabs({ items }: TabsProps) {
           </Link>
         ))}
       </div>
-      <hr className="text-gray-200" />
+      <hr className="text-text-200" />
     </>
   );
 }

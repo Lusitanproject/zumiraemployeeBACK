@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 
 import { decrypt } from "@/app/_lib/session";
-import { ActChapter, ActChatbot, ActsData } from "@/types/acts";
+import { ActChapter, ActChatbot, ActsData } from "@/types/act";
 import { catchError } from "@/utils/error";
 
 import { ZumiraApiResponse } from "./common";

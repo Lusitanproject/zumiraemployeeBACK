@@ -15,7 +15,7 @@ export function ButtonIcon({ children, tooltip, onClick, disabled }: ButtonProps
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            className="w-10 h-10 border border-gray-300 bg-white rounded flex items-center justify-center disabled:bg-gray-25 disabled:border-gray-200 disabled:text-gray-400"
+            className="w-10 h-10 border border-border-300 text-text-700 bg-background-0 rounded flex items-center justify-center disabled:bg-background-25 disabled:border-border-200 disabled:text-text-400"
             disabled={disabled}
             onClick={onClick}
           >

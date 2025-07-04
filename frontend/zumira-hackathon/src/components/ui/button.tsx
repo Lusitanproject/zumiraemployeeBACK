@@ -19,7 +19,7 @@ const buttonVariants = cva(
         secondary:
           "bg-primary-50 text-primary-700 hover:bg-primary-100 focus:shadow-focus-ring disabled:bg-primary-25 disabled:text-primary-300",
         outline:
-          "border border-gray-300 text-gray-700 hover:bg-gray-50 focus:shadow-focus-ring disabled:border-gray-200 disabled:text-gray-300",
+          "border border-border-300 text-text-700 hover:bg-background-50 focus:shadow-focus-ring disabled:border-border-200 disabled:text-text-300",
         danger: "bg-error-600 text-white hover:bg-error-700 focus:shadow-focus-ring disabled:bg-error-200",
         link: "text-primary underline-offset-4 hover:underline",
         alternate: "bg-primary-200 text-white hover:bg-primary-300 focus:shadow-focus-ring disabled:bg-primary-50",

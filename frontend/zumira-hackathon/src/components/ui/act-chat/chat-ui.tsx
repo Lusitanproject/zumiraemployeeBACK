@@ -5,7 +5,7 @@ import { flushSync } from "react-dom";
 
 import { generateResponse } from "@/api/acts";
 import { MessageInput } from "@/components/ui/chatbase-chat/components/message-input";
-import { ActChapter, ActMessage } from "@/types/acts";
+import { ActChapter, ActMessage } from "@/types/act";
 
 import { Messages } from "./messages";
 
@@ -58,8 +58,8 @@ export function ChatUi({ actChapter, inputWarning, onChangeMessages }: ChatUiPro
 
   return (
     <section className="relative flex flex-col size-full p-4 pt-0">
-      {/* <h1 className="text-gray-300 text-lg font-semibold mb-2">{actChapter.actChatbot.name}</h1> */}
-      {showRule && <hr className="text-gray-200 bottom-0 w-full" />}
+      {/* <h1 className="text-text-300 text-lg font-semibold mb-2">{actChapter.actChatbot.name}</h1> */}
+      {showRule && <hr className="text-text-200 bottom-0 w-full" />}
       <Messages loadingResponse={loading} messages={messages} onScroll={setShowRule} />
       <MessageInput
         disabled={!actChapter}

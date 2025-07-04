@@ -7,7 +7,7 @@ export default async function Testes() {
 
   return (
     <div className="flex size-full flex-col">
-      <div className="w-full pb-8 [&:not(:last-child)]:border-b border-gray-200 mb-8">
+      <div className="w-full pb-8 [&:not(:last-child)]:border-b border-border-200 mb-8">
         <Header />
         <AssessmentList data={assessments} />
       </div>

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ActsData } from "@/types/acts";
+import { ActsData } from "@/types/act";
 
 import { newChapter } from "../actions";
 
@@ -57,10 +57,10 @@ export function ActSelector({ data }: ActSelectorProps) {
   }
 
   return (
-    <div className={cn("flex flex-col items-center justify-start size-full gap-6 py-4 mt-32", "px-48")}>
+    <div className={cn("flex flex-col items-center justify-start size-full gap-6 py-4 px-0 md:px-48 mt-32")}>
       <div className="flex flex-col gap-2 items-center justify-end">
-        <div className="rounded-full border-2 border-gray-200 p-4 size-18 flex-none">
-          <DynamicIcon className="size-full text-gray-700" name={selected.icon as IconName} />
+        <div className="rounded-full border-2 border-border-200 p-4 size-18 flex-none">
+          <DynamicIcon className="size-full text-text-700" name={selected.icon as IconName} />
         </div>
 
         <div className="flex flex-col relative">
@@ -70,15 +70,15 @@ export function ActSelector({ data }: ActSelectorProps) {
               className="flex flex-row gap-2 items-end cursor-pointer"
               onClick={() => setOpenDropdown((prev) => !prev)}
             >
-              <span className="text-2xl font-semibold text-gray-700">{selected.name}</span>
-              <ChevronDown className="flex-none size-6 text-gray-400" />
+              <span className="text-2xl font-semibold text-text-700">{selected.name}</span>
+              <ChevronDown className="flex-none size-6 text-text-400" />
             </div>
           </div>
 
           <div
             ref={dropdownRef}
             className={cn(
-              "absolute flex flex-col justify-center items-center z-30 -translate-x-1/2 left-1/2 top-[110%] rounded-xl bg-white border-1 border-gray-300 w-fit overflow-clip duration-200 shadow-md py-2",
+              "absolute flex flex-col justify-center items-center z-30 -translate-x-1/2 left-1/2 top-[110%] rounded-xl bg-background-0 border-1 border-border-300 w-fit overflow-clip duration-200 shadow-md py-2",
               openDropdown
                 ? "opacity-100 pointer-events-auto translate-y-0"
                 : "opacity-0 pointer-events-none -translate-y-2"
@@ -88,7 +88,7 @@ export function ActSelector({ data }: ActSelectorProps) {
               <div
                 key={bot.id}
                 className={cn(
-                  "flex flex-row gap-2 items-center w-full text-center text-lg hover:bg-gray-50 px-3 py-1.5 cursor-pointer text-gray-500 text-nowrap",
+                  "flex flex-row gap-2 items-center w-full text-center text-lg hover:bg-background-50 px-3 py-1.5 cursor-pointer text-text-500 text-nowrap",
                   { "opacity-50": bot.locked, "font-semibold": bot.id === selected.id }
                 )}
                 onClick={() => {
@@ -111,7 +111,7 @@ export function ActSelector({ data }: ActSelectorProps) {
           </div>
         </div>
 
-        <span className="text-gray-500 text-center">{selected.description}</span>
+        <span className="text-text-500 text-center">{selected.description}</span>
       </div>
       {/* <MessageInput placeholder="Comece a escrever seu próximo capítulo" /> */}
       <Button disabled={loading} loading={loading} size="xxl" variant="primary" onClick={handleConfirm}>

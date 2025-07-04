@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { ActsData } from "@/types/acts";
+import { ActsData } from "@/types/act";
 
 interface ActItemProps {
   chapters: ActsData["chapters"];
@@ -21,7 +21,7 @@ interface ActItemProps {
 export function ActItem({ icon, name, chapters, defaultOpen, currentChapterId, locked }: ActItemProps) {
   const [open, setOpen] = useState<boolean>(defaultOpen);
   const isActiveChapter = chapters.some((c) => c.id === currentChapterId);
-  const textColor = isActiveChapter ? "text-gray-500" : "text-gray-400";
+  const textColor = isActiveChapter ? "text-text-500" : "text-text-400";
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownHeight, setDropdownHeight] = useState<number>(0);
@@ -64,7 +64,7 @@ export function ActItem({ icon, name, chapters, defaultOpen, currentChapterId, l
               key={c.id}
               className={cn(
                 "text-sm px-7 py-2 rounded-xl hover:bg-black/5 cursor-pointer w-full",
-                currentChapterId === c.id ? "text-gray-500 font-medium" : "text-gray-400"
+                currentChapterId === c.id ? "text-text-500 font-medium" : "text-text-400"
               )}
               href={`/chat/${c.id}`}
             >

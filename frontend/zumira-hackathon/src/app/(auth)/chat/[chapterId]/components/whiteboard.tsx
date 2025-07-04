@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 
 import { ChatUi } from "@/components/ui/act-chat/chat-ui";
 import { cn } from "@/lib/utils";
-import { ActChapter } from "@/types/acts";
+import { ActChapter } from "@/types/act";
 
 import { Book, BookRef } from "./book";
 
@@ -33,7 +33,7 @@ export function Whiteboard({ actChapter }: WhiteboardProps) {
       />
       <button
         className={cn(
-          "absolute text-xs right-5 top-1/2 -translate-y-1/2 rounded-full p-2 bg-green-200 cursor-pointer hover:bg-green-300 duration-200",
+          "absolute text-xs right-5 top-1/2 -translate-y-1/2 rounded-full p-2 bg-primary-200 cursor-pointer hover:bg-primary-300 duration-200",
           showFinishButton ? "scale-100" : "scale-0"
         )}
         title="Recompilar capítulo"
@@ -45,7 +45,7 @@ export function Whiteboard({ actChapter }: WhiteboardProps) {
           }
         }}
       >
-        <ArrowBigRightDash className="size-8 text-gray-700" />
+        <ArrowBigRightDash className="size-8 text-text-700" />
       </button>
       <div
         className={cn(

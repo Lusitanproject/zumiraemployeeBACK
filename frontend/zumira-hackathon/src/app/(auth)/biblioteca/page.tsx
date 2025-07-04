@@ -1,6 +1,6 @@
 export default function Biblioteca() {
   return (
-    <div className="flex flex-col w-full h-2/3 sm:h-fit justify-center gap-3 text-gray-600 text-center sm:text-start">
+    <div className="flex flex-col w-full h-2/3 sm:h-fit justify-center gap-3 text-text-600 text-center sm:text-start">
       <h1 className="text-2xl font-bold">✨ Está quase pronta!...</h1>
       <div className="flex flex-col gap-2 text-lg">
         <p>

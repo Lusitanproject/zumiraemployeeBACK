@@ -49,7 +49,7 @@ export function MessageInput({ placeholder, disabled, onSend }: MessageInputProp
     <form
       ref={formRef}
       action={handleSubmit}
-      className="flex flex-row w-full min-h-[3.125rem] max-h-32 border-gray-300 border-1 rounded-xl overflow-clip"
+      className="flex flex-row w-full min-h-[3.125rem] max-h-32 border-border-300 border-1 rounded-xl overflow-clip"
     >
       <div className="flex size-full py-2.5">
         <textarea

@@ -17,13 +17,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html suppressHydrationWarning lang="pt-BR">
       <body className={`${rawline.className} antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const stored = localStorage.getItem("theme");
+                  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                  if (stored === "dark" || (!stored && prefersDark)) {
+                    document.documentElement.classList.add("dark");
+                  } else {
+                    document.documentElement.classList.remove("dark");
+                  }
+                } catch (_) {}
+              })();
+            `,
+          }}
+          id="theme-init"
+        />
         <Toaster
           position="bottom-right"
           toastOptions={{
             unstyled: true,
-            className: "flex flex-row gap-4 bg-white border-1 border-gray-200 p-4 rounded-xl items-center shadow-xl",
+            className:
+              "flex flex-row gap-4 bg-background-0 border-1 border-border-200 p-4 rounded-xl items-center shadow-xl",
             classNames: {
               error: "text-error-500",
               success: "text-primary-400",

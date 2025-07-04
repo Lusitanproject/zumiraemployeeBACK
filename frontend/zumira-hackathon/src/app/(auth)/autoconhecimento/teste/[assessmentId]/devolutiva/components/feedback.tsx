@@ -29,7 +29,7 @@ export function Feedback({ data }: FeedbackProps) {
   return (
     <div className="relative">
       <X
-        className="absolute text-gray-400 size-7 right-0 cursor-pointer z-40"
+        className="absolute text-text-400 size-7 right-0 cursor-pointer z-10"
         onClick={() => redirect("/autoconhecimento")}
       />
       <div
@@ -38,18 +38,18 @@ export function Feedback({ data }: FeedbackProps) {
         }`}
       >
         <div className="flex flex-col justify-start">
-          <h1 className="text-lg text-gray-600 leading-7 font-bold">{data.assessment.title}</h1>
-          <h2 className="text-base text-gray-600 leading-6 font-semibold">{subtitle}</h2>
+          <h1 className="text-lg text-text-600 leading-7 font-bold">{data.assessment.title}</h1>
+          <h2 className="text-base text-text-600 leading-6 font-semibold">{subtitle}</h2>
           <div className="markdown prose lg:prose-xl">
             <Markdown>{data.feedback}</Markdown>
           </div>
-          <hr className="text-gray-300 my-3" />
-          <footer className="text-base text-gray-600 leading-4 font-semibold">
+          <hr className="text-text-300 my-3" />
+          <footer className="text-base text-text-600 leading-4 font-semibold">
             Teste realizado em {formatDate(new Date(data.createdAt))}
           </footer>
         </div>
         <div
-          className={`absolute w-full bottom-0 bg-gradient-to-t from-white via-white via-70% to-transparent duration-500 ${
+          className={`absolute w-full bottom-0 bg-gradient-to-t from-background-0 via-background-0 via-70% to-transparent duration-500 rounded-b-xl ${
             showAll ? "translate-y-full pointer-events-none opacity-0" : "translate-y-0 pointer-events-auto opacity-100"
           }`}
         >

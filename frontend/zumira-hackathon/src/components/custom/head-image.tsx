@@ -3,7 +3,7 @@ interface HeadImageProps {
   size?: "small" | "medium" | "large";
 }
 
-export function HeadImage({ size = "medium", fadeColor = "var(--color-white)" }: HeadImageProps) {
+export function HeadImage({ size = "medium", fadeColor = "var(--color-background-0)" }: HeadImageProps) {
   let width;
   let height;
 

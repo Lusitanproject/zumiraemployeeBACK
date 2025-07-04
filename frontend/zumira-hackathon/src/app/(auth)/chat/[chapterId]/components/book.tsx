@@ -11,7 +11,7 @@ import { useDebouncedCallback } from "use-debounce";
 
 import { compileActChapter, updateActChapter, UpdateActChapterRequest } from "@/api/acts";
 import { cn } from "@/lib/utils";
-import { ActChapter } from "@/types/acts";
+import { ActChapter } from "@/types/act";
 import { isMacOS } from "@/utils/is-macos";
 
 import { moveToNext } from "../actions";
@@ -139,7 +139,7 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
   ] as BookButton[];
 
   const textInputClass = cn(
-    "p-2 rounded-lg duration-200 focus:bg-white/40 outline-0 ring-black/15 ring-0 focus:ring-2"
+    "p-2 rounded-lg duration-200 focus:bg-background-0/40 outline-0 ring-black/15 ring-0 focus:ring-2"
   );
 
   useEffect(() => {
@@ -180,17 +180,20 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
     <div ref={divRef} className={cn("relative flex h-full left-0 top-0 duration-500 w-full")}>
       <div
         className={cn(
-          "absolute flex flex-col gap-2 size-full items-center justify-start p-4 z-10 bg-white overflow-scroll"
+          "absolute flex flex-col gap-2 size-full items-center justify-start p-4 z-10 bg-background-0 overflow-scroll"
         )}
       >
         <div className="flex gap-2 text-sm">
           {buttons.map((b, i) => (
             <button
               key={i}
-              className={cn("flex flex-row gap-1.5 p-1 rounded-lg duration-150 font-medium items-center", {
-                "opacity-30": b.disabled,
-                "hover:bg-primary-200 hover:text-white cursor-pointer": !b.disabled,
-              })}
+              className={cn(
+                "flex flex-row gap-1.5 p-1 rounded-lg duration-150 font-medium items-center text-text-700",
+                {
+                  "opacity-30": b.disabled,
+                  "hover:bg-primary-200 hover:text-white cursor-pointer": !b.disabled,
+                }
+              )}
               disabled={b.disabled}
               onClick={b.func}
             >
@@ -200,7 +203,7 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
           ))}
         </div>
 
-        <div className="flex bg-[##f5f5eb] flex-col items-center justify-start gap-2 text-start w-full max-w-[40rem] rounded-xs shadow-xl py-10 px-14">
+        <div className="flex bg-[#f5f5eb] flex-col items-center justify-start gap-2 text-start w-full max-w-[40rem] rounded-xs shadow-xl py-10 px-14">
           <input
             className={cn("font-semibold text-xl field-sizing-content max-w-full", textInputClass)}
             disabled={finishing}
@@ -227,16 +230,19 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
 
       {onClose && (
         <button className="absolute flex left-4 top-4 z-20">
-          <ChevronLeft className={cn("flex flex-none size-6 text-500 cursor-pointer")} onClick={onClose} />
+          <ChevronLeft
+            className={cn("flex flex-none size-6 text-500 cursor-pointer text-text-700")}
+            onClick={onClose}
+          />
         </button>
       )}
 
       <button
-        className="absolute z-20 right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-green-200 cursor-pointer hover:bg-green-300 duration-200"
+        className="absolute z-20 right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-primary-200 cursor-pointer hover:bg-primary-300 duration-200"
         title="Finalizar capítulo"
         onClick={finishAct}
       >
-        <Check className="size-8 text-gray-700" />
+        <Check className="size-8 text-text-700" />
       </button>
     </div>
   );

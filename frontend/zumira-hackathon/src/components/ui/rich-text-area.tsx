@@ -37,7 +37,7 @@ interface EditorButtonProps {
 function EditorButton({ highlight, icon: Icon, onClick }: EditorButtonProps) {
   return (
     <button
-      className={cn(highlight ? "text-gray-700" : "text-gray-400", "cursor-pointer hover:text-gray-500")}
+      className={cn(highlight ? "text-text-700" : "text-text-400", "cursor-pointer hover:text-text-500")}
       onClick={onClick}
     >
       <Icon className="size-4.5" />
@@ -74,7 +74,7 @@ function CollapsedContent({ editor, icon: Icon, children }: OverflowButton) {
     <div className={`flex flex-row h-full duration-200 ${open ? "gap-2" : "gap-0"}`}>
       <button
         ref={buttonRef}
-        className={cn(open || isTitle ? "text-gray-700" : "text-gray-400", "cursor-pointer")}
+        className={cn(open || isTitle ? "text-text-700" : "text-text-400", "cursor-pointer")}
         onClick={() => setOpen((prev) => !prev)}
       >
         <Icon className="size-4.5" />
@@ -112,10 +112,10 @@ export function RichTextArea({ id, value, onChange }: RichTextAreaProps) {
 
   return (
     <div
-      className="relative overflow-clip w-full flex flex-col rounded-xl border border-gray-300 bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground focus-within:border-primary-300 focus-within:shadow-focus-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+      className="relative overflow-clip w-full flex flex-col rounded-xl border border-border-300 bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground focus-within:border-primary-300 focus-within:shadow-focus-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
       id={id}
     >
-      <div className="flex flex-row items-center p-2 gap-2 bg-gray-100 h-10 border-b border-gray-300">
+      <div className="flex flex-row items-center p-2 gap-2 bg-background-100 h-10 border-b border-border-300">
         <EditorButton
           highlight={editor?.isActive("bold")}
           icon={Bold}

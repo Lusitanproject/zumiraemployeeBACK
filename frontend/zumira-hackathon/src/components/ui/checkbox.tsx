@@ -10,7 +10,7 @@ function Checkbox({ className, ...props }: CheckboxProps) {
   return (
     <label
       className={cn(
-        "relative inline-flex items-center justify-center size-5 rounded border border-gray-300 bg-white transition-colors focus-within:border-primary-300 focus-within:shadow-focus-ring disabled:bg-gray-100 disabled:border-gray-200",
+        "relative inline-flex items-center justify-center size-5 rounded border border-border-300 bg-background-0 transition-colors focus-within:border-primary-300 focus-within:shadow-focus-ring disabled:bg-background-100 disabled:border-border-200",
         className
       )}
     >

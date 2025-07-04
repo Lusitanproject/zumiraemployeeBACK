@@ -9,7 +9,7 @@ export function PageTitle() {
 
   return (
     <div>
-      <h4 className="md:hidden text-lg font-semibold text-gray-400">{getPageName(pathname)}</h4>
+      <h4 className="md:hidden text-lg font-semibold text-text-400">{getPageName(pathname)}</h4>
     </div>
   );
 }

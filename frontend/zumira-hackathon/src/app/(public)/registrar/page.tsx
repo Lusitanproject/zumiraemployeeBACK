@@ -24,16 +24,16 @@ export default async function Registrar() {
       </div>
 
       <div className="mb-8">
-        <h1 className="text-[1.625rem] md:text-3xl font-semibold text-center text-gray-700 tracking-tight">
+        <h1 className="text-[1.625rem] md:text-3xl font-semibold text-center text-text-700 tracking-tight">
           Vamos começar sua jornada de{" "}
           <span className={`${borel.className} text-primary-500 tracking-normal`}>autoconhecimento</span>?
         </h1>
-        <h2 className="text-gray-500 text-center">
+        <h2 className="text-text-500 text-center">
           Cadastre-se gratuitamente e descubra novas formas de cuidar de você.
         </h2>
       </div>
       <RegisterForm nationalities={nationalities} />
-      <span className="text-center text-gray-500 font-semibold mt-8">
+      <span className="text-center text-text-500 font-semibold mt-8">
         Ja tem uma conta?{" "}
         <Link className="underline" href="/entrar">
           Entre

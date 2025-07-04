@@ -10,7 +10,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { updateManyActChatbots } from "@/api/acts";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ActChatbot } from "@/types/acts";
+import { ActChatbot } from "@/types/act";
 
 type ActsListProps = {
   data: ActChatbot[];
@@ -64,28 +64,28 @@ export function ActsList({ data }: ActsListProps) {
       {chatbots.sort(orderBots).map((item, index) => (
         <div
           key={item.id}
-          className={cn("flex flex-row items-center justify-between rounded-xl bg-gray-100 duration-500 p-4")}
+          className={cn("flex flex-row items-center justify-between rounded-xl bg-background-100 duration-500 p-4")}
         >
           <Link className="flex flex-row gap-4 items-center w-full" href={`/admin/atos/${item.id}`}>
-            <span className="text-gray-400 text-lg">#{index + 1}</span>
+            <span className="text-text-400 text-lg">#{index + 1}</span>
             <div className="flex justify-start">
               <div className="size-[50px] rounded-xl bg-primary-50 flex items-center justify-center">
                 <DynamicIcon className="size-6" name={item.icon as IconName} />
               </div>
             </div>
             <div className="flex flex-col">
-              <h3 className="text-base font-medium text-gray-700 mb-1">{item.name}</h3>
-              <p className="w-full h-fit overflow-hidden text-ellipsis text-xs font-normal text-gray-900">
+              <h3 className="text-base font-medium text-text-700 mb-1">{item.name}</h3>
+              <p className="w-full h-fit overflow-hidden text-ellipsis text-xs font-normal text-text-900">
                 {item.description}
               </p>
             </div>
           </Link>
           <div className="flex flex-col gap-1">
-            <Button className="bg-gray-100" disabled={index === 0} size="icon" onClick={() => moveUp(index)}>
+            <Button className="bg-background-100" disabled={index === 0} size="icon" onClick={() => moveUp(index)}>
               <ChevronUp className="size-6" />
             </Button>
             <Button
-              className="bg-gray-100"
+              className="bg-background-100"
               disabled={index + 1 === chatbots.length}
               size="icon"
               onClick={() => moveDown(index)}

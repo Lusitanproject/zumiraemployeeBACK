@@ -11,7 +11,7 @@ interface CategoryCardProps {
 export function CategoryCard({ data }: CategoryCardProps) {
   return (
     <Link
-      className={cn("rounded-xl bg-gray-100 p-4 flex flex-row items-center h-fit")}
+      className={cn("rounded-xl bg-background-100 p-4 flex flex-row items-center h-fit")}
       href={`/admin/notificacoes/categorias/${data.id}`}
     >
       <div className="flex flex-row gap-2 w-full">
@@ -19,7 +19,7 @@ export function CategoryCard({ data }: CategoryCardProps) {
           className="flex items-center justify-center rounded-lg size-6 flex-none"
           style={{ backgroundColor: data.color }}
         />
-        <span className="w-full overflow-hidden whitespace-nowrap text-ellipsis text-base font-medium">
+        <span className="w-full overflow-hidden whitespace-nowrap text-ellipsis text-base font-medium text-text-700">
           {data.name}
         </span>
       </div>

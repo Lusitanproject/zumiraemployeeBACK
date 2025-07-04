@@ -13,8 +13,8 @@ export default function Verificar() {
         <div className="w-28 h-28 rounded-full border-4 border-primary-25 mx-auto mb-8 flex items-center justify-center">
           <Mail className="size-14 text-primary-600" />
         </div>
-        <h3 className="text-4xl text-gray-700 font-bold mb-4">Verifique seu email</h3>
-        <p className="text-lg text-center text-gray-700 tracking-tight">
+        <h3 className="text-4xl text-text-700 font-bold mb-4">Verifique seu email</h3>
+        <p className="text-lg text-center text-text-700 tracking-tight">
           Enviamos um <span className="font-bold">código de verificação para seu e-mail.</span> Digite o código abaixo
           para continuar.
         </p>

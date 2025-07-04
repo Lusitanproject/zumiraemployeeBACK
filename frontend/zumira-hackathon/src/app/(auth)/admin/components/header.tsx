@@ -11,15 +11,15 @@ interface HeaderProps {
 
 export function Header({ title, create }: HeaderProps) {
   return (
-    <div className="flex items-center justify-between py-4 border-b border-gray-100">
-      <h3 className="font-bold text-2xl text-gray-700">{title}</h3>
+    <div className="flex items-center justify-between py-4 border-b border-border-100">
+      <h3 className="font-bold text-2xl text-text-700">{title}</h3>
       {create && (
         <Link
-          className="bg-white hover:bg-gray-50 border border-transparent hover:border-gray-100 flex items-center gap-x-3 px-3 py-2 rounded-xl"
+          className="bg-background-0 hover:bg-background-50 border border-transparent hover:border-border-100 flex items-center gap-x-3 px-3 py-2 rounded-xl"
           href={create.href}
         >
-          <CirclePlus className="text-gray-300 size-6" />
-          <span className="text-sm text-gray-500 font-medium">{create.text}</span>
+          <CirclePlus className="text-text-300 size-6" />
+          <span className="text-sm text-text-500 font-medium">{create.text}</span>
         </Link>
       )}
     </div>

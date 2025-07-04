@@ -1,47 +1,30 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { ReactNode } from "react";
 
-import { getFilteredResults } from "../actions";
-import { Assessment, Company, Filters as FiltersType, Result } from "../definitions";
-import { AlertsTable } from "./alerts-table";
+import { Tabs } from "@/components/ui/tabs";
+import { Assessment } from "@/types/assessment";
+import { Company } from "@/types/company";
+
 import { Filters } from "./filters";
 
 interface AlertsUIProps {
   assessments: Assessment[];
   companies: Company[];
+  children?: ReactNode;
 }
 
-export function AlertsUI({ assessments, companies }: AlertsUIProps) {
-  const [results, setResults] = useState<Result[]>();
-  const [loading, setLoading] = useState<boolean>(false);
-  const filters = useRef<FiltersType>(undefined);
-
-  async function fetchResults(data: FiltersType) {
-    setLoading(true);
-    const newData = await getFilteredResults(data);
-    setResults(newData);
-    setLoading(false);
-  }
-
-  async function handleChangeFilters(data: FiltersType) {
-    filters.current = data;
-    await fetchResults(data);
-  }
+export function AlertsUI({ assessments, children, companies }: AlertsUIProps) {
+  const tabs = [
+    { label: "Alertas", href: `/admin/alertas` },
+    { label: "Relatório", href: `/admin/alertas/relatorio` },
+  ];
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-col">
-        <Filters
-          assessments={assessments}
-          companies={companies}
-          totalResults={results?.length}
-          onChangeFilters={handleChangeFilters}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <AlertsTable filters={filters.current} loading={loading} results={results} />
-      </div>
+      <Filters assessments={assessments} companies={companies} />
+      <Tabs items={tabs} />
+      <div className="flex flex-col gap-2">{children}</div>
     </div>
   );
 }

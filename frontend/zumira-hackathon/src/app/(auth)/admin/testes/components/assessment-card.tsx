@@ -12,16 +12,18 @@ type AssessmentCardProps = {
 export function AssessmentCard({ id, title, summary }: AssessmentCardProps) {
   return (
     <Link
-      className={cn("rounded-xl bg-gray-100 p-[1.375rem] flex flex-col h-[12.375rem]")}
+      className={cn("rounded-xl bg-background-100 p-[1.375rem] flex flex-col h-[12.375rem]")}
       href={`/admin/testes/${id}`}
     >
       <div className="flex w-full mb-3">
         <div className="flex items-center justify-center bg-primary-50 rounded-xl w-[50px] h-[50px]">
-          <User className="size-6" />
+          <User className="size-6 text-text-700" />
         </div>
       </div>
-      <span className="w-full overflow-hidden whitespace-nowrap text-ellipsis text-base font-medium mb-3">{title}</span>
-      <p className="w-full h-14 text-xs leading-[18px] text-ellipsis overflow-hidden">{summary}</p>
+      <span className="w-full overflow-hidden whitespace-nowrap text-ellipsis text-base font-medium text-text-700 mb-3">
+        {title}
+      </span>
+      <p className="w-full h-14 text-xs leading-[18px] text-ellipsis overflow-hidden text-text-500">{summary}</p>
     </Link>
   );
 }

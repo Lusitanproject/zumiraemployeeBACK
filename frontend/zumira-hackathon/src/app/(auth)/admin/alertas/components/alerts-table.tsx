@@ -3,14 +3,15 @@ import { toast } from "sonner";
 
 import { downloadAssessmentResultsReport } from "@/api/assessments";
 import { Spinner } from "@/components/custom/spinner";
+import { AssessmentResult } from "@/types/assessment";
 
-import { Filters, Result } from "../definitions";
+import { Filters } from "../definitions";
 import { MeatballsMenu } from "./meatballs-menu";
 
 interface AlertsTableProps {
   filters?: Filters;
   loading?: boolean;
-  results?: Result[];
+  results?: AssessmentResult[];
 }
 
 export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
@@ -38,7 +39,7 @@ export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
 
   if (loading || results === undefined) {
     return (
-      <span className="flex w-full text-center justify-center text-gray-500 bg-gray-100 rounded-xl p-1.5 border-1 border-gray-300">
+      <span className="flex w-full text-center justify-center text-text-500 bg-background-100 rounded-xl p-1.5 border-1 border-border-300">
         <Spinner color="var(--color-gray-300)" size="xl" />
       </span>
     );
@@ -46,7 +47,7 @@ export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
 
   if (!results.length) {
     return (
-      <span className="w-full text-center text-gray-500 bg-gray-100 rounded-xl p-1.5 border-1 border-gray-300">
+      <span className="w-full text-center text-text-500 bg-background-100 rounded-xl p-1.5 border-1 border-border-300">
         Sem resultados
       </span>
     );
@@ -55,9 +56,9 @@ export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
   const sample = results.length ? results[0] : null;
 
   return (
-    <div className="rounded-xl border-1 border-gray-300">
+    <div className="rounded-xl border-1 border-border-300">
       <table className="min-w-full text-sm text-center rounded-xl overflow-clip">
-        <thead className="bg-gray-100 text-gray-500 font-semibold">
+        <thead className="bg-background-100 text-text-500 font-semibold">
           <tr>
             <th className="p-2">Código</th>
             <th className="p-2">Perfil</th>
@@ -76,10 +77,10 @@ export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-text-700">
           {results.map((result, index) => {
             return (
-              <tr key={result.id} className="border-b border-gray-200">
+              <tr key={result.id} className="border-b border-border-200">
                 <td className="p-2">{`C-${String(index + 1).padStart(3, "0")}`}</td>
                 <td className="p-2">{result.assessmentResultRating.profile}</td>
                 {result.scores.map((score) => (

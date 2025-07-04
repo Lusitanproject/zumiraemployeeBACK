@@ -37,23 +37,23 @@ export function AlertCard({ alert, selected, onClose }: AlertCardProps) {
     >
       <section
         className={cn(
-          "relative flex flex-col gap-1 p-3 rounded-md  border-gray-100 border-1",
-          selected ? "bg-[#E7F8EA]" : "hover:bg-[#E7F8EA]"
+          "relative flex flex-col gap-1 p-3 rounded-md  border-border-100 border-1",
+          selected ? "bg-background-50" : "hover:bg-background-50"
         )}
       >
-        <h1 className="text-gray-500 text-xs leading-[1.125rem] text-start">Alerta de risco</h1>
-        <hr className="text-gray-200" />
-        <p className="text-gray-700 text-sm leading-5 text-start">
+        <h1 className="text-text-500 text-xs leading-[1.125rem] text-start">Alerta de risco</h1>
+        <hr className="text-text-200" />
+        <p className="text-text-700 text-sm leading-5 text-start">
           O resultado de uma das suas avaliações gerou um alerta: <strong>{alert.assessmentResultRating.risk}</strong>
         </p>
-        <span className="flex w-full text-[10px] leading-[18px] text-right text-gray-400 justify-end">
+        <span className="flex w-full text-[10px] leading-[18px] text-right text-text-400 justify-end">
           {formatDate(alert.createdAt)}
         </span>
-        <span className="w-full text-xs leading-[18px] underline text-gray-400 text-star">Ver mais</span>
+        <span className="w-full text-xs leading-[18px] underline text-text-400 text-star">Ver mais</span>
 
         {!alert.read && (
           <div
-            className="absolute right-0 top-0 -translate-y-1/3 rounded-full size-2 border-1 border-gray-200"
+            className="absolute right-0 top-0 -translate-y-1/3 rounded-full size-2 border-1 border-border-200"
             style={{ backgroundColor: alert.assessmentResultRating.color }}
           />
         )}

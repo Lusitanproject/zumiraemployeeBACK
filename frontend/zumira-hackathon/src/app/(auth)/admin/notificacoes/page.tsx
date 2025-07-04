@@ -9,11 +9,11 @@ export default async function Notificacoes() {
 
   return (
     <div className="flex flex-col size-full gap-4">
-      <div className="w-full pb-8 border-gray-200">
+      <div className="w-full pb-8 border-border-200">
         <Header create={{ text: "Nova notificação", href: "/admin/notificacoes/novo" }} title="Notificações" />
         <NotificationList data={notifications} />
       </div>
-      <div className="w-full pb-8 border-gray-200 mb-8">
+      <div className="w-full pb-8 border-border-200 mb-8">
         <Header create={{ text: "Nova categoria", href: "/admin/notificacoes/categorias/novo" }} title="Categorias" />
         <CategoryList data={types} />
       </div>

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { getActChapter, newActChapter } from "@/api/acts";
 import { ChatUi } from "@/components/ui/act-chat/chat-ui";
-import { ActChapter, ActChatbot } from "@/types/acts";
+import { ActChapter, ActChatbot } from "@/types/act";
 
 import { ManageActChatbot } from "../definitions";
 import { ActChatbotForm } from "../form";
@@ -55,10 +55,10 @@ export function Playground({ data }: PlaygroundProps) {
       <div className="flex size-full py-4">
         {data ? (
           <div className="flex flex-col size-full">
-            <div className="flex flex-col border-1 border-gray-200 rounded-xl w-full md:h-full h-[30rem]">
+            <div className="flex flex-col border-1 border-border-200 rounded-xl w-full md:h-full h-[30rem]">
               <ChatUi actChapter={chapter} inputWarning={saveWarning} />
             </div>
-            <div className="flex w-full justify-center p-2 font-medium text-gray-400">
+            <div className="flex w-full justify-center p-2 font-medium text-text-400">
               <button
                 className="flex flex-row items-center gap-1 rounded-lg hover:bg-black/5 px-2.5 py-1 cursor-pointer"
                 onClick={newChapter}
@@ -69,7 +69,7 @@ export function Playground({ data }: PlaygroundProps) {
             </div>
           </div>
         ) : (
-          <span className="flex size-full text-center items-center text-gray-500 justify-center">
+          <span className="flex size-full text-center items-center text-text-500 justify-center">
             Preencha e salve as informações para começar a testar
           </span>
         )}

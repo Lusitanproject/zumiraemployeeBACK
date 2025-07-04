@@ -5,5 +5,5 @@ interface DividerProps {
 }
 
 export function Divider({ className }: DividerProps) {
-  return <div className={cn("bg-gray-300", className, "w-[1px] h-full")} />;
+  return <div className={cn("bg-background-300", className, "w-[1px] h-full")} />;
 }
