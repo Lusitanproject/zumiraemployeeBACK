@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ActsData } from "@/types/acts";
+import { ActsData } from "@/types/act";
 
 import { newChapter } from "../actions";
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { ActsData } from "@/types/acts";
+import { ActsData } from "@/types/act";
 
 import { ActItem } from "./act-item";
 

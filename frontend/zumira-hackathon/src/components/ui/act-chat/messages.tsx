@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 
 import { cn } from "@/lib/utils";
-import { ActMessage } from "@/types/acts";
+import { ActMessage } from "@/types/act";
 
 interface MessagesProps {
   messages: ActMessage[];

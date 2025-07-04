@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 
 import { ChatUi } from "@/components/ui/act-chat/chat-ui";
 import { cn } from "@/lib/utils";
-import { ActChapter } from "@/types/acts";
+import { ActChapter } from "@/types/act";
 
 import { Book, BookRef } from "./book";
 

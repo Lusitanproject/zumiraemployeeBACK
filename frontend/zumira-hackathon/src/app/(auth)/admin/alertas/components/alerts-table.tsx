@@ -3,14 +3,15 @@ import { toast } from "sonner";
 
 import { downloadAssessmentResultsReport } from "@/api/assessments";
 import { Spinner } from "@/components/custom/spinner";
+import { AssessmentResult } from "@/types/assessment";
 
-import { Filters, Result } from "../definitions";
+import { Filters } from "../definitions";
 import { MeatballsMenu } from "./meatballs-menu";
 
 interface AlertsTableProps {
   filters?: Filters;
   loading?: boolean;
-  results?: Result[];
+  results?: AssessmentResult[];
 }
 
 export function AlertsTable({ results, loading, filters }: AlertsTableProps) {

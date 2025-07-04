@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { ActsData } from "@/types/acts";
+import { ActsData } from "@/types/act";
 
 interface ActItemProps {
   chapters: ActsData["chapters"];

@@ -11,7 +11,7 @@ import { useDebouncedCallback } from "use-debounce";
 
 import { compileActChapter, updateActChapter, UpdateActChapterRequest } from "@/api/acts";
 import { cn } from "@/lib/utils";
-import { ActChapter } from "@/types/acts";
+import { ActChapter } from "@/types/act";
 import { isMacOS } from "@/utils/is-macos";
 
 import { moveToNext } from "../actions";

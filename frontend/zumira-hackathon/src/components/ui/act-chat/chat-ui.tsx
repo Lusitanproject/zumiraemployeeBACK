@@ -5,7 +5,7 @@ import { flushSync } from "react-dom";
 
 import { generateResponse } from "@/api/acts";
 import { MessageInput } from "@/components/ui/chatbase-chat/components/message-input";
-import { ActChapter, ActMessage } from "@/types/acts";
+import { ActChapter, ActMessage } from "@/types/act";
 
 import { Messages } from "./messages";
 

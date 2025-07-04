@@ -3,7 +3,7 @@ import { ShieldCheck } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { ActsData } from "@/types/acts";
+import { ActsData } from "@/types/act";
 
 import { MainMenu, MenuLink } from "../main-menu";
 import { ActsMenu } from "./components/acts-menu";

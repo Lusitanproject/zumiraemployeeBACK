@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { Tabs } from "../../components/tabs";
+import { Tabs } from "../../../../../components/ui/tabs";
 import { getAssessmentData } from "./actions";
 
 interface LayoutProps {

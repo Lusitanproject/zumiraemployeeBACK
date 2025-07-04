@@ -11,7 +11,7 @@ import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ActChatbot } from "@/types/acts";
+import { ActChatbot } from "@/types/act";
 
 import { IconField } from "../../components/icons";
 import { FormErrors, INITIAL_VALUE, ManageActChatbot, ManageActChatbotSchema } from "./definitions";

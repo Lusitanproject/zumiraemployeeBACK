@@ -10,7 +10,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { updateManyActChatbots } from "@/api/acts";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ActChatbot } from "@/types/acts";
+import { ActChatbot } from "@/types/act";
 
 type ActsListProps = {
   data: ActChatbot[];
