@@ -20,6 +20,7 @@ interface ActSelectorProps {
 export function ActSelector({ data }: ActSelectorProps) {
   const searchParams = useSearchParams();
   const defaultActId = searchParams.get("default") || undefined;
+
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [selected, setSelected] = useState<ActsData["chatbots"][0]>(
     data.chatbots.find((c) => (defaultActId ? c.id === defaultActId : c.current)) ?? data.chatbots[0]!
@@ -53,6 +54,8 @@ export function ActSelector({ data }: ActSelectorProps) {
       await newChapter(selected.id);
     } catch (error) {
       if (!isRedirectError(error) && error instanceof Error) toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -67,10 +70,10 @@ export function ActSelector({ data }: ActSelectorProps) {
           <div className="flex flex-row items-end justify-center gap-2">
             <div className="flex-none size-6" />
             <div
-              className="flex flex-row gap-2 items-end cursor-pointer"
+              className="flex flex-row gap-2 items-center cursor-pointer"
               onClick={() => setOpenDropdown((prev) => !prev)}
             >
-              <span className="text-2xl font-semibold text-text-700">{selected.name}</span>
+              <span className="text-2xl font-semibold text-text-700 text-center">{selected.name}</span>
               <ChevronDown className="flex-none size-6 text-text-400" />
             </div>
           </div>

@@ -4,7 +4,7 @@ import image from "../images/zumira-picture5.png";
 
 export function HowItWorks() {
   return (
-    <section className="w-full px-4 py-28 sm:pb-32 bg-background-0">
+    <section className="w-full px-4 py-28 sm:pb-32 bg-white">
       <div className="w-full max-w-[82.5rem] mx-auto flex flex-col sm:flex-row items-start sm:items-center sm:justify-between">
         <div className="flex flex-col w-full mb-16 md:mb-0 md:w-5/12">
           <h2 className="text-3xl font-bold leading-[1.25] sm:text-4xl sm:leading-[1.2] mb-6 text-slate-800">

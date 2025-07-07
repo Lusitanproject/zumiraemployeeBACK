@@ -10,6 +10,6 @@ export async function verifyUserRole(): Promise<void> {
   const session = decrypt(cookie.get("session")?.value);
 
   if (session?.role !== "admin") {
-    redirect("/chat");
+    redirect("/chat/novo");
   }
 }

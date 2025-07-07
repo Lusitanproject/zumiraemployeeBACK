@@ -9,14 +9,14 @@ const linkVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-zumira-green text-white hover:bg-primary-700 focus:shadow-focus-ring disabled:bg-primary-200",
+        primary: "bg-zumira-green text-white hover:bg-green-700 focus:shadow-focus-ring disabled:bg-green-200",
         secondary:
-          "bg-primary-50 text-primary-700 hover:bg-primary-100 focus:shadow-focus-ring disabled:bg-primary-25 disabled:text-primary-300",
+          "bg-green-50 text-green-700 hover:bg-green-100 focus:shadow-focus-ring disabled:bg-green-25 disabled:text-green-300",
         outline:
-          "border border-border-500 text-text-500 hover:bg-background-50 focus:shadow-focus-ring disabled:border-border-200 disabled:text-text-300",
+          "border border-gray-500 text-gray-500 hover:bg-gray-50 focus:shadow-focus-ring disabled:border-gray-200 disabled:text-gray-300",
         danger: "bg-error-600 text-white hover:bg-error-700 focus:shadow-focus-ring disabled:bg-error-200",
         link: "text-primary underline-offset-4 hover:underline",
-        alternate: "bg-primary-200 text-white hover:bg-primary-300 focus:shadow-focus-ring disabled:bg-primary-50",
+        alternate: "bg-green-200 text-white hover:bg-green-300 focus:shadow-focus-ring disabled:bg-green-50",
       },
     },
     defaultVariants: {

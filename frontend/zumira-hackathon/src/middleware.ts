@@ -33,7 +33,7 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/admin/testes", req.nextUrl));
     }
 
-    return NextResponse.redirect(new URL("/chat", req.nextUrl));
+    return NextResponse.redirect(new URL("/chat/novo", req.nextUrl));
   }
 
   return res;

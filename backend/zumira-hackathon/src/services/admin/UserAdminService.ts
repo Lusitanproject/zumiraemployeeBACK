@@ -107,8 +107,17 @@ class UserAdminService {
   }
 
   async create(data: CreateUser) {
+    const firstAct = await prismaClient.actChatbot.findFirst({
+      orderBy: {
+        index: "asc",
+      },
+    });
+
     const user = await prismaClient.user.create({
-      data,
+      data: {
+        ...data,
+        currentActChatbotId: firstAct?.id,
+      },
     });
 
     return user;

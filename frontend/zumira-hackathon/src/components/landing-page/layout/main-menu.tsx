@@ -20,8 +20,8 @@ export function MainMenu({ open, onDismiss }: MainMenuProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-background-0 md:hidden">
-      <header className="w-full h-[5.5rem] flex items-center px-4 border-b border-border-50">
+    <div className="fixed inset-0 bg-white md:hidden">
+      <header className="w-full h-[5.5rem] flex items-center px-4 border-b border-gray-50">
         <div className="w-full h-full flex justify-between items-center">
           <Link href="/">
             <h1 className="w-[123px] h-[32px] sm:w-[132px] md:h-[34px] text-zumira-green">
@@ -30,7 +30,7 @@ export function MainMenu({ open, onDismiss }: MainMenuProps) {
           </Link>
 
           <button className="w-12 h-12 flex items-center justify-center" onClick={onDismiss}>
-            <XIcon className="size-6 text-text-500" />
+            <XIcon className="size-6 text-gray-500" />
           </button>
         </div>
       </header>
@@ -58,7 +58,7 @@ export function MainMenu({ open, onDismiss }: MainMenuProps) {
         <li>
           <AppLink className="w-fit my-3" href="https://www.zumira.com.br" variant="outline">
             <span className="leading-none mb-1">Acessar plataforma</span>
-            <ChevronRight className="size-5 text-text-500" />
+            <ChevronRight className="size-5 text-gray-500" />
           </AppLink>
         </li>
       </ul>

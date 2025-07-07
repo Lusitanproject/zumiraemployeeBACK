@@ -22,10 +22,16 @@ class CreateUserService {
         });
         if (!role)
             throw new Error("Cargo usuario não encontrado");
+        const firstAct = await prisma_1.default.actChatbot.findFirst({
+            orderBy: {
+                index: "asc",
+            },
+        });
         const user = await prisma_1.default.user.create({
             data: {
                 ...data,
                 roleId: role.id,
+                currentActChatbotId: firstAct === null || firstAct === void 0 ? void 0 : firstAct.id,
             },
         });
         return user;

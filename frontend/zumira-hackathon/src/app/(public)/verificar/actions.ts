@@ -49,7 +49,7 @@ export async function verifyCode(state: FormState, formData: FormData): Promise<
     cookie.delete("session:verify");
     await createSession(res.data);
 
-    const route = res.data.role === "admin" ? "/admin/testes" : "/chat";
+    const route = res.data.role === "admin" ? "/admin/testes" : "/chat/novo";
     redirect(route, RedirectType.replace);
   } else {
     return { errors: { code: res.message, input: true } };
