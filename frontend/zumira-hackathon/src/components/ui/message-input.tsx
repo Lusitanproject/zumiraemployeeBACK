@@ -1,7 +1,9 @@
 "use client";
 
-import { Send } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { useRef, useState } from "react";
+
+import { cn } from "@/lib/utils";
 
 interface MessageInputProps {
   disabled?: boolean;
@@ -14,6 +16,7 @@ export function MessageInput({ placeholder, disabled, warning, onSend }: Message
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showWaring, setShowWarning] = useState<boolean>(false);
+  const [value, setValue] = useState<string>("");
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
     // Enter: Envia a mensagem
@@ -26,24 +29,26 @@ export function MessageInput({ placeholder, disabled, warning, onSend }: Message
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
 
-        textarea.value = textarea.value.substring(0, start) + "\n" + textarea.value.substring(end);
-        textarea.selectionStart = textarea.selectionEnd = start + 1;
-        textarea.scrollTop = textarea.scrollHeight;
+        const newValue = value.substring(0, start) + "\n" + value.substring(end);
+        setValue(newValue);
+
+        // Ajustar cursor após o state update
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 1;
+          textarea.scrollTop = textarea.scrollHeight;
+        }, 0);
       } else if (!disabled) {
-        formRef.current?.requestSubmit();
+        handleSubmit();
       }
     }
   }
 
-  function handleSubmit(formData: FormData) {
-    const text = formData.get("message") as string;
-
-    if (text?.trim()) {
-      onSend?.(text);
-
-      if (textareaRef.current && !disabled) {
-        textareaRef.current.value = "";
-      }
+  function handleSubmit() {
+    if (value?.trim()) {
+      onSend?.(value);
+      setValue("");
+    } else {
+      textareaRef.current?.focus();
     }
   }
 
@@ -51,7 +56,10 @@ export function MessageInput({ placeholder, disabled, warning, onSend }: Message
     <form
       ref={formRef}
       action={handleSubmit}
-      className="relative flex flex-row w-full min-h-[3.125rem] max-h-32 border-border-100 border-1 rounded-xl"
+      className={cn(
+        "relative flex flex-row w-full min-h-[3.125rem] max-h-36 border-border-100 border-1 rounded-xl focus-within:min-h-24 duration-200",
+        { "focus-within:border-primary-300": !disabled }
+      )}
     >
       <div className="flex size-full py-2.5">
         <textarea
@@ -60,16 +68,20 @@ export function MessageInput({ placeholder, disabled, warning, onSend }: Message
           name="message"
           placeholder={placeholder}
           style={{ overflowWrap: "anywhere" }}
+          value={value}
           onBlur={() => setShowWarning(false)}
+          onChange={(e) => setValue(e.target.value)}
           onFocus={() => setShowWarning(true)}
           onKeyDown={handleKeyDown}
         />
       </div>
       <button
-        className="flex flex-none justify-center items-center w-[3.125rem] h-full bg-primary-300 cursor-pointer rounded-r-xl"
+        className="flex flex-none justify-center items-center w-[3.125rem] h-full bg-primary-300 cursor-pointer rounded-r-xl disabled:bg-border-100 duration-200 disabled:cursor-default"
         disabled={disabled}
+        type="button"
+        onClick={handleSubmit}
       >
-        <Send className="text-white" type="submit" />
+        <ArrowUp className={cn(disabled || !value.length ? "text-gray-300" : "text-white", "duration-200")} />
       </button>
       {showWaring && <span className="absolute text-error-500 bottom-[105%] left-1 text-sm">{warning}</span>}
     </form>

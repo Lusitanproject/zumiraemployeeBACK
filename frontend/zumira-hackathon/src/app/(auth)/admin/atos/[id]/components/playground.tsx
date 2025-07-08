@@ -6,11 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { getActChapter, newActChapter } from "@/api/acts";
-import { ChatUi } from "@/components/ui/act-chat/chat-ui";
 import { ActChapter, ActChatbot } from "@/types/act";
 
 import { ManageActChatbot } from "../definitions";
 import { ActChatbotForm } from "../form";
+import { ActChat } from "@/components/ui/act-chat/act-chat";
 
 interface PlaygroundProps {
   data: ActChatbot | null;
@@ -56,7 +56,7 @@ export function Playground({ data }: PlaygroundProps) {
         {data ? (
           <div className="flex flex-col size-full">
             <div className="flex flex-col border-1 border-border-200 rounded-xl w-full md:h-full h-[30rem]">
-              <ChatUi actChapter={chapter} inputWarning={saveWarning} />
+              <ActChat actChapter={chapter} inputWarning={saveWarning} />
             </div>
             <div className="flex w-full justify-center p-2 font-medium text-text-400">
               <button

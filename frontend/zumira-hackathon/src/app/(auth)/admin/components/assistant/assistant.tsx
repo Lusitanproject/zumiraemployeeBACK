@@ -4,7 +4,7 @@ import { BotMessageSquare, Maximize2, Minimize2, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-import { Chat } from "@/components/ui/chatbase-chat/chat";
+import { ChatbaseChat } from "@/components/ui/chatbase-chat/chatbase-chat";
 import { ChatMessage } from "@/components/ui/chatbase-chat/definitions";
 import { cn } from "@/lib/utils";
 
@@ -68,14 +68,14 @@ export function Assistant({ companyFeedbacks, username, chatbotId }: AssistantPr
           </button>
         </header>
         <div className="flex flex-col flex-1 min-h-0">
-          <Chat chatbotId={chatbotId} context={context} username={username}>
+          <ChatbaseChat chatbotId={chatbotId} context={context} username={username}>
             <div className="flex flex-col justify-center items-center size-full gap-3">
               <p className="text-center text-text-500">Consulte aqui os indicadores da sua empresa</p>
               <div className="absolute size-24">
                 <Image fill alt="icon zumira" className="opacity-10" src={icon} />
               </div>
             </div>
-          </Chat>
+          </ChatbaseChat>
         </div>
       </section>
     </div>

@@ -72,7 +72,7 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
               {Array.from({ length: 3 }, (_, i) => (
                 <div
                   key={i}
-                  className="size-1.5 rounded-full bg-black animate-jump"
+                  className="size-1.5 rounded-full bg-text-900 animate-jump"
                   style={{
                     animationDelay: `${i * 0.34}s`,
                   }}
