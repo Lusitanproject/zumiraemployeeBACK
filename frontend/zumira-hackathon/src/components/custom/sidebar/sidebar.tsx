@@ -17,7 +17,7 @@ type SidebarProps = {
 export function Sidebar({ menuItems, data }: SidebarProps) {
   const pathname = usePathname();
   const isAdminRoute = pathname.startsWith("/admin");
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [expanded, setExpanded] = useState<boolean>(true);
 
   return (
     <aside
