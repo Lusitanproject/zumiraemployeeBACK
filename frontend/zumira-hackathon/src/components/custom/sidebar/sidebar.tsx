@@ -22,8 +22,8 @@ export function Sidebar({ menuItems, data }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col justify-between bg-background-200 transition-all transition-discrete scrollbar-hide pb-12 pt-8 h-screen gap-4",
-        expanded ? "px-12 w-[18rem]" : "px-4 w-22"
+        "hidden md:flex flex-col justify-between bg-background-200 transition-all transition-discrete scrollbar-hide pb-12 pt-8 h-full gap-4",
+        expanded ? "px-12 w-[18rem]" : "px-4 w-20"
       )}
     >
       <div className={cn("flex w-full", expanded ? "justify-end" : "justify-center")}>
