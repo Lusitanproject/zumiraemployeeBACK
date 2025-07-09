@@ -3,20 +3,20 @@
 import { ReactNode, useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-import { MessageInput } from "@/components/ui/chatbase-chat/components/message-input";
 import { Messages } from "@/components/ui/chatbase-chat/components/messages";
 
+import { MessageInput } from "../message-input";
 import { messageChatbot } from "./actions";
 import { ChatMessage } from "./definitions";
 
-interface AssistantChatProps {
+interface ChatbaseChatProps {
   chatbotId: string;
   username: string;
   children?: ReactNode;
   context?: ChatMessage[];
 }
 
-export function Chat({ children, username, chatbotId, context }: AssistantChatProps) {
+export function ChatbaseChat({ children, username, chatbotId, context }: ChatbaseChatProps) {
   const id = btoa(username + chatbotId.slice(0, 5));
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);

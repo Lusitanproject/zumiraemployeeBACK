@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -21,10 +21,13 @@ export function ActSelector({ data }: ActSelectorProps) {
   const searchParams = useSearchParams();
   const defaultActId = searchParams.get("default") || undefined;
 
-  const [openDropdown, setOpenDropdown] = useState<boolean>(false);
-  const [selected, setSelected] = useState<ActsData["chatbots"][0]>(
-    data.chatbots.find((c) => (defaultActId ? c.id === defaultActId : c.current)) ?? data.chatbots[0]!
+  const findActById = useCallback(
+    (id?: string) => data.chatbots.find((c) => (id ? c.id === id : c.current)) ?? data.chatbots[0]!,
+    [data.chatbots]
   );
+
+  const [openDropdown, setOpenDropdown] = useState<boolean>(false);
+  const [selected, setSelected] = useState<ActsData["chatbots"][0]>(findActById(defaultActId));
   const [loading, setLoading] = useState<boolean>(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -46,6 +49,10 @@ export function ActSelector({ data }: ActSelectorProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [openDropdown]);
+
+  useEffect(() => {
+    setSelected(findActById(defaultActId));
+  }, [defaultActId, findActById]);
 
   async function handleConfirm() {
     setLoading(true);

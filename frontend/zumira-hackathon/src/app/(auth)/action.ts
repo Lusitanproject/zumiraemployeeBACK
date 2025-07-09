@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-import { MenuLink } from "@/components/custom/main-menu";
+import { MenuLink } from "@/components/custom/sidebar/components/main-menu";
 
 export async function getSidebarContent() {
   const heads = await headers();

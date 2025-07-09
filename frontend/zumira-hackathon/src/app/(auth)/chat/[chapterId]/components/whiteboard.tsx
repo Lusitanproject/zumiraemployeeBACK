@@ -3,7 +3,7 @@
 import { ArrowBigRightDash } from "lucide-react";
 import { useRef, useState } from "react";
 
-import { ChatUi } from "@/components/ui/act-chat/chat-ui";
+import { ActChat } from "@/components/ui/act-chat/act-chat";
 import { cn } from "@/lib/utils";
 import { ActChapter } from "@/types/act";
 
@@ -25,7 +25,7 @@ export function Whiteboard({ actChapter }: WhiteboardProps) {
 
   return (
     <div className="flex size-full">
-      <ChatUi
+      <ActChat
         actChapter={actChapter}
         onChangeMessages={(m) => {
           setShowFinishButton(m.length >= MIN_MESSAGES_TO_FINISH);

@@ -16,6 +16,18 @@ interface NotificationsButtonProps {
 export function NotificationsButton({ notifications, alerts }: NotificationsButtonProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
+  const sortedAlerts = alerts.toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const sortedNotifications = notifications.toSorted(
+    (a, b) =>
+      b.notificationType.priority - a.notificationType.priority ||
+      new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime()
+  );
+  // Pega a cor do primeiro alerta ou notificação
+  const dotColor =
+    sortedAlerts[0]?.assessmentResultRating.color ??
+    sortedNotifications[0]?.notificationType.color ??
+    "oklch(0.704 0.191 22.216)";
+
   return (
     <div className="relative">
       <button
@@ -32,9 +44,10 @@ export function NotificationsButton({ notifications, alerts }: NotificationsButt
       )}
       {!!(notifications.length + alerts.length) && (
         <div
-          className={cn("absolute size-2 rounded-full bg-red-400 top-2 right-3", {
+          className={cn("absolute size-2 rounded-full top-2 right-3", {
             "z-50": isDropdownOpen,
           })}
+          style={{ backgroundColor: dotColor }}
         />
       )}
     </div>

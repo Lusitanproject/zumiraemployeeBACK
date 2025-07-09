@@ -29,7 +29,7 @@ export function AssessmentCard({ id, title, summary, completed }: AssessmentCard
   return (
     <div
       className={cn(
-        "rounded-xl bg-background-100 hover:bg-background-200 p-[1.375rem] flex flex-col h-[12.375rem] text-left cursor-pointer",
+        "rounded-xl bg-background-100 hover:bg-background-200 p-[1.375rem] flex flex-col h-[12.375rem] w-[12rem] flex-none text-left cursor-pointer",
         {
           "bg-primary-25/50 hover:bg-primary-25/70": completed,
         }
