@@ -18,6 +18,7 @@ class AssessmentAdminService {
                 selfMonitoringBlockId: true,
                 userFeedbackInstructions: true,
                 companyFeedbackInstructions: true,
+                public: true,
                 operationType: true,
                 nationalityId: true,
             },
@@ -67,6 +68,7 @@ class AssessmentAdminService {
                 nationalityId: assessment.nationalityId,
                 operationType: assessment.operationType,
                 selfMonitoringBlockId: assessment.selfMonitoringBlockId,
+                public: assessment.public,
                 assessmentQuestions: {
                     create: assessment.assessmentQuestions.map((q) => ({
                         index: q.index,

@@ -18,6 +18,7 @@ class ListAssessmentsService {
         const assessments = await prisma_1.default.assessment.findMany({
             where: {
                 nationalityId, // Ignorado se for undefined
+                public: true,
             },
             select: {
                 id: true,

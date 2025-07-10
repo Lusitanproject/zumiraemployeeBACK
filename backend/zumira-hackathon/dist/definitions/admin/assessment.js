@@ -12,6 +12,7 @@ exports.CreateAssessmentSchema = zod_1.z.object({
     companyFeedbackInstructions: zod_1.z.string().optional(),
     operationType: zod_1.z.nativeEnum(client_1.AssessmentOperation),
     nationalityId: zod_1.z.string().cuid(),
+    public: zod_1.z.boolean(),
 });
 exports.UpdateAssessmentSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
@@ -23,6 +24,7 @@ exports.UpdateAssessmentSchema = zod_1.z.object({
     companyFeedbackInstructions: zod_1.z.string().optional(),
     operationType: zod_1.z.nativeEnum(client_1.AssessmentOperation),
     nationalityId: zod_1.z.string().cuid(),
+    public: zod_1.z.boolean(),
 });
 exports.UpdateRatingsSchema = zod_1.z.object({
     ratings: zod_1.z.array(zod_1.z.object({

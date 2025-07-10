@@ -1,4 +1,7 @@
+"use client";
+
 import { Download } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { downloadAssessmentResultsReport } from "@/api/assessments";
@@ -9,19 +12,48 @@ import { Filters } from "../definitions";
 import { MeatballsMenu } from "./meatballs-menu";
 
 interface AlertsTableProps {
-  filters?: Filters;
   loading?: boolean;
   results?: AssessmentResult[];
 }
 
-export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
+export function AlertsTable({ results, loading }: AlertsTableProps) {
+  const searchParams = useSearchParams();
+
+  const assessmentId = searchParams.get("assessment");
+  const companyId = searchParams.get("company");
+  const dateFrom = searchParams.get("dateFrom");
+  const dateTo = searchParams.get("dateTo");
+
+  const filters: Filters = {
+    assessmentId: assessmentId || "",
+    companyId: companyId || undefined,
+    dateFrom: dateFrom || undefined,
+    dateTo: dateTo || undefined,
+  };
+
   function formatDate(date: Date) {
-    return `${date.getDay()} / ${date.getMonth() + 1} / ${date.getFullYear()}`;
+    return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}/${date.getFullYear()}`;
+  }
+
+  // TODO: aplicar esses filtros no backend
+  function filterResultsByDate(results: AssessmentResult[]) {
+    if (!dateFrom && !dateTo) return results;
+
+    return results.filter((result) => {
+      const resultDate = new Date(result.createdAt);
+      const fromDate = dateFrom ? new Date(dateFrom) : null;
+      const toDate = dateTo ? new Date(dateTo) : null;
+
+      if (fromDate && resultDate < fromDate) return false;
+      if (toDate && resultDate > toDate) return false;
+
+      return true;
+    });
   }
 
   async function downloadReport() {
-    if (!filters) return;
-
     try {
       const { blob, filename } = await downloadAssessmentResultsReport(filters);
       const urlBlob = window.URL.createObjectURL(blob);
@@ -53,7 +85,17 @@ export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
     );
   }
 
-  const sample = results.length ? results[0] : null;
+  const filteredResults = filterResultsByDate(results);
+
+  if (!filteredResults.length) {
+    return (
+      <span className="w-full text-center text-text-500 bg-background-100 rounded-xl p-1.5 border-1 border-border-300">
+        Nenhum resultado encontrado para o período selecionado
+      </span>
+    );
+  }
+
+  const sample = filteredResults.length ? filteredResults[0] : null;
 
   return (
     <div className="rounded-xl border-1 border-border-300">
@@ -64,9 +106,9 @@ export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
             <th className="p-2">Perfil</th>
             {sample &&
               sample.scores.map((score) => (
-                <td key={score.dimension.id} className="p-2">
+                <th key={score.dimension.id} className="p-2">
                   Escore {score.dimension.acronym}
-                </td>
+                </th>
               ))}
             <th className="p-2">Ultima avaliação</th>
             <th className="p-2">Status</th>
@@ -78,7 +120,7 @@ export function AlertsTable({ results, loading, filters }: AlertsTableProps) {
           </tr>
         </thead>
         <tbody className="text-text-700">
-          {results.map((result, index) => {
+          {filteredResults.map((result, index) => {
             return (
               <tr key={result.id} className="border-b border-border-200">
                 <td className="p-2">{`C-${String(index + 1).padStart(3, "0")}`}</td>

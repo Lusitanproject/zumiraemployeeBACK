@@ -29,7 +29,7 @@ export function TabBar() {
           <Link
             key={item.href}
             className={cn("w-fit flex items-center h-9 rounded-xl", {
-              "bg-primary-300 text-primary-25 gap-x-3 px-3": pathname.indexOf(item.href) === 0,
+              "bg-black/5 text-text-900 gap-x-3 px-3": pathname.indexOf(item.href) === 0,
               "text-text-500/60": pathname.indexOf(item.href) !== 0,
             })}
             href={item.href}

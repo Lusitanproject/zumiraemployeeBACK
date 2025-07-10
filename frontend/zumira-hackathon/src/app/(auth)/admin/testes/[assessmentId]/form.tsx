@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { RichTextArea } from "@/components/ui/rich-text-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -40,6 +41,7 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         companyFeedbackInstructions: data.companyFeedbackInstructions,
         operationType: data.operationType,
         nationalityId: data.nationalityId,
+        public: data.public,
       }
     : null;
 
@@ -250,6 +252,21 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
             </Select>
             {!!errors?.operationType && <span className="text-sm text-error-500">{errors.operationType}</span>}
           </div>
+        </div>
+        <div className="pl-2 pb-3">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="public"
+              checked={formData.public}
+              onChange={(e) => {
+                setFormData((current) => ({ ...current, public: e.target.checked }));
+              }}
+            />
+            <Label className="text-text-700" htmlFor="public">
+              Tornar teste público
+            </Label>
+          </div>
+          {!!errors?.public && <span className="text-sm text-error-500">{errors.public}</span>}
         </div>
         {!!formError && <span className="text-sm text-error-500">{formError}</span>}
       </div>

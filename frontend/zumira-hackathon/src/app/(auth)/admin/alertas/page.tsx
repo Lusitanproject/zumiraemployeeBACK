@@ -1,16 +1,20 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { getAssessmentResultsFiltered } from "@/api/assessments";
-import { AlertsContext } from "@/providers/alerts";
 import { AssessmentResult } from "@/types/assessment";
 
 import { AlertsTable } from "./components/alerts-table";
 import { Filters } from "./definitions";
 
 export default function Alertas() {
-  const { assessmentId, companyId } = useContext(AlertsContext);
+  const searchParams = useSearchParams();
+  const assessmentId = searchParams.get("assessment");
+  const companyId = searchParams.get("company");
+  const dateFrom = searchParams.get("dateFrom");
+  const dateTo = searchParams.get("dateTo");
 
   const [results, setResults] = useState<AssessmentResult[]>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -24,8 +28,13 @@ export default function Alertas() {
 
   useEffect(() => {
     if (!assessmentId) return;
-    fetchResults({ assessmentId, companyId });
-  }, [assessmentId, companyId]);
+    fetchResults({
+      assessmentId,
+      companyId: companyId || undefined,
+      dateFrom: dateFrom || undefined,
+      dateTo: dateTo || undefined,
+    });
+  }, [assessmentId, companyId, dateFrom, dateTo]);
 
   return (
     <div className="flex size-full flex-col gap-2">
