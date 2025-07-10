@@ -256,8 +256,8 @@ export function AssessmentForm({ data, blocks, nationalities }: FormProps) {
         <div className="pl-2 pb-3">
           <div className="flex items-center gap-2">
             <Checkbox
-              id="public"
               checked={formData.public}
+              id="public"
               onChange={(e) => {
                 setFormData((current) => ({ ...current, public: e.target.checked }));
               }}

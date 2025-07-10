@@ -1,5 +1,6 @@
+import { getNotifications, getNotificationTypes } from "@/api/notifications";
+
 import { Header } from "../components/header";
-import { getNotifications, getNotificationTypes } from "./actions";
 import { CategoryList } from "./components/category-list";
 import { NotificationList } from "./components/notification-list";
 

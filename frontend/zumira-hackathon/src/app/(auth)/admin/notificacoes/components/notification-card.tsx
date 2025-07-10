@@ -2,8 +2,7 @@ import { Mail } from "lucide-react";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
-
-import { Notification } from "../definitions";
+import { Notification } from "@/types/notification";
 
 interface NotificationCardProps {
   data: Notification;

@@ -6,14 +6,9 @@ import { useCallback, useState } from "react";
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NotificationType } from "@/types/notification";
 
-import {
-  FormErrors,
-  INITIAL_VALUE,
-  ManageNotificationType,
-  ManageNotificationTypeSchema,
-  NotificationType,
-} from "./definitions";
+import { FormErrors, INITIAL_VALUE, ManageNotificationType, ManageNotificationTypeSchema } from "./definitions";
 import { saveNotificationType } from "./form-actions";
 
 type FormProps = {
