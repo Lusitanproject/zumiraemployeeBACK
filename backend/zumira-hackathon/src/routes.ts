@@ -4,6 +4,7 @@ import { CompileActChapterController } from "./controllers/actChatbot/CompileAct
 import { CreateActChapterController } from "./controllers/actChatbot/CreateActChapterController";
 import { GetActChapterController } from "./controllers/actChatbot/GetActChapterController";
 import { GetActsDataController } from "./controllers/actChatbot/GetActsDataController";
+import { GetFullStoryController } from "./controllers/actChatbot/GetFullStoryController";
 import { MessageActChatbotController } from "./controllers/actChatbot/MessageActChatbotController";
 import { MoveToNextActController } from "./controllers/actChatbot/MoveToNextActController";
 import { UpdateActChapterController } from "./controllers/actChatbot/UpdateActChapterController";
@@ -187,5 +188,6 @@ router.post("/acts/message", isAuthenticated, new MessageActChatbotController().
 router.post("/acts/new-chapter", isAuthenticated, new CreateActChapterController().handle);
 router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
 router.put("/acts/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
+router.get("/acts/full-story", isAuthenticated, new GetFullStoryController().handle);
 
 export { router };

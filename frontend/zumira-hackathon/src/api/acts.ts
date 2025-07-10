@@ -36,6 +36,19 @@ export type NewChapterResponse = ZumiraApiResponse<{
 }>;
 export type GetActsDataResponse = ZumiraApiResponse<ActsData>;
 export type MoveToNextActResponse = ZumiraApiResponse<{ currActChatbotId: string }>;
+export type GetFullStoryResponse = ZumiraApiResponse<{
+  chapters: {
+    id: string;
+    title: string;
+    compilation: string;
+    createdAt: Date;
+    updatedAt: Date;
+    actChatbot: {
+      index: number;
+      name: string;
+    };
+  }[];
+}>;
 
 export async function getActChapter(chapterId: string) {
   const cookie = await cookies();
@@ -391,4 +404,37 @@ export async function moveToNextAct() {
   }
 
   return parsed.data.currActChatbotId;
+}
+
+export async function getFullStory() {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/acts/full-story`;
+
+  const [error, response] = await catchError(
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error) {
+    throw new Error(error?.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const parsed = (await response.json()) as GetFullStoryResponse;
+
+  if (parsed.status === "ERROR") {
+    throw new Error(parsed.message);
+  }
+
+  return parsed.data.chapters;
 }

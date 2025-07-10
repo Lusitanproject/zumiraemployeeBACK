@@ -6,11 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { getActChapter, newActChapter } from "@/api/acts";
+import { ActChat } from "@/components/ui/act-chat/act-chat";
 import { ActChapter, ActChatbot } from "@/types/act";
 
 import { ManageActChatbot } from "../definitions";
 import { ActChatbotForm } from "../form";
-import { ActChat } from "@/components/ui/act-chat/act-chat";
 
 interface PlaygroundProps {
   data: ActChatbot | null;

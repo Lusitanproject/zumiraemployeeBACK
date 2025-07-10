@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: ["@react-pdf/renderer"],
+  experimental: {
+    // Feito para não dar erro nos imports dinamicos em frontend/zumira-hackathon/src/components/custom/pdf.tsx
+    esmExternals: "loose",
+  },
   images: {
     remotePatterns: [
       {

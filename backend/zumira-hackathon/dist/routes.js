@@ -6,6 +6,7 @@ const CompileActChapterController_1 = require("./controllers/actChatbot/CompileA
 const CreateActChapterController_1 = require("./controllers/actChatbot/CreateActChapterController");
 const GetActChapterController_1 = require("./controllers/actChatbot/GetActChapterController");
 const GetActsDataController_1 = require("./controllers/actChatbot/GetActsDataController");
+const GetFullStoryController_1 = require("./controllers/actChatbot/GetFullStoryController");
 const MessageActChatbotController_1 = require("./controllers/actChatbot/MessageActChatbotController");
 const MoveToNextActController_1 = require("./controllers/actChatbot/MoveToNextActController");
 const UpdateActChapterController_1 = require("./controllers/actChatbot/UpdateActChapterController");
@@ -167,3 +168,4 @@ router.post("/acts/message", isAuthenticated_1.isAuthenticated, new MessageActCh
 router.post("/acts/new-chapter", isAuthenticated_1.isAuthenticated, new CreateActChapterController_1.CreateActChapterController().handle);
 router.post("/acts/chapters/compile", isAuthenticated_1.isAuthenticated, new CompileActChapterController_1.CompileActChapterController().handle);
 router.put("/acts/chapters/:actChapterId", isAuthenticated_1.isAuthenticated, new UpdateActChapterController_1.UpdateActChapterController().handle);
+router.get("/acts/full-story", isAuthenticated_1.isAuthenticated, new GetFullStoryController_1.GetFullStoryController().handle);
