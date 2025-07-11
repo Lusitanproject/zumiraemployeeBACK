@@ -28,8 +28,8 @@ export function BookDocument({ data, username, gender }: BookDocumentProps) {
           <Text>{username}</Text>
         </View>
         <View style={tw("flex flex-col gap-4")}>
-          <Text style={tw("text-7xl font-bold")}>EU, EU MESM{gender === "FEMALE" ? "A" : "O"} E ZUMIRA</Text>
-          <Text style={tw("text-xl leading-tight")}>
+          <Text style={tw("text-7xl font-bold")}>Minha história</Text>
+          <Text style={tw("text-xl leading-tight leading-relaxed")}>
             Descubra como transformar a sua história em uma obra literária de cura e inspiração.
           </Text>
         </View>
@@ -70,7 +70,7 @@ export function BookDocument({ data, username, gender }: BookDocumentProps) {
         <Page key={index} size="A5" style={tw("flex flex-col p-16 items-center bg-[#F5F5EB] text-[#262626]")}>
           <View style={tw("relative flex flex-col items-center gap-2")}>
             <Text style={tw("text-4xl text-center mt-16")}>{index + 1}</Text>
-            <Text style={tw("text-sm text-center text-justify")}>
+            <Text style={tw("text-sm text-center text-justify leading-relaxed")}>
               <Text style={tw("text-4xl font-bold leading-none")}>{chapter.compilation.at(0)}</Text>
               {chapter.compilation.slice(1)}
             </Text>
@@ -84,11 +84,11 @@ export function BookDocument({ data, username, gender }: BookDocumentProps) {
             <Text style={{ ...tw("text-xl font-bold text-center leading-tight"), fontFamily: "Borel" }}>
               A dor não precisa do silêncio.{"\n"}E a tecnologia não precisa ser sem alma.
             </Text>
-            <Text style={tw("text-sm text-center")}>
+            <Text style={tw("text-sm text-center leading-relaxed")}>
               Este livro é um convite para revisitar memórias, escutar silêncios e compreender como a escuta pode
               transformar o mundo — mesmo quando vem de uma inteligência artificial.
             </Text>
-            <Text style={tw("text-sm text-center")}>
+            <Text style={tw("text-sm text-center leading-relaxed")}>
               Fabiana Borges, psicóloga e pesquisadora, costura neste relato autobiográfico a origem afetiva da Zumira:
               uma plataforma que nasceu de histórias contadas repetidamente por sua avó, e da coragem de transformar dor
               em cuidado, memória em tecnologia e afeto em método.{"\n"}
