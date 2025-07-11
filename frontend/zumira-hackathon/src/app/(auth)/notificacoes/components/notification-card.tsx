@@ -6,8 +6,7 @@ import Markdown from "react-markdown";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-import { Notification } from "../definitions";
+import { Notification } from "@/types/notification";
 
 interface NotificationCardProps {
   notification: Notification;

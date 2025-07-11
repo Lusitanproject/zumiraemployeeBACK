@@ -2,8 +2,6 @@ import { z } from "zod";
 
 import { NotificationTypeSchema, UserSchema } from "@/schemas";
 
-import { Notification } from "../definitions";
-
 export type User = z.infer<typeof UserSchema>;
 
 export type NotificationType = z.infer<typeof NotificationTypeSchema>;
@@ -39,40 +37,3 @@ export type FormErrors = {
   notificationTypeId?: string[];
   contentOrActionUrl?: string[];
 } | null;
-
-export type GetNotificationSuccess = {
-  status: "SUCCESS";
-  data: Notification;
-};
-
-export type GetNotificationError = {
-  status: "ERROR";
-  message: string;
-};
-
-export type GetNotificationTypesSuccess = {
-  status: "SUCCESS";
-  data: {
-    items: NotificationType[];
-  };
-};
-
-export type GetNotificationTypesError = {
-  status: "ERROR";
-  message: string;
-};
-
-export type GetUsers =
-  | {
-      status: "SUCCESS";
-      data: {
-        users: User[];
-      };
-    }
-  | {
-      status: "ERROR";
-      message: string;
-    };
-
-export type GetNotificationResponse = GetNotificationError | GetNotificationSuccess;
-export type GetNotificationTypesResponse = GetNotificationTypesError | GetNotificationTypesSuccess;

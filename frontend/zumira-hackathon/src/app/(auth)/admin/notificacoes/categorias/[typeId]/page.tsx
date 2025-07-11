@@ -1,4 +1,5 @@
-import { getNotificationType } from "./actions";
+import { getNotificationType } from "@/api/notifications";
+
 import { NotificationTypeForm } from "./form";
 
 export default async function ManageDimension({ params }: { params: Promise<{ typeId: string }> }) {

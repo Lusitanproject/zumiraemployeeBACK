@@ -1,4 +1,6 @@
-import { getAlerts, getNotifications } from "./actions";
+import { getAlerts } from "@/api/alerts";
+import { getNotifications } from "@/api/notifications";
+
 import { NotificationsButton } from "./components/notifications-button";
 
 export async function Notifications() {

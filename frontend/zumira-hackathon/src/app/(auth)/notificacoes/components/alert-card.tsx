@@ -5,8 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-import { Alert } from "../definitions";
+import { Alert } from "@/types/alert";
 
 interface AlertCardProps {
   alert: Alert;

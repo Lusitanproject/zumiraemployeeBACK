@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 
+import { readAlert } from "@/api/alerts";
 import { cn } from "@/lib/utils";
-
-import { readAlert } from "../actions";
-import { Alert } from "../definitions";
+import { Alert } from "@/types/alert";
 
 interface AlertCardProps {
   alert: Alert;

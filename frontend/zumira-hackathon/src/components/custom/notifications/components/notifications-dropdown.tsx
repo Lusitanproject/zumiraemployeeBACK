@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { Fragment } from "react";
 
-import { Alert, Notification } from "../definitions";
+import { Alert } from "@/types/alert";
+import { Notification } from "@/types/notification";
+
 import { AlertCard } from "./alert-card";
 import { NotificationCard } from "./notification-card";
 
