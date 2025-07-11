@@ -30,7 +30,7 @@ export function BookDocument({ data, username, gender }: BookDocumentProps) {
         <View style={tw("flex flex-col gap-4")}>
           <Text style={tw("text-7xl font-bold")}>Minha história</Text>
           <Text style={tw("text-xl leading-tight leading-relaxed")}>
-            Descubra como transformar a sua história em uma obra literária de cura e inspiração.
+            Um olhar guiado sobre quem sou, de onde vim e para onde quero ir
           </Text>
         </View>
         <Image src="/icon-green.png" style={{ width: "2.5rem" }} />
@@ -82,18 +82,18 @@ export function BookDocument({ data, username, gender }: BookDocumentProps) {
         <View style={tw("flex flex-col h-full justify-between")}>
           <View style={tw("flex flex-col gap-8 items-center mt-4")}>
             <Text style={{ ...tw("text-xl font-bold text-center leading-tight"), fontFamily: "Borel" }}>
-              A dor não precisa do silêncio.{"\n"}E a tecnologia não precisa ser sem alma.
+              Este livro é sobre mim — e, talvez, por isso mesmo, também seja sobre muitos outros.
             </Text>
             <Text style={tw("text-sm text-center leading-relaxed")}>
-              Este livro é um convite para revisitar memórias, escutar silêncios e compreender como a escuta pode
-              transformar o mundo — mesmo quando vem de uma inteligência artificial.
+              Aqui estão reunidos fragmentos da minha história, minhas escolhas, dúvidas, vitórias, medos e sonhos.
             </Text>
             <Text style={tw("text-sm text-center leading-relaxed")}>
-              Fabiana Borges, psicóloga e pesquisadora, costura neste relato autobiográfico a origem afetiva da Zumira:
-              uma plataforma que nasceu de histórias contadas repetidamente por sua avó, e da coragem de transformar dor
-              em cuidado, memória em tecnologia e afeto em método.{"\n"}
-              Mais do que uma biografia, esta obra é um testemunho de como o amor pode virar código — e de como uma neta
-              que escutava, sem entender, criou uma máquina que escuta para acolher.
+              A cada capítulo, fui guiado(a) por perguntas da Zumira que me fizeram olhar para dentro, resgatar
+              memórias, repensar rotas e reconhecer o que faz sentido para mim.
+            </Text>
+            <Text style={tw("text-sm text-center leading-relaxed")}>
+              Escrevo como quem deixa rastros no caminho — para não me perder de mim, e talvez para que outras pessoas
+              se encontrem também.
             </Text>
           </View>
           {/* A imagem foi gerada com o fundo verde pois a biblioteca apresenta problemas ao renderizar imagens somente com a cor branca (motivo desconhecido) */}

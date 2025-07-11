@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { detailNotification } from "@/components/custom/notifications/actions";
+import { getAlerts } from "@/api/alerts";
+import { detailNotification, getNotifications } from "@/api/notifications";
 
-import { getAlerts, getNotifications } from "./actions";
 import { NotificationsAccordion } from "./components/notifications-accordion";
 
 export default async function Notificacoes({ searchParams }: { searchParams: Promise<{ id: string }> }) {

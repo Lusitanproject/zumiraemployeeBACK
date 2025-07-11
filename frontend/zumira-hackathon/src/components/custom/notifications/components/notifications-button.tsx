@@ -4,8 +4,9 @@ import { Bell } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { Alert } from "@/types/alert";
+import { Notification } from "@/types/notification";
 
-import { Alert, Notification } from "../definitions";
 import { NotificationsDropdown } from "./notifications-dropdown";
 
 interface NotificationsButtonProps {

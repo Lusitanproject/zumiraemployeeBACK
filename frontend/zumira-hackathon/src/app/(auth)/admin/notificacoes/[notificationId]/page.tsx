@@ -1,11 +1,12 @@
-import { getNotificationData, getNotificationTypes, getUsers } from "./actions";
+import { detailNotification, getNotificationTypes } from "@/api/notifications";
 import { NotificationForm } from "./form";
+import { getUsers } from "@/api/users";
 
 // TODO: Definir em que momento serao selecionados os usuarios que recebem a notificacao
 
 export default async function ManageDimension({ params }: { params: Promise<{ notificationId: string }> }) {
   const id = (await params).notificationId;
-  const notification = await getNotificationData(id === "novo" ? null : id);
+  const notification = id === "novo" ? null : await detailNotification(id);
   const types = await getNotificationTypes();
   const users = await getUsers();
 
