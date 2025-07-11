@@ -23,11 +23,9 @@ export default async function MinhaHistoria() {
             <span>{session?.name}</span>
           </div>
           <div className={"flex flex-col gap-4"}>
-            <span className={"text-4xl md:text-6xl font-bold"}>
-              EU, EU MESM{session?.gender === "FEMALE" ? "A" : "O"} E ZUMIRA
-            </span>
+            <span className={"text-4xl md:text-6xl font-bold"}>Minha história</span>
             <span className={"text-sm md:text-base leading-tight"}>
-              Descubra como transformar a sua história em uma obra literária de cura e inspiração.
+              Um olhar guiado sobre quem sou, de onde vim e para onde quero ir
             </span>
           </div>
           <Image alt="Icon Zumira" height={30} src="/icon-green.png" width={30} />
