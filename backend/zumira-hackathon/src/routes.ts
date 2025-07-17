@@ -1,17 +1,18 @@
 import { Router } from "express";
 
-import { CompileActChapterController } from "./controllers/actChatbot/CompileActChapterController";
-import { CreateActChapterController } from "./controllers/actChatbot/CreateActChapterController";
-import { GetActChapterController } from "./controllers/actChatbot/GetActChapterController";
-import { GetActsDataController } from "./controllers/actChatbot/GetActsDataController";
-import { MessageActChatbotController } from "./controllers/actChatbot/MessageActChatbotController";
-import { MoveToNextActController } from "./controllers/actChatbot/MoveToNextActController";
-import { UpdateActChapterController } from "./controllers/actChatbot/UpdateActChapterController";
-import { CreateActChatbotController } from "./controllers/admin/act-chatbots/CreateActChatbotController";
-import { FindActChatbotController } from "./controllers/admin/act-chatbots/FindActChatbotController";
-import { FindAllActChatbotsController } from "./controllers/admin/act-chatbots/FindAllActChatbotsController";
-import { UpdateActChatbotController } from "./controllers/admin/act-chatbots/UpdateActChatbotController";
-import { UpdateManyActChatbotsController } from "./controllers/admin/act-chatbots/UpdateManyActChatbotsController";
+import { CompileActChapterController } from "./controllers/act/CompileActChapterController";
+import { CreateActChapterController } from "./controllers/act/CreateActChapterController";
+import { GetActChapterController } from "./controllers/act/GetActChapterController";
+import { GetActsDataController } from "./controllers/act/GetActsDataController";
+import { GetFullStoryController } from "./controllers/act/GetFullStoryController";
+import { MessageActChatbotController } from "./controllers/act/MessageActChatbotController";
+import { MoveToNextActController } from "./controllers/act/MoveToNextActController";
+import { UpdateActChapterController } from "./controllers/act/UpdateActChapterController";
+import { CreateActChatbotController } from "./controllers/admin/acts/CreateActChatbotController";
+import { FindActChatbotController } from "./controllers/admin/acts/FindActChatbotController";
+import { FindAllActChatbotsController } from "./controllers/admin/acts/FindAllActChatbotsController";
+import { UpdateActChatbotController } from "./controllers/admin/acts/UpdateActChatbotController";
+import { UpdateManyActChatbotsController } from "./controllers/admin/acts/UpdateManyActChatbotsController";
 import { DuplicateAssessmentController } from "./controllers/admin/assessments/DuplicateAssessmentController";
 import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
 import { FindResultRatingsByAssessmentController } from "./controllers/admin/assessments/FindResultRatingsByAssessmentController";
@@ -69,8 +70,8 @@ import { ListNationalitiesController } from "./controllers/nationality/ListNatio
 import { DetailNotificationController } from "./controllers/notification/DetailNotificationController";
 import { ListNotificationsController } from "./controllers/notification/ListNotificationsController";
 import { ReadNotificationController } from "./controllers/notification/ReadNotificationController";
-import { ListSelfMonitoringBlockResultsController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlockResultsController";
-import { ListSelfMonitoringBlocksController } from "./controllers/selfMonitoringBlock/ListSelfMonitoringBlocksController";
+import { ListSelfMonitoringBlockResultsController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlockResultsController";
+import { ListSelfMonitoringBlocksController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlocksController";
 import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
@@ -187,5 +188,6 @@ router.post("/acts/message", isAuthenticated, new MessageActChatbotController().
 router.post("/acts/new-chapter", isAuthenticated, new CreateActChapterController().handle);
 router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
 router.put("/acts/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
+router.get("/acts/full-story", isAuthenticated, new GetFullStoryController().handle);
 
 export { router };

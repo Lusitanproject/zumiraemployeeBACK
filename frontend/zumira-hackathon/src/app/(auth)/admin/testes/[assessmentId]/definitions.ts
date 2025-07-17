@@ -16,6 +16,7 @@ export type AssessmentSummary = {
   companyFeedbackInstructions: string;
   operationType: AssessmentOperation;
   nationalityId: string;
+  public: boolean;
 };
 
 export type AssessmentResponse = { status: "SUCCESS"; data: AssessmentSummary } | { status: "ERROR"; message: string };
@@ -29,6 +30,7 @@ export const CreateAssessmentSchema = z.object({
   companyFeedbackInstructions: z.string().optional(),
   operationType: z.enum(["SUM", "AVERAGE"]),
   nationalityId: z.string().cuid(),
+  public: z.boolean().default(false),
 });
 
 export type ManageAssessment = z.infer<typeof CreateAssessmentSchema>;
@@ -43,6 +45,7 @@ export type FormErrors = {
   companyFeedbackInstructions?: string[];
   operationType?: string[];
   nationalityId?: string[];
+  public?: string[];
 } | null;
 
 export const INITIAL_VALUE: ManageAssessment = {
@@ -54,6 +57,7 @@ export const INITIAL_VALUE: ManageAssessment = {
   companyFeedbackInstructions: "",
   operationType: "AVERAGE",
   nationalityId: "",
+  public: false,
 };
 
 export type CreateAssessmentResponse =

@@ -14,6 +14,7 @@ class AssessmentAdminService {
         selfMonitoringBlockId: true,
         userFeedbackInstructions: true,
         companyFeedbackInstructions: true,
+        public: true,
         operationType: true,
         nationalityId: true,
       },
@@ -21,6 +22,7 @@ class AssessmentAdminService {
 
     return assessment;
   }
+
   async update({ id, ...data }: UpdateAssessment) {
     const assessment = await prismaClient.assessment.update({
       where: { id },
@@ -71,6 +73,7 @@ class AssessmentAdminService {
         nationalityId: assessment.nationalityId,
         operationType: assessment.operationType,
         selfMonitoringBlockId: assessment.selfMonitoringBlockId,
+        public: assessment.public,
         assessmentQuestions: {
           create: assessment.assessmentQuestions.map((q) => ({
             index: q.index,

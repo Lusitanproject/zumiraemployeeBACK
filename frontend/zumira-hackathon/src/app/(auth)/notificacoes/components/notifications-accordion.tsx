@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { Alert } from "@/types/alert";
+import { Notification } from "@/types/notification";
 
-import { Alert, Notification, NotificationFull } from "../definitions";
 import { AlertCard } from "./alert-card";
 import { NotificationCard } from "./notification-card";
 
 interface NotificationsListProps {
   alerts: Alert[];
   notifications: Notification[];
-  current?: NotificationFull;
+  current?: Notification;
 }
 
 export function NotificationsAccordion({ notifications, alerts, current }: NotificationsListProps) {

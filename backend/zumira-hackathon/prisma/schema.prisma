@@ -145,6 +145,7 @@ model Assessment {
   userFeedbackInstructions    String?             @map("user_feedback_instructions")
   companyFeedbackInstructions String?             @map("company_feedback_instructions")
   operationType               AssessmentOperation @default(AVERAGE) @map("operation_type")
+  public                      Boolean             @default(false)
   selfMonitoringBlockId       String              @map("self_monitoring_block_id")
   nationalityId               String              @map("nationality_id")
   createdAt                   DateTime            @default(now()) @map("created_at")
@@ -350,7 +351,7 @@ model ActChatbot {
   icon                    String
   messageInstructions     String?  @map("message_instructions")
   compilationInstructions String?  @map("compilation_instructions")
-  index                   Int      
+  index                   Int
   createdAt               DateTime @default(now()) @map("created_at")
   updatedAt               DateTime @updatedAt @map("updated_at")
 

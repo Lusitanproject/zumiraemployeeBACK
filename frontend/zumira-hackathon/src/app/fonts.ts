@@ -13,22 +13,22 @@ export const rawline = localFont({
   preload: true,
   src: [
     {
-      path: "./rawline-400.ttf",
+      path: "../../public/fonts/rawline-400.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "./rawline-500.ttf",
+      path: "../../public/fonts/rawline-500.ttf",
       weight: "500",
       style: "normal",
     },
     {
-      path: "./rawline-600.ttf",
+      path: "../../public/fonts/rawline-600.ttf",
       weight: "600",
       style: "normal",
     },
     {
-      path: "./rawline-700.ttf",
+      path: "../../public/fonts/rawline-700.ttf",
       weight: "700",
       style: "normal",
     },

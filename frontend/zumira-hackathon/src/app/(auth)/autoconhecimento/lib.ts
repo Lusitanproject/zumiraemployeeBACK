@@ -17,9 +17,24 @@ export function useFilteredAssessments({ data, selfMonitoringBlockId, term }: Fi
   const filteredBySelfMonitoring = selfMonitoringBlockId
     ? data.filter((item) => item.selfMonitoring.id === selfMonitoringBlockId)
     : data;
-  const filteredBySearchTerm = term
-    ? filteredBySelfMonitoring.filter((item) => item.title.toLowerCase().indexOf(term.toLowerCase()) !== -1)
-    : filteredBySelfMonitoring;
+
+  let filteredBySearchTerm = filteredBySelfMonitoring;
+
+  if (term) {
+    const termLower = term.toLowerCase();
+
+    // Separa os resultados em dois grupos: com match no título e com match no sumário
+    const titleMatches = filteredBySelfMonitoring.filter((item) => item.title.toLowerCase().indexOf(termLower) !== -1);
+
+    const summaryMatches = filteredBySelfMonitoring.filter(
+      (item) =>
+        item.title.toLowerCase().indexOf(termLower) === -1 && // Não está no título
+        item.summary.toLowerCase().indexOf(termLower) !== -1
+    );
+
+    // Prioriza resultados com match no título, depois com match no sumário
+    filteredBySearchTerm = [...titleMatches, ...summaryMatches];
+  }
 
   const completed = filteredBySearchTerm.filter((item) => {
     return (

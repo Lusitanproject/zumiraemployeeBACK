@@ -14,23 +14,27 @@ export function SearchBar() {
   const { replace } = useRouter();
   const [search, setSearch] = useState(searchParams.get("busca"));
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-
+  function getSearchUrl(value: string) {
     const params = new URLSearchParams(searchParams);
-    if (e.target.value.trim()) {
-      params.set("busca", e.target.value);
+    if (value.trim()) {
+      params.set("busca", value);
     } else {
       params.delete("busca");
     }
 
-    debouncedSearch(`${pathname}?${params.toString()}`);
+    return `${pathname}?${params.toString()}`;
+  }
+
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    const href = getSearchUrl(e.target.value);
+    debouncedSearch(href);
   };
 
   const debouncedSearch = useDebouncedCallback((href) => {
     startHolyLoader();
     replace(href);
-  }, 500);
+  }, 800);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);

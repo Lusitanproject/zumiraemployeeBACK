@@ -1,8 +1,7 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
-
-import { NotificationType } from "../definitions";
+import { NotificationType } from "@/types/notification";
 
 interface CategoryCardProps {
   data: NotificationType;

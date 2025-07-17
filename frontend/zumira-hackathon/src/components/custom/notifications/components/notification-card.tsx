@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 
+import { readNotification } from "@/api/notifications";
 import { cn } from "@/lib/utils";
-
-import { readNotification } from "../actions";
-import { Notification } from "../definitions";
+import { Notification } from "@/types/notification";
 
 interface NotificationCardProps {
   notification: Notification;

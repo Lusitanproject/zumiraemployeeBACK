@@ -26,6 +26,7 @@ export type AuthResponse =
 
 export type Authenticated = {
   name: string;
+  gender: "MALE" | "FEMALE" | "OTHER";
   act: string;
   role: string;
   token: string;

@@ -20,7 +20,6 @@ class UpdateAssessmentController {
         message: parseZodError(error),
       });
     }
-
     const assessmentAdminService = new AssessmentAdminService();
     const assessment = await assessmentAdminService.update({ ...data, id });
 

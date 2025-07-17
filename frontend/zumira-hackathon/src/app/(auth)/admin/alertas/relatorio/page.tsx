@@ -1,16 +1,19 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 
 import { getCompanyFeedback } from "@/api/companies";
 import { Spinner } from "@/components/custom/spinner";
-import { AlertsContext } from "@/providers/alerts";
 
 import { CompanyFeedback } from "../../components/assistant/definitions";
 
 export default function Relatorio() {
-  const { assessmentId, companyId } = useContext(AlertsContext);
+  const searchParams = useSearchParams();
+  const companyId = searchParams.get("company");
+  const assessmentId = searchParams.get("assessment");
+
   const [feedback, setFeedback] = useState<CompanyFeedback | null>();
   const [loading, setLoading] = useState<boolean>(false);
 

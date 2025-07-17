@@ -10,6 +10,7 @@ export const CreateAssessmentSchema = z.object({
   companyFeedbackInstructions: z.string().optional(),
   operationType: z.nativeEnum(AssessmentOperation),
   nationalityId: z.string().cuid(),
+  public: z.boolean(),
 });
 
 export const UpdateAssessmentSchema = z.object({
@@ -22,6 +23,7 @@ export const UpdateAssessmentSchema = z.object({
   companyFeedbackInstructions: z.string().optional(),
   operationType: z.nativeEnum(AssessmentOperation),
   nationalityId: z.string().cuid(),
+  public: z.boolean(),
 });
 
 export const UpdateRatingsSchema = z.object({

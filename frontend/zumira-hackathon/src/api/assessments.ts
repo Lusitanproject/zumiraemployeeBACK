@@ -15,6 +15,8 @@ export interface DownloadAssessmentResultsReportRequest {
 export interface GetAssessmentResultsFilteredRequest {
   assessmentId: string;
   companyId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export type GetAssessmentsResponse = ZumiraApiResponse<{ assessments: Assessment[] }>;
