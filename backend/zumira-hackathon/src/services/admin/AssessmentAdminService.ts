@@ -23,6 +23,38 @@ class AssessmentAdminService {
     return assessment;
   }
 
+  async findAll() {
+    // O RETORNO DA FUNCAO NAO ESTÁ 100% APROPRIADO PARA A INTERFACE DO ADMIN
+    const assessments = await prismaClient.assessment.findMany({
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        selfMonitoringBlock: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        assessmentResults: {
+          select: {
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    const formattedAssessments = assessments.map((a) => ({
+      id: a.id,
+      title: a.title,
+      summary: a.summary,
+      selfMonitoring: a.selfMonitoringBlock,
+      lastCompleted: new Date(Math.max(...a.assessmentResults.map((r) => new Date(r.createdAt).getTime()))),
+    }));
+
+    return { assessments: formattedAssessments };
+  }
+
   async update({ id, ...data }: UpdateAssessment) {
     const assessment = await prismaClient.assessment.update({
       where: { id },

@@ -55,7 +55,6 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
         <div
           ref={contentRef}
           className={cn("absolute flex w-full", {
-            "prose markdown": notification.content,
             "justify-center": notification.actionUrl,
           })}
         >
@@ -66,7 +65,9 @@ export function NotificationCard({ notification, id, open, onOpen, onClose }: No
               </Button>
             </Link>
           ) : (
-            <Markdown>{notification.content}</Markdown>
+            <div className="markdown prose lg:prose-xl">
+              <Markdown>{notification.content}</Markdown>
+            </div>
           )}
         </div>
       </div>

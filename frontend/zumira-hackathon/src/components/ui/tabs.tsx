@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ interface TabsProps {
 
 export function Tabs({ items }: TabsProps) {
   const path = usePathname();
+  const searchParams = useSearchParams();
 
   return (
     <>
@@ -27,7 +28,7 @@ export function Tabs({ items }: TabsProps) {
               path === item.href ? "bg-background-100" : "bg-transparent",
               item.disabled ? "pointer-events-none opacity-20" : "pointer-events-auto"
             )}
-            href={item.href}
+            href={`${item.href}?${searchParams.toString()}`}
           >
             {item.label}
           </Link>

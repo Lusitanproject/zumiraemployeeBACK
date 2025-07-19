@@ -76,6 +76,7 @@ import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { FindAllAssessmentsController } from "./controllers/admin/assessments/FindAllAssessmentsController";
 
 const router = Router();
 
@@ -123,6 +124,7 @@ router.put("/assessments/alerts/:id/read", isAuthenticated, new ReadAlertControl
 
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
+router.get("/assessments/admin", isAuthenticated, new FindAllAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
 router.get("/assessments/admin/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
 router.post("/assessments", isAuthenticated, new CreateAssessmentController().handle);

@@ -78,6 +78,7 @@ const AuthUserController_1 = require("./controllers/user/auth/AuthUserController
 const SendCodeController_1 = require("./controllers/user/auth/SendCodeController");
 const CreateUserController_2 = require("./controllers/user/CreateUserController");
 const isAuthenticated_1 = require("./middlewares/isAuthenticated");
+const FindAllAssessmentsController_1 = require("./controllers/admin/assessments/FindAllAssessmentsController");
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -116,6 +117,7 @@ router.get("/assessments/alerts", isAuthenticated_1.isAuthenticated, new ListAle
 router.put("/assessments/alerts/:id/read", isAuthenticated_1.isAuthenticated, new ReadAlertController_1.ReadAlertController().handle);
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated_1.isAuthenticated, new ListAssessmentsController_1.ListAssessmentsController().handle);
+router.get("/assessments/admin", isAuthenticated_1.isAuthenticated, new FindAllAssessmentsController_1.FindAllAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated_1.isAuthenticated, new DetailAssessmentController_1.DetailAssessmentController().handle);
 router.get("/assessments/admin/:id", isAuthenticated_1.isAuthenticated, new AssessmentDetailForAdminController_1.AssessmentDetailForAdminController().handle);
 router.post("/assessments", isAuthenticated_1.isAuthenticated, new CreateAssessmentController_1.CreateAssessmentController().handle);

@@ -25,6 +25,35 @@ class AssessmentAdminService {
         });
         return assessment;
     }
+    async findAll() {
+        // O RETORNO DA FUNCAO NAO ESTÁ 100% APROPRIADO PARA A INTERFACE DO ADMIN
+        const assessments = await prisma_1.default.assessment.findMany({
+            select: {
+                id: true,
+                title: true,
+                summary: true,
+                selfMonitoringBlock: {
+                    select: {
+                        id: true,
+                        title: true,
+                    },
+                },
+                assessmentResults: {
+                    select: {
+                        createdAt: true,
+                    },
+                },
+            },
+        });
+        const formattedAssessments = assessments.map((a) => ({
+            id: a.id,
+            title: a.title,
+            summary: a.summary,
+            selfMonitoring: a.selfMonitoringBlock,
+            lastCompleted: new Date(Math.max(...a.assessmentResults.map((r) => new Date(r.createdAt).getTime()))),
+        }));
+        return { assessments: formattedAssessments };
+    }
     async update({ id, ...data }) {
         const assessment = await prisma_1.default.assessment.update({
             where: { id },
