@@ -386,7 +386,7 @@ model ActChapterMessage {
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  actChapter ActChapter @relation(fields: [actChapterId], references: [id])
+  actChapter ActChapter @relation(fields: [actChapterId], references: [id], onDelete: Cascade)
 
   @@map("act_chapter_messages")
 }
