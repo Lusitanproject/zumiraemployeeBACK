@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 import { readNotification } from "@/api/notifications";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,8 @@ interface NotificationCardProps {
 }
 
 export function NotificationCard({ notification, selected, onClose }: NotificationCardProps) {
+  const cardRef = useRef<HTMLElement>(null);
+
   function formatDate(dateInput: Date | string | number): string {
     const date = new Date(dateInput);
 
@@ -26,6 +29,23 @@ export function NotificationCard({ notification, selected, onClose }: Notificati
     return `${day}/${month}/${year} às ${hours}:${minutes}`;
   }
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && entry.intersectionRatio === 1.0) {
+          readNotification(notification.id);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [notification.id]);
+
   return (
     <Link
       href={notification.actionUrl ?? `/notificacoes?id=${notification.id}`}
@@ -35,6 +55,7 @@ export function NotificationCard({ notification, selected, onClose }: Notificati
       }}
     >
       <section
+        ref={cardRef}
         className={cn(
           "relative flex flex-col gap-1 p-3 rounded-md border-border-100 border-1",
           selected ? "bg-background-50" : "hover:bg-background-50"

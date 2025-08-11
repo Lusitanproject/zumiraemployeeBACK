@@ -5,7 +5,7 @@ import { CategoryList } from "./components/category-list";
 import { NotificationList } from "./components/notification-list";
 
 export default async function Notificacoes() {
-  const notifications = await getNotifications();
+  const notifications = await getNotifications({ filter: "recent" });
   const types = await getNotificationTypes();
 
   return (

@@ -25,9 +25,8 @@ export function NotificationsButton({ notifications, alerts }: NotificationsButt
   );
   // Pega a cor do primeiro alerta ou notificação
   const dotColor =
-    sortedAlerts[0]?.assessmentResultRating.color ??
-    sortedNotifications[0]?.notificationType.color ??
-    "oklch(0.704 0.191 22.216)";
+    alerts.find((a) => !a.read)?.assessmentResultRating.color ??
+    notifications.find((n) => !n.read)?.notificationType.color;
 
   return (
     <div className="relative">
@@ -41,7 +40,11 @@ export function NotificationsButton({ notifications, alerts }: NotificationsButt
         <Bell className="text-text-400" size={24} />
       </button>
       {isDropdownOpen && (
-        <NotificationsDropdown alerts={alerts} notifications={notifications} onClose={() => setIsDropdownOpen(false)} />
+        <NotificationsDropdown
+          alerts={sortedAlerts}
+          notifications={sortedNotifications}
+          onClose={() => setIsDropdownOpen(false)}
+        />
       )}
       {!!(notifications.length + alerts.length) && (
         <div

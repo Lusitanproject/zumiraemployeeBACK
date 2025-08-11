@@ -16,16 +16,15 @@ interface NotificationsDropdownProps {
 }
 
 export function NotificationsDropdown({ notifications, alerts, onClose }: NotificationsDropdownProps) {
-  const numAlerts = Math.min(alerts.length, 2);
-  const numNotifications = Math.min(notifications.length, 2 - numAlerts);
-
   return (
     <>
       <div className="inset-0 fixed bg-background-500/60 z-40" onClick={onClose} />
       <div className="absolute flex flex-col gap-3 right-0 top-14 shadow-2xl bg-background-0 border border-border-200 w-60 px-5 py-4 z-40 rounded-lg overflow-y-scroll max-h-[25rem]">
         {alerts
-          .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, numAlerts)
+          .toSorted(
+            (a, b) =>
+              Number(b.read) - Number(a.read) || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
           .map((alert, index) => (
             <Fragment key={index}>
               {index !== 0 && <hr className="text-text-200" />}
@@ -36,10 +35,10 @@ export function NotificationsDropdown({ notifications, alerts, onClose }: Notifi
         {notifications
           .toSorted(
             (a, b) =>
+              Number(b.read) - Number(a.read) ||
               b.notificationType.priority - a.notificationType.priority ||
               new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime()
           )
-          .slice(0, numNotifications)
           .map((notification, index) => (
             <Fragment key={index}>
               {index !== 0 && <hr className="text-text-200" />}
@@ -47,7 +46,7 @@ export function NotificationsDropdown({ notifications, alerts, onClose }: Notifi
             </Fragment>
           ))}
 
-        {!numNotifications && !numAlerts && (
+        {!notifications.length && !alerts.length && (
           <span className="text-base text-text-500 text-center">Sem novas notificações</span>
         )}
 

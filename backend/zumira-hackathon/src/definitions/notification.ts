@@ -11,6 +11,7 @@ export const CreateNotificationSchema = z.object({
 
 export const ListNotificationsSchema = z.object({
   filter: z.enum(["recent", "unread"] as const),
+  max: z.coerce.number().int().positive().optional(),
 });
 
 export const NotificationIdSchema = z.object({
