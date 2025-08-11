@@ -12,6 +12,7 @@ exports.CreateNotificationSchema = zod_1.z.object({
 });
 exports.ListNotificationsSchema = zod_1.z.object({
     filter: zod_1.z.enum(["recent", "unread"]),
+    max: zod_1.z.coerce.number().int().positive().optional(),
 });
 exports.NotificationIdSchema = zod_1.z.object({
     notificationId: zod_1.z.string().cuid(),

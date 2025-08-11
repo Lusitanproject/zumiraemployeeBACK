@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListNotificationsService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class ListNotificationsService {
-    async execute({ userId, filter }) {
+    async execute({ userId, filter, max }) {
         const notifications = await prisma_1.default.notificationRecipient.findMany({
             where: {
                 userId,
@@ -31,7 +31,7 @@ class ListNotificationsService {
                     },
                 },
             },
-            take: filter === "recent" ? 30 : undefined,
+            take: max,
             orderBy: { createdAt: "desc" },
         });
         return {
