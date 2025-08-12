@@ -38,15 +38,17 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
   const [chapter, setChapter] = useState<ActChapter>(actChapter);
   const [recompiling, setRecompiling] = useState<boolean>(false);
   const [finishing, setFinishing] = useState<boolean>(false);
+  const [saving, setSaving] = useState<boolean>(false);
 
   const undoStack = useRef<ActChapter[]>([]);
   const redoStack = useRef<ActChapter[]>([]);
 
-  const debouncedUpdate = useDebouncedCallback(update, 3000);
+  const debouncedUpdate = useDebouncedCallback(update, 1000);
 
   async function update() {
     if (equal(chapter, savedChapter.current)) return;
 
+    setSaving(true);
     const payload = { actChapterId: chapter.id, ...chapter } as UpdateActChapterRequest;
 
     try {
@@ -55,6 +57,10 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
       savedChapter.current = result;
     } catch (err) {
       if (err instanceof Error) toast.error(err.message);
+    } finally {
+      setTimeout(() => {
+        setSaving(false);
+      }, 1000);
     }
   }
 
@@ -244,6 +250,15 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
       >
         <Check className="size-8 text-text-700" />
       </button>
+
+      <div
+        className={cn(
+          "absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-1 font-medium rounded-lg bg-primary-500 text-white z-10 duration-500",
+          saving ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+        )}
+      >
+        Salvando...
+      </div>
     </div>
   );
 });
