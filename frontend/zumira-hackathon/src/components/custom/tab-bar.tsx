@@ -1,11 +1,6 @@
 "use client";
-import {
-  // ChartNoAxesColumnIncreasing,
-  House,
-  // LayoutGrid,
-  SquarePen,
-  Users,
-} from "lucide-react";
+
+import { House, SquarePen, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -13,10 +8,8 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/chat", label: "Início", icon: House },
-  // { href: "/autoconhecimento", label: "Autoconhecimento", icon: ChartNoAxesColumnIncreasing },
-  { href: "/autoconhecimento", label: "Autoconhecimento", icon: SquarePen },
+  { href: "/testes", label: "Testes", icon: SquarePen },
   { href: "/rede-apoio", label: "Rede de Apoio", icon: Users },
-  // { href: "/biblioteca", label: "Biblioteca", icon: LayoutGrid },
 ] as const;
 
 export function TabBar() {

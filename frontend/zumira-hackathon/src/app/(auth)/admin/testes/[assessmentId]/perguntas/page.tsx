@@ -1,7 +1,7 @@
 import { TriangleAlert } from "lucide-react";
 
 import { getAssessmentData } from "../actions";
-// import { getMonitoringBlocks } from "../../autoconhecimento/actions"
+// import { getMonitoringBlocks } from "../../testes/actions"
 import { getAssessmentQuestions, getDimensionsByBlock } from "./actions";
 import { ManageQuestionsForm } from "./form";
 

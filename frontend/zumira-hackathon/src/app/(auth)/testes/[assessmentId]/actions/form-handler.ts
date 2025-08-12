@@ -55,6 +55,6 @@ export async function saveAnswersAction(tate: FormState, formData: FormData): Pr
   const result = (await response.json()) as MutateAssessmentResult;
 
   if (result.status === "SUCCESS") {
-    redirect(`/autoconhecimento/teste/${data.assessmentId}/concluido`, RedirectType.replace);
+    redirect(`/testes/${data.assessmentId}/concluido`, RedirectType.replace);
   }
 }

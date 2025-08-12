@@ -23,7 +23,7 @@ export function AssessmentCard({ id, title, summary, completed }: AssessmentCard
   }
 
   function goToFeedback() {
-    redirect(`/autoconhecimento/teste/${id}/devolutiva`, RedirectType.push);
+    redirect(`/testes/${id}/devolutiva`, RedirectType.push);
   }
 
   return (

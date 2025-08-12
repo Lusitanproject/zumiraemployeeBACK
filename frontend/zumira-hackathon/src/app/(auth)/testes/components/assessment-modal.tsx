@@ -18,7 +18,7 @@ export type AssessmentModalProps = {
 export function AssessmentModal({ id, title, summary, open, onClose }: AssessmentModalProps) {
   const handleOpenAssessment = useCallback(() => {
     startHolyLoader();
-    redirect(`/autoconhecimento/teste/${id}`, RedirectType.push);
+    redirect(`/testes/${id}`, RedirectType.push);
   }, [id]);
 
   return (

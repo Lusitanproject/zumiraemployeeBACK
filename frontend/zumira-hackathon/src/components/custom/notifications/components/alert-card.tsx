@@ -48,7 +48,7 @@ export function AlertCard({ alert, selected, onClose }: AlertCardProps) {
 
   return (
     <Link
-      href={`/autoconhecimento/teste/${alert.assessmentResultRating.assessment.id}/devolutiva`}
+      href={`/testes/${alert.assessmentResultRating.assessment.id}/devolutiva`}
       onClick={() => {
         readAlert(alert.id);
         onClose?.();

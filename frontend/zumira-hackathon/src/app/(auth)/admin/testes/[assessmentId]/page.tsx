@@ -1,4 +1,4 @@
-import { getMonitoringBlocks, getNationalities } from "../../autoconhecimento/actions";
+import { getMonitoringBlocks, getNationalities } from "../../testes/actions";
 import { getAssessmentData } from "./actions";
 import { Header } from "./components/header";
 import { AssessmentForm } from "./form";

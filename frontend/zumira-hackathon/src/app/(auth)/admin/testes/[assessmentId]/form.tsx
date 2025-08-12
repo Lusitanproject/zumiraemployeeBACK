@@ -12,7 +12,7 @@ import { RichTextArea } from "@/components/ui/rich-text-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
-import { Nationality } from "../../autoconhecimento/definitions";
+import { Nationality } from "../../testes/definitions";
 import { duplicateAssessment } from "./actions";
 import {
   AssessmentSummary,

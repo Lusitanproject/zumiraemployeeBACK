@@ -9,12 +9,12 @@ export async function getSidebarContent() {
 
   const links = [
     { href: "/chat", label: "Início", icon: "house", role: "user" },
-    { href: "/autoconhecimento", label: "Autoconhecimento", icon: "square-pen", role: "user" },
+    { href: "/testes", label: "Testes", icon: "square-pen", role: "user" },
     { href: "/rede-apoio", label: "Rede de Apoio", icon: "users", role: "user" },
     { href: "/biblioteca", label: "Biblioteca", icon: "layout-grid", role: "user" },
     {
-      href: "/admin/autoconhecimento",
-      label: "Autoconhecimento",
+      href: "/admin/testes",
+      label: "Testes",
       icon: "chart-no-axes-column-increasing",
       role: "admin",
     },
