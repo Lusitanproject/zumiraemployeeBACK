@@ -20,30 +20,33 @@ async function sendEmail(user: User, code: string) {
   const url = "https://www.zumira.com.br/verificar";
 
   const html = `
-  <p>Hello ${user.name},</p>
+  <p>Olá ${user.name},</p>
 
-  <p>Welcome to <strong>Zumira</strong> — your mental health and well-being assistant.</p>
+  <p>Bem-vindo à <strong>Zumira</strong> — sua assistente de saúde mental e bem-estar.</p>
 
-  <p>Your <strong>exclusive access code</strong> is: <strong>${code}</strong></p>
+  <p>Seu <strong>código exclusivo de acesso</strong> é: <strong>${code}</strong></p>
 
-  <p>With it, you can start your self-awareness journey, take psychological assessments, track your emotional progress, and, if you wish, schedule an appointment with professionals from our support network.</p>
+  <p>Com ele, você pode iniciar sua jornada de autoconhecimento, realizar avaliações psicológicas, acompanhar seu progresso emocional e, se desejar, agendar uma consulta com profissionais da nossa rede de apoio.</p>
 
-  <p>Access the platform through the link below and enter your code to get started:</p>
+  <p>Acesse a plataforma pelo link abaixo e insira seu código para começar:</p>
 
   <p><a href="${url}">${url}</a></p>
 
-  <p>If you have any questions or need support, we’re here to help.<br />
-  Enjoy your experience with Zumira!</p>
+  <p>Se tiver dúvidas ou precisar de suporte, estamos aqui para ajudar.<br />
+  Aproveite sua experiência com a Zumira!</p>
 
-  <p>With love,<br />
-  <strong>The Zumira Team</strong></p>
+  <p>Com carinho,<br />
+  <strong>Equipe Zumira</strong></p>
 `;
 
   try {
     await transporter.sendMail({
-      from: `<${process.env.EMAIL_USER}>`,
+      from: {
+        name: "Zumira",
+        address: process.env.EMAIL_USER!,
+      },
       to: user.email,
-      subject: "Your Access Code to the Zumira Platform",
+      subject: "Seu código de acesso à plataforma Zumira",
       html: html,
     });
   } catch (err) {
