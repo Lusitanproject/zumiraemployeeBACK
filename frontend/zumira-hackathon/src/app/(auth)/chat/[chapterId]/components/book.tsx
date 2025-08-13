@@ -15,6 +15,7 @@ import { ActChapter } from "@/types/act";
 import { isMacOS } from "@/utils/is-macos";
 
 import { moveToNext } from "../actions";
+import { LoadingText } from "./loading-text";
 
 interface BookProps {
   actChapter: ActChapter;
@@ -217,8 +218,8 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
             onChange={(e) => handleChange("title", e.target.value)}
           />
           {recompiling ? (
-            <span className="flex size-full text-center justify-center min-h-[60rem]">
-              <span className="mt-32">Recompilando...</span>
+            <span className="flex size-full text-center justify-center pt-32 min-h-[60rem]">
+              <LoadingText />
             </span>
           ) : (
             <textarea
