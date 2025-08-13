@@ -41,6 +41,8 @@ class MessageActChatbotService {
             role: m.role,
             content: m.content,
         }));
+        if (conv.actChatbot.initialMessage)
+            historyAndInput.unshift({ role: "assistant", content: conv.actChatbot.initialMessage });
         const response = await (0, generateOpenAiResponse_1.generateOpenAiResponse)({
             instructions: bot.messageInstructions + `\nO nome do usuário é: ${conv.user.name.split(" ")[0]}`,
             messages: historyAndInput,
