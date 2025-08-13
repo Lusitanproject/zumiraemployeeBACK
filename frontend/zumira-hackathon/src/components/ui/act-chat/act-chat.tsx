@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
 import { generateResponse } from "@/api/acts";
+import { cn } from "@/lib/utils";
 import { ActChapter, ActMessage } from "@/types/act";
 
 import { MessageInput } from "../message-input";
@@ -60,12 +61,26 @@ export function ActChat({ actChapter, inputWarning, onChangeMessages }: ActChatP
     <section className="relative flex flex-col size-full p-4 pt-0">
       {showRule && <hr className="text-text-200 bottom-0 w-full" />}
       <Messages loadingResponse={loading} messages={messages} onScroll={setShowRule} />
-      <MessageInput
-        disabled={!actChapter || loading}
-        placeholder="Pergunte alguma coisa"
-        warning={inputWarning}
-        onSend={sendMessage}
-      />
+
+      <div className={cn("relative flex w-full duration-500", messages.length ? "pb-0" : "pb-80")}>
+        <span
+          className={cn(
+            "absolute bottom-full w-full pb-7 text-3xl text-text-700 font-medium text-center duration-500 ease-in-out",
+            {
+              "opacity-0": messages.length,
+            }
+          )}
+        >
+          {actChapter?.actChatbot.initialMessage}
+        </span>
+        <MessageInput
+          disabled={!actChapter || loading}
+          expandOnFocus={!!messages.length}
+          placeholder="Pergunte alguma coisa"
+          warning={inputWarning}
+          onSend={sendMessage}
+        />
+      </div>
     </section>
   );
 }

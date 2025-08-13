@@ -349,6 +349,7 @@ model ActChatbot {
   name                    String
   description             String
   icon                    String
+  initialMessage          String?  @map("initial_message")
   messageInstructions     String?  @map("message_instructions")
   compilationInstructions String?  @map("compilation_instructions")
   index                   Int

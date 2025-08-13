@@ -17,6 +17,7 @@ class ActChatbotAdminService {
         name: true,
         description: true,
         icon: true,
+        initialMessage: true,
         messageInstructions: true,
         compilationInstructions: true,
         index: true,

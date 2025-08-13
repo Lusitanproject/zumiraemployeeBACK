@@ -33,6 +33,7 @@ export interface ActChapter {
     description: string;
     icon: string;
     name: string;
+    initialMessage?: string;
   };
   id: string;
   messages: ActMessage[];

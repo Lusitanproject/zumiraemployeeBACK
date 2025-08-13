@@ -16,6 +16,7 @@ class GetActChapterService {
               description: true,
               icon: true,
               name: true,
+              initialMessage: true,
             },
           },
         },
