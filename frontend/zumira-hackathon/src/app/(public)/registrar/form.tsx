@@ -7,16 +7,21 @@ import { toast } from "sonner";
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { register } from "./actions";
-import { FormState, Nationality, RegisterFormState } from "./definitions";
+import {
+  FormState,
+  //  Nationality,
+  RegisterFormState,
+} from "./definitions";
 
-interface RegisterFormProps {
-  nationalities: Nationality[];
-}
+// interface RegisterFormProps {
+//   nationalities: Nationality[];
+// }
 
-export function RegisterForm({ nationalities }: RegisterFormProps) {
+export function RegisterForm() {
+  // { nationalities }: RegisterFormProps
   const [loading, setLoading] = useState<boolean>(false);
   const [state, setState] = useState<FormState>();
   const [formData, setFormData] = useState<RegisterFormState>({
