@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { toast } from "sonner";
 
 import { Label } from "@/components/custom/label";
@@ -9,14 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { register } from "./actions";
+import { captureLead, register } from "./actions";
 import { FormState, Nationality, RegisterFormState } from "./definitions";
+import { useSearchParams } from "next/navigation";
 
 interface RegisterFormProps {
   nationalities: Nationality[];
 }
 
-export function RegisterForm({ nationalities }: RegisterFormProps) {
+// Move the form logic to a child component
+function RegisterFormInner({ nationalities }: RegisterFormProps) {
+  const params = useSearchParams();
+  const plan = params.get("p");
+
   const _ = nationalities;
   const [loading, setLoading] = useState<boolean>(false);
   const [state, setState] = useState<FormState>();
@@ -39,6 +44,7 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
     setLoading(true);
 
     try {
+      captureLead(formData.name, formData.email, plan);
       const result = await register(formData);
       setState(result);
 
@@ -54,14 +60,14 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
     <form className="w-full flex flex-col gap-3" onSubmit={handleSubmit}>
       <div>
         <Label className="text-text-700" htmlFor="name">
-          Nome completo
+          Nome
         </Label>
         <Input
           className="text-text-700"
           hasError={!!state?.errors?.name}
           id="name"
           name="name"
-          placeholder="Digite seu nome completo"
+          placeholder="Digite seu nome"
           value={formData.name}
           onChange={handleChange}
         />
@@ -172,5 +178,14 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
         <ChevronRight className="size-6" />
       </Button>
     </form>
+  );
+}
+
+// Export the form wrapped in Suspense
+export function RegisterForm({ nationalities }: RegisterFormProps) {
+  return (
+    <Suspense fallback={null}>
+      <RegisterFormInner nationalities={nationalities} />
+    </Suspense>
   );
 }

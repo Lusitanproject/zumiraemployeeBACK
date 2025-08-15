@@ -15,14 +15,14 @@ export function SignUpForm() {
   return (
     <form action={action} className="w-full">
       <Label className="text-text-700" htmlFor="email">
-        Digite seu e-mail corporativo
+        Digite seu e-mail
       </Label>
       <Input
         className="text-text-700"
         hasError={!!state?.errors?.email}
         id="email"
         name="email"
-        placeholder="Ex.: nome@empresa.com"
+        placeholder="Ex.: nome@exemplo.com"
       />
       {state?.errors?.email && <span className="mt-3 mb-8 text-sm text-red-400">{state.errors.email}</span>}
       <Button className="w-full mt-8" disabled={pending} size="xxl" variant="primary">

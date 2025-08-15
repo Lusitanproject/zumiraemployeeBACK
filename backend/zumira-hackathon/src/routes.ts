@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 
 import { CompileActChapterController } from "./controllers/act/CompileActChapterController";
 import { CreateActChapterController } from "./controllers/act/CreateActChapterController";
@@ -77,6 +77,8 @@ import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
+
+import nodemailer from "nodemailer";
 
 const router = Router();
 
@@ -191,5 +193,50 @@ router.post("/acts/new-chapter", isAuthenticated, new CreateActChapterController
 router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
 router.put("/acts/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
 router.get("/acts/full-story", isAuthenticated, new GetFullStoryController().handle);
+
+router.post("/leads", async (req: Request, res: Response) => {
+  const { name, email, phone, company, message, plan } = req.body;
+
+  // Validação dos campos obrigatórios
+  if (!name || !email) {
+    return res.status(400).json({ error: "Name, email and plan are required." });
+  }
+
+  const leadInfo =
+    "Este e-mail foi gerado a partir da captura de leads do site Zumira.\n" +
+    `Nome: ${name}\n` +
+    `Email: ${email}\n` +
+    `Telefone: ${phone || "Não informado"}\n` +
+    `Empresa: ${company || "Não informado"}\n` +
+    `Plano: ${plan || "Nenhum"}\n` +
+    `Mensagem: ${message || "Não informado"}`;
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  try {
+    await transporter.sendMail({
+      from: {
+        name: "Zumira",
+        address: process.env.EMAIL_USER!,
+      },
+      to: process.env.LEAD_CAPTURE_EMAIL ?? "zumirajobs@gmail.com",
+      subject: "Captura de leads zumira",
+      text: leadInfo,
+    });
+    console.log("sent email");
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.log("failed to send email");
+    res.status(500).json({ error: "Erro ao enviar e-mail" });
+  }
+});
 
 export { router };
