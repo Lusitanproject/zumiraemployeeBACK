@@ -227,8 +227,7 @@ router.post("/leads", async (req: Request, res: Response) => {
         name: "Zumira",
         address: process.env.EMAIL_USER!,
       },
-      // to: process.env.LEAD_CAPTURE_EMAIL ?? "zumirajobs@gmail.com",
-      to: "gbrevilieri.dev@gmail.com",
+      to: process.env.LEAD_CAPTURE_EMAIL ?? "zumirajobs@gmail.com",
       subject: "Captura de leads zumira",
       text: leadInfo,
     });

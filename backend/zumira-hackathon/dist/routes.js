@@ -176,6 +176,7 @@ router.post("/acts/chapters/compile", isAuthenticated_1.isAuthenticated, new Com
 router.put("/acts/chapters/:actChapterId", isAuthenticated_1.isAuthenticated, new UpdateActChapterController_1.UpdateActChapterController().handle);
 router.get("/acts/full-story", isAuthenticated_1.isAuthenticated, new GetFullStoryController_1.GetFullStoryController().handle);
 router.post("/leads", async (req, res) => {
+    var _a;
     const { name, email, phone, company, message, plan } = req.body;
     // Validação dos campos obrigatórios
     if (!name || !email) {
@@ -203,8 +204,7 @@ router.post("/leads", async (req, res) => {
                 name: "Zumira",
                 address: process.env.EMAIL_USER,
             },
-            // to: process.env.LEAD_CAPTURE_EMAIL ?? "zumirajobs@gmail.com",
-            to: "gbrevilieri.dev@gmail.com",
+            to: (_a = process.env.LEAD_CAPTURE_EMAIL) !== null && _a !== void 0 ? _a : "zumirajobs@gmail.com",
             subject: "Captura de leads zumira",
             text: leadInfo,
         });
