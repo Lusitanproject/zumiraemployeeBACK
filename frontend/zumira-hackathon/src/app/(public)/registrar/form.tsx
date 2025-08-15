@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { toast } from "sonner";
 
 import { Label } from "@/components/custom/label";
@@ -17,7 +17,8 @@ interface RegisterFormProps {
   nationalities: Nationality[];
 }
 
-export function RegisterForm({ nationalities }: RegisterFormProps) {
+// Move the form logic to a child component
+function RegisterFormInner({ nationalities }: RegisterFormProps) {
   const params = useSearchParams();
   const plan = params.get("p");
 
@@ -177,5 +178,14 @@ export function RegisterForm({ nationalities }: RegisterFormProps) {
         <ChevronRight className="size-6" />
       </Button>
     </form>
+  );
+}
+
+// Export the form wrapped in Suspense
+export function RegisterForm({ nationalities }: RegisterFormProps) {
+  return (
+    <Suspense fallback={null}>
+      <RegisterFormInner nationalities={nationalities} />
+    </Suspense>
   );
 }
