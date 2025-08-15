@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 type CreateSessionProps = {
   name: string;
-  gender: "MALE" | "FEMALE" | "OTHER";
+  gender?: "MALE" | "FEMALE" | "OTHER";
   act: string;
   role: string;
   token: string;

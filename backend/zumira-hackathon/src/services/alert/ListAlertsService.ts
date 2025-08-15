@@ -1,15 +1,14 @@
+import { ListAlertsRequest } from "../../definitions/alert";
 import prismaClient from "../../prisma";
 
 class ListAlertsService {
-  async execute(userId: string) {
+  async execute({ userId, filter, max }: ListAlertsRequest) {
     const alerts = await prismaClient.alert.findMany({
       where: {
         assessmentResult: {
           userId,
         },
-        read: {
-          not: true,
-        },
+        read: filter === "recent" ? undefined : false,
       },
       select: {
         id: true,
@@ -29,6 +28,8 @@ class ListAlertsService {
         read: true,
         createdAt: true,
       },
+      take: max,
+      orderBy: { createdAt: "desc" },
     });
 
     const latestAlertsMap = new Map<string, (typeof alerts)[0]>();

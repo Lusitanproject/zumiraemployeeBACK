@@ -22,18 +22,19 @@ export type SaveNotificationRequest = {
   actionUrl?: string | null;
   notificationTypeId: string;
 };
+export type GetNotificationsRequest = { filter: "unread" | "recent"; max?: number };
 
 export type GetNotificationsResponse = ZumiraApiResponse<{ notifications: Notification[] }>;
 export type DetailNotificationResponse = ZumiraApiResponse<Notification>;
 export type GetNotificationTypesResponse = ZumiraApiResponse<{ items: NotificationType[] }>;
 export type GetNotificationTypeResponse = ZumiraApiResponse<NotificationType>;
 
-export async function getNotifications() {
+export async function getNotifications({ filter, max }: GetNotificationsRequest) {
   const cookie = await cookies();
   const session = decrypt(cookie.get("session")?.value);
 
   const [error, response] = await catchError(
-    fetch(`${process.env.API_BASE_URL}/notifications?filter=recent`, {
+    fetch(`${process.env.API_BASE_URL}/notifications?filter=${filter}${max ? `&max=${max}` : ""}`, {
       headers: {
         "Content-Type": "Application/json",
         Authorization: `Bearer ${session?.token}`,

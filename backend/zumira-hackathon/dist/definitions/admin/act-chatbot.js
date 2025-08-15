@@ -5,6 +5,7 @@ const zod_1 = require("zod");
 exports.CreateActChatbotSchema = zod_1.z.object({
     name: zod_1.z.string().nonempty(),
     description: zod_1.z.string().nonempty(),
+    initialMessage: zod_1.z.string().optional(),
     messageInstructions: zod_1.z.string().nonempty().optional(),
     compilationInstructions: zod_1.z.string().nonempty().optional(),
     icon: zod_1.z.string().nonempty(),
@@ -13,6 +14,7 @@ exports.UpdateActChatbotSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
     name: zod_1.z.string().nonempty().optional(),
     description: zod_1.z.string().nonempty().optional(),
+    initialMessage: zod_1.z.string().optional(),
     messageInstructions: zod_1.z.string().nonempty().optional(),
     compilationInstructions: zod_1.z.string().nonempty().optional(),
     index: zod_1.z.number().int().optional(),

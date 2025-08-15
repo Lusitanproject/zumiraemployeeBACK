@@ -27,7 +27,7 @@ export function NoData({ assessmentId }: NoDataProps) {
           className="w-full mt-8"
           size="xxl"
           variant="primary"
-          onClick={() => redirect(`/autoconhecimento/teste/${assessmentId}`)}
+          onClick={() => redirect(`/testes/${assessmentId}`)}
         >
           <span>Fazer Avaliação</span>
           <ChevronRight className="size-6" />

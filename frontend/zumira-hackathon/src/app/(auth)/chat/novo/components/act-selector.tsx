@@ -60,9 +60,10 @@ export function ActSelector({ data }: ActSelectorProps) {
     try {
       await newChapter(selected.id);
     } catch (error) {
-      if (!isRedirectError(error) && error instanceof Error) toast.error(error.message);
-    } finally {
-      setLoading(false);
+      if (!isRedirectError(error)) {
+        setLoading(false);
+        if (error instanceof Error) toast.error(error.message);
+      }
     }
   }
 

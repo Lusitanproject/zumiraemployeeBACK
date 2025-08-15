@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 import { readAlert } from "@/api/alerts";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,8 @@ interface AlertCardProps {
 }
 
 export function AlertCard({ alert, selected, onClose }: AlertCardProps) {
+  const cardRef = useRef<HTMLElement>(null);
+
   function formatDate(dateInput: Date | string | number): string {
     const date = new Date(dateInput);
 
@@ -26,15 +29,33 @@ export function AlertCard({ alert, selected, onClose }: AlertCardProps) {
     return `${day}/${month}/${year} às ${hours}:${minutes}`;
   }
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && entry.intersectionRatio === 1.0) {
+          readAlert(alert.id);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [alert.id]);
+
   return (
     <Link
-      href={`/autoconhecimento/teste/${alert.assessmentResultRating.assessment.id}/devolutiva`}
+      href={`/testes/${alert.assessmentResultRating.assessment.id}/devolutiva`}
       onClick={() => {
         readAlert(alert.id);
         onClose?.();
       }}
     >
       <section
+        ref={cardRef}
         className={cn(
           "relative flex flex-col gap-1 p-3 rounded-md  border-border-100 border-1",
           selected ? "bg-background-50" : "hover:bg-background-50"

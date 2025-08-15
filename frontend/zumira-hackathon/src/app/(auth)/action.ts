@@ -8,7 +8,7 @@ export async function getSidebarContent() {
   const isAdminRoute = path.includes("/admin");
 
   const links = [
-    { href: "/autoconhecimento", label: "Autoconhecimento", icon: "square-pen", role: "user" },
+    { href: "/testes", label: "Testes", icon: "square-pen", role: "user" },
     // { href: "#", label: "Analytics", icon: "chart-no-axes-combined", role: "user" },
     { href: "/rede-apoio", label: "Rede de apoio", icon: "users", role: "user" },
     {

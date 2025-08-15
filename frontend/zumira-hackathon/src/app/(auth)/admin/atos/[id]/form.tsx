@@ -52,6 +52,7 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
             name: payload.name,
             description: payload.description,
             icon: payload.icon,
+            initialMessage: payload.initialMessage,
             messageInstructions: payload.messageInstructions,
             compilationInstructions: payload.compilationInstructions,
           };
@@ -110,6 +111,21 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
             }}
           />
           {!!errors?.description && <span className="text-sm text-error-500">{errors.description}</span>}
+        </div>
+        <div className="pb-3">
+          <Label className="text-text-700" htmlFor="initial-message">
+            Mensagem inicial
+          </Label>
+          <Textarea
+            className="h-28 text-text-700"
+            id="initial-message"
+            name="initial-message"
+            value={formData.initialMessage ?? ""}
+            onChange={(e) => {
+              setFormData((current) => ({ ...current, initialMessage: e.target.value }));
+            }}
+          />
+          {!!errors?.initialMessage && <span className="text-sm text-error-500">{errors.initialMessage}</span>}
         </div>
         <div className="pb-3">
           <Label className="text-text-700" htmlFor="message-instructions">

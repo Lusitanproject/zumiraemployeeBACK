@@ -6,15 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListAlertsService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class ListAlertsService {
-    async execute(userId) {
+    async execute({ userId, filter, max }) {
         const alerts = await prisma_1.default.alert.findMany({
             where: {
                 assessmentResult: {
                     userId,
                 },
-                read: {
-                    not: true,
-                },
+                read: filter === "recent" ? undefined : false,
             },
             select: {
                 id: true,
@@ -34,6 +32,8 @@ class ListAlertsService {
                 read: true,
                 createdAt: true,
             },
+            take: max,
+            orderBy: { createdAt: "desc" },
         });
         const latestAlertsMap = new Map();
         for (const alert of alerts) {

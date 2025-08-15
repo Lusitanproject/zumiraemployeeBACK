@@ -7,8 +7,9 @@ export const CreateUserSchema = z.object({
   birthdate: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)))
-    .transform((val) => new Date(val)),
-  nationalityId: z.string().cuid(),
+    .transform((val) => new Date(val))
+    .optional(),
+  nationalityId: z.string().cuid().optional(),
   gender: z.nativeEnum(UserGender).optional(),
   occupation: z.string().nonempty().optional(),
 });

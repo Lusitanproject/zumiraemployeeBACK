@@ -7,8 +7,8 @@ import { NotificationsAccordion } from "./components/notifications-accordion";
 
 export default async function Notificacoes({ searchParams }: { searchParams: Promise<{ id: string }> }) {
   const { id: notificationId } = await searchParams;
-  const notifications = await getNotifications();
-  const alerts = await getAlerts();
+  const notifications = await getNotifications({ filter: "recent" });
+  const alerts = await getAlerts({ filter: "recent" });
   let current;
 
   if (notificationId) {

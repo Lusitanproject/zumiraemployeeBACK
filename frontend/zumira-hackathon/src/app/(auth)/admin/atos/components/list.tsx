@@ -69,7 +69,7 @@ export function ActsList({ data }: ActsListProps) {
           <Link className="flex flex-row gap-4 items-center w-full" href={`/admin/atos/${item.id}`}>
             <span className="text-text-400 text-lg">#{index + 1}</span>
             <div className="flex justify-start">
-              <div className="size-[50px] rounded-xl bg-primary-50 flex items-center justify-center">
+              <div className="size-[50px] rounded-xl bg-primary-50 flex items-center justify-center text-text-700">
                 <DynamicIcon className="size-6" name={item.icon as IconName} />
               </div>
             </div>

@@ -5,6 +5,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetActsDataService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
+function getProgress(bots, chapters) {
+    const _bots = [...bots].sort((a, b) => a.index - b.index);
+    let completedActs = 0;
+    for (const bot of _bots) {
+        if (chapters.find((chapter) => chapter.actChatbotId === bot.id && !!chapter.compilation)) {
+            completedActs += 1;
+        }
+        else {
+            break;
+        }
+    }
+    return completedActs / _bots.length;
+}
 class GetActsDataService {
     async execute(userId) {
         const [user, chatbots, chapters] = await Promise.all([
@@ -34,6 +47,7 @@ class GetActsDataService {
                     id: true,
                     title: true,
                     actChatbotId: true,
+                    compilation: true,
                     createdAt: true,
                     updatedAt: true,
                 },
@@ -42,6 +56,7 @@ class GetActsDataService {
                 },
             }),
         ]);
+        const progress = getProgress(chatbots, chapters);
         if (!user)
             throw new Error("Usuário não encontrado");
         let currAct = chatbots.find((bot) => bot.id === user.currentActChatbotId);
@@ -56,7 +71,11 @@ class GetActsDataService {
             locked: bot.index > currAct.index,
             current: bot.id === currAct.id,
         }));
-        return { chatbots: processedChatbots, chapters };
+        const processedChapters = chapters.map((chapter) => {
+            const { compilation: _, ...formatted } = chapter;
+            return formatted;
+        });
+        return { chatbots: processedChatbots, chapters: processedChapters, progress };
     }
 }
 exports.GetActsDataService = GetActsDataService;

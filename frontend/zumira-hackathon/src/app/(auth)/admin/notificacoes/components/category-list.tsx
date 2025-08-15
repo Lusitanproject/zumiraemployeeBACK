@@ -1,4 +1,5 @@
 import { NotificationType } from "@/types/notification";
+
 import { CategoryCard } from "./category-card";
 
 type CategoryListProps = {

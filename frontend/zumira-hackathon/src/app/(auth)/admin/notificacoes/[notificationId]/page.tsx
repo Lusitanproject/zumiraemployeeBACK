@@ -1,6 +1,7 @@
 import { detailNotification, getNotificationTypes } from "@/api/notifications";
-import { NotificationForm } from "./form";
 import { getUsers } from "@/api/users";
+
+import { NotificationForm } from "./form";
 
 // TODO: Definir em que momento serao selecionados os usuarios que recebem a notificacao
 

@@ -28,10 +28,7 @@ export function Feedback({ data }: FeedbackProps) {
 
   return (
     <div className="relative">
-      <X
-        className="absolute text-text-400 size-7 right-0 cursor-pointer z-10"
-        onClick={() => redirect("/autoconhecimento")}
-      />
+      <X className="absolute text-text-400 size-7 right-0 cursor-pointer z-10" onClick={() => redirect("/testes")} />
       <div
         className={`relative flex flex-col size-full justify-between ${
           showAll ? "overflow-visible" : "overflow-hidden"

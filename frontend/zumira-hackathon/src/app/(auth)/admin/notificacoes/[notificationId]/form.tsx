@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { RichTextArea } from "@/components/ui/rich-text-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Notification } from "@/types/notification";
 
 import {
   FormErrors,
@@ -19,7 +20,6 @@ import {
   User,
 } from "./definitions";
 import { saveNotification } from "./form-actions";
-import { Notification } from "@/types/notification";
 
 type FormProps = {
   data: Notification | null;

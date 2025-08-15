@@ -12,6 +12,20 @@ import {
   RegisterResponse,
 } from "./definitions";
 
+export async function captureLead(name: string, email: string, plan: string | null) {
+  const url = `${process.env.API_BASE_URL}/leads`;
+
+  await catchError(
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ name, email, plan }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+  );
+}
+
 export async function register(state: RegisterFormState): Promise<FormState> {
   const validationResult = RegisterFormSchema.safeParse(state);
 

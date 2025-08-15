@@ -7,7 +7,7 @@ export function Header() {
       <h3 className="font-bold text-2xl text-text-700">Blocos de Autoconhecimento</h3>
       <Link
         className="bg-background-0 hover:bg-background-50 border border-transparent hover:border-border-100 flex items-center gap-x-3 px-3 py-2 rounded-xl"
-        href="/admin/autoconhecimento/novo"
+        href="/admin/testes/novo"
       >
         <CirclePlus className="text-text-300 size-6" />
         <span className="text-sm text-text-500 font-medium">Criar novo bloco</span>

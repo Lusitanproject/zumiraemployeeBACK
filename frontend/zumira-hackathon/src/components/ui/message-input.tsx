@@ -7,12 +7,13 @@ import { cn } from "@/lib/utils";
 
 interface MessageInputProps {
   disabled?: boolean;
+  expandOnFocus?: boolean;
   placeholder?: string;
   warning?: string;
   onSend?: (text: string) => void;
 }
 
-export function MessageInput({ placeholder, disabled, warning, onSend }: MessageInputProps) {
+export function MessageInput({ placeholder, expandOnFocus, disabled, warning, onSend }: MessageInputProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showWaring, setShowWarning] = useState<boolean>(false);
@@ -57,8 +58,8 @@ export function MessageInput({ placeholder, disabled, warning, onSend }: Message
       ref={formRef}
       action={handleSubmit}
       className={cn(
-        "relative flex flex-row w-full min-h-[3.125rem] max-h-36 border-border-100 border-1 rounded-xl focus-within:min-h-24 duration-200",
-        { "focus-within:border-primary-300": !disabled }
+        "relative flex flex-row w-full min-h-[3.125rem] max-h-36 border-border-100 border-1 rounded-xl duration-200",
+        { "focus-within:border-primary-300": !disabled, "focus-within:min-h-24": expandOnFocus }
       )}
     >
       <div className="flex size-full py-2.5">

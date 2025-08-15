@@ -2,7 +2,7 @@ import { ListNotificationsRequest } from "../../definitions/notification";
 import prismaClient from "../../prisma";
 
 class ListNotificationsService {
-  async execute({ userId, filter }: ListNotificationsRequest) {
+  async execute({ userId, filter, max }: ListNotificationsRequest) {
     const notifications = await prismaClient.notificationRecipient.findMany({
       where: {
         userId,
@@ -27,7 +27,7 @@ class ListNotificationsService {
           },
         },
       },
-      take: filter === "recent" ? 30 : undefined,
+      take: max,
       orderBy: { createdAt: "desc" },
     });
 

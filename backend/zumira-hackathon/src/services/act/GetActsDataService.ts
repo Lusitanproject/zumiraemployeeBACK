@@ -1,5 +1,35 @@
 import prismaClient from "../../prisma";
 
+function getProgress(
+  bots: {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    index: number;
+  }[],
+  chapters: {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    title: string;
+    compilation: string | null;
+    actChatbotId: string;
+  }[]
+) {
+  const _bots = [...bots].sort((a, b) => a.index - b.index);
+
+  let completedActs = 0;
+  for (const bot of _bots) {
+    if (chapters.find((chapter) => chapter.actChatbotId === bot.id && !!chapter.compilation)) {
+      completedActs += 1;
+    } else {
+      break;
+    }
+  }
+
+  return completedActs / _bots.length;
+}
 class GetActsDataService {
   async execute(userId: string) {
     const [user, chatbots, chapters] = await Promise.all([
@@ -31,6 +61,7 @@ class GetActsDataService {
           id: true,
           title: true,
           actChatbotId: true,
+          compilation: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -39,6 +70,8 @@ class GetActsDataService {
         },
       }),
     ]);
+
+    const progress = getProgress(chatbots, chapters);
 
     if (!user) throw new Error("Usuário não encontrado");
 
@@ -56,7 +89,12 @@ class GetActsDataService {
       current: bot.id === currAct.id,
     }));
 
-    return { chatbots: processedChatbots, chapters };
+    const processedChapters = chapters.map((chapter) => {
+      const { compilation: _, ...formatted } = chapter;
+      return formatted;
+    });
+
+    return { chatbots: processedChatbots, chapters: processedChapters, progress };
   }
 }
 

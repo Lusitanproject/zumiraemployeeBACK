@@ -58,7 +58,7 @@ export function UserForm({ data, companies, roles }: FormProps) {
   };
 
   const handleCancel = useCallback(() => {
-    redirect("/admin/autoconhecimento");
+    redirect("/admin/testes");
   }, []);
 
   async function handleDelete() {

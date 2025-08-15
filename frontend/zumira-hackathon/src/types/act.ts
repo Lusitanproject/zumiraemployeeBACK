@@ -16,6 +16,7 @@ export interface ActsData {
     locked: boolean;
     current: boolean;
   }[];
+  progress: number;
 }
 
 export interface ActMessage {
@@ -32,6 +33,7 @@ export interface ActChapter {
     description: string;
     icon: string;
     name: string;
+    initialMessage?: string;
   };
   id: string;
   messages: ActMessage[];

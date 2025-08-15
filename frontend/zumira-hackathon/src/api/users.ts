@@ -1,7 +1,9 @@
+import { cookies } from "next/headers";
+
 import { decrypt } from "@/app/_lib/session";
 import { User } from "@/types/user";
 import { catchError } from "@/utils/error";
-import { cookies } from "next/headers";
+
 import { ZumiraApiResponse } from "./common";
 
 export type GetUsersResponse = ZumiraApiResponse<{ users: User[] }>;
