@@ -120,6 +120,7 @@ model Company {
 
   users                      User[]
   companyAssessmentFeedbacks CompanyAssessmentFeedback[]
+  companyAvailableAssessments CompanyAvailableAssessment[]
 
   @@map("companies")
 }
@@ -157,6 +158,7 @@ model Assessment {
   assessmentResults          AssessmentResult[]
   companyAssessmentFeedbacks CompanyAssessmentFeedback[]
   assessmentResultRatings    AssessmentResultRating[]
+  companyAvailableAssessments CompanyAvailableAssessment[]
 
   @@map("assessments")
 }
@@ -242,6 +244,19 @@ model AssessmentQuestionChoice {
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
 
   @@map("assessment_question_choices")
+}
+
+model CompanyAvailableAssessment {
+  companyId    String   @map("company_id")
+  assessmentId String   @map("assessment_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+  assessment Assessment @relation(fields: [assessmentId], references: [id])
+
+  @@id([companyId, assessmentId])
+  @@map("companies_available_assessments")
 }
 
 model SelfMonitoringBlock {

@@ -10,6 +10,13 @@ class CompanyAdminService {
     async find(companyId) {
         const company = await prisma_1.default.company.findFirst({
             where: { id: companyId },
+            include: {
+                companyAvailableAssessments: {
+                    select: {
+                        assessmentId: true,
+                    },
+                },
+            },
         });
         return company;
     }
@@ -47,6 +54,47 @@ class CompanyAdminService {
     async create(data) {
         const company = await prisma_1.default.company.create({ data });
         return company;
+    }
+    async setCompanyAssessments({ id: companyId, assessmentIds }) {
+        const [company, newAssessments, currentAssessments] = await Promise.all([
+            prisma_1.default.company.findFirst({
+                where: {
+                    id: companyId,
+                },
+            }),
+            prisma_1.default.assessment.findMany({
+                where: {
+                    id: {
+                        in: assessmentIds,
+                    },
+                },
+            }),
+            prisma_1.default.companyAvailableAssessment.findMany({ where: { companyId } }),
+        ]);
+        if (!company)
+            throw new Error("Empresa não existe");
+        if (assessmentIds.find((id) => !newAssessments.find((assessment) => id === assessment.id))) {
+            throw new Error("Um ou mais testes enviados não existem");
+        }
+        const deletedAssessmentIds = currentAssessments
+            .filter((curr) => !assessmentIds.includes(curr.assessmentId))
+            .map((item) => item.assessmentId);
+        await Promise.all([
+            prisma_1.default.companyAvailableAssessment.createMany({
+                data: assessmentIds.map((assessmentId) => ({
+                    assessmentId,
+                    companyId,
+                })),
+                skipDuplicates: true,
+            }),
+            prisma_1.default.companyAvailableAssessment.deleteMany({
+                where: {
+                    assessmentId: {
+                        in: deletedAssessmentIds,
+                    },
+                },
+            }),
+        ]);
     }
 }
 exports.CompanyAdminService = CompanyAdminService;
