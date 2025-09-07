@@ -2,9 +2,9 @@ import { CompanyAssessmentFeedback } from "@prisma/client";
 import { z } from "zod";
 
 import { CreateCompanySchema } from "../../definitions/admin/company";
+import { SetCompanyAssessmentsRequest } from "../../definitions/company";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
-import { SetCompanyAssessmentsRequest } from "../../definitions/company";
 
 type CreateCompany = z.infer<typeof CreateCompanySchema>;
 

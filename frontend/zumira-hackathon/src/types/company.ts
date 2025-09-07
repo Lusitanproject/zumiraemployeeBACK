@@ -1,12 +1,12 @@
 export interface Company {
+  companyAvailableAssessments: {
+    assessmentId: string;
+  }[];
   createdAt: Date;
   email: string;
   id: string;
   name: string;
   updatedAt: Date;
-  companyAvailableAssessments: {
-    assessmentId: string;
-  }[];
 }
 
 export interface CompanyFeedback {

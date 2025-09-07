@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import nodemailer from "nodemailer";
 
 import { CompileActChapterController } from "./controllers/act/CompileActChapterController";
 import { CreateActChapterController } from "./controllers/act/CreateActChapterController";
@@ -24,6 +25,7 @@ import { UpdateResultRatingsController } from "./controllers/admin/assessments/U
 import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
 import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAllFeedbacksController";
 import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
+import { SetCompanyAssessmentsController } from "./controllers/admin/companies/SetCompanyAssessmentsController";
 import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
 import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
 import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
@@ -77,9 +79,6 @@ import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
-
-import nodemailer from "nodemailer";
-import { SetCompanyAssessmentsController } from "./controllers/admin/companies/SetCompanyAssessmentsController";
 
 const router = Router();
 
@@ -235,7 +234,7 @@ router.post("/leads", async (req: Request, res: Response) => {
     });
     console.log("sent email");
     res.status(200).json({ success: true });
-  } catch (err) {
+  } catch {
     console.log("failed to send email");
     res.status(500).json({ error: "Erro ao enviar e-mail" });
   }

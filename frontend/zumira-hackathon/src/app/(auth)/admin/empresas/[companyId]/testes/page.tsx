@@ -1,9 +1,9 @@
-import { getAssessments, getAssessmentsAdmin } from "@/api/assessments";
-import { SelectAssessments } from "./select-assessments";
-import { getCompanyData } from "../actions";
 import { redirect } from "next/navigation";
+
+import { getAssessmentsAdmin } from "@/api/assessments";
 import { getCompany } from "@/api/companies";
-import { Company } from "@/types/company";
+
+import { SelectAssessments } from "./select-assessments";
 
 export default async function ManageCompanyAssessments({ params }: { params: Promise<{ companyId: string }> }) {
   const { companyId } = await params;

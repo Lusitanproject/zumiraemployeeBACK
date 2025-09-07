@@ -1,12 +1,13 @@
 import { Assessment } from "@/types/assessment";
+
 import { AssessmentItem } from "./assessment-item";
 
 interface AssessmentListProps {
-  title: string;
   assessments: Assessment[];
   search: string;
-  onToggleAssessment: (assessment: Assessment, checked: boolean) => void;
+  title: string;
   selected?: boolean;
+  onToggleAssessment: (assessment: Assessment, checked: boolean) => void;
 }
 
 export function AssessmentList({ title, assessments, search, onToggleAssessment, selected }: AssessmentListProps) {

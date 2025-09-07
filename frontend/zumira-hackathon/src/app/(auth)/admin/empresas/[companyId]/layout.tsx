@@ -1,6 +1,8 @@
-import { Tabs } from "@/components/ui/tabs";
-import { getCompanyData } from "./actions";
 import { ReactNode } from "react";
+
+import { Tabs } from "@/components/ui/tabs";
+
+import { getCompanyData } from "./actions";
 
 interface CompanyLayoutProps {
   children: ReactNode;

@@ -1,8 +1,10 @@
-import { useEffect, useState, useRef } from "react";
 import { CircleMinus, CirclePlus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
 import { cn } from "@/lib/utils";
-import { Input } from "../ui/input";
+
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 export interface MultiSelectItem {
   label: string;
@@ -68,7 +70,7 @@ export function MultiSelect({ items, onChangeSelection }: MultiSelectProps) {
 
   useEffect(() => {
     onChangeSelection?.(selectedItems);
-  }, [selectedItems]);
+  }, [selectedItems, onChangeSelection]);
 
   return (
     <div className={cn("flex flex-col relative gap-1 max-h-72")}>
@@ -89,12 +91,12 @@ export function MultiSelect({ items, onChangeSelection }: MultiSelectProps) {
         ))}
       </div>
       <Button
-        variant="outline"
+        disabled={addeableItems.length === 0}
         size="sm"
+        variant="outline"
         onClick={() => {
           if (addeableItems.length > 0) setShowModal(true);
         }}
-        disabled={addeableItems.length === 0}
       >
         <div className="flex flex-row gap-1 items-center">
           <CirclePlus />
@@ -110,9 +112,9 @@ export function MultiSelect({ items, onChangeSelection }: MultiSelectProps) {
         >
           <Input
             className="bg-background-50"
+            placeholder="Procurar..."
             value={modalInput}
             onChange={(e) => setModalInput(e.target.value)}
-            placeholder="Procurar..."
           />
           <div className="flex flex-col rounded-xl border-1 border-t-0 rounded-t-none border-border-300 overflow-y-scroll w-full -mt-2 pt-2">
             {addeableItems
@@ -122,8 +124,8 @@ export function MultiSelect({ items, onChangeSelection }: MultiSelectProps) {
               .map((item) => (
                 <div
                   key={item.value}
-                  onClick={() => addItem(item.value)}
                   className="[&:not(:last-child)]:border-b border-border-200 p-2 text-text-500 hover:bg-background-100 hover:cursor-pointer"
+                  onClick={() => addItem(item.value)}
                 >
                   {item.label}
                 </div>

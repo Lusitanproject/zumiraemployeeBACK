@@ -1,12 +1,10 @@
 "use client";
 
 import { Bookmark } from "lucide-react";
-import { redirect } from "next/navigation";
-import { toast } from "sonner";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { ActsData } from "@/types/act";
-import Link from "next/link";
 
 type MyStoryProps = {
   data: ActsData;

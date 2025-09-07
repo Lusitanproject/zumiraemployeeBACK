@@ -128,7 +128,7 @@ export async function setCompanyAvailableAssessments(companyId: string, assessme
     throw new Error(response.statusText);
   }
 
-  const parsed = (await response.json()) as ZumiraApiResponse<{}>;
+  const parsed = (await response.json()) as ZumiraApiResponse<any>;
 
   if (parsed.status === "ERROR") throw new Error(parsed.message);
 }

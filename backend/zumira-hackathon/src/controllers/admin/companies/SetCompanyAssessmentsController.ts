@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
+import { SetCompanyAssessmentsSchema } from "../../../definitions/company";
 import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
-import { SetCompanyAssessmentsSchema } from "../../../definitions/company";
 
 const RequestParam = z.object({
   id: z.string().cuid(),

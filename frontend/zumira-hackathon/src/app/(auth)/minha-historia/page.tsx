@@ -1,9 +1,8 @@
 import { Download } from "lucide-react";
 import { cookies } from "next/headers";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 
-import { getActsData, getFullStory } from "@/api/acts";
+import { getFullStory } from "@/api/acts";
 import { decrypt } from "@/app/_lib/session";
 import { PDFDownloadLink } from "@/components/custom/pdf";
 

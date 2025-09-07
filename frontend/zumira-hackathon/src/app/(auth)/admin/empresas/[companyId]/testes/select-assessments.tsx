@@ -1,19 +1,21 @@
 "use client";
 
+import { Search } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useDebouncedCallback } from "use-debounce";
+
+import { setCompanyAvailableAssessments } from "@/api/companies";
 import { Divider } from "@/components/custom/divider";
 import { Input } from "@/components/ui/input";
 import { Assessment } from "@/types/assessment";
 import { Company } from "@/types/company";
-import { Search } from "lucide-react";
+
 import { AssessmentList } from "./components/assessment-list";
-import { useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
-import { setCompanyAvailableAssessments } from "@/api/companies";
-import { toast } from "sonner";
 
 interface SelectAssessentsProps {
-  company: Company;
   assessments: Assessment[];
+  company: Company;
 }
 
 export function SelectAssessments({ assessments, company }: SelectAssessentsProps) {
@@ -52,28 +54,28 @@ export function SelectAssessments({ assessments, company }: SelectAssessentsProp
   return (
     <div className="flex flex-col gap-2 h-full w-full">
       <Input
-        icon={Search}
-        className="w-full"
         hasIcon
+        className="w-full"
+        icon={Search}
         placeholder="Pesquise por um teste"
         value={search}
         onChange={(e) => setSearch(e.target.value.toLowerCase())}
       />
       <div className="flex flex-row gap-3 size-full min-h-0">
         <AssessmentList
-          title="Selecionados"
+          selected
           assessments={selected}
           search={search}
+          title="Selecionados"
           onToggleAssessment={handleToggleAssessment}
-          selected
         />
 
         <Divider />
 
         <AssessmentList
+          assessments={assessments.filter((a) => !selected.some((b) => a.id === b.id))}
           search={search}
           title="Não Selecionados"
-          assessments={assessments.filter((a) => !selected.some((b) => a.id === b.id))}
           onToggleAssessment={handleToggleAssessment}
         />
       </div>
