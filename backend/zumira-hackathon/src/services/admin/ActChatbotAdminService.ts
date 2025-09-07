@@ -54,6 +54,28 @@ class ActChatbotAdminService {
     return { items: bots };
   }
 
+  async findByTrail(trailId: string | null) {
+    const bots = await prismaClient.actChatbot.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        icon: true,
+        index: true,
+      },
+
+      where: {
+        trailId,
+      },
+
+      orderBy: {
+        index: "asc",
+      },
+    });
+
+    return { items: bots };
+  }
+
   async create(data: CreateActChatbotRequest) {
     const existingBots = await prismaClient.actChatbot.findMany();
 

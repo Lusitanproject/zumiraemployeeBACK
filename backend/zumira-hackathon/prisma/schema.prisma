@@ -115,11 +115,13 @@ model Company {
   id        String   @id @default(cuid())
   name      String
   email     String
+  trailId   String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  users                      User[]
-  companyAssessmentFeedbacks CompanyAssessmentFeedback[]
+  trail                       Trail?                       @relation(fields: [trailId], references: [id])
+  users                       User[]
+  companyAssessmentFeedbacks  CompanyAssessmentFeedback[]
   companyAvailableAssessments CompanyAvailableAssessment[]
 
   @@map("companies")
@@ -152,12 +154,12 @@ model Assessment {
   createdAt                   DateTime            @default(now()) @map("created_at")
   updatedAt                   DateTime            @updatedAt @map("updated_at")
 
-  selfMonitoringBlock        SelfMonitoringBlock         @relation(fields: [selfMonitoringBlockId], references: [id])
-  nationality                Nationality                 @relation(fields: [nationalityId], references: [id])
-  assessmentQuestions        AssessmentQuestion[]
-  assessmentResults          AssessmentResult[]
-  companyAssessmentFeedbacks CompanyAssessmentFeedback[]
-  assessmentResultRatings    AssessmentResultRating[]
+  selfMonitoringBlock         SelfMonitoringBlock          @relation(fields: [selfMonitoringBlockId], references: [id])
+  nationality                 Nationality                  @relation(fields: [nationalityId], references: [id])
+  assessmentQuestions         AssessmentQuestion[]
+  assessmentResults           AssessmentResult[]
+  companyAssessmentFeedbacks  CompanyAssessmentFeedback[]
+  assessmentResultRatings     AssessmentResultRating[]
   companyAvailableAssessments CompanyAvailableAssessment[]
 
   @@map("assessments")
@@ -252,7 +254,7 @@ model CompanyAvailableAssessment {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  company Company @relation(fields: [companyId], references: [id])
+  company    Company    @relation(fields: [companyId], references: [id])
   assessment Assessment @relation(fields: [assessmentId], references: [id])
 
   @@id([companyId, assessmentId])
@@ -359,6 +361,20 @@ model Alert {
   @@map("alerts")
 }
 
+model Trail {
+  id          String @id @default(cuid())
+  title       String
+  subtitle    String
+  description String
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  actChatbots ActChatbot[]
+  companies   Company[]
+
+  @@map("trails")
+}
+
 model ActChatbot {
   id                      String   @id @default(cuid())
   name                    String
@@ -367,10 +383,12 @@ model ActChatbot {
   initialMessage          String?  @map("initial_message")
   messageInstructions     String?  @map("message_instructions")
   compilationInstructions String?  @map("compilation_instructions")
+  trailId                 String?
   index                   Int
   createdAt               DateTime @default(now()) @map("created_at")
   updatedAt               DateTime @updatedAt @map("updated_at")
 
+  trail        Trail?       @relation(fields: [trailId], references: [id])
   actChapters  ActChapter[]
   currentUsers User[]
 
