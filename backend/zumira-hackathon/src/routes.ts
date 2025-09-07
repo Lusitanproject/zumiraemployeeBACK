@@ -79,6 +79,10 @@ import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { CreateTrailController } from "./controllers/admin/trails/CreateTrailController copy";
+import { FindAllTrailsController } from "./controllers/admin/trails/FindAllTrailsController";
+import { FindTrailController } from "./controllers/admin/trails/FindTrailController";
+import { UpdateTrailController } from "./controllers/admin/trails/UpdateTrailController";
 
 const router = Router();
 
@@ -194,6 +198,11 @@ router.post("/acts/new-chapter", isAuthenticated, new CreateActChapterController
 router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
 router.put("/acts/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
 router.get("/acts/full-story", isAuthenticated, new GetFullStoryController().handle);
+
+router.post("/trails/admin", isAuthenticated, new CreateTrailController().handle);
+router.get("/trails/admin", isAuthenticated, new FindAllTrailsController().handle);
+router.get("/trails/admin/:id", isAuthenticated, new FindTrailController().handle);
+router.put("/trails/admin/:id", isAuthenticated, new UpdateTrailController().handle);
 
 router.post("/leads", async (req: Request, res: Response) => {
   const { name, email, phone, company, message, plan } = req.body;
