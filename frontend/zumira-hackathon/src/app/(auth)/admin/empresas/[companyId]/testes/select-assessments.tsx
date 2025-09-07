@@ -23,7 +23,6 @@ export function SelectAssessments({ assessments, company }: SelectAssessentsProp
   );
 
   const debouncedSave = useDebouncedCallback(async (assessments: Assessment[]) => {
-    toast.warning("chamou");
     try {
       await setCompanyAvailableAssessments(
         company.id,
@@ -35,7 +34,6 @@ export function SelectAssessments({ assessments, company }: SelectAssessentsProp
   }, 1000);
 
   function handleToggleAssessment(assessment: Assessment, selected: boolean) {
-    toast.warning("chamou -1");
     setSelected((prev) => {
       let updated;
 

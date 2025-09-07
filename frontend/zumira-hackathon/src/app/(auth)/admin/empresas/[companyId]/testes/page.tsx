@@ -1,4 +1,4 @@
-import { getAssessments } from "@/api/assessments";
+import { getAssessments, getAssessmentsAdmin } from "@/api/assessments";
 import { SelectAssessments } from "./select-assessments";
 import { getCompanyData } from "../actions";
 import { redirect } from "next/navigation";
@@ -7,7 +7,7 @@ import { Company } from "@/types/company";
 
 export default async function ManageCompanyAssessments({ params }: { params: Promise<{ companyId: string }> }) {
   const { companyId } = await params;
-  const assessments = await getAssessments();
+  const assessments = await getAssessmentsAdmin();
   const company = await getCompany(companyId);
 
   if (!company) redirect("/not-found");
