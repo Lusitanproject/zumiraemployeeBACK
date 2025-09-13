@@ -1,12 +1,9 @@
 import { CompanyAssessmentFeedback } from "@prisma/client";
-import { z } from "zod";
 
-import { CreateCompanySchema } from "../../definitions/admin/company";
+import { CreateCompanyRequest, UpdateCompanyRequest } from "../../definitions/admin/company";
 import { SetCompanyAssessmentsRequest } from "../../definitions/company";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
-
-type CreateCompany = z.infer<typeof CreateCompanySchema>;
 
 class CompanyAdminService {
   async find(companyId: string) {
@@ -59,8 +56,13 @@ class CompanyAdminService {
     return { items: Object.values(aux) };
   }
 
-  async create(data: CreateCompany) {
+  async create(data: CreateCompanyRequest) {
     const company = await prismaClient.company.create({ data });
+    return company;
+  }
+
+  async update({ id, ...data }: UpdateCompanyRequest) {
+    const company = await prismaClient.company.update({ where: { id }, data });
     return company;
   }
 

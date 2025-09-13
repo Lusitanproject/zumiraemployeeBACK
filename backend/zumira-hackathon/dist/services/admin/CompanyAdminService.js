@@ -55,6 +55,10 @@ class CompanyAdminService {
         const company = await prisma_1.default.company.create({ data });
         return company;
     }
+    async update({ id, ...data }) {
+        const company = await prisma_1.default.company.update({ where: { id }, data });
+        return company;
+    }
     async setCompanyAssessments({ id: companyId, assessmentIds }) {
         const [company, newAssessments, currentAssessments] = await Promise.all([
             prisma_1.default.company.findFirst({

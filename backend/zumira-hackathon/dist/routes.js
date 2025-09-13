@@ -28,10 +28,12 @@ const FindResultsFilteredController_1 = require("./controllers/admin/assessments
 const GenerateExcelReportController_1 = require("./controllers/admin/assessments/GenerateExcelReportController");
 const UpdateAssessmentController_1 = require("./controllers/admin/assessments/UpdateAssessmentController");
 const UpdateResultRatingsController_1 = require("./controllers/admin/assessments/UpdateResultRatingsController");
+const CreateCompanyController_1 = require("./controllers/admin/companies/CreateCompanyController");
 const FindAllCompaniesController_1 = require("./controllers/admin/companies/FindAllCompaniesController");
 const FindAllFeedbacksController_1 = require("./controllers/admin/companies/FindAllFeedbacksController");
 const FindCompanyController_1 = require("./controllers/admin/companies/FindCompanyController");
 const SetCompanyAssessmentsController_1 = require("./controllers/admin/companies/SetCompanyAssessmentsController");
+const UpdateCompanyController_1 = require("./controllers/admin/companies/UpdateCompanyController");
 const CreateDimensionController_1 = require("./controllers/admin/dimensions/CreateDimensionController");
 const EditDimensionController_1 = require("./controllers/admin/dimensions/EditDimensionController");
 const FindAllDimensionController_1 = require("./controllers/admin/dimensions/FindAllDimensionController");
@@ -77,7 +79,6 @@ const GenerateUserFeedbackController_1 = require("./controllers/assessment/Gener
 const ListAssessmentsController_1 = require("./controllers/assessment/ListAssessmentsController");
 const ListResultsController_1 = require("./controllers/assessment/ListResultsController");
 const UpdateQuestionsController_1 = require("./controllers/assessment/UpdateQuestionsController");
-const CreateCompanyController_1 = require("./controllers/company/CreateCompanyController");
 const FindCompanyFeedbackController_1 = require("./controllers/company/FindCompanyFeedbackController");
 const ListNationalitiesController_1 = require("./controllers/nationality/ListNationalitiesController");
 const DetailNotificationController_1 = require("./controllers/notification/DetailNotificationController");
@@ -148,8 +149,9 @@ router.get("/companies", isAuthenticated_1.isAuthenticated, new FindAllCompanies
 router.get("/companies/feedback", isAuthenticated_1.isAuthenticated, new FindAllFeedbacksController_1.FindAllFeedbacksController().handle);
 router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
 router.get("/companies/:id/feedback", isAuthenticated_1.isAuthenticated, new FindCompanyFeedbackController_1.FindCompanyFeedbackController().handle);
-router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
 router.post("/companies/:id/assessments", isAuthenticated_1.isAuthenticated, new SetCompanyAssessmentsController_1.SetCompanyAssessmentsController().handle);
+router.post("/companies/admin", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
+router.put("/companies/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateCompanyController_1.UpdateCompanyController().handle);
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController_1.ListNationalitiesController().handle);
 router.post("/nationalities/admin", isAuthenticated_1.isAuthenticated, new CreateNationalityController_1.CreateNationalityController().handle);

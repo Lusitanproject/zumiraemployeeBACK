@@ -53,6 +53,7 @@ export const CompanySchema = z.object({
   id: z.string().cuid(),
   name: z.string(),
   email: z.string().email(),
+  trailId: z.string().cuid(),
 });
 
 export const RoleSchema = z.object({
