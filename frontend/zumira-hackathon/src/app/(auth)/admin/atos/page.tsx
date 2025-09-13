@@ -1,15 +1,13 @@
-import { getActChatbots } from "@/api/acts";
-
-import { Header } from "../components/header";
 import { ActsList } from "./components/list";
+import { getTrailsAdmin } from "@/api/trails";
 
-export default async function Autoconhecimento() {
-  const result = await getActChatbots();
+export default async function Atos({ searchParams }: { searchParams: { trailId?: string } }) {
+  const trails = await getTrailsAdmin();
+  const trailId = searchParams.trailId ?? trails[0]?.id;
 
   return (
     <div className="flex flex-col w-full">
-      <Header create={{ href: "/admin/atos/novo", text: "Criar novo ato" }} title="Atos" />
-      <ActsList data={result} />
+      <ActsList trailId={trailId} trails={trails} />
     </div>
   );
 }

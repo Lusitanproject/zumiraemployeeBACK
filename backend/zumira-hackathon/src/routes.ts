@@ -83,6 +83,8 @@ import { CreateTrailController } from "./controllers/admin/trails/CreateTrailCon
 import { FindAllTrailsController } from "./controllers/admin/trails/FindAllTrailsController";
 import { FindTrailController } from "./controllers/admin/trails/FindTrailController";
 import { UpdateTrailController } from "./controllers/admin/trails/UpdateTrailController";
+import { FindByTrailSchema } from "./definitions/admin/act-chatbot";
+import { FindByTrailController } from "./controllers/admin/acts/FindByTrailController";
 
 const router = Router();
 
@@ -186,6 +188,7 @@ router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotif
 
 // ROTAS ACTS
 router.get("/acts/admin", isAuthenticated, new FindAllActChatbotsController().handle);
+router.get("/acts/admin/by-trail", isAuthenticated, new FindByTrailController().handle);
 router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().handle);
 router.put("/acts/admin/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);

@@ -11,12 +11,15 @@ import { ActChapter, ActChatbot } from "@/types/act";
 
 import { ManageActChatbot } from "../definitions";
 import { ActChatbotForm } from "../form";
+import { Trail } from "@/types/trail";
 
 interface PlaygroundProps {
+  defaultTrailId: string;
+  trails: Trail[];
   data: ActChatbot | null;
 }
 
-export function Playground({ data }: PlaygroundProps) {
+export function Playground({ data, trails, defaultTrailId }: PlaygroundProps) {
   const [saveWarning, setSaveWarning] = useState<string | undefined>();
   const [chapter, setChapter] = useState<ActChapter>();
 
@@ -50,7 +53,7 @@ export function Playground({ data }: PlaygroundProps) {
   return (
     <div className="flex md:flex-row flex-col size-full gap-4 overflow-y-scroll px-2">
       <div className="flex size-full">
-        <ActChatbotForm data={data} onChange={handleFormChange} />
+        <ActChatbotForm trails={trails} defaultTrailId={defaultTrailId} data={data} onChange={handleFormChange} />
       </div>
       <div className="flex size-full py-4">
         {data ? (

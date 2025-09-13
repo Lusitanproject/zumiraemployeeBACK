@@ -15,16 +15,20 @@ import { ActChatbot } from "@/types/act";
 
 import { IconField } from "../../components/icons";
 import { FormErrors, INITIAL_VALUE, ManageActChatbot, ManageActChatbotSchema } from "./definitions";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Trail } from "@/types/trail";
 
 type FormProps = {
+  defaultTrailId: string;
+  trails: Trail[];
   data: ActChatbot | null;
   onChange?: (formData: ManageActChatbot, storedData: ActChatbot | null) => void;
 };
 
-export function ActChatbotForm({ data, onChange }: FormProps) {
+export function ActChatbotForm({ data, trails, defaultTrailId, onChange }: FormProps) {
   const router = useRouter();
   const [storedData, setStoredData] = useState(data);
-  const [formData, setFormData] = useState<ManageActChatbot>(data ?? INITIAL_VALUE);
+  const [formData, setFormData] = useState<ManageActChatbot>(data ?? { ...INITIAL_VALUE, trailId: defaultTrailId });
   const [errors, setErrors] = useState<FormErrors>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
@@ -72,7 +76,7 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
   }
 
   function handleGoBack() {
-    router.push("/admin/atos");
+    router.push(`/admin/atos?trailId=${formData.trailId}`);
   }
 
   useEffect(() => {
@@ -144,6 +148,31 @@ export function ActChatbotForm({ data, onChange }: FormProps) {
             <span className="text-sm text-error-500">{errors.messageInstructions}</span>
           )}
         </div>
+        <div className="pb-3">
+          <Label className="text-text-700" htmlFor="trail">
+            Trilha
+          </Label>
+          <Select
+            name="company"
+            value={formData.trailId}
+            onValueChange={(value) => {
+              setFormData((current) => ({ ...current, trailId: value }));
+            }}
+          >
+            <SelectTrigger className="w-64 bg-background-0 text-text-700">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="text-text-700">
+              {trails.map((t) => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {!!errors?.trailId && <span className="text-sm text-error-500">{errors.trailId}</span>}
+        </div>
+
         <div className="pb-3">
           <Label className="text-text-700" htmlFor="compilation-instructions">
             Instruções para compilação da conversa

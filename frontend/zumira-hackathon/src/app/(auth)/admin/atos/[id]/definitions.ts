@@ -7,6 +7,7 @@ export const ManageActChatbotSchema = z.object({
   messageInstructions: z.string().nonempty().optional(),
   compilationInstructions: z.string().nonempty().optional(),
   icon: z.string().nonempty(),
+  trailId: z.string().cuid(),
 });
 
 export type ManageActChatbot = z.infer<typeof ManageActChatbotSchema>;
@@ -18,6 +19,7 @@ export const INITIAL_VALUE: ManageActChatbot = {
   messageInstructions: "",
   compilationInstructions: "",
   icon: "",
+  trailId: "",
 };
 
 export type FormErrors = {
@@ -27,4 +29,5 @@ export type FormErrors = {
   messageInstructions?: string[];
   compilationInstructions?: string[];
   icon?: string[];
+  trailId?: string[];
 } | null;

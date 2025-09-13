@@ -15,6 +15,7 @@ export type SaveActChatbotRequest = {
   messageInstructions?: string;
   compilationInstructions?: string;
   icon: string;
+  trailId?: string;
 };
 export type UpdateActChapterRequest = {
   actChapterId: string;
@@ -157,6 +158,30 @@ export async function getActChatbots() {
   const session = decrypt(cookie.get("session")?.value);
 
   const url = `${process.env.API_BASE_URL}/acts/admin`;
+
+  const [error, response] = await catchError(
+    fetch(url, {
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error || !response.ok) return [];
+
+  const parsed = (await response.json()) as GetActChatbotsResponse;
+
+  if (parsed.status === "ERROR") return [];
+
+  return parsed.data.items;
+}
+
+export async function getActChatbotsByTrail(trailId?: string) {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/acts/admin/by-trail?trailId=${trailId}`;
 
   const [error, response] = await catchError(
     fetch(url, {

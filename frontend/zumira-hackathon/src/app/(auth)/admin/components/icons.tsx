@@ -18,7 +18,7 @@ export function IconField({ value, onChange, icons }: IconFieldProps) {
           <button
             key={icon}
             className={cn(
-              "w-10 h-10 flex items-center justify-center rounded-lg bg-background-100 border border-border-100 cursor-pointer",
+              "w-10 h-10 flex items-center justify-center rounded-lg bg-background-100 border border-border-100 cursor-pointer text-text-500",
               {
                 "bg-primary-25 border border-primary-50": value === icon,
               }

@@ -115,11 +115,11 @@ model Company {
   id        String   @id @default(cuid())
   name      String
   email     String
-  trailId   String?
+  trailId   String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  trail                       Trail?                       @relation(fields: [trailId], references: [id])
+  trail                       Trail                        @relation(fields: [trailId], references: [id])
   users                       User[]
   companyAssessmentFeedbacks  CompanyAssessmentFeedback[]
   companyAvailableAssessments CompanyAvailableAssessment[]
@@ -362,12 +362,12 @@ model Alert {
 }
 
 model Trail {
-  id          String @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   subtitle    String
   description String
-  createdAt               DateTime @default(now()) @map("created_at")
-  updatedAt               DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   actChatbots ActChatbot[]
   companies   Company[]
@@ -383,12 +383,12 @@ model ActChatbot {
   initialMessage          String?  @map("initial_message")
   messageInstructions     String?  @map("message_instructions")
   compilationInstructions String?  @map("compilation_instructions")
-  trailId                 String?
+  trailId                 String
   index                   Int
   createdAt               DateTime @default(now()) @map("created_at")
   updatedAt               DateTime @updatedAt @map("updated_at")
 
-  trail        Trail?       @relation(fields: [trailId], references: [id])
+  trail        Trail        @relation(fields: [trailId], references: [id])
   actChapters  ActChapter[]
   currentUsers User[]
 

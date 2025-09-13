@@ -50,4 +50,5 @@ export type ActChatbot = {
   icon: string;
   index: number;
   actChapters: { id: string; title: string }[];
+  trailId: string;
 };

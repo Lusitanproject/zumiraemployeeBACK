@@ -1,3 +1,4 @@
+import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 
 function getProgress(
@@ -32,14 +33,22 @@ function getProgress(
 }
 class GetActsDataService {
   async execute(userId: string) {
-    const [user, chatbots, chapters] = await Promise.all([
-      await prismaClient.user.findFirst({
-        where: {
-          id: userId,
-        },
-      }),
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id: userId,
+      },
+      include: {
+        company: true,
+      },
+    });
 
+    if (!user) throw new PublicError("Usuário não encontrado");
+
+    const [chatbots, chapters] = await Promise.all([
       await prismaClient.actChatbot.findMany({
+        where: {
+          trailId: user.company?.trailId,
+        },
         select: {
           id: true,
           name: true,
@@ -56,6 +65,9 @@ class GetActsDataService {
         where: {
           userId,
           type: "REGULAR",
+          actChatbot: {
+            trailId: user.company?.trailId,
+          },
         },
         select: {
           id: true,

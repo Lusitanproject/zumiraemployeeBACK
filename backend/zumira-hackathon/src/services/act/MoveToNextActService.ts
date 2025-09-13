@@ -10,11 +10,14 @@ class MoveToNextActService {
 
       include: {
         currentActChatbot: true,
+        company: true,
       },
     });
 
     if (!user) throw new PublicError("Usuário não encontrado");
     if (!user.currentActChatbot) throw new PublicError("Usuário não está atribuído a nenhum ato");
+
+    const trailId = user.company?.trailId;
 
     const currentActMessages = await prismaClient.actChapterMessage.findMany({
       where: {
@@ -29,6 +32,7 @@ class MoveToNextActService {
 
     const nextAct = await prismaClient.actChatbot.findFirst({
       where: {
+        trailId,
         index: user.currentActChatbot.index + 1,
       },
     });

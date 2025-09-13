@@ -8,6 +8,7 @@ import { parseZodError } from "../../utils/parseZodError";
 const CreateCompanySchema = z.object({
   name: z.string(),
   email: z.string().email(),
+  trailId: z.string().cuid(),
 });
 
 class CreateCompanyController {
@@ -18,10 +19,10 @@ class CreateCompanyController {
 
     if (!success) throw new Error(parseZodError(error));
 
-    const { name, email } = data;
+    const { name, email, trailId } = data;
 
     const createCompany = new CreateCompanyService();
-    const company = await createCompany.execute({ name, email });
+    const company = await createCompany.execute({ name, email, trailId });
 
     return res.json({ status: "SUCCESS", data: company });
   }
