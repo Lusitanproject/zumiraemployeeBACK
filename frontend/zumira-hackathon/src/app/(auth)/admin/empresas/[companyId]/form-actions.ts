@@ -10,13 +10,14 @@ export type Payload = {
   id: string | undefined;
   name: string;
   email: string;
+  trailId: string;
 };
 
 export async function saveCompany(data: Payload) {
   const cookie = await cookies();
   const session = decrypt(cookie.get("session")?.value);
 
-  const url = `${process.env.API_BASE_URL}/companies${!data.id ? "" : `/${data.id}`}`;
+  const url = `${process.env.API_BASE_URL}/companies/admin${!data.id ? "" : `/${data.id}`}`;
   const method = !data.id ? "POST" : "PUT";
 
   const [error, response] = await catchError(

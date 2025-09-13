@@ -6,21 +6,19 @@ import { useCallback, useState } from "react";
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Trail } from "@/types/trail";
 
 import { Company, FormErrors, INITIAL_VALUE, ManageCompany, ManageCompanySchema } from "./definitions";
 import { saveCompany } from "./form-actions";
 
 type FormProps = {
+  trails: Trail[];
   data: Company | null;
 };
 
-export function CompanyForm({ data }: FormProps) {
-  const parsedUser = data && {
-    name: data.name,
-    email: data.email,
-  };
-
-  const [formData, setFormData] = useState<ManageCompany>(parsedUser ?? INITIAL_VALUE);
+export function CompanyForm({ data, trails }: FormProps) {
+  const [formData, setFormData] = useState<ManageCompany>(data ?? INITIAL_VALUE);
   const [errors, setErrors] = useState<FormErrors>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
@@ -85,6 +83,30 @@ export function CompanyForm({ data }: FormProps) {
             }}
           />
           {!!errors?.email && <span className="text-sm text-error-500">{errors.email}</span>}
+        </div>
+        <div className="pb-3">
+          <Label className="text-text-700" htmlFor="trail">
+            Trilha
+          </Label>
+          <Select
+            name="trail"
+            value={formData.trailId}
+            onValueChange={(value) => {
+              setFormData((current) => ({ ...current, trailId: value }));
+            }}
+          >
+            <SelectTrigger className="w-64 bg-background-0 text-text-700">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="text-text-700">
+              {trails.map((t) => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {!!errors?.trailId && <span className="text-sm text-error-500">{errors.trailId}</span>}
         </div>
       </div>
       {!!formError && <span className="text-sm text-error-500">{formError}</span>}

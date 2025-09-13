@@ -23,10 +23,12 @@ import { FindResultsFilteredController } from "./controllers/admin/assessments/F
 import { GenerateExcelReportController } from "./controllers/admin/assessments/GenerateExcelReportController";
 import { UpdateAssessmentController } from "./controllers/admin/assessments/UpdateAssessmentController";
 import { UpdateResultRatingsController } from "./controllers/admin/assessments/UpdateResultRatingsController";
+import { CreateCompanyController } from "./controllers/admin/companies/CreateCompanyController";
 import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
 import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAllFeedbacksController";
 import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
 import { SetCompanyAssessmentsController } from "./controllers/admin/companies/SetCompanyAssessmentsController";
+import { UpdateCompanyController } from "./controllers/admin/companies/UpdateCompanyController";
 import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
 import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
 import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
@@ -72,7 +74,6 @@ import { GenerateUserFeedbackController } from "./controllers/assessment/Generat
 import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
 import { ListResultsController } from "./controllers/assessment/ListResultsController";
 import { UpdateQuestionsController } from "./controllers/assessment/UpdateQuestionsController";
-import { CreateCompanyController } from "./controllers/company/CreateCompanyController";
 import { FindCompanyFeedbackController } from "./controllers/company/FindCompanyFeedbackController";
 import { ListNationalitiesController } from "./controllers/nationality/ListNationalitiesController";
 import { DetailNotificationController } from "./controllers/notification/DetailNotificationController";
@@ -162,8 +163,9 @@ router.get("/companies", isAuthenticated, new FindAllCompaniesController().handl
 router.get("/companies/feedback", isAuthenticated, new FindAllFeedbacksController().handle);
 router.get("/companies/:companyId", isAuthenticated, new FindCompanyController().handle);
 router.get("/companies/:id/feedback", isAuthenticated, new FindCompanyFeedbackController().handle);
-router.post("/companies", isAuthenticated, new CreateCompanyController().handle);
 router.post("/companies/:id/assessments", isAuthenticated, new SetCompanyAssessmentsController().handle);
+router.post("/companies/admin", isAuthenticated, new CreateCompanyController().handle);
+router.put("/companies/admin/:id", isAuthenticated, new UpdateCompanyController().handle);
 
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController().handle);
