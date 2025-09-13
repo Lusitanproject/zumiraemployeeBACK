@@ -8,6 +8,7 @@ const parseZodError_1 = require("../../utils/parseZodError");
 const CreateCompanySchema = zod_1.z.object({
     name: zod_1.z.string(),
     email: zod_1.z.string().email(),
+    trailId: zod_1.z.string().cuid(),
 });
 class CreateCompanyController {
     async handle(req, res) {
@@ -15,9 +16,9 @@ class CreateCompanyController {
         const { success, data, error } = CreateCompanySchema.safeParse(req.body);
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
-        const { name, email } = data;
+        const { name, email, trailId } = data;
         const createCompany = new CreateCompanyService_1.CreateCompanyService();
-        const company = await createCompany.execute({ name, email });
+        const company = await createCompany.execute({ name, email, trailId });
         return res.json({ status: "SUCCESS", data: company });
     }
 }

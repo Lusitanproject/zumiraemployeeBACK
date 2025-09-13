@@ -20,6 +20,7 @@ class ActChatbotAdminService {
                 messageInstructions: true,
                 compilationInstructions: true,
                 index: true,
+                trailId: true,
                 actChapters: {
                     where: {
                         type: "ADMIN_TEST",
@@ -41,6 +42,26 @@ class ActChatbotAdminService {
                 description: true,
                 icon: true,
                 index: true,
+                trailId: true,
+            },
+            orderBy: {
+                index: "asc",
+            },
+        });
+        return { items: bots };
+    }
+    async findByTrail(trailId) {
+        const bots = await prisma_1.default.actChatbot.findMany({
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                icon: true,
+                index: true,
+                trailId: true,
+            },
+            where: {
+                trailId,
             },
             orderBy: {
                 index: "asc",
@@ -49,7 +70,7 @@ class ActChatbotAdminService {
         return { items: bots };
     }
     async create(data) {
-        const existingBots = await prisma_1.default.actChatbot.findMany();
+        const existingBots = await prisma_1.default.actChatbot.findMany({ where: { trailId: data.trailId } });
         const bot = await prisma_1.default.actChatbot.create({
             data: {
                 ...data,

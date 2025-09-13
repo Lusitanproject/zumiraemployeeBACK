@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateManyActChatbotsSchema = exports.UpdateActChatbotSchema = exports.CreateActChatbotSchema = void 0;
+exports.FindByTrailSchema = exports.UpdateManyActChatbotsSchema = exports.UpdateActChatbotSchema = exports.CreateActChatbotSchema = void 0;
 const zod_1 = require("zod");
 exports.CreateActChatbotSchema = zod_1.z.object({
     name: zod_1.z.string().nonempty(),
@@ -9,6 +9,7 @@ exports.CreateActChatbotSchema = zod_1.z.object({
     messageInstructions: zod_1.z.string().nonempty().optional(),
     compilationInstructions: zod_1.z.string().nonempty().optional(),
     icon: zod_1.z.string().nonempty(),
+    trailId: zod_1.z.string().cuid(),
 });
 exports.UpdateActChatbotSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
@@ -19,7 +20,11 @@ exports.UpdateActChatbotSchema = zod_1.z.object({
     compilationInstructions: zod_1.z.string().nonempty().optional(),
     index: zod_1.z.number().int().optional(),
     icon: zod_1.z.string().nonempty().optional(),
+    trailId: zod_1.z.string().cuid().optional(),
 });
 exports.UpdateManyActChatbotsSchema = zod_1.z.object({
     chatbots: zod_1.z.array(exports.UpdateActChatbotSchema),
+});
+exports.FindByTrailSchema = zod_1.z.object({
+    trailId: zod_1.z.string().cuid(),
 });

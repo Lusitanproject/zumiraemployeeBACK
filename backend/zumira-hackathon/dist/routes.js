@@ -17,6 +17,7 @@ const UpdateActChapterController_1 = require("./controllers/act/UpdateActChapter
 const CreateActChatbotController_1 = require("./controllers/admin/acts/CreateActChatbotController");
 const FindActChatbotController_1 = require("./controllers/admin/acts/FindActChatbotController");
 const FindAllActChatbotsController_1 = require("./controllers/admin/acts/FindAllActChatbotsController");
+const FindByTrailController_1 = require("./controllers/admin/acts/FindByTrailController");
 const UpdateActChatbotController_1 = require("./controllers/admin/acts/UpdateActChatbotController");
 const UpdateManyActChatbotsController_1 = require("./controllers/admin/acts/UpdateManyActChatbotsController");
 const DuplicateAssessmentController_1 = require("./controllers/admin/assessments/DuplicateAssessmentController");
@@ -53,6 +54,10 @@ const CreateSelfMonitoringBlockController_1 = require("./controllers/admin/self-
 const EditSelfMonitoringBlockController_1 = require("./controllers/admin/self-monitoring/EditSelfMonitoringBlockController");
 const FindAllSelfMonitoringBlocksController_1 = require("./controllers/admin/self-monitoring/FindAllSelfMonitoringBlocksController");
 const FindSelfMonitoringBlockController_1 = require("./controllers/admin/self-monitoring/FindSelfMonitoringBlockController");
+const CreateTrailController_copy_1 = require("./controllers/admin/trails/CreateTrailController copy");
+const FindAllTrailsController_1 = require("./controllers/admin/trails/FindAllTrailsController");
+const FindTrailController_1 = require("./controllers/admin/trails/FindTrailController");
+const UpdateTrailController_1 = require("./controllers/admin/trails/UpdateTrailController");
 const CreateUserController_1 = require("./controllers/admin/users/CreateUserController");
 const DeleteUserController_1 = require("./controllers/admin/users/DeleteUserController");
 const FindUserController_1 = require("./controllers/admin/users/FindUserController");
@@ -165,6 +170,7 @@ router.post("/notifications/admin/types", isAuthenticated_1.isAuthenticated, new
 router.delete("/notifications/:notificationId", isAuthenticated_1.isAuthenticated, new DeleteNotificationController_1.DeleteNotificationController().handle);
 // ROTAS ACTS
 router.get("/acts/admin", isAuthenticated_1.isAuthenticated, new FindAllActChatbotsController_1.FindAllActChatbotsController().handle);
+router.get("/acts/admin/by-trail", isAuthenticated_1.isAuthenticated, new FindByTrailController_1.FindByTrailController().handle);
 router.get("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new FindActChatbotController_1.FindActChatbotController().handle);
 router.put("/acts/admin/update-many", isAuthenticated_1.isAuthenticated, new UpdateManyActChatbotsController_1.UpdateManyActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateActChatbotController_1.UpdateActChatbotController().handle);
@@ -177,6 +183,10 @@ router.post("/acts/new-chapter", isAuthenticated_1.isAuthenticated, new CreateAc
 router.post("/acts/chapters/compile", isAuthenticated_1.isAuthenticated, new CompileActChapterController_1.CompileActChapterController().handle);
 router.put("/acts/chapters/:actChapterId", isAuthenticated_1.isAuthenticated, new UpdateActChapterController_1.UpdateActChapterController().handle);
 router.get("/acts/full-story", isAuthenticated_1.isAuthenticated, new GetFullStoryController_1.GetFullStoryController().handle);
+router.post("/trails/admin", isAuthenticated_1.isAuthenticated, new CreateTrailController_copy_1.CreateTrailController().handle);
+router.get("/trails/admin", isAuthenticated_1.isAuthenticated, new FindAllTrailsController_1.FindAllTrailsController().handle);
+router.get("/trails/admin/:id", isAuthenticated_1.isAuthenticated, new FindTrailController_1.FindTrailController().handle);
+router.put("/trails/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateTrailController_1.UpdateTrailController().handle);
 router.post("/leads", async (req, res) => {
     var _a;
     const { name, email, phone, company, message, plan } = req.body;

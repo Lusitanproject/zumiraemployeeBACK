@@ -8,18 +8,21 @@ const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
 class MoveToNextActService {
     async execute(userId) {
+        var _a;
         const user = await prisma_1.default.user.findFirst({
             where: {
                 id: userId,
             },
             include: {
                 currentActChatbot: true,
+                company: true,
             },
         });
         if (!user)
             throw new error_1.PublicError("Usuário não encontrado");
         if (!user.currentActChatbot)
             throw new error_1.PublicError("Usuário não está atribuído a nenhum ato");
+        const trailId = (_a = user.company) === null || _a === void 0 ? void 0 : _a.trailId;
         const currentActMessages = await prisma_1.default.actChapterMessage.findMany({
             where: {
                 actChapter: {
@@ -32,6 +35,7 @@ class MoveToNextActService {
             throw new error_1.PublicError("Usuário não iniciou o ato atual");
         const nextAct = await prisma_1.default.actChatbot.findFirst({
             where: {
+                trailId,
                 index: user.currentActChatbot.index + 1,
             },
         });

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetActsDataService = void 0;
+const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
 function getProgress(bots, chapters) {
     const _bots = [...bots].sort((a, b) => a.index - b.index);
@@ -20,13 +21,22 @@ function getProgress(bots, chapters) {
 }
 class GetActsDataService {
     async execute(userId) {
-        const [user, chatbots, chapters] = await Promise.all([
-            await prisma_1.default.user.findFirst({
-                where: {
-                    id: userId,
-                },
-            }),
+        var _a, _b;
+        const user = await prisma_1.default.user.findFirst({
+            where: {
+                id: userId,
+            },
+            include: {
+                company: true,
+            },
+        });
+        if (!user)
+            throw new error_1.PublicError("Usuário não encontrado");
+        const [chatbots, chapters] = await Promise.all([
             await prisma_1.default.actChatbot.findMany({
+                where: {
+                    trailId: (_a = user.company) === null || _a === void 0 ? void 0 : _a.trailId,
+                },
                 select: {
                     id: true,
                     name: true,
@@ -42,6 +52,9 @@ class GetActsDataService {
                 where: {
                     userId,
                     type: "REGULAR",
+                    actChatbot: {
+                        trailId: (_b = user.company) === null || _b === void 0 ? void 0 : _b.trailId,
+                    },
                 },
                 select: {
                     id: true,
