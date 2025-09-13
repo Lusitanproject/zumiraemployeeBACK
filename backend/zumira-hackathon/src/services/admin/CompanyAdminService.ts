@@ -2,6 +2,7 @@ import { CompanyAssessmentFeedback } from "@prisma/client";
 import { z } from "zod";
 
 import { CreateCompanySchema } from "../../definitions/admin/company";
+import { SetCompanyAssessmentsRequest } from "../../definitions/company";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 
@@ -11,7 +12,15 @@ class CompanyAdminService {
   async find(companyId: string) {
     const company = await prismaClient.company.findFirst({
       where: { id: companyId },
+      include: {
+        companyAvailableAssessments: {
+          select: {
+            assessmentId: true,
+          },
+        },
+      },
     });
+
     return company;
   }
 
@@ -53,6 +62,53 @@ class CompanyAdminService {
   async create(data: CreateCompany) {
     const company = await prismaClient.company.create({ data });
     return company;
+  }
+
+  async setCompanyAssessments({ id: companyId, assessmentIds }: SetCompanyAssessmentsRequest) {
+    const [company, newAssessments, currentAssessments] = await Promise.all([
+      prismaClient.company.findFirst({
+        where: {
+          id: companyId,
+        },
+      }),
+
+      prismaClient.assessment.findMany({
+        where: {
+          id: {
+            in: assessmentIds,
+          },
+        },
+      }),
+
+      prismaClient.companyAvailableAssessment.findMany({ where: { companyId } }),
+    ]);
+
+    if (!company) throw new Error("Empresa não existe");
+    if (assessmentIds.find((id) => !newAssessments.find((assessment) => id === assessment.id))) {
+      throw new Error("Um ou mais testes enviados não existem");
+    }
+
+    const deletedAssessmentIds = currentAssessments
+      .filter((curr) => !assessmentIds.includes(curr.assessmentId))
+      .map((item) => item.assessmentId);
+
+    await Promise.all([
+      prismaClient.companyAvailableAssessment.createMany({
+        data: assessmentIds.map((assessmentId) => ({
+          assessmentId,
+          companyId,
+        })),
+        skipDuplicates: true,
+      }),
+
+      prismaClient.companyAvailableAssessment.deleteMany({
+        where: {
+          assessmentId: {
+            in: deletedAssessmentIds,
+          },
+        },
+      }),
+    ]);
   }
 }
 

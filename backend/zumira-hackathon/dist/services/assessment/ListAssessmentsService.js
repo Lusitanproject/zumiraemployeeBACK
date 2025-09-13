@@ -8,17 +8,24 @@ const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
 class ListAssessmentsService {
     async execute({ userId, nationalityId }) {
-        const userExists = await prisma_1.default.user.findFirst({
+        const user = await prisma_1.default.user.findFirst({
             where: {
                 id: userId,
             },
         });
-        if (!userExists)
+        if (!user)
             throw new error_1.PublicError("Usuário não existe");
         const assessments = await prisma_1.default.assessment.findMany({
             where: {
                 nationalityId, // Ignorado se for undefined
                 public: true,
+                companyAvailableAssessments: user.companyId
+                    ? {
+                        some: {
+                            companyId: user.companyId,
+                        },
+                    }
+                    : undefined,
             },
             select: {
                 id: true,

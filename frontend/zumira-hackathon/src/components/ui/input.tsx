@@ -20,16 +20,26 @@ const inputVariants = cva(
   }
 );
 
-function Input({
-  className,
-  type,
-  hasIcon = false,
-  hasError = false,
-  ...props
-}: React.ComponentProps<"input"> & VariantProps<typeof inputVariants>) {
+interface InputProps extends React.ComponentProps<"input">, VariantProps<typeof inputVariants> {
+  icon?: React.ElementType;
+}
+
+function Input({ className, type, hasIcon = false, hasError = false, icon: Icon, ...props }: InputProps) {
+  const shouldShowIcon = hasIcon || !!Icon;
+
   return (
-    <div className="w-full relative">
-      <input className={cn(inputVariants({ hasIcon, hasError, className }))} data-slot="input" type={type} {...props} />
+    <div className="w-full h-fit relative text-text-700 placeholder:text-text-400">
+      {shouldShowIcon && Icon && (
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-500 pointer-events-none z-10">
+          <Icon size={20} strokeWidth={1.5} />
+        </div>
+      )}
+      <input
+        className={cn(inputVariants({ hasIcon: shouldShowIcon, hasError, className }))}
+        data-slot="input"
+        type={type}
+        {...props}
+      />
     </div>
   );
 }

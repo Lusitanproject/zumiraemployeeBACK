@@ -21,7 +21,7 @@ function Checkbox({ className, ...props }: CheckboxProps) {
       />
       <span
         className={cn(
-          "pointer-events-none flex items-center justify-center w-full h-full rounded transition-[background,border]",
+          "pointer-events-none flex items-center justify-center w-full h-full rounded transition-[background,border] duration-200",
           "peer-checked:border-primary-600 peer-checked:bg-primary-50 peer-checked:ring-2 peer-checked:ring-primary-600"
         )}
       >

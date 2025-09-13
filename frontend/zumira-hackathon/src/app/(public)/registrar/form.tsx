@@ -1,17 +1,17 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { toast } from "sonner";
 
 import { Label } from "@/components/custom/label";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 import { captureLead, register } from "./actions";
 import { FormState, Nationality, RegisterFormState } from "./definitions";
-import { useSearchParams } from "next/navigation";
 
 interface RegisterFormProps {
   nationalities: Nationality[];

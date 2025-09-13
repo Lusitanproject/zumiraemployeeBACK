@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
 const express_1 = require("express");
+const nodemailer_1 = __importDefault(require("nodemailer"));
 const CompileActChapterController_1 = require("./controllers/act/CompileActChapterController");
 const CreateActChapterController_1 = require("./controllers/act/CreateActChapterController");
 const GetActChapterController_1 = require("./controllers/act/GetActChapterController");
@@ -29,6 +30,7 @@ const UpdateResultRatingsController_1 = require("./controllers/admin/assessments
 const FindAllCompaniesController_1 = require("./controllers/admin/companies/FindAllCompaniesController");
 const FindAllFeedbacksController_1 = require("./controllers/admin/companies/FindAllFeedbacksController");
 const FindCompanyController_1 = require("./controllers/admin/companies/FindCompanyController");
+const SetCompanyAssessmentsController_1 = require("./controllers/admin/companies/SetCompanyAssessmentsController");
 const CreateDimensionController_1 = require("./controllers/admin/dimensions/CreateDimensionController");
 const EditDimensionController_1 = require("./controllers/admin/dimensions/EditDimensionController");
 const FindAllDimensionController_1 = require("./controllers/admin/dimensions/FindAllDimensionController");
@@ -82,7 +84,6 @@ const AuthUserController_1 = require("./controllers/user/auth/AuthUserController
 const SendCodeController_1 = require("./controllers/user/auth/SendCodeController");
 const CreateUserController_2 = require("./controllers/user/CreateUserController");
 const isAuthenticated_1 = require("./middlewares/isAuthenticated");
-const nodemailer_1 = __importDefault(require("nodemailer"));
 const router = (0, express_1.Router)();
 exports.router = router;
 // ROTAS AUTH
@@ -143,6 +144,7 @@ router.get("/companies/feedback", isAuthenticated_1.isAuthenticated, new FindAll
 router.get("/companies/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
 router.get("/companies/:id/feedback", isAuthenticated_1.isAuthenticated, new FindCompanyFeedbackController_1.FindCompanyFeedbackController().handle);
 router.post("/companies", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
+router.post("/companies/:id/assessments", isAuthenticated_1.isAuthenticated, new SetCompanyAssessmentsController_1.SetCompanyAssessmentsController().handle);
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController_1.ListNationalitiesController().handle);
 router.post("/nationalities/admin", isAuthenticated_1.isAuthenticated, new CreateNationalityController_1.CreateNationalityController().handle);
@@ -211,7 +213,7 @@ router.post("/leads", async (req, res) => {
         console.log("sent email");
         res.status(200).json({ success: true });
     }
-    catch (err) {
+    catch {
         console.log("failed to send email");
         res.status(500).json({ error: "Erro ao enviar e-mail" });
     }

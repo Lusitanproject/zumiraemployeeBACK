@@ -11,6 +11,7 @@ import { ZumiraApiResponse } from "./common";
 
 export type GetCompaniesResponse = ZumiraApiResponse<{ companies: Company[] }>;
 export type GetCompanyFeedbackResponse = ZumiraApiResponse<CompanyFeedback>;
+export type GetCompanyResponse = ZumiraApiResponse<Company>;
 
 export async function getCompanies(): Promise<Company[]> {
   const cookie = await cookies();
@@ -70,4 +71,64 @@ export async function getCompanyFeedback(companyId: string, assessmentId: string
   if (parsed.status === "ERROR") throw new Error(parsed.message);
 
   return parsed.data;
+}
+
+export async function getCompany(companyId: string) {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/companies/${companyId}`;
+
+  const [error, response] = await catchError(
+    fetch(url, {
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+    })
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const parsed = (await response.json()) as GetCompanyResponse;
+
+  if (parsed.status === "ERROR") throw new Error(parsed.message);
+
+  return parsed.data;
+}
+
+export async function setCompanyAvailableAssessments(companyId: string, assessmentIds: string[]) {
+  const cookie = await cookies();
+  const session = decrypt(cookie.get("session")?.value);
+
+  const url = `${process.env.API_BASE_URL}/companies/${companyId}/assessments`;
+
+  const [error, response] = await catchError(
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "Application/json",
+        Authorization: `Bearer ${session?.token}`,
+      },
+      body: JSON.stringify({ assessmentIds }),
+    })
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const parsed = (await response.json()) as ZumiraApiResponse<any>;
+
+  if (parsed.status === "ERROR") throw new Error(parsed.message);
 }
