@@ -9,7 +9,11 @@ export function Footer() {
         </div>
       </div>
       <div className="w-full flex justify-between items-center max-w-[82.5rem] mx-auto pt-3 pb-8">
-        <p className="text-white text-sm opacity-65">Junte-se a nós para promover<br />saúde e o bem-estar</p>
+        <p className="text-white text-sm opacity-65">
+          Junte-se a nós para promover
+          <br />
+          saúde e o bem-estar
+        </p>
       </div>
       <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center max-w-[82.5rem] mx-auto pt-3 pb-8">
         <div className="flex flex-col mb-10 md:mb-0">
@@ -26,11 +30,10 @@ export function Footer() {
           </div>
           <p className="text-sm text-white">support@zumira.ai</p>
         </div>
-        <p className="text-sm text-white/60 text-left md:text-right">Rua Visconde de Ouro Preto, 5 - 5&ordm; andar<br />Botafogo - Rio de Janeiro<br />Rj - Brasil - CEP 22250-180</p>
       </div>
       <div className="w-full flex justify-between items-center max-w-[82.5rem] mx-auto py-6 border-t border-white/30">
         <p className="text-white text-sm opacity-65">Zumira AI &copy; 2025. Todos os direitos reservados</p>
       </div>
     </footer>
-  )
+  );
 }
