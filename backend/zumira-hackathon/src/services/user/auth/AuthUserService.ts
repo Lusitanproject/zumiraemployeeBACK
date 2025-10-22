@@ -2,14 +2,28 @@ import { sign } from "jsonwebtoken";
 
 import { PublicError } from "../../../error";
 import prismaClient from "../../../prisma";
+import { AuthUserRequest } from "../../../definitions/user";
+import { User } from "@prisma/client";
+import { verify } from "argon2";
 
-interface AuthRequest {
-  code: string;
-  email: string;
+async function authByPassword(user: User, password: string) {
+  const passwordMatch = user.password ? await verify(user.password, password) : false;
+  if (!passwordMatch) throw new PublicError("Usuário ou senha inválidos");
+}
+
+async function authByCode(user: User, code: string) {
+  const storedCode = await prismaClient.authCode.findFirst({
+    where: {
+      userId: user.id,
+      code,
+    },
+  });
+
+  if (!storedCode || storedCode.expiresAt < new Date()) throw new PublicError("Código inválido ou expirado");
 }
 
 class AuthUserService {
-  async execute({ email, code }: AuthRequest) {
+  async execute({ email, password, code }: AuthUserRequest) {
     const user = await prismaClient.user.findUnique({
       where: {
         email: email,
@@ -19,16 +33,21 @@ class AuthUserService {
       },
     });
 
-    if (!user) throw new PublicError("E-mail não cadastrado");
+    if (!user) {
+      throw new PublicError("E-mail não cadastrado");
+    }
 
-    const storedCode = await prismaClient.authCode.findFirst({
-      where: {
-        userId: user.id,
-        code,
-      },
-    });
+    if (!password && !code) {
+      throw new PublicError("Por favor informe o código de autênticação ou senha");
+    }
 
-    if (!storedCode || storedCode.expiresAt < new Date()) throw new PublicError("Código inválido ou expirado");
+    if (password) {
+      await authByPassword(user, password);
+    }
+
+    if (code) {
+      await authByCode(user, code);
+    }
 
     const token = sign(
       {

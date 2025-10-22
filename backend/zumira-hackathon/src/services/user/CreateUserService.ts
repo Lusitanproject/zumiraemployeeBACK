@@ -1,9 +1,10 @@
 import { CreateUserRequest } from "../../definitions/user";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
+import { hash } from "argon2";
 
 class CreateUserService {
-  async execute(data: CreateUserRequest) {
+  async execute({ password, ...data }: CreateUserRequest) {
     const userExists = await prismaClient.user.findFirst({
       where: {
         email: data.email,
@@ -24,9 +25,12 @@ class CreateUserService {
       },
     });
 
+    const passwordHash = password ? await hash(password) : null;
+
     const user = await prismaClient.user.create({
       data: {
         ...data,
+        password: passwordHash,
         roleId: role.id,
         currentActChatbotId: firstAct?.id,
       },
