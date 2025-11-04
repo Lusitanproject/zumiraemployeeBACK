@@ -62,10 +62,10 @@ export function ActChat({ actChapter, inputWarning, onChangeMessages }: ActChatP
       {showRule && <hr className="text-text-200 bottom-0 w-full" />}
       <Messages loadingResponse={loading} messages={messages} onScroll={setShowRule} />
 
-      <div className={cn("relative flex w-full duration-500", messages.length ? "pb-0" : "pb-80")}>
+      <div className={cn("relative flex w-full duration-500", messages.length ? "pb-0" : "sm:pb-80 pb-56")}>
         <span
           className={cn(
-            "absolute bottom-full w-full pb-7 text-3xl text-text-700 font-medium text-center duration-500 ease-in-out",
+            "absolute bottom-full w-full sm:pb-7 pb-4 sm:text-3xl text-2xl text-text-700 font-medium text-center duration-500 ease-in-out",
             {
               "opacity-0": messages.length,
             }

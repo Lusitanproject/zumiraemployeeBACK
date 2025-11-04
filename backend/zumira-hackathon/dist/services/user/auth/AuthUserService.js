@@ -7,8 +7,24 @@ exports.AuthUserService = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const error_1 = require("../../../error");
 const prisma_1 = __importDefault(require("../../../prisma"));
+const argon2_1 = require("argon2");
+async function authByPassword(user, password) {
+    const passwordMatch = user.password ? await (0, argon2_1.verify)(user.password, password) : false;
+    if (!passwordMatch)
+        throw new error_1.PublicError("Usuário ou senha inválidos");
+}
+async function authByCode(user, code) {
+    const storedCode = await prisma_1.default.authCode.findFirst({
+        where: {
+            userId: user.id,
+            code,
+        },
+    });
+    if (!storedCode || storedCode.expiresAt < new Date())
+        throw new error_1.PublicError("Código inválido ou expirado");
+}
 class AuthUserService {
-    async execute({ email, code }) {
+    async execute({ email, password, code }) {
         const user = await prisma_1.default.user.findUnique({
             where: {
                 email: email,
@@ -17,16 +33,18 @@ class AuthUserService {
                 role: true,
             },
         });
-        if (!user)
+        if (!user) {
             throw new error_1.PublicError("E-mail não cadastrado");
-        const storedCode = await prisma_1.default.authCode.findFirst({
-            where: {
-                userId: user.id,
-                code,
-            },
-        });
-        if (!storedCode || storedCode.expiresAt < new Date())
-            throw new error_1.PublicError("Código inválido ou expirado");
+        }
+        if (!password && !code) {
+            throw new error_1.PublicError("Por favor informe o código de autênticação ou senha");
+        }
+        if (password) {
+            await authByPassword(user, password);
+        }
+        if (code) {
+            await authByCode(user, code);
+        }
         const token = (0, jsonwebtoken_1.sign)({
             email: user.email,
         }, process.env.JWT_SECRET, {

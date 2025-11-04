@@ -6,8 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserService = void 0;
 const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
+const argon2_1 = require("argon2");
 class CreateUserService {
-    async execute(data) {
+    async execute({ password, ...data }) {
         const userExists = await prisma_1.default.user.findFirst({
             where: {
                 email: data.email,
@@ -27,9 +28,11 @@ class CreateUserService {
                 index: "asc",
             },
         });
+        const passwordHash = password ? await (0, argon2_1.hash)(password) : null;
         const user = await prisma_1.default.user.create({
             data: {
                 ...data,
+                password: passwordHash,
                 roleId: role.id,
                 currentActChatbotId: firstAct === null || firstAct === void 0 ? void 0 : firstAct.id,
             },
