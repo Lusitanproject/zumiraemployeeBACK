@@ -1,9 +1,8 @@
 "use client";
 
-import { Fragment, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 
-import { cn } from "@/lib/utils";
 import { ActMessage } from "@/types/act";
 
 interface MessagesProps {
@@ -32,7 +31,7 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
       onScroll={handleScroll}
     >
       {messages.map((m, i) => (
-        <div className="w-full" ref={i == messages.length - 1 && !loadingResponse ? lastDivRef : null} key={i}>
+        <div key={i} ref={i == messages.length - 1 && !loadingResponse ? lastDivRef : null} className="w-full">
           {m.role === "user" ? (
             <>
               <div className="flex flex-col w-full items-end" style={{ overflowWrap: "anywhere" }}>
