@@ -43,7 +43,7 @@ export function Messages({ messages, loadingResponse, onScroll }: MessagesProps)
           ) : (
             <>
               <hr className="text-text-200 w-full" />
-              <div className="flex flex-col w-full items-start markdown" style={{ overflowWrap: "anywhere" }}>
+              <div className="flex flex-col w-full items-start markdown sm:px-5" style={{ overflowWrap: "anywhere" }}>
                 <Markdown>{m.content}</Markdown>
               </div>
               {m.error && <span className="text-md text-red-400">Erro ao processar uma resposta</span>}
