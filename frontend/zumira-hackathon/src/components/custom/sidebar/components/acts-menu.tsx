@@ -26,7 +26,7 @@ export function ActsMenu({ data, expanded }: ActsMenuProps) {
   return (
     <>
       <Link className="flex w-full justify-center" href="/chat/novo">
-        <Button size={expanded ? undefined : "icon"} variant="primary">
+        <Button className="w-full" size={expanded ? undefined : "icon"} variant="primary">
           <div className="flex flex-row gap-2 items-center">
             <Plus className="size-5 flex-none flex" />
             {expanded && (

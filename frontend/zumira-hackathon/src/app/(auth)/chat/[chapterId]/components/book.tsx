@@ -2,7 +2,7 @@
 
 import equal from "fast-deep-equal";
 import { startHolyLoader } from "holy-loader";
-import { Check, ChevronLeft, Redo, RefreshCcw, Undo } from "lucide-react";
+import { Check, Redo, RefreshCcw, Undo } from "lucide-react";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { MouseEvent } from "react";
@@ -33,7 +33,7 @@ export type BookRef = {
   recompile: () => Promise<void>;
 };
 
-export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps, ref) {
+export const Book = forwardRef(function Book({ actChapter }: BookProps, ref) {
   const divRef = useRef<HTMLDivElement>(null);
   const savedChapter = useRef<ActChapter>(actChapter);
   const [chapter, setChapter] = useState<ActChapter>(actChapter);
