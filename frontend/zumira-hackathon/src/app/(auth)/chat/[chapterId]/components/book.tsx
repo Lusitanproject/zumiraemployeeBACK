@@ -210,15 +210,15 @@ export const Book = forwardRef(function Book({ actChapter }: BookProps, ref) {
           ))}
         </div>
 
-        <div className="flex bg-[#f5f5eb] flex-col md:min-h-auto min-h-0 h-full md:h-auto items-center justify-start gap-2 text-start w-full max-w-[40rem] rounded-xs shadow-xl sm:py-10 sm:px-14 py-3 px-6">
+        <div className="flex bg-[#f5f5eb] flex-col md:min-h-auto min-h-[60vh] h-full md:h-auto items-center justify-start gap-2 text-start w-full max-w-[40rem] rounded-xs shadow-xl sm:py-10 sm:px-14 py-3 px-6">
           <input
-            className={cn("font-semibold text-xl field-sizing-content max-w-full", textInputClass)}
+            className={cn("font-semibold text-xl field-sizing-content max-w-full text-center", textInputClass)}
             disabled={finishing}
             value={chapter.title}
             onChange={(e) => handleChange("title", e.target.value)}
           />
           {recompiling ? (
-            <span className="flex size-full text-center justify-center pt-32 min-h-[60rem]">
+            <span className="flex size-full text-center justify-center pt-32 sm:min-h-[60rem] min-h-0">
               <LoadingText />
             </span>
           ) : (
@@ -236,7 +236,10 @@ export const Book = forwardRef(function Book({ actChapter }: BookProps, ref) {
       </div>
 
       <button
-        className="absolute z-20 right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-primary-200 cursor-pointer hover:bg-primary-300 duration-200"
+        className={cn(
+          "absolute z-20 right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-primary-200 cursor-pointer hover:bg-primary-300 duration-200",
+          { "opacity-0 pointer-events-none": recompiling }
+        )}
         title="Finalizar capítulo"
         onClick={finishAct}
       >

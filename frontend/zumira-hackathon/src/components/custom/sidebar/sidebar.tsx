@@ -85,7 +85,7 @@ export function Sidebar({ menuItems, data }: SidebarProps) {
         </div>
       </div>
       {!isAdminRoute && (
-        <span className="flex flex-row items-center justify-center gap-1.5 text-text-500 font-semibold text-sm sm:mt-48 mt-12">
+        <span className="flex flex-row items-center justify-center gap-1.5 text-text-500 font-semibold text-sm sm:mt-24 mt-12">
           <ShieldCheck className="size-6 flex-none" />
           {expanded && <span className="text-nowrap">Espaço seguro e confidencial</span>}
         </span>
