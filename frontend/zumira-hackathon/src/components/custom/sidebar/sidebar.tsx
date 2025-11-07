@@ -19,7 +19,7 @@ export function Sidebar({ menuItems, data }: SidebarProps) {
   const pathname = usePathname();
   const isAdminRoute = pathname.startsWith("/admin");
   const [expanded, setExpanded] = useState<boolean>(true);
-  const [hidden, setHidden] = useState<boolean>(false);
+  const [hidden, setHidden] = useState<boolean>(true);
 
   useEffect(() => {
     const listener = () => {
@@ -45,6 +45,10 @@ export function Sidebar({ menuItems, data }: SidebarProps) {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [hidden]);
+
+  useEffect(() => {
+    setHidden(true);
+  }, [pathname]);
 
   return (
     <aside
@@ -81,7 +85,7 @@ export function Sidebar({ menuItems, data }: SidebarProps) {
         </div>
       </div>
       {!isAdminRoute && (
-        <span className="flex flex-row items-center justify-center gap-1.5 text-text-500 font-semibold text-sm sm:mt-48 mt-32">
+        <span className="flex flex-row items-center justify-center gap-1.5 text-text-500 font-semibold text-sm sm:mt-48 mt-12">
           <ShieldCheck className="size-6 flex-none" />
           {expanded && <span className="text-nowrap">Espaço seguro e confidencial</span>}
         </span>
