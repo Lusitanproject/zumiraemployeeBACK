@@ -1,13 +1,12 @@
-import { cookies } from "next/headers";
-
-import { decrypt } from "@/app/_lib/session";
+import { CreateSessionProps } from "@/app/_lib/session";
 
 import { AvatarThumb } from "./avatar-thumb";
 
-export async function Avatar() {
-  const cookie = await cookies();
-  const session = decrypt(cookie.get("session")?.value);
+interface AvatarProps {
+  session: CreateSessionProps | null;
+}
 
+export function Avatar({ session }: AvatarProps) {
   if (!session) {
     return <></>;
   }

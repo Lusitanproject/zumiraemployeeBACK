@@ -50,7 +50,7 @@ export function Whiteboard({ actChapter }: WhiteboardProps) {
       <div
         className={cn(
           "absolute flex size-full left-0 top-0 duration-500",
-          openBook ? "translate-x-0" : "translate-x-full"
+          openBook || !!actChapter.compilation ? "translate-x-0" : "translate-x-full"
         )}
       >
         <Book ref={bookRef} actChapter={actChapter} onClose={() => setOpenBook(false)} />

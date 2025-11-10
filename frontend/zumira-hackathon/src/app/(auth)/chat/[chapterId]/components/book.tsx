@@ -2,7 +2,7 @@
 
 import equal from "fast-deep-equal";
 import { startHolyLoader } from "holy-loader";
-import { Check, ChevronLeft, Redo, RefreshCcw, Undo } from "lucide-react";
+import { Check, Redo, RefreshCcw, Undo } from "lucide-react";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { MouseEvent } from "react";
@@ -33,7 +33,7 @@ export type BookRef = {
   recompile: () => Promise<void>;
 };
 
-export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps, ref) {
+export const Book = forwardRef(function Book({ actChapter }: BookProps, ref) {
   const divRef = useRef<HTMLDivElement>(null);
   const savedChapter = useRef<ActChapter>(actChapter);
   const [chapter, setChapter] = useState<ActChapter>(actChapter);
@@ -117,6 +117,8 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
     setFinishing(true);
 
     try {
+      await update();
+      debouncedUpdate();
       startHolyLoader();
       await moveToNext(actChapter.actChatbot.id);
     } catch (err) {
@@ -176,13 +178,6 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
-  useEffect(() => {
-    return () => {
-      update();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <div ref={divRef} className={cn("relative flex h-full left-0 top-0 duration-500 w-full")}>
       <div
@@ -210,21 +205,21 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
           ))}
         </div>
 
-        <div className="flex bg-[#f5f5eb] flex-col items-center justify-start gap-2 text-start w-full max-w-[40rem] rounded-xs shadow-xl py-10 px-14">
+        <div className="flex bg-[#f5f5eb] flex-col md:min-h-auto min-h-[60vh] h-full md:h-auto items-center justify-start gap-2 text-start w-full max-w-[40rem] rounded-xs shadow-xl sm:py-10 sm:px-14 py-3 px-6">
           <input
-            className={cn("font-semibold text-xl field-sizing-content max-w-full", textInputClass)}
+            className={cn("font-semibold text-xl field-sizing-content max-w-full text-center", textInputClass)}
             disabled={finishing}
             value={chapter.title}
             onChange={(e) => handleChange("title", e.target.value)}
           />
           {recompiling ? (
-            <span className="flex size-full text-center justify-center pt-32 min-h-[60rem]">
+            <span className="flex size-full text-center justify-center pt-32 sm:min-h-[60rem] min-h-0">
               <LoadingText />
             </span>
           ) : (
             <textarea
               className={cn(
-                "flex size-full min-h-[60rem] font-normal text-base resize-y field-sizing-content text-justify",
+                "flex size-full md:min-h-[60rem] min-h-0 font-normal text-base resize-y field-sizing-content text-justify sm:overflow-y-scroll",
                 textInputClass
               )}
               disabled={finishing}
@@ -235,17 +230,11 @@ export const Book = forwardRef(function Book({ actChapter, onClose }: BookProps,
         </div>
       </div>
 
-      {onClose && (
-        <button className="absolute flex left-4 top-4 z-20">
-          <ChevronLeft
-            className={cn("flex flex-none size-6 text-500 cursor-pointer text-text-700")}
-            onClick={onClose}
-          />
-        </button>
-      )}
-
       <button
-        className="absolute z-20 right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-primary-200 cursor-pointer hover:bg-primary-300 duration-200"
+        className={cn(
+          "absolute z-20 right-5 text-xs top-1/2 -translate-y-1/2 rounded-full p-2 bg-primary-200 cursor-pointer hover:bg-primary-300 duration-200",
+          { "opacity-0 pointer-events-none": recompiling }
+        )}
         title="Finalizar capítulo"
         onClick={finishAct}
       >

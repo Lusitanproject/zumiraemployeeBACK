@@ -2,7 +2,7 @@ import { isAfter } from "date-fns";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-type CreateSessionProps = {
+export type CreateSessionProps = {
   name: string;
   gender?: "MALE" | "FEMALE" | "OTHER";
   act: string;

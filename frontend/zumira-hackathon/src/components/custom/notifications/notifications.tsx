@@ -1,13 +1,13 @@
-import { getAlerts } from "@/api/alerts";
-import { getNotifications } from "@/api/notifications";
+import { Alert } from "@/types/alert";
+import { Notification } from "@/types/notification";
 
 import { NotificationsButton } from "./components/notifications-button";
 
-export async function Notifications() {
-  const [notifications, alerts] = await Promise.all([
-    getNotifications({ filter: "recent", max: 10 }),
-    getAlerts({ filter: "recent", max: 10 }),
-  ]);
+interface NotificationsProps {
+  alerts: Alert[];
+  notifications: Notification[];
+}
 
+export function Notifications({ notifications, alerts }: NotificationsProps) {
   return <NotificationsButton alerts={alerts} notifications={notifications} />;
 }
