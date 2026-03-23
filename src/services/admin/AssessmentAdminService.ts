@@ -30,6 +30,7 @@ class AssessmentAdminService {
         id: true,
         title: true,
         summary: true,
+        public: true,
         selfMonitoringBlock: {
           select: {
             id: true,
@@ -48,6 +49,7 @@ class AssessmentAdminService {
       id: a.id,
       title: a.title,
       summary: a.summary,
+      public: a.public,
       selfMonitoring: a.selfMonitoringBlock,
       lastCompleted: new Date(Math.max(...a.assessmentResults.map((r) => new Date(r.createdAt).getTime()))),
     }));
