@@ -85,6 +85,7 @@ import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { FindUserByController } from "./controllers/admin/users/FindUserByController";
 
 const router = Router();
 
@@ -95,6 +96,7 @@ router.post("/auth/verify", new AuthUserController().handle);
 // ROTAS USERS
 router.post("/users", new CreateUserController().handle);
 router.post("/users/admin", isAuthenticated, new AdminCreateUserController().handle);
+router.get("/users/admin/find-by", isAuthenticated, new FindUserByController().handle);
 router.put("/users/admin/:id", isAuthenticated, new UpdateUserController().handle);
 router.delete("/users/:id", isAuthenticated, new DeleteUserController().handle);
 router.get("/users", isAuthenticated, new ListAllUsersController().handle);
@@ -150,12 +152,12 @@ router.get("/self-monitoring/admin/:id", isAuthenticated, new FindSelfMonitoring
 router.get(
   "/self-monitoring/results/:selfMonitoringBlockId",
   isAuthenticated,
-  new ListSelfMonitoringBlockResultsController().handle
+  new ListSelfMonitoringBlockResultsController().handle,
 );
 router.get(
   "/self-monitoring/dimensions/:selfMonitoringBlockId",
   isAuthenticated,
-  new FindDimensionByBlockController().handle
+  new FindDimensionByBlockController().handle,
 );
 
 // ROTAS COMPANY
