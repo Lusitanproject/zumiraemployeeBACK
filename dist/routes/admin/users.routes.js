@@ -13,6 +13,54 @@ const isAuthenticated_1 = require("../../middlewares/isAuthenticated");
 const adminUsersRoutes = (0, express_1.Router)();
 exports.adminUsersRoutes = adminUsersRoutes;
 adminUsersRoutes.post("/admin", isAuthenticated_1.isAuthenticated, new CreateUserController_1.CreateUserController().handle);
+/**
+ * @swagger
+ * /users/admin/find-by:
+ *   get:
+ *     tags: [AdminUsers]
+ *     summary: GET /users/admin/find-by
+ *     description: Valida filtros na query (id, email e/ou phoneNumber) e retorna um usuario.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: email
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: email
+ *       - in: query
+ *         name: phoneNumber
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required: [status, data]
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *       400:
+ *         description: PublicError
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
 adminUsersRoutes.get("/admin/find-by", isAuthenticated_1.isAuthenticated, new FindUserByController_1.FindUserByController().handle);
 adminUsersRoutes.put("/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateUserController_1.UpdateUserController().handle);
 adminUsersRoutes.delete("/:id", isAuthenticated_1.isAuthenticated, new DeleteUserController_1.DeleteUserController().handle);

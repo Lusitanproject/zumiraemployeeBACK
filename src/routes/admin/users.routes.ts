@@ -12,6 +12,55 @@ import { isAuthenticated } from "../../middlewares/isAuthenticated";
 const adminUsersRoutes = Router();
 
 adminUsersRoutes.post("/admin", isAuthenticated, new CreateUserController().handle);
+
+/**
+ * @swagger
+ * /users/admin/find-by:
+ *   get:
+ *     tags: [AdminUsers]
+ *     summary: GET /users/admin/find-by
+ *     description: Valida filtros na query (id, email e/ou phoneNumber) e retorna um usuario.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: email
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: email
+ *       - in: query
+ *         name: phoneNumber
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required: [status, data]
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *       400:
+ *         description: PublicError
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
 adminUsersRoutes.get("/admin/find-by", isAuthenticated, new FindUserByController().handle);
 adminUsersRoutes.put("/admin/:id", isAuthenticated, new UpdateUserController().handle);
 adminUsersRoutes.delete("/:id", isAuthenticated, new DeleteUserController().handle);
