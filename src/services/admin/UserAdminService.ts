@@ -1,7 +1,8 @@
 import { z } from "zod";
 
-import { CreateUserSchema, UpdateUserSchema } from "../../definitions/admin/users";
+import { CreateUserSchema, FindUserByRequest, UpdateUserSchema } from "../../definitions/admin/users";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 type CreateUser = z.infer<typeof CreateUserSchema>;
 type UpdateUser = z.infer<typeof UpdateUserSchema>;
@@ -29,6 +30,22 @@ class UserAdminService {
       },
     });
     return user;
+  }
+
+  async findBy({ id, email, phoneNumber }: FindUserByRequest) {
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id,
+        email,
+        phoneNumber,
+      },
+    });
+
+    if (!user) throw new PublicError("Usuário não encontrado");
+
+    const { password, roleId, companyId, nationalityId, currentActChatbotId, ...response } = user;
+
+    return response;
   }
 
   async findAll() {
