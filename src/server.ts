@@ -1,14 +1,22 @@
 import cors from "cors";
 import "express-async-errors";
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, RequestHandler, Response } from "express";
 import kleur from "kleur";
+import swaggerUi from "swagger-ui-express";
 
+import { swaggerSpec } from "./config/swagger";
 import { PublicError } from "./error";
 import { router } from "./routes";
 
 const app = express();
+const swaggerServeHandlers = swaggerUi.serve as unknown as RequestHandler[];
+const swaggerSetupHandler = swaggerUi.setup(swaggerSpec) as unknown as RequestHandler;
+
 app.use(express.json());
 app.use(cors());
+
+app.use("/docs", ...swaggerServeHandlers, swaggerSetupHandler);
+app.get("/docs-json", (_req, res) => res.json(swaggerSpec));
 
 app.use(router);
 
