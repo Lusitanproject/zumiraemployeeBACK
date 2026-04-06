@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminSelfMonitoringRoutes = void 0;
+const express_1 = require("express");
+const CreateSelfMonitoringBlockController_1 = require("../../controllers/admin/self-monitoring/CreateSelfMonitoringBlockController");
+const EditSelfMonitoringBlockController_1 = require("../../controllers/admin/self-monitoring/EditSelfMonitoringBlockController");
+const FindAllSelfMonitoringBlocksController_1 = require("../../controllers/admin/self-monitoring/FindAllSelfMonitoringBlocksController");
+const FindSelfMonitoringBlockController_1 = require("../../controllers/admin/self-monitoring/FindSelfMonitoringBlockController");
+const FindBySelfMonitoringController_1 = require("../../controllers/admin/dimensions/FindBySelfMonitoringController");
+const isAuthenticated_1 = require("../../middlewares/isAuthenticated");
+const adminSelfMonitoringRoutes = (0, express_1.Router)();
+exports.adminSelfMonitoringRoutes = adminSelfMonitoringRoutes;
+adminSelfMonitoringRoutes.get("/admin", isAuthenticated_1.isAuthenticated, new FindAllSelfMonitoringBlocksController_1.ListAllSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRoutes.post("/admin", isAuthenticated_1.isAuthenticated, new CreateSelfMonitoringBlockController_1.CreateSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRoutes.put("/admin/:id", isAuthenticated_1.isAuthenticated, new EditSelfMonitoringBlockController_1.EditSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRoutes.get("/admin/:id", isAuthenticated_1.isAuthenticated, new FindSelfMonitoringBlockController_1.FindSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRoutes.get("/dimensions/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new FindBySelfMonitoringController_1.FindDimensionByBlockController().handle);

@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminDimensionsRoutes = void 0;
+const express_1 = require("express");
+const CreateDimensionController_1 = require("../../controllers/admin/dimensions/CreateDimensionController");
+const EditDimensionController_1 = require("../../controllers/admin/dimensions/EditDimensionController");
+const FindAllDimensionController_1 = require("../../controllers/admin/dimensions/FindAllDimensionController");
+const FindDimensionController_1 = require("../../controllers/admin/dimensions/FindDimensionController");
+const isAuthenticated_1 = require("../../middlewares/isAuthenticated");
+const adminDimensionsRoutes = (0, express_1.Router)();
+exports.adminDimensionsRoutes = adminDimensionsRoutes;
+adminDimensionsRoutes.post("/", isAuthenticated_1.isAuthenticated, new CreateDimensionController_1.CreateDimensionController().handle);
+adminDimensionsRoutes.get("/", isAuthenticated_1.isAuthenticated, new FindAllDimensionController_1.FindAllDimensionsController().handle);
+adminDimensionsRoutes.get("/:psychologicalDimensionId", isAuthenticated_1.isAuthenticated, new FindDimensionController_1.FindDimensionController().handle);
+adminDimensionsRoutes.put("/:psychologicalDimensionId", isAuthenticated_1.isAuthenticated, new EditDimensionController_1.EditDimensionController().handle);
