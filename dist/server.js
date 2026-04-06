@@ -7,11 +7,17 @@ const cors_1 = __importDefault(require("cors"));
 require("express-async-errors");
 const express_1 = __importDefault(require("express"));
 const kleur_1 = __importDefault(require("kleur"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const swagger_1 = require("./config/swagger");
 const error_1 = require("./error");
 const routes_1 = require("./routes");
 const app = (0, express_1.default)();
+const swaggerServeHandlers = swagger_ui_express_1.default.serve;
+const swaggerSetupHandler = swagger_ui_express_1.default.setup(swagger_1.swaggerSpec);
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
+app.use("/docs", ...swaggerServeHandlers, swaggerSetupHandler);
+app.get("/docs-json", (_req, res) => res.json(swagger_1.swaggerSpec));
 app.use(routes_1.router);
 app.use((err, req, res, _next) => {
     console.error(`${kleur_1.default.red(req.url)}: ${err.message}`);
