@@ -81,6 +81,21 @@ import { ListNotificationsController } from "./controllers/notification/ListNoti
 import { ReadNotificationController } from "./controllers/notification/ReadNotificationController";
 import { ListSelfMonitoringBlockResultsController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlockResultsController";
 import { ListSelfMonitoringBlocksController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlocksController";
+import { IntegrationCompileActChapterController } from "./controllers/integration/act/CompileActChapterController";
+import { IntegrationCreateActChapterController } from "./controllers/integration/act/CreateActChapterController";
+import { IntegrationGetActChapterController } from "./controllers/integration/act/GetActChapterController";
+import { IntegrationGetActsDataController } from "./controllers/integration/act/GetActsDataController";
+import { IntegrationGetFullStoryController } from "./controllers/integration/act/GetFullStoryController";
+import { IntegrationMessageActChatbotController } from "./controllers/integration/act/MessageActChatbotController";
+import { IntegrationMoveToNextActController } from "./controllers/integration/act/MoveToNextActController";
+import { IntegrationUpdateActChapterController } from "./controllers/integration/act/UpdateActChapterController";
+import { IntegrationCreateResultController } from "./controllers/integration/assessment/CreateResultController";
+import { IntegrationDetailAssessmentController } from "./controllers/integration/assessment/DetailAssessmentController";
+import { IntegrationDetailResultController } from "./controllers/integration/assessment/DetailResultController";
+import { IntegrationGenerateCompanyFeedbackController } from "./controllers/integration/assessment/GenerateCompanyFeedbackController";
+import { IntegrationGenerateUserFeedbackController } from "./controllers/integration/assessment/GenerateUserFeedbackController";
+import { IntegrationListAssessmentsController } from "./controllers/integration/assessment/ListAssessmentsController";
+import { IntegrationListResultsController } from "./controllers/integration/assessment/ListResultsController";
 import { AuthUserController } from "./controllers/user/auth/AuthUserController";
 import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
@@ -209,6 +224,41 @@ router.post("/trails/admin", isAuthenticated, new CreateTrailController().handle
 router.get("/trails/admin", isAuthenticated, new FindAllTrailsController().handle);
 router.get("/trails/admin/:id", isAuthenticated, new FindTrailController().handle);
 router.put("/trails/admin/:id", isAuthenticated, new UpdateTrailController().handle);
+
+// ROTAS INTEGRATIONS
+router.get("/integrations/assessments/results", isAuthenticated, new IntegrationListResultsController().handle);
+router.get("/integrations/assessments/results/:id", isAuthenticated, new IntegrationDetailResultController().handle);
+router.post("/integrations/assessments/results", isAuthenticated, new IntegrationCreateResultController().handle);
+
+router.get("/integrations/assessments", isAuthenticated, new IntegrationListAssessmentsController().handle);
+router.get("/integrations/assessments/:id", isAuthenticated, new IntegrationDetailAssessmentController().handle);
+router.post(
+  "/integrations/assessments/feedback/users/:id",
+  isAuthenticated,
+  new IntegrationGenerateUserFeedbackController().handle,
+);
+router.post(
+  "/integrations/assessments/feedback/companies/:id",
+  isAuthenticated,
+  new IntegrationGenerateCompanyFeedbackController().handle,
+);
+
+router.get("/integrations/acts", isAuthenticated, new IntegrationGetActsDataController().handle);
+router.get("/integrations/acts/chapters", isAuthenticated, new IntegrationGetActChapterController().handle);
+router.put("/integrations/acts/next", isAuthenticated, new IntegrationMoveToNextActController().handle);
+router.post("/integrations/acts/message", isAuthenticated, new IntegrationMessageActChatbotController().handle);
+router.post("/integrations/acts/new-chapter", isAuthenticated, new IntegrationCreateActChapterController().handle);
+router.post(
+  "/integrations/acts/chapters/compile",
+  isAuthenticated,
+  new IntegrationCompileActChapterController().handle,
+);
+router.put(
+  "/integrations/acts/chapters/:actChapterId",
+  isAuthenticated,
+  new IntegrationUpdateActChapterController().handle,
+);
+router.get("/integrations/acts/full-story", isAuthenticated, new IntegrationGetFullStoryController().handle);
 
 router.post("/leads", async (req: Request, res: Response) => {
   const { name, email, phone, company, message, plan } = req.body;
