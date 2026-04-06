@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.notificationsRoutes = void 0;
+const express_1 = require("express");
+const DetailNotificationController_1 = require("../controllers/notification/DetailNotificationController");
+const ListNotificationsController_1 = require("../controllers/notification/ListNotificationsController");
+const ReadNotificationController_1 = require("../controllers/notification/ReadNotificationController");
+const isAuthenticated_1 = require("../middlewares/isAuthenticated");
+const notificationsRoutes = (0, express_1.Router)();
+exports.notificationsRoutes = notificationsRoutes;
+notificationsRoutes.get("/", isAuthenticated_1.isAuthenticated, new ListNotificationsController_1.ListNotificationsController().handle);
+notificationsRoutes.get("/:notificationId", isAuthenticated_1.isAuthenticated, new DetailNotificationController_1.DetailNotificationController().handle);
+notificationsRoutes.put("/:notificationId/read", isAuthenticated_1.isAuthenticated, new ReadNotificationController_1.ReadNotificationController().handle);

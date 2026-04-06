@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.companiesRoutes = void 0;
+const express_1 = require("express");
+const FindAllCompaniesController_1 = require("../controllers/admin/companies/FindAllCompaniesController");
+const FindAllFeedbacksController_1 = require("../controllers/admin/companies/FindAllFeedbacksController");
+const FindCompanyController_1 = require("../controllers/admin/companies/FindCompanyController");
+const SetCompanyAssessmentsController_1 = require("../controllers/admin/companies/SetCompanyAssessmentsController");
+const FindCompanyFeedbackController_1 = require("../controllers/company/FindCompanyFeedbackController");
+const isAuthenticated_1 = require("../middlewares/isAuthenticated");
+const companiesRoutes = (0, express_1.Router)();
+exports.companiesRoutes = companiesRoutes;
+companiesRoutes.get("/", isAuthenticated_1.isAuthenticated, new FindAllCompaniesController_1.FindAllCompaniesController().handle);
+companiesRoutes.get("/feedback", isAuthenticated_1.isAuthenticated, new FindAllFeedbacksController_1.FindAllFeedbacksController().handle);
+companiesRoutes.get("/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
+companiesRoutes.get("/:id/feedback", isAuthenticated_1.isAuthenticated, new FindCompanyFeedbackController_1.FindCompanyFeedbackController().handle);
+companiesRoutes.post("/:id/assessments", isAuthenticated_1.isAuthenticated, new SetCompanyAssessmentsController_1.SetCompanyAssessmentsController().handle);
