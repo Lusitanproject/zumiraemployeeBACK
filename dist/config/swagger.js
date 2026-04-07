@@ -6,6 +6,13 @@ var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.swaggerSpec = void 0;
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const isDistRuntime = __dirname.includes("/dist/");
+const docsBaseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : `http://localhost:${(_a = process.env.PORT) !== null && _a !== void 0 ? _a : "3000"}`;
+const apis = isDistRuntime
+    ? ["./dist/routes/integrations/*.js", "./dist/routes/admin/users.routes.js"]
+    : ["./src/routes/integrations/*.ts", "./src/routes/admin/users.routes.ts"];
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -16,7 +23,7 @@ const options = {
         },
         servers: [
             {
-                url: `http://localhost:${(_a = process.env.PORT) !== null && _a !== void 0 ? _a : "3000"}`,
+                url: docsBaseUrl,
             },
         ],
         components: {
@@ -55,6 +62,6 @@ const options = {
             },
         },
     },
-    apis: ["./src/routes/integrations/*.ts", "./src/routes/admin/users.routes.ts"],
+    apis,
 };
 exports.swaggerSpec = (0, swagger_jsdoc_1.default)(options);

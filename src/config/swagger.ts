@@ -1,5 +1,15 @@
 import swaggerJSDoc from "swagger-jsdoc";
 
+const isDistRuntime = __dirname.includes("/dist/");
+
+const docsBaseUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : `http://localhost:${process.env.PORT ?? "3000"}`;
+
+const apis = isDistRuntime
+  ? ["./dist/routes/integrations/*.js", "./dist/routes/admin/users.routes.js"]
+  : ["./src/routes/integrations/*.ts", "./src/routes/admin/users.routes.ts"];
+
 const options: swaggerJSDoc.Options = {
   definition: {
     openapi: "3.0.0",
@@ -10,7 +20,7 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT ?? "3000"}`,
+        url: docsBaseUrl,
       },
     ],
     components: {
@@ -49,7 +59,7 @@ const options: swaggerJSDoc.Options = {
       },
     },
   },
-  apis: ["./src/routes/integrations/*.ts", "./src/routes/admin/users.routes.ts"],
+  apis,
 };
 
 export const swaggerSpec = swaggerJSDoc(options);
