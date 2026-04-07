@@ -7,8 +7,8 @@ const docsBaseUrl = process.env.VERCEL_URL
   : `http://localhost:${process.env.PORT ?? "3000"}`;
 
 const apis = isDistRuntime
-  ? ["./dist/routes/integrations/*.js", "./dist/routes/admin/users.routes.js"]
-  : ["./src/routes/integrations/*.ts", "./src/routes/admin/users.routes.ts"];
+  ? ["./dist/routes/integrations/*.js", "./dist/routes/admin/users.routes.js", "./dist/routes/auth.routes.js"]
+  : ["./src/routes/integrations/*.ts", "./src/routes/admin/users.routes.ts", "./src/routes/auth.routes.ts"];
 
 const options: swaggerJSDoc.Options = {
   definition: {
