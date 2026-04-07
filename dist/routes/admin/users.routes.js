@@ -18,25 +18,28 @@ adminUsersRoutes.post("/admin", isAuthenticated_1.isAuthenticated, new CreateUse
  * /users/admin/find-by:
  *   get:
  *     tags: [AdminUsers]
- *     summary: GET /users/admin/find-by
- *     description: Valida filtros na query (id, email e/ou phoneNumber) e retorna um usuario.
+ *     summary: Buscar usuario por identificadores
+ *     description: Permite localizar um usuario usando identificadores alternativos (id, email e/ou telefone). Internamente, aplica o filtro informado para encontrar o cadastro correspondente e retorna o usuario encontrado.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: id
+ *         description: ID do usuario que se deseja localizar.
  *         required: false
  *         schema:
  *           type: string
  *           format: uuid
  *       - in: query
  *         name: email
+ *         description: Email do usuario a ser buscado.
  *         required: false
  *         schema:
  *           type: string
  *           format: email
  *       - in: query
  *         name: phoneNumber
+ *         description: Telefone do usuario a ser buscado.
  *         required: false
  *         schema:
  *           type: string
