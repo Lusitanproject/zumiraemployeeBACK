@@ -17,13 +17,14 @@ exports.integrationAssessmentsRoutes = integrationAssessmentsRoutes;
  * /integrations/assessments/results:
  *   get:
  *     tags: [Integrations]
- *     summary: GET /integrations/assessments/results
- *     description: Valida query.userId e retorna a lista de resultados mais recentes por assessment para esse usuario.
+ *     summary: Listar resultados recentes de assessments do usuario
+ *     description: Retorna, para o usuario informado, apenas o resultado mais recente de cada assessment ja respondido. Internamente, o sistema agrupa os registros por assessment e mantem o ultimo envio de respostas para montar um historico resumido, sem duplicidades.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario dono dos resultados que serao listados.
  *         required: true
  *         schema:
  *           type: string
@@ -83,19 +84,21 @@ integrationAssessmentsRoutes.get("/results", isAuthenticated_1.isAuthenticated, 
  * /integrations/assessments/results/{id}:
  *   get:
  *     tags: [Integrations]
- *     summary: GET /integrations/assessments/results/{id}
- *     description: Valida params.id e query.userId e retorna o detalhamento do resultado do assessment informado.
+ *     summary: Detalhar resultado de um assessment do usuario
+ *     description: Busca um resultado especifico de assessment e devolve a visao completa para leitura individual. Internamente, valida se o resultado pertence ao usuario informado e monta os detalhes com respostas, dimensoes psicologicas e dados do assessment.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: ID do resultado do assessment que sera detalhado.
  *         required: true
  *         schema:
  *           type: string
  *           minLength: 1
  *       - in: query
  *         name: userId
+ *         description: ID do usuario dono do resultado. Usado para garantir acesso apenas aos proprios dados.
  *         required: true
  *         schema:
  *           type: string
@@ -212,13 +215,14 @@ integrationAssessmentsRoutes.get("/results/:id", isAuthenticated_1.isAuthenticat
  * /integrations/assessments/results:
  *   post:
  *     tags: [Integrations]
- *     summary: POST /integrations/assessments/results
- *     description: Requer permissao answer-assessment, valida query.userId e body (assessmentId, answers) e cria um novo resultado.
+ *     summary: Registrar respostas e criar resultado de assessment
+ *     description: Recebe as respostas de um assessment e cria um novo resultado para o usuario informado. Internamente, valida a permissao de resposta, confere se assessment e escolhas enviados sao validos e persiste o resultado para uso em historico e feedbacks.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario que esta respondendo o assessment.
  *         required: true
  *         schema:
  *           type: string
@@ -232,18 +236,22 @@ integrationAssessmentsRoutes.get("/results/:id", isAuthenticated_1.isAuthenticat
  *             required: [assessmentId, answers]
  *             properties:
  *               assessmentId:
+ *                 description: ID do assessment que sera respondido.
  *                 type: string
  *                 minLength: 1
  *               answers:
+ *                 description: Lista de respostas do usuario, uma por pergunta respondida.
  *                 type: array
  *                 items:
  *                   type: object
  *                   required: [assessmentQuestionId, assessmentQuestionChoiceId]
  *                   properties:
  *                     assessmentQuestionId:
+ *                       description: ID da pergunta do assessment que esta sendo respondida.
  *                       type: string
  *                       format: uuid
  *                     assessmentQuestionChoiceId:
+ *                       description: ID da alternativa escolhida para a pergunta informada.
  *                       type: string
  *                       format: uuid
  *     responses:
@@ -278,19 +286,21 @@ integrationAssessmentsRoutes.post("/results", isAuthenticated_1.isAuthenticated,
  * /integrations/assessments:
  *   get:
  *     tags: [Integrations]
- *     summary: GET /integrations/assessments
- *     description: Valida query.userId e nationalityId opcional, e retorna assessments publicos disponiveis para a empresa do usuario.
+ *     summary: Listar assessments disponiveis para o usuario
+ *     description: Lista os assessments publicos disponiveis para a empresa do usuario informado. Internamente, aplica as regras de disponibilidade e, quando nationalityId e enviado, considera a versao de conteudo correspondente.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario usado para identificar empresa e disponibilidade de assessments.
  *         required: true
  *         schema:
  *           type: string
  *           format: uuid
  *       - in: query
  *         name: nationalityId
+ *         description: ID da nacionalidade usada para filtrar a versao do assessment (quando aplicavel).
  *         required: false
  *         schema:
  *           type: string
@@ -344,19 +354,21 @@ integrationAssessmentsRoutes.get("/", isAuthenticated_1.isAuthenticated, new Lis
  * /integrations/assessments/{id}:
  *   get:
  *     tags: [Integrations]
- *     summary: GET /integrations/assessments/{id}
- *     description: Requer permissao read-assessment, valida params.id e query.userId e retorna o assessment detalhado.
+ *     summary: Detalhar assessment para resposta do usuario
+ *     description: Retorna o conteudo completo de um assessment para resposta, incluindo perguntas, alternativas e bloco de automonitoramento. Internamente, valida permissao de leitura, verifica elegibilidade do usuario e informa o ultimo preenchimento quando existir.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: ID do assessment que sera aberto em detalhes.
  *         required: true
  *         schema:
  *           type: string
  *           minLength: 1
  *       - in: query
  *         name: userId
+ *         description: ID do usuario para validar permissao e contexto de acesso ao assessment.
  *         required: true
  *         schema:
  *           type: string
@@ -435,19 +447,21 @@ integrationAssessmentsRoutes.get("/:id", isAuthenticated_1.isAuthenticated, new 
  * /integrations/assessments/feedback/users/{id}:
  *   post:
  *     tags: [Integrations]
- *     summary: POST /integrations/assessments/feedback/users/{id}
- *     description: Valida params.id e query.userId, gera feedback individual via IA e pode criar alerta conforme perfil identificado.
+ *     summary: Gerar feedback individual de assessment
+ *     description: Gera um feedback individual para um assessment especifico com base no historico do usuario. Internamente, consolida os resultados mais recentes do usuario nesse assessment, envia o contexto para a IA e pode sinalizar criacao de alerta conforme o perfil identificado.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: ID do assessment usado como base para gerar o feedback individual.
  *         required: true
  *         schema:
  *           type: string
  *           minLength: 1
  *       - in: query
  *         name: userId
+ *         description: ID do usuario que recebera o feedback e delimita quais resultados entram na analise.
  *         required: true
  *         schema:
  *           type: string
@@ -484,19 +498,21 @@ integrationAssessmentsRoutes.post("/feedback/users/:id", isAuthenticated_1.isAut
  * /integrations/assessments/feedback/companies/{id}:
  *   post:
  *     tags: [Integrations]
- *     summary: POST /integrations/assessments/feedback/companies/{id}
- *     description: Valida params.id e query.userId, agrega resultados mais recentes da empresa e gera feedback corporativo via IA.
+ *     summary: Gerar feedback corporativo de assessment
+ *     description: Gera um feedback corporativo para um assessment especifico considerando os resultados recentes da empresa do usuario solicitante. Internamente, agrega dados dos participantes da empresa, identifica padroes coletivos e produz orientacoes em nivel organizacional.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: ID do assessment usado como base para o feedback corporativo.
  *         required: true
  *         schema:
  *           type: string
  *           minLength: 1
  *       - in: query
  *         name: userId
+ *         description: ID do usuario solicitante. O sistema usa esse usuario para identificar qual empresa sera analisada.
  *         required: true
  *         schema:
  *           type: string

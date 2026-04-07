@@ -17,13 +17,14 @@ const integrationActsRoutes = Router();
  * /integrations/acts:
  *   get:
  *     tags: [Integrations]
- *     summary: GET /integrations/acts
- *     description: Valida query.userId e retorna dados do usuario na trilha atual com chatbots, capitulos e progresso.
+ *     summary: Obter visao geral da trilha ACT do usuario
+ *     description: Retorna uma visao geral da trilha ACT do usuario, com chatbots, capitulos e progresso. Internamente, identifica a etapa atual da jornada, quais itens estao desbloqueados e calcula o avanco para orientar os proximos passos.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario dono da trilha ACT que sera consultada.
  *         required: true
  *         schema:
  *           type: string
@@ -84,19 +85,21 @@ integrationActsRoutes.get("/", isAuthenticated, new IntegrationGetActsDataContro
  * /integrations/acts/chapters:
  *   get:
  *     tags: [Integrations]
- *     summary: GET /integrations/acts/chapters
- *     description: Valida query.userId e query.actChapterId, busca capitulo e mensagens desse capitulo para o usuario informado.
+ *     summary: Consultar capitulo da trilha com historico de conversa
+ *     description: Retorna os dados de um capitulo especifico da trilha do usuario, incluindo mensagens ja trocadas. Internamente, valida se o capitulo pertence ao usuario informado e monta o contexto completo para continuidade da conversa.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario dono do capitulo consultado.
  *         required: true
  *         schema:
  *           type: string
  *           format: uuid
  *       - in: query
  *         name: actChapterId
+ *         description: ID do capitulo da trilha ACT que deve ser carregado.
  *         required: true
  *         schema:
  *           type: string
@@ -159,13 +162,14 @@ integrationActsRoutes.get("/chapters", isAuthenticated, new IntegrationGetActCha
  * /integrations/acts/next:
  *   put:
  *     tags: [Integrations]
- *     summary: PUT /integrations/acts/next
- *     description: Valida query.userId e tenta avancar o usuario para o proximo act chatbot da trilha.
+ *     summary: Avancar usuario para o proximo chatbot da trilha
+ *     description: Tenta mover o usuario para a proxima etapa da trilha ACT. Internamente, verifica as regras de progressao da jornada e, quando elegivel, atualiza o chatbot atual do usuario.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario que tera a progressao da trilha avaliada.
  *         required: true
  *         schema:
  *           type: string
@@ -202,13 +206,14 @@ integrationActsRoutes.put("/next", isAuthenticated, new IntegrationMoveToNextAct
  * /integrations/acts/message:
  *   post:
  *     tags: [Integrations]
- *     summary: POST /integrations/acts/message
- *     description: Valida query.userId e body (actChapterId, content), grava mensagem do usuario, gera resposta da IA e salva mensagem assistant.
+ *     summary: Enviar mensagem no capitulo e receber resposta do assistente
+ *     description: Registra uma nova mensagem do usuario no capitulo informado e retorna a resposta do assistente. Internamente, valida o vinculo do capitulo com o usuario, salva a mensagem enviada, gera a resposta por IA e persiste essa resposta no historico.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario que esta interagindo no capitulo.
  *         required: true
  *         schema:
  *           type: string
@@ -222,9 +227,11 @@ integrationActsRoutes.put("/next", isAuthenticated, new IntegrationMoveToNextAct
  *             required: [actChapterId, content]
  *             properties:
  *               actChapterId:
+ *                 description: ID do capitulo onde a mensagem sera registrada.
  *                 type: string
  *                 minLength: 1
  *               content:
+ *                 description: Texto da mensagem enviada pelo usuario.
  *                 type: string
  *                 minLength: 1
  *     responses:
@@ -255,13 +262,14 @@ integrationActsRoutes.post("/message", isAuthenticated, new IntegrationMessageAc
  * /integrations/acts/new-chapter:
  *   post:
  *     tags: [Integrations]
- *     summary: POST /integrations/acts/new-chapter
- *     description: Valida query.userId e body (actChatbotId, type), remove capitulos vazios do usuario e cria novo capitulo.
+ *     summary: Criar novo capitulo na trilha ACT
+ *     description: Cria um novo capitulo para o chatbot informado dentro da trilha do usuario. Internamente, remove capitulos vazios anteriores para evitar ruido no historico e inicia um novo espaco de conversa.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario para o qual o novo capitulo sera criado.
  *         required: true
  *         schema:
  *           type: string
@@ -275,9 +283,11 @@ integrationActsRoutes.post("/message", isAuthenticated, new IntegrationMessageAc
  *             required: [actChatbotId, type]
  *             properties:
  *               actChatbotId:
+ *                 description: ID do chatbot da trilha que sera associado ao novo capitulo.
  *                 type: string
  *                 minLength: 1
  *               type:
+ *                 description: Tipo do capitulo a ser criado (uso normal ou teste administrativo).
  *                 type: string
  *                 enum: [REGULAR, ADMIN_TEST]
  *     responses:
@@ -318,13 +328,14 @@ integrationActsRoutes.post("/new-chapter", isAuthenticated, new IntegrationCreat
  * /integrations/acts/chapters/compile:
  *   post:
  *     tags: [Integrations]
- *     summary: POST /integrations/acts/chapters/compile
- *     description: Valida query.userId e body.actChapterId, compila o capitulo usando as mensagens e salva o texto em compilation.
+ *     summary: Compilar capitulo em resumo consolidado
+ *     description: Gera uma compilacao textual do capitulo a partir das mensagens ja registradas. Internamente, reune o historico da conversa, produz um resumo consolidado e salva esse conteudo no campo de compilacao do capitulo.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario dono do capitulo a ser compilado.
  *         required: true
  *         schema:
  *           type: string
@@ -338,6 +349,7 @@ integrationActsRoutes.post("/new-chapter", isAuthenticated, new IntegrationCreat
  *             required: [actChapterId]
  *             properties:
  *               actChapterId:
+ *                 description: ID do capitulo que tera o texto de compilacao gerado.
  *                 type: string
  *                 minLength: 1
  *     responses:
@@ -382,19 +394,21 @@ integrationActsRoutes.post("/chapters/compile", isAuthenticated, new Integration
  * /integrations/acts/chapters/{actChapterId}:
  *   put:
  *     tags: [Integrations]
- *     summary: PUT /integrations/acts/chapters/{actChapterId}
- *     description: Valida query.userId e body (actChapterId, title opcional, compilation opcional) e atualiza o capitulo do usuario.
+ *     summary: Atualizar dados de um capitulo da trilha
+ *     description: Atualiza informacoes de um capitulo da trilha do usuario, como titulo e texto de compilacao. Internamente, garante que o capitulo pertence ao usuario informado e aplica apenas os campos enviados.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: actChapterId
+ *         description: ID do capitulo na URL que sera atualizado.
  *         required: true
  *         schema:
  *           type: string
  *           minLength: 1
  *       - in: query
  *         name: userId
+ *         description: ID do usuario dono do capitulo que esta sendo alterado.
  *         required: true
  *         schema:
  *           type: string
@@ -408,12 +422,15 @@ integrationActsRoutes.post("/chapters/compile", isAuthenticated, new Integration
  *             required: [actChapterId]
  *             properties:
  *               actChapterId:
+ *                 description: ID do capitulo no corpo da requisicao (deve corresponder ao capitulo a ser atualizado).
  *                 type: string
  *                 minLength: 1
  *               title:
+ *                 description: Novo titulo do capitulo.
  *                 type: string
  *                 minLength: 1
  *               compilation:
+ *                 description: Texto consolidado do capitulo apos a revisao/edicao.
  *                 type: string
  *                 nullable: true
  *     responses:
@@ -462,13 +479,14 @@ integrationActsRoutes.put(
  * /integrations/acts/full-story:
  *   get:
  *     tags: [Integrations]
- *     summary: GET /integrations/acts/full-story
- *     description: Valida query.userId e retorna capitulos REGULAR com compilation preenchida para a trilha do usuario.
+ *     summary: Listar historia completa compilada da trilha
+ *     description: Retorna a historia completa da trilha ACT do usuario com os capitulos regulares ja compilados. Internamente, filtra apenas capitulos com conteudo consolidado para montar uma narrativa continua da jornada.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
+ *         description: ID do usuario cuja historia consolidada sera retornada.
  *         required: true
  *         schema:
  *           type: string
