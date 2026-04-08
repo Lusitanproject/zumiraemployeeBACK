@@ -11,10 +11,7 @@ class UserAdminService {
   async find(id: string) {
     const user = await prismaClient.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      include: {
         company: {
           select: {
             id: true,
@@ -50,10 +47,7 @@ class UserAdminService {
 
   async findAll() {
     const users = await prismaClient.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      include: {
         company: {
           select: {
             id: true,
@@ -75,10 +69,7 @@ class UserAdminService {
   async findByEmail(email: string) {
     const user = await prismaClient.user.findFirst({
       where: { email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      include: {
         company: {
           select: {
             id: true,
@@ -101,10 +92,7 @@ class UserAdminService {
   async findByCompany(companyId: string) {
     const users = await prismaClient.user.findMany({
       where: { companyId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      include: {
         company: {
           select: {
             id: true,

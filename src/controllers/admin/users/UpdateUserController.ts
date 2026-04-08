@@ -7,6 +7,7 @@ import { RoleAdminService } from "../../../services/admin/RoleAdminService";
 import { UserAdminService } from "../../../services/admin/UserAdminService";
 import { assertPermissions } from "../../../utils/assertPermissions";
 import { parseZodError } from "../../../utils/parseZodError";
+import { PublicError } from "../../../error";
 
 const RequestParams = z.object({
   id: z.string().uuid(),
@@ -20,13 +21,10 @@ class UpdateUserController {
     const { success, data, error } = UpdateUserSchema.safeParse(req.body);
 
     if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
+      throw new Error(parseZodError(error));
     }
 
-    const { name, roleId, companyId } = data;
+    const { roleId, companyId } = data;
 
     if (roleId) {
       const roleService = new RoleAdminService();
@@ -60,7 +58,7 @@ class UpdateUserController {
     }
 
     const userService = new UserAdminService();
-    const user = await userService.update({ id, name, roleId, companyId });
+    const user = await userService.update({ id, ...data });
 
     return res.json({ status: "SUCCESS", data: user });
   }
