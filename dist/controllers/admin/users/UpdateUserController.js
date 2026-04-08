@@ -17,12 +17,9 @@ class UpdateUserController {
         const { id } = RequestParams.parse(req.params);
         const { success, data, error } = users_1.UpdateUserSchema.safeParse(req.body);
         if (!success) {
-            return res.status(400).json({
-                status: "ERROR",
-                message: (0, parseZodError_1.parseZodError)(error),
-            });
+            throw new Error((0, parseZodError_1.parseZodError)(error));
         }
-        const { name, roleId, companyId } = data;
+        const { roleId, companyId } = data;
         if (roleId) {
             const roleService = new RoleAdminService_1.RoleAdminService();
             const role = await roleService.find(roleId);
@@ -50,7 +47,7 @@ class UpdateUserController {
             }
         }
         const userService = new UserAdminService_1.UserAdminService();
-        const user = await userService.update({ id, name, roleId, companyId });
+        const user = await userService.update({ id, ...data });
         return res.json({ status: "SUCCESS", data: user });
     }
 }
