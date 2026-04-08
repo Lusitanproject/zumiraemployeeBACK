@@ -3,10 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthUserSchema = exports.CreateUserSchema = void 0;
 const client_1 = require("@prisma/client");
 const zod_1 = require("zod");
+const common_1 = require("./common");
 exports.CreateUserSchema = zod_1.z.object({
     name: zod_1.z.string().nonempty(),
     email: zod_1.z.string().email(),
     password: zod_1.z.string().min(8).optional(),
+    phoneNumber: common_1.PhoneNumberSchema.optional(),
     birthdate: zod_1.z
         .string()
         .refine((val) => !isNaN(Date.parse(val)))
