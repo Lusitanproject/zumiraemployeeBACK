@@ -1,10 +1,12 @@
 import { UserGender } from "@prisma/client";
 import { z } from "zod";
+import { PhoneNumberSchema } from "./common";
 
 export const CreateUserSchema = z.object({
   name: z.string().nonempty(),
   email: z.string().email(),
   password: z.string().min(8).optional(),
+  phoneNumber: PhoneNumberSchema.optional(),
   birthdate: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)))
