@@ -15,13 +15,35 @@ const swaggerSetupHandler = swaggerUi.setup(swaggerSpec) as unknown as RequestHa
 app.use(express.json());
 app.use(cors());
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const startedAt = process.hrtime.bigint();
+
+  console.log(`${kleur.cyan(req.method)} ${kleur.blue(req.originalUrl)} - incoming`);
+
+  res.on("finish", () => {
+    const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
+    const statusCode = res.statusCode;
+    const statusColor = statusCode >= 500 ? kleur.red : statusCode >= 400 ? kleur.yellow : kleur.green;
+    const errorMessage = (res.locals as { errorMessage?: string }).errorMessage;
+    const errorLog = errorMessage ? ` ${kleur.red(`error=\"${errorMessage}\"`)}` : "";
+
+    console.log(
+      `${kleur.cyan(req.method)} ${kleur.blue(req.originalUrl)} - ${statusColor(String(statusCode))} ${kleur.gray(
+        `${durationMs.toFixed(1)}ms`,
+      )}${errorLog}`,
+    );
+  });
+
+  next();
+});
+
 app.use("/docs", ...swaggerServeHandlers, swaggerSetupHandler);
 app.get("/docs-json", (_req, res) => res.json(swaggerSpec));
 
 app.use(router);
 
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-  console.error(`${kleur.red(req.url)}: ${err.message}`);
+  console.error(`${kleur.red(req.url)}: ${err.stack}`);
 
   if (err instanceof PublicError) {
     return res.status(400).json({
