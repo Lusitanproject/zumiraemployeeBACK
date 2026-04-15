@@ -43,7 +43,7 @@ app.get("/docs-json", (_req, res) => res.json(swaggerSpec));
 app.use(router);
 
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-  console.error(`${kleur.red(req.url)}: ${err.stack}`);
+  console.error(`${kleur.red(req.method)} ${kleur.red(req.url)}: ${err.stack}`);
 
   if (err instanceof PublicError) {
     return res.status(400).json({

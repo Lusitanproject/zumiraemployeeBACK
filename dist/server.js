@@ -33,7 +33,7 @@ app.use("/docs", ...swaggerServeHandlers, swaggerSetupHandler);
 app.get("/docs-json", (_req, res) => res.json(swagger_1.swaggerSpec));
 app.use(routes_1.router);
 app.use((err, req, res, _next) => {
-    console.error(`${kleur_1.default.red(req.url)}: ${err.stack}`);
+    console.error(`${kleur_1.default.red(req.method)} ${kleur_1.default.red(req.url)}: ${err.stack}`);
     if (err instanceof error_1.PublicError) {
         return res.status(400).json({
             status: "ERROR",
