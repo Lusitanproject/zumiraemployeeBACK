@@ -16,7 +16,7 @@ class CreateUserController {
 
     if (!success) throw new Error(parseZodError(error));
 
-    const { name, email, roleId, companyId } = data;
+    const { email, roleId, companyId } = data;
 
     const roleService = new RoleAdminService();
     const role = await roleService.find(roleId);
@@ -39,7 +39,7 @@ class CreateUserController {
 
     if (emailExists) throw new PublicError("Já exista uma conta em uso com o email informado");
 
-    const user = await userService.create({ name, email, roleId, companyId });
+    const user = await userService.create(data);
 
     return res.json({ status: "SUCCESS", data: user });
   }
