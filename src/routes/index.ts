@@ -14,6 +14,9 @@ import { usersRoutes } from "./users.routes";
 
 const router = Router();
 
+router.use(integrationsRoutes);
+router.use(adminRoutes);
+
 router.use("/auth", authRoutes);
 router.use("/users", usersRoutes);
 router.use("/assessments", assessmentsRoutes);
@@ -22,9 +25,6 @@ router.use("/companies", companiesRoutes);
 router.use("/nationalities", nationalitiesRoutes);
 router.use("/notifications", notificationsRoutes);
 router.use("/acts", actsRoutes);
-
-router.use(adminRoutes);
-router.use(integrationsRoutes);
 
 router.use("/leads", leadsRoutes);
 
