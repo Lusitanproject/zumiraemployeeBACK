@@ -5,14 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserAdminService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
+const error_1 = require("../../error");
 class UserAdminService {
     async find(id) {
         const user = await prisma_1.default.user.findUnique({
             where: { id },
-            select: {
-                id: true,
-                name: true,
-                email: true,
+            include: {
                 company: {
                     select: {
                         id: true,
@@ -29,12 +27,22 @@ class UserAdminService {
         });
         return user;
     }
+    async findBy({ id, email, phoneNumber }) {
+        const user = await prisma_1.default.user.findFirst({
+            where: {
+                id,
+                email,
+                phoneNumber,
+            },
+        });
+        if (!user)
+            throw new error_1.PublicError("Usuário não encontrado");
+        const { password, roleId, companyId, nationalityId, currentActChatbotId, ...response } = user;
+        return response;
+    }
     async findAll() {
         const users = await prisma_1.default.user.findMany({
-            select: {
-                id: true,
-                name: true,
-                email: true,
+            include: {
                 company: {
                     select: {
                         id: true,
@@ -55,10 +63,7 @@ class UserAdminService {
     async findByEmail(email) {
         const user = await prisma_1.default.user.findFirst({
             where: { email },
-            select: {
-                id: true,
-                name: true,
-                email: true,
+            include: {
                 company: {
                     select: {
                         id: true,
@@ -79,10 +84,7 @@ class UserAdminService {
     async findByCompany(companyId) {
         const users = await prisma_1.default.user.findMany({
             where: { companyId },
-            select: {
-                id: true,
-                name: true,
-                email: true,
+            include: {
                 company: {
                     select: {
                         id: true,

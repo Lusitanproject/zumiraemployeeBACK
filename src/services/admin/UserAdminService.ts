@@ -1,7 +1,8 @@
 import { z } from "zod";
 
-import { CreateUserSchema, UpdateUserSchema } from "../../definitions/admin/users";
+import { CreateUserSchema, FindUserByRequest, UpdateUserSchema } from "../../definitions/admin/users";
 import prismaClient from "../../prisma";
+import { PublicError } from "../../error";
 
 type CreateUser = z.infer<typeof CreateUserSchema>;
 type UpdateUser = z.infer<typeof UpdateUserSchema>;
@@ -10,10 +11,7 @@ class UserAdminService {
   async find(id: string) {
     const user = await prismaClient.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      include: {
         company: {
           select: {
             id: true,
@@ -31,12 +29,25 @@ class UserAdminService {
     return user;
   }
 
+  async findBy({ id, email, phoneNumber }: FindUserByRequest) {
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id,
+        email,
+        phoneNumber,
+      },
+    });
+
+    if (!user) throw new PublicError("Usuário não encontrado");
+
+    const { password, roleId, companyId, nationalityId, currentActChatbotId, ...response } = user;
+
+    return response;
+  }
+
   async findAll() {
     const users = await prismaClient.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      include: {
         company: {
           select: {
             id: true,
@@ -58,10 +69,7 @@ class UserAdminService {
   async findByEmail(email: string) {
     const user = await prismaClient.user.findFirst({
       where: { email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      include: {
         company: {
           select: {
             id: true,
@@ -84,10 +92,7 @@ class UserAdminService {
   async findByCompany(companyId: string) {
     const users = await prismaClient.user.findMany({
       where: { companyId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      include: {
         company: {
           select: {
             id: true,
