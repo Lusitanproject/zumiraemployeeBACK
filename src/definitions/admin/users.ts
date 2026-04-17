@@ -9,6 +9,8 @@ export const CreateUserSchema = z.object({
   phoneNumber: PhoneNumberSchema.optional(),
 });
 
+export const CreateManyUsersSchema = z.array(CreateUserSchema).min(1);
+
 export const FindByEmailSchema = z.object({
   email: z.string().email(),
 });
