@@ -101,6 +101,7 @@ import { SendCodeController } from "./controllers/user/auth/SendCodeController";
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { FindUserByController } from "./controllers/admin/users/FindUserByController";
+import { CreateManyUsersController } from "./controllers/admin/users/CreateManyUsersController";
 
 const router = Router();
 
@@ -117,6 +118,7 @@ router.delete("/users/:id", isAuthenticated, new DeleteUserController().handle);
 router.get("/users", isAuthenticated, new ListAllUsersController().handle);
 router.get("/users/:userId", isAuthenticated, new FindUserController().handle);
 router.get("/users/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);
+router.post("/users/admin/create-many", isAuthenticated, new CreateManyUsersController().handle)
 
 // ROTAS PERFIS
 router.get("/roles", isAuthenticated, new FindAllRolesController().handle);

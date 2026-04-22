@@ -57,18 +57,20 @@ class AuthUserService {
       {
         subject: String(user.id),
         expiresIn: "30d",
-      }
+      },
     );
     const now = new Date().getTime();
     const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30); // Expiração em 30 dias
 
     return {
+      // TODO Remover dados de user da root
       name: user.name,
       gender: user.gender,
       act: user.currentActChatbotId,
       role: user.role.slug,
       token: token,
       expiresAt: expiresAt,
+      user,
     };
   }
 }
