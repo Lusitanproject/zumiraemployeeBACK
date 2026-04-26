@@ -115,6 +115,30 @@ class UserAdminService {
         });
         return user;
     }
+    async createMany(data) {
+        const { companyId } = data[0];
+        const allSameCompany = data.every((u) => u.companyId === companyId);
+        if (!allSameCompany)
+            throw new error_1.PublicError("Todos os usuários cadastrados em lote devem ser da mesma empresa");
+        const company = companyId
+            ? await prisma_1.default.company.findFirst({
+                where: { id: companyId },
+                include: { trail: true },
+            })
+            : null;
+        if (companyId && !company)
+            throw new error_1.PublicError("Empresa não encontrada");
+        const firstAct = await prisma_1.default.actChatbot.findFirst({
+            where: company ? { trailId: company.trail.id } : undefined,
+            orderBy: {
+                index: "asc",
+            },
+        });
+        const result = await prisma_1.default.user.createMany({
+            data: data.map((d) => ({ ...d, currentActChatbotId: firstAct === null || firstAct === void 0 ? void 0 : firstAct.id })),
+        });
+        return result;
+    }
     async update({ id, ...data }) {
         const user = await prisma_1.default.user.update({
             where: { id },
