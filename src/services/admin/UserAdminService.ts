@@ -1,10 +1,16 @@
 import { z } from "zod";
 
-import { CreateUserSchema, FindUserByRequest, UpdateUserSchema } from "../../definitions/admin/users";
+import {
+  CreateManyUsersSchema,
+  CreateUserSchema,
+  FindUserByRequest,
+  UpdateUserSchema,
+} from "../../definitions/admin/users";
 import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
 
 type CreateUser = z.infer<typeof CreateUserSchema>;
+type CreateManyUsers = z.infer<typeof CreateManyUsersSchema>;
 type UpdateUser = z.infer<typeof UpdateUserSchema>;
 
 class UserAdminService {
@@ -126,6 +132,35 @@ class UserAdminService {
     });
 
     return user;
+  }
+
+  async createMany(data: CreateManyUsers) {
+    const { companyId } = data[0];
+    const allSameCompany = data.every((u) => u.companyId === companyId);
+
+    if (!allSameCompany) throw new PublicError("Todos os usuários cadastrados em lote devem ser da mesma empresa");
+
+    const company = companyId
+      ? await prismaClient.company.findFirst({
+          where: { id: companyId },
+          include: { trail: true },
+        })
+      : null;
+
+    if (companyId && !company) throw new PublicError("Empresa não encontrada");
+
+    const firstAct = await prismaClient.actChatbot.findFirst({
+      where: company ? { trailId: company.trail.id } : undefined,
+      orderBy: {
+        index: "asc",
+      },
+    });
+
+    const result = await prismaClient.user.createMany({
+      data: data.map((d) => ({ ...d, currentActChatbotId: firstAct?.id })),
+    });
+
+    return result;
   }
 
   async update({ id, ...data }: UpdateUser & { id: string }) {

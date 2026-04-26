@@ -28,4 +28,3 @@ router.use("/acts", actsRoutes);
 
 router.use("/leads", leadsRoutes);
 
-export { router };

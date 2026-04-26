@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminCompaniesRoutes = void 0;
+const express_1 = require("express");
+const CreateCompanyController_1 = require("../../controllers/admin/companies/CreateCompanyController");
+const UpdateCompanyController_1 = require("../../controllers/admin/companies/UpdateCompanyController");
+const isAuthenticated_1 = require("../../middlewares/isAuthenticated");
+const adminCompaniesRoutes = (0, express_1.Router)();
+exports.adminCompaniesRoutes = adminCompaniesRoutes;
+adminCompaniesRoutes.post("/admin", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
+adminCompaniesRoutes.put("/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateCompanyController_1.UpdateCompanyController().handle);

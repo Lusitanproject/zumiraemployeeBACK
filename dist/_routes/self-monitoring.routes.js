@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.selfMonitoringRoutes = void 0;
+const express_1 = require("express");
+const ListSelfMonitoringBlockResultsController_1 = require("../controllers/self-monitoring-block/ListSelfMonitoringBlockResultsController");
+const ListSelfMonitoringBlocksController_1 = require("../controllers/self-monitoring-block/ListSelfMonitoringBlocksController");
+const isAuthenticated_1 = require("../middlewares/isAuthenticated");
+const selfMonitoringRoutes = (0, express_1.Router)();
+exports.selfMonitoringRoutes = selfMonitoringRoutes;
+selfMonitoringRoutes.get("/", isAuthenticated_1.isAuthenticated, new ListSelfMonitoringBlocksController_1.ListSelfMonitoringBlocksController().handle);
+selfMonitoringRoutes.get("/results/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new ListSelfMonitoringBlockResultsController_1.ListSelfMonitoringBlockResultsController().handle);

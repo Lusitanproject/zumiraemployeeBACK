@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.integrationsRoutes = void 0;
+const express_1 = require("express");
+const acts_routes_1 = require("./acts.routes");
+const assessments_routes_1 = require("./assessments.routes");
+const integrationsRoutes = (0, express_1.Router)();
+exports.integrationsRoutes = integrationsRoutes;
+integrationsRoutes.use("/integrations/acts", acts_routes_1.integrationActsRoutes);
+integrationsRoutes.use("/integrations/assessments", assessments_routes_1.integrationAssessmentsRoutes);

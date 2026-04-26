@@ -6,8 +6,11 @@ export const CreateUserSchema = z.object({
   name: z.string().min(1),
   roleId: z.string().uuid(),
   companyId: z.string().cuid().optional(),
+  occupation: z.string().optional(),
   phoneNumber: PhoneNumberSchema.optional(),
 });
+
+export const CreateManyUsersSchema = z.array(CreateUserSchema).min(1);
 
 export const FindByEmailSchema = z.object({
   email: z.string().email(),
@@ -17,6 +20,7 @@ export const UpdateUserSchema = z.object({
   name: z.string().optional(),
   roleId: z.string().uuid().optional(),
   companyId: z.string().cuid().optional(),
+  occupation: z.string().optional(),
   phoneNumber: PhoneNumberSchema.optional(),
 });
 
