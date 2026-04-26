@@ -156,11 +156,11 @@ class UserAdminService {
       },
     });
 
-    const users = await prismaClient.user.createMany({
+    const result = await prismaClient.user.createMany({
       data: data.map((d) => ({ ...d, currentActChatbotId: firstAct?.id })),
     });
 
-    return { items: users };
+    return result;
   }
 
   async update({ id, ...data }: UpdateUser & { id: string }) {
