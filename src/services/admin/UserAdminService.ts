@@ -32,23 +32,29 @@ class UserAdminService {
         },
       },
     });
-    return user;
+
+    if (!user) return null;
+
+    const { password: _password, ...response } = user;
+
+    return { ...response };
   }
 
-  async findBy({ id, email, phoneNumber }: FindUserByRequest) {
+  async findBy({ id, email, customId, phoneNumber }: FindUserByRequest) {
     const user = await prismaClient.user.findFirst({
       where: {
         id,
         email,
+        customId,
         phoneNumber,
       },
     });
 
     if (!user) throw new PublicError("Usuário não encontrado");
 
-    const { password, roleId, companyId, nationalityId, currentActChatbotId, ...response } = user;
+    const { password: _password, ...response } = user;
 
-    return response;
+    return { ...response };
   }
 
   async findAll() {
@@ -68,7 +74,11 @@ class UserAdminService {
         },
       },
     });
-    return users;
+
+    return users.map((user) => {
+      const { password: _password, ...response } = user;
+      return { ...response };
+    });
   }
 
   // Busca um usuário que possua o email informado
@@ -91,7 +101,11 @@ class UserAdminService {
       },
     });
 
-    return user;
+    if (!user) return null;
+
+    const { password: _password, ...response } = user;
+
+    return { ...response };
   }
 
   // Lista todos os usuários que pertencem a empresa informada
@@ -114,7 +128,10 @@ class UserAdminService {
       },
     });
 
-    return users;
+    return users.map((user) => {
+      const { password: _password, ...response } = user;
+      return { ...response };
+    });
   }
 
   async create(data: CreateUser) {
@@ -131,7 +148,9 @@ class UserAdminService {
       },
     });
 
-    return user;
+    const { password: _password, ...response } = user;
+
+    return { ...response };
   }
 
   async createMany(data: CreateManyUsers) {
@@ -168,7 +187,10 @@ class UserAdminService {
       where: { id },
       data,
     });
-    return user;
+
+    const { password: _password, ...response } = user;
+
+    return { ...response };
   }
 
   async delete(id: string) {

@@ -36,7 +36,9 @@ class CreateUserService {
       },
     });
 
-    return user;
+    const { password: _password, ...response } = user;
+
+    return { ...response };
   }
 }
 

@@ -40,8 +40,15 @@ model User {
   phoneNumber         String?     @unique
   password            String?
   name                String
+  customId            String?     @map("custom_id")
   occupation          String?
+  occupationLevel     String?     @map("occupation_level")
+  area                String?
+  location            String?
+  skinColor           String?
+  hasDisability       Boolean?    @map("has_disability")
   birthdate           DateTime?
+  admissionDate       DateTime?   @map("admission_date")
   gender              UserGender?
   nationalityId       String?     @map("nationality_id")
   roleId              String      @map("role_id")
