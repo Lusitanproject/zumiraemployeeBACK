@@ -72,6 +72,7 @@ import { DetailResultController } from "./controllers/assessment/DetailResultCon
 import { GenerateCompanyFeedbackController } from "./controllers/assessment/GenerateCompanyFeedbackController";
 import { GenerateUserFeedbackController } from "./controllers/assessment/GenerateUserFeedbackController";
 import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
+import { ListCompanyAssessmentsController } from "./controllers/assessment/ListCompanyAssessmentsController";
 import { ListResultsController } from "./controllers/assessment/ListResultsController";
 import { UpdateQuestionsController } from "./controllers/assessment/UpdateQuestionsController";
 import { FindCompanyFeedbackController } from "./controllers/company/FindCompanyFeedbackController";
@@ -118,7 +119,7 @@ router.delete("/users/:id", isAuthenticated, new DeleteUserController().handle);
 router.get("/users", isAuthenticated, new ListAllUsersController().handle);
 router.get("/users/:userId", isAuthenticated, new FindUserController().handle);
 router.get("/users/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);
-router.post("/users/admin/create-many", isAuthenticated, new CreateManyUsersController().handle)
+router.post("/users/admin/create-many", isAuthenticated, new CreateManyUsersController().handle);
 
 // ROTAS PERFIS
 router.get("/roles", isAuthenticated, new FindAllRolesController().handle);
@@ -151,6 +152,7 @@ router.put("/assessments/alerts/:id/read", isAuthenticated, new ReadAlertControl
 
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
+router.get("/assessments/company", isAuthenticated, new ListCompanyAssessmentsController().handle);
 router.get("/assessments/admin", isAuthenticated, new FindAllAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
 router.get("/assessments/admin/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
