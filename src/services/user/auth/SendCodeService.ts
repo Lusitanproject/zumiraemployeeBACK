@@ -25,10 +25,6 @@ async function sendEmail(user: User, code: string) {
 
     <p>Seu <strong>código exclusivo de acesso</strong> é: <strong>${code}</strong></p>
 
-    <p>Acesse a plataforma pelo link abaixo e insira seu código para começar:</p>
-
-    <p><a href="${url}" title="https://www.zumira.com.br/verificar">${url}</a></p>
-
     <p>Se tiver dúvidas ou precisar de suporte, você pode enviar e-mail para <a href="mailto:support@zumira.ai">support@zumira.ai</a></p>
 
     <p>Aproveite sua experiência com a Zumira!</p>
