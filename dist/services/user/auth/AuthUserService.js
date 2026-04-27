@@ -61,7 +61,10 @@ class AuthUserService {
             role: user.role.slug,
             token: token,
             expiresAt: expiresAt,
-            user,
+            user: (() => {
+                const { password, ...response } = user;
+                return { ...response };
+            })(),
         };
     }
 }

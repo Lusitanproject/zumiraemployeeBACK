@@ -8,7 +8,18 @@ exports.CreateUserSchema = zod_1.z.object({
     name: zod_1.z.string().min(1),
     roleId: zod_1.z.string().uuid(),
     companyId: zod_1.z.string().cuid().optional(),
+    customId: zod_1.z.string().min(1).optional(),
     occupation: zod_1.z.string().optional(),
+    occupationLevel: zod_1.z.string().min(1).optional(),
+    area: zod_1.z.string().min(1).optional(),
+    location: zod_1.z.string().min(1).optional(),
+    skinColor: zod_1.z.string().min(1).optional(),
+    hasDisability: zod_1.z.boolean().optional(),
+    admissionDate: zod_1.z
+        .string()
+        .refine((val) => !isNaN(Date.parse(val)))
+        .transform((val) => new Date(val))
+        .optional(),
     phoneNumber: common_1.PhoneNumberSchema.optional(),
 });
 exports.CreateManyUsersSchema = zod_1.z.array(exports.CreateUserSchema).min(1);
@@ -19,7 +30,18 @@ exports.UpdateUserSchema = zod_1.z.object({
     name: zod_1.z.string().optional(),
     roleId: zod_1.z.string().uuid().optional(),
     companyId: zod_1.z.string().cuid().optional(),
+    customId: zod_1.z.string().min(1).optional(),
     occupation: zod_1.z.string().optional(),
+    occupationLevel: zod_1.z.string().min(1).optional(),
+    area: zod_1.z.string().min(1).optional(),
+    location: zod_1.z.string().min(1).optional(),
+    skinColor: zod_1.z.string().min(1).optional(),
+    hasDisability: zod_1.z.boolean().optional(),
+    admissionDate: zod_1.z
+        .string()
+        .refine((val) => !isNaN(Date.parse(val)))
+        .transform((val) => new Date(val))
+        .optional(),
     phoneNumber: common_1.PhoneNumberSchema.optional(),
 });
 exports.CreateCompanySchema = zod_1.z.object({
@@ -30,7 +52,8 @@ exports.FindUserBySchema = zod_1.z
     .object({
     id: zod_1.z.string().uuid().optional(),
     email: zod_1.z.string().email().optional(),
+    customId: zod_1.z.string().min(1).optional(),
     phoneNumber: common_1.PhoneNumberSchema.optional(),
 })
     .refine((data) => Object.values(data).filter(Boolean).length > 0, // Verifica se ha ao menos um valor presente no objeto
-"At least one of the fields (id, email or phoneNumber) must be provided");
+"At least one of the fields (id, email, customId or phoneNumber) must be provided");

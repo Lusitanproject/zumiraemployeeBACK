@@ -37,7 +37,8 @@ class CreateUserService {
                 currentActChatbotId: firstAct === null || firstAct === void 0 ? void 0 : firstAct.id,
             },
         });
-        return user;
+        const { password: _password, ...response } = user;
+        return { ...response };
     }
 }
 exports.CreateUserService = CreateUserService;
