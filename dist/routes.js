@@ -77,6 +77,7 @@ const DetailResultController_1 = require("./controllers/assessment/DetailResultC
 const GenerateCompanyFeedbackController_1 = require("./controllers/assessment/GenerateCompanyFeedbackController");
 const GenerateUserFeedbackController_1 = require("./controllers/assessment/GenerateUserFeedbackController");
 const ListAssessmentsController_1 = require("./controllers/assessment/ListAssessmentsController");
+const ListCompanyAssessmentsController_1 = require("./controllers/assessment/ListCompanyAssessmentsController");
 const ListResultsController_1 = require("./controllers/assessment/ListResultsController");
 const UpdateQuestionsController_1 = require("./controllers/assessment/UpdateQuestionsController");
 const FindCompanyFeedbackController_1 = require("./controllers/company/FindCompanyFeedbackController");
@@ -147,6 +148,7 @@ router.get("/assessments/alerts", isAuthenticated_1.isAuthenticated, new ListAle
 router.put("/assessments/alerts/:id/read", isAuthenticated_1.isAuthenticated, new ReadAlertController_1.ReadAlertController().handle);
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated_1.isAuthenticated, new ListAssessmentsController_1.ListAssessmentsController().handle);
+router.get("/assessments/company", isAuthenticated_1.isAuthenticated, new ListCompanyAssessmentsController_1.ListCompanyAssessmentsController().handle);
 router.get("/assessments/admin", isAuthenticated_1.isAuthenticated, new FindAllAssessmentsController_1.FindAllAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated_1.isAuthenticated, new DetailAssessmentController_1.DetailAssessmentController().handle);
 router.get("/assessments/admin/:id", isAuthenticated_1.isAuthenticated, new AssessmentDetailForAdminController_1.AssessmentDetailForAdminController().handle);
