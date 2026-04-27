@@ -11,8 +11,10 @@ import { router } from "./routes";
 const app = express();
 const swaggerServeHandlers = swaggerUi.serve as unknown as RequestHandler[];
 const swaggerSetupHandler = swaggerUi.setup(swaggerSpec) as unknown as RequestHandler;
+const requestBodyLimit = process.env.REQUEST_BODY_LIMIT ?? "100mb";
 
-app.use(express.json());
+app.use(express.json({ limit: requestBodyLimit }));
+app.use(express.urlencoded({ extended: true, limit: requestBodyLimit }));
 app.use(cors());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -44,6 +46,13 @@ app.use(router);
 
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   console.error(`${kleur.red(req.method)} ${kleur.red(req.url)}: ${err.stack}`);
+
+  if ((err as { type?: string }).type === "entity.too.large" || err.name === "PayloadTooLargeError") {
+    return res.status(413).json({
+      status: "ERROR",
+      message: "Payload muito grande",
+    });
+  }
 
   if (err instanceof PublicError) {
     return res.status(400).json({
