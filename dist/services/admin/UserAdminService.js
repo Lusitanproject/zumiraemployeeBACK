@@ -25,20 +25,24 @@ class UserAdminService {
                 },
             },
         });
-        return user;
+        if (!user)
+            return null;
+        const { password: _password, ...response } = user;
+        return { ...response };
     }
-    async findBy({ id, email, phoneNumber }) {
+    async findBy({ id, email, customId, phoneNumber }) {
         const user = await prisma_1.default.user.findFirst({
             where: {
                 id,
                 email,
+                customId,
                 phoneNumber,
             },
         });
         if (!user)
             throw new error_1.PublicError("Usuário não encontrado");
-        const { password, roleId, companyId, nationalityId, currentActChatbotId, ...response } = user;
-        return response;
+        const { password: _password, ...response } = user;
+        return { ...response };
     }
     async findAll() {
         const users = await prisma_1.default.user.findMany({
@@ -57,7 +61,10 @@ class UserAdminService {
                 },
             },
         });
-        return users;
+        return users.map((user) => {
+            const { password: _password, ...response } = user;
+            return { ...response };
+        });
     }
     // Busca um usuário que possua o email informado
     async findByEmail(email) {
@@ -78,7 +85,10 @@ class UserAdminService {
                 },
             },
         });
-        return user;
+        if (!user)
+            return null;
+        const { password: _password, ...response } = user;
+        return { ...response };
     }
     // Lista todos os usuários que pertencem a empresa informada
     async findByCompany(companyId) {
@@ -99,7 +109,10 @@ class UserAdminService {
                 },
             },
         });
-        return users;
+        return users.map((user) => {
+            const { password: _password, ...response } = user;
+            return { ...response };
+        });
     }
     async create(data) {
         const firstAct = await prisma_1.default.actChatbot.findFirst({
@@ -113,7 +126,8 @@ class UserAdminService {
                 currentActChatbotId: firstAct === null || firstAct === void 0 ? void 0 : firstAct.id,
             },
         });
-        return user;
+        const { password: _password, ...response } = user;
+        return { ...response };
     }
     async createMany(data) {
         const { companyId } = data[0];
@@ -144,7 +158,8 @@ class UserAdminService {
             where: { id },
             data,
         });
-        return user;
+        const { password: _password, ...response } = user;
+        return { ...response };
     }
     async delete(id) {
         await prisma_1.default.user.delete({ where: { id } });
