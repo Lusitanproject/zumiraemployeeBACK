@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PhoneNumberSchema } from "../common";
+import { DateStringSchema, PhoneNumberSchema } from "../common";
 
 export const CreateUserSchema = z.object({
   email: z.string().email(),
@@ -13,11 +13,7 @@ export const CreateUserSchema = z.object({
   location: z.string().min(1).optional(),
   skinColor: z.string().min(1).optional(),
   hasDisability: z.boolean().optional(),
-  admissionDate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)))
-    .transform((val) => new Date(val))
-    .optional(),
+  admissionDate: DateStringSchema.optional(),
   phoneNumber: PhoneNumberSchema.optional(),
 });
 
@@ -38,11 +34,7 @@ export const UpdateUserSchema = z.object({
   location: z.string().min(1).optional(),
   skinColor: z.string().min(1).optional(),
   hasDisability: z.boolean().optional(),
-  admissionDate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)))
-    .transform((val) => new Date(val))
-    .optional(),
+  admissionDate: DateStringSchema.optional(),
   phoneNumber: PhoneNumberSchema.optional(),
 });
 

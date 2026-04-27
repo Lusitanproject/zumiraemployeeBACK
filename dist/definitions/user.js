@@ -10,16 +10,8 @@ exports.CreateUserSchema = zod_1.z.object({
     password: zod_1.z.string().min(8).optional(),
     phoneNumber: common_1.PhoneNumberSchema.optional(),
     customId: zod_1.z.string().nonempty().optional(),
-    birthdate: zod_1.z
-        .string()
-        .refine((val) => !isNaN(Date.parse(val)))
-        .transform((val) => new Date(val))
-        .optional(),
-    admissionDate: zod_1.z
-        .string()
-        .refine((val) => !isNaN(Date.parse(val)))
-        .transform((val) => new Date(val))
-        .optional(),
+    birthdate: common_1.DateStringSchema.optional(),
+    admissionDate: common_1.DateStringSchema.optional(),
     nationalityId: zod_1.z.string().cuid().optional(),
     gender: zod_1.z.nativeEnum(client_1.UserGender).optional(),
     occupation: zod_1.z.string().nonempty().optional(),

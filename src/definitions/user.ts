@@ -1,6 +1,6 @@
 import { UserGender } from "@prisma/client";
 import { z } from "zod";
-import { PhoneNumberSchema } from "./common";
+import { DateStringSchema, PhoneNumberSchema } from "./common";
 
 export const CreateUserSchema = z.object({
   name: z.string().nonempty(),
@@ -8,16 +8,8 @@ export const CreateUserSchema = z.object({
   password: z.string().min(8).optional(),
   phoneNumber: PhoneNumberSchema.optional(),
   customId: z.string().nonempty().optional(),
-  birthdate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)))
-    .transform((val) => new Date(val))
-    .optional(),
-  admissionDate: z
-    .string()
-    .refine((val) => !isNaN(Date.parse(val)))
-    .transform((val) => new Date(val))
-    .optional(),
+  birthdate: DateStringSchema.optional(),
+  admissionDate: DateStringSchema.optional(),
   nationalityId: z.string().cuid().optional(),
   gender: z.nativeEnum(UserGender).optional(),
   occupation: z.string().nonempty().optional(),

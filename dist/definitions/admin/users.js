@@ -15,11 +15,7 @@ exports.CreateUserSchema = zod_1.z.object({
     location: zod_1.z.string().min(1).optional(),
     skinColor: zod_1.z.string().min(1).optional(),
     hasDisability: zod_1.z.boolean().optional(),
-    admissionDate: zod_1.z
-        .string()
-        .refine((val) => !isNaN(Date.parse(val)))
-        .transform((val) => new Date(val))
-        .optional(),
+    admissionDate: common_1.DateStringSchema.optional(),
     phoneNumber: common_1.PhoneNumberSchema.optional(),
 });
 exports.CreateManyUsersSchema = zod_1.z.array(exports.CreateUserSchema).min(1);
@@ -37,11 +33,7 @@ exports.UpdateUserSchema = zod_1.z.object({
     location: zod_1.z.string().min(1).optional(),
     skinColor: zod_1.z.string().min(1).optional(),
     hasDisability: zod_1.z.boolean().optional(),
-    admissionDate: zod_1.z
-        .string()
-        .refine((val) => !isNaN(Date.parse(val)))
-        .transform((val) => new Date(val))
-        .optional(),
+    admissionDate: common_1.DateStringSchema.optional(),
     phoneNumber: common_1.PhoneNumberSchema.optional(),
 });
 exports.CreateCompanySchema = zod_1.z.object({
