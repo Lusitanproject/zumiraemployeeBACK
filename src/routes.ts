@@ -15,6 +15,7 @@ import { FindAllActChatbotsController } from "./controllers/admin/acts/FindAllAc
 import { FindByTrailController } from "./controllers/admin/acts/FindByTrailController";
 import { UpdateActChatbotController } from "./controllers/admin/acts/UpdateActChatbotController";
 import { UpdateManyActChatbotsController } from "./controllers/admin/acts/UpdateManyActChatbotsController";
+import { ImportChatbaseChaptersController } from "./controllers/admin/acts/ImportChatbaseChaptersController";
 import { DuplicateAssessmentController } from "./controllers/admin/assessments/DuplicateAssessmentController";
 import { FindAllAssessmentsController } from "./controllers/admin/assessments/FindAllAssessmentsController";
 import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
@@ -227,6 +228,7 @@ router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().ha
 router.put("/acts/admin/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);
 router.post("/acts/admin", isAuthenticated, new CreateActChatbotController().handle);
+router.post("/acts/admin/:id/import-chatbase-chapters", isAuthenticated, new ImportChatbaseChaptersController().handle);
 router.get("/acts", isAuthenticated, new GetActsDataController().handle);
 router.get("/acts/chapters", isAuthenticated, new GetActChapterController().handle);
 router.put("/acts/next", isAuthenticated, new MoveToNextActController().handle);

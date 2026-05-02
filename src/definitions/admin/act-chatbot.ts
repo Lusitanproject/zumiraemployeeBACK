@@ -30,6 +30,11 @@ export const FindByTrailSchema = z.object({
   trailId: z.string().cuid(),
 });
 
+export const ImportChatbaseChaptersSchema = z.object({
+  chatbaseChatbotId: z.string().nonempty(),
+});
+
 export type CreateActChatbotRequest = z.infer<typeof CreateActChatbotSchema>;
 export type UpdateActChatbotRequest = z.infer<typeof UpdateActChatbotSchema>;
 export type UpdateManyActChatbotsRequest = z.infer<typeof UpdateManyActChatbotsSchema>;
+export type ImportChatbaseChaptersRequest = z.infer<typeof ImportChatbaseChaptersSchema>;

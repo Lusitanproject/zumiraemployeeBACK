@@ -1,8 +1,12 @@
+import { ChapterType } from "@prisma/client";
 import {
   CreateActChatbotRequest,
+  ImportChatbaseChaptersRequest,
   UpdateActChatbotRequest,
   UpdateManyActChatbotsRequest,
 } from "../../definitions/admin/act-chatbot";
+import { PublicError } from "../../error";
+import { ChatbaseApi } from "../../external/chatbase";
 import prismaClient from "../../prisma";
 
 class ActChatbotAdminService {
@@ -117,7 +121,7 @@ class ActChatbotAdminService {
               userId: user.id,
               type: "REGULAR",
             },
-          })
+          }),
         ),
       ]);
     }
@@ -141,10 +145,127 @@ class ActChatbotAdminService {
             id: bot.id,
           },
           data: { ...bot },
-        })
-      )
+        }),
+      ),
     );
   }
+
+  async importChatbaseChapters({ id, chatbaseChatbotId }: ImportChatbaseChaptersRequest & { id: string }) {
+    const actChatbot = await prismaClient.actChatbot.findFirst({ where: { id } });
+
+    if (!actChatbot) {
+      throw new PublicError("Act chatbot does not exist");
+    }
+
+    const chatbase = new ChatbaseApi();
+
+    const conversations = await chatbase.getConversationsFromChatbot({
+      chatbotId: chatbaseChatbotId,
+      filteredSources: "WhatsApp",
+    });
+
+    // Remove previously imported chapters/messages for these conversations and import again.
+    const existingChapters = await prismaClient.actChapter.findMany({
+      where: {
+        actChatbotId: id,
+        externalId: {
+          in: conversations.map((c) => c.id),
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const existingChapterIds = existingChapters.map((c) => c.id);
+    if (existingChapterIds.length > 0) {
+      await prismaClient.actChapterMessage.deleteMany({
+        where: {
+          actChapterId: {
+            in: existingChapterIds,
+          },
+        },
+      });
+
+      await prismaClient.actChapter.deleteMany({
+        where: {
+          id: {
+            in: existingChapterIds,
+          },
+        },
+      });
+    }
+
+    // Normalize WhatsApp numbers so they match DB values.
+    const normalizePhone = (p?: string | null) => (p ? p.replace(/\D/g, "").replace(/^55/, "") : "");
+
+    const conversationUsersPhoneNumbers = conversations
+      .map((c) => normalizePhone(c.form_submission?.phone))
+      .filter(Boolean) as string[];
+
+    const storedUsers = await prismaClient.user.findMany({
+      where: {
+        phoneNumber: {
+          in: conversationUsersPhoneNumbers,
+        },
+      },
+    });
+
+    // Map normalized phone number -> user id for quick lookup.
+    const phoneToUserId = new Map(storedUsers.map((u) => [normalizePhone(u.phoneNumber), u.id]));
+
+    const chaptersFromConversations = await prismaClient.actChapter.createManyAndReturn({
+      data: conversations
+        .map((conv) => {
+          const phone = normalizePhone(conv.form_submission?.phone);
+          const userId = phoneToUserId.get(phone);
+
+          if (!userId) {
+            return null;
+          }
+
+          return {
+            actChatbotId: id,
+            userId,
+            type: "REGULAR" as ChapterType,
+            externalId: conv.id,
+            createdAt: conv.created_at,
+          };
+        })
+        .filter((v) => v !== null),
+    });
+
+    const createdMessages = await prismaClient.actChapterMessage.createMany({
+      // Attach imported messages to their created chapter by external conversation id.
+      data: chaptersFromConversations.flatMap((chapter) => {
+        const conv = conversations.find((conv) => conv.id === chapter.externalId);
+
+        if (!conv) {
+          return [];
+        }
+
+        const messages = conv.messages.map((m) => ({
+          actChapterId: chapter.id,
+          content: m.content,
+          role: m.role,
+          createdAt: m.created_at,
+        }));
+
+        return messages;
+      }),
+    });
+
+    const importedUserIds = new Set(chaptersFromConversations.map((chapter) => chapter.userId));
+    const usersFound = storedUsers.filter((u) => importedUserIds.has(u.id));
+
+    const usersFoundSummary = usersFound.map((u) => `${u.name} (${u.phoneNumber})`).join(", ");
+
+    return {
+      message: `Import concluido. users encontrados=${usersFound.length}; chapters criados=${chaptersFromConversations.length}; mensagens criadas=${createdMessages.count}; usuarios=[${usersFoundSummary}]`,
+    };
+  }
+
+  async generateAnalysis(id: string, companyId: string) {}
 }
 
 export { ActChatbotAdminService };

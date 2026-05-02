@@ -407,6 +407,7 @@ model ActChatbot {
 
 model ActChapter {
   id           String      @id @default(cuid())
+  externalId   String?     @map("external_id")
   title        String      @default("Novo capítulo")
   compilation  String?
   actChatbotId String      @map("act_chatbot_id")
