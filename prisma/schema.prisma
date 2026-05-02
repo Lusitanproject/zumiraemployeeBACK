@@ -37,7 +37,7 @@ enum ChapterType {
 model User {
   id                  String      @id @default(uuid())
   email               String      @unique
-  phoneNumber         String?     
+  phoneNumber         String?
   password            String?
   name                String
   customId            String?     @map("custom_id")
@@ -280,6 +280,7 @@ model SelfMonitoringBlock {
 
   assessments             Assessment[]
   psychologicalDimensions PsychologicalDimension[]
+  psychosocialFactors     PsychosocialFactor[]
 
   @@map("self_monitoring_blocks")
 }
@@ -432,4 +433,16 @@ model ActChapterMessage {
   actChapter ActChapter @relation(fields: [actChapterId], references: [id], onDelete: Cascade)
 
   @@map("act_chapter_messages")
+}
+
+model PsychosocialFactor {
+  id                    String @id @default(cuid())
+  name                  String
+  wheight               Int
+  description           String
+  selfMonitoringBlockId String @map("self_monitoring_block_id")
+
+  selfMonitoringBlock SelfMonitoringBlock @relation(fields: [selfMonitoringBlockId], references: [id])
+
+  @@map("psychosocial_factors")
 }

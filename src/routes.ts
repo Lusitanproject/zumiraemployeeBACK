@@ -82,6 +82,11 @@ import { ListNotificationsController } from "./controllers/notification/ListNoti
 import { ReadNotificationController } from "./controllers/notification/ReadNotificationController";
 import { ListSelfMonitoringBlockResultsController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlockResultsController";
 import { ListSelfMonitoringBlocksController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlocksController";
+import { CreatePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/CreatePsychosocialFactorController";
+import { FindAllPsychosocialFactorsController } from "./controllers/admin/psychosocial-factors/FindAllPsychosocialFactorsController";
+import { FindPsychosocialFactorController } from "./controllers/admin/psychosocial-factors/FindPsychosocialFactorController";
+import { UpdatePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/UpdatePsychosocialFactorController";
+import { DeletePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/DeletePsychosocialFactorController";
 import { IntegrationCompileActChapterController } from "./controllers/integration/act/CompileActChapterController";
 import { IntegrationCreateActChapterController } from "./controllers/integration/act/CreateActChapterController";
 import { IntegrationGetActChapterController } from "./controllers/integration/act/GetActChapterController";
@@ -178,6 +183,13 @@ router.get(
   isAuthenticated,
   new FindDimensionByBlockController().handle,
 );
+
+// ROTAS PSYCHOSOCIAL FACTORS
+router.get("/psychosocial-factors", isAuthenticated, new FindAllPsychosocialFactorsController().handle);
+router.post("/psychosocial-factors", isAuthenticated, new CreatePsychosocialFactorController().handle);
+router.get("/psychosocial-factors/:id", isAuthenticated, new FindPsychosocialFactorController().handle);
+router.put("/psychosocial-factors/:id", isAuthenticated, new UpdatePsychosocialFactorController().handle);
+router.delete("/psychosocial-factors/:id", isAuthenticated, new DeletePsychosocialFactorController().handle);
 
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated, new FindAllCompaniesController().handle);
