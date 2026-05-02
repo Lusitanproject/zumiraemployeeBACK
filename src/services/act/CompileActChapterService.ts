@@ -1,6 +1,6 @@
 import { CompileActChapterRequest } from "../../schemas/actChatbot";
 import prismaClient from "../../prisma";
-import { generateOpenAiResponse, GenerateOpenAiResponseRequest } from "../../utils/generateOpenAiResponse";
+import { OpenAiApi, GenerateOpenAiResponseRequest } from "../../external/openai";
 
 class CompileActChapterService {
   async execute({ actChapterId, userId }: CompileActChapterRequest) {
@@ -23,7 +23,8 @@ class CompileActChapterService {
       role: "user",
     })) as GenerateOpenAiResponseRequest["messages"];
 
-    const response = await generateOpenAiResponse({
+    const openai = new OpenAiApi();
+    const response = await openai.generateResponse({
       messages,
       instructions: chapter.actChatbot.compilationInstructions,
     });
