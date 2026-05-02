@@ -1,4 +1,4 @@
-import { ReadAlertRequest } from "../../definitions/alert";
+import { ReadAlertRequest } from "../../schemas/alert";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 

@@ -1,4 +1,4 @@
-import { ListAlertsRequest } from "../../definitions/alert";
+import { ListAlertsRequest } from "../../schemas/alert";
 import prismaClient from "../../prisma";
 
 class ListAlertsService {

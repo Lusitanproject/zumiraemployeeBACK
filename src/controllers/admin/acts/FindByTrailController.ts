@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { FindByTrailSchema } from "../../../definitions/admin/act-chatbot";
+import { FindByTrailSchema } from "../../../schemas/admin/act-chatbot";
 import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

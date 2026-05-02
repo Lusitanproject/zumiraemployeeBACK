@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { UserIdSchema } from "../../../definitions/common";
+import { UserIdSchema } from "../../../schemas/common";
 import { DetailResultService } from "../../../services/assessment/DetailResultService";
 import { parseZodError } from "../../../utils/parseZodError";
 

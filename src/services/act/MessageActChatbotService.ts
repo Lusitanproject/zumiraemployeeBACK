@@ -1,4 +1,4 @@
-import { MessageActChatbotRequest } from "../../definitions/actChatbot";
+import { MessageActChatbotRequest } from "../../schemas/actChatbot";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { generateOpenAiResponse, GenerateOpenAiResponseRequest } from "../../utils/generateOpenAiResponse";

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { GetActChapterSchema } from "../../definitions/actChatbot";
+import { GetActChapterSchema } from "../../schemas/actChatbot";
 import { GetActChapterService } from "../../services/act/GetActChapterService";
 import { parseZodError } from "../../utils/parseZodError";
 

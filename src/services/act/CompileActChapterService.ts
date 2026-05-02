@@ -1,4 +1,4 @@
-import { CompileActChapterRequest } from "../../definitions/actChatbot";
+import { CompileActChapterRequest } from "../../schemas/actChatbot";
 import prismaClient from "../../prisma";
 import { generateOpenAiResponse, GenerateOpenAiResponseRequest } from "../../utils/generateOpenAiResponse";
 

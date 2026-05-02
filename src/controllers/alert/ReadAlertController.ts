@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { ReadAlertSchema } from "../../definitions/alert";
+import { ReadAlertSchema } from "../../schemas/alert";
 import { ReadAlertService } from "../../services/alert/ReadAlertService";
 import { parseZodError } from "../../utils/parseZodError";
 

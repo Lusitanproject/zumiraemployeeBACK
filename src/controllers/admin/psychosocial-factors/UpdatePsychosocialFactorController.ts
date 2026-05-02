@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 
-import {
-  PsychosocialFactorIdSchema,
-  UpdatePsychosocialFactorSchema,
-} from "../../../definitions/admin/psychosocial-factor";
+import { PsychosocialFactorIdSchema, UpdatePsychosocialFactorSchema } from "../../../schemas/admin/psychosocial-factor";
 import { PsychosocialFactorAdminService } from "../../../services/admin/PsychosocialFactorAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

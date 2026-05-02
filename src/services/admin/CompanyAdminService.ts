@@ -1,7 +1,7 @@
 import { CompanyAssessmentFeedback } from "@prisma/client";
 
-import { CreateCompanyRequest, UpdateCompanyRequest } from "../../definitions/admin/company";
-import { SetCompanyAssessmentsRequest } from "../../definitions/company";
+import { CreateCompanyRequest, UpdateCompanyRequest } from "../../schemas/admin/company";
+import { SetCompanyAssessmentsRequest } from "../../schemas/company";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 

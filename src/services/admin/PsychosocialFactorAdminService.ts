@@ -1,7 +1,7 @@
 import {
   CreatePsychosocialFactorRequest,
   UpdatePsychosocialFactorRequest,
-} from "../../definitions/admin/psychosocial-factor";
+} from "../../schemas/admin/psychosocial-factor";
 import prismaClient from "../../prisma";
 
 class PsychosocialFactorAdminService {

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { RequestParamsIdCUID } from "../../../definitions/common";
+import { RequestParamsIdCUID } from "../../../schemas/common";
 import { TrailAdminService } from "../../../services/admin/TrailAdminService";
 
 class FindTrailController {

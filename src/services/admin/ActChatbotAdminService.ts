@@ -4,7 +4,7 @@ import {
   ImportChatbaseChaptersRequest,
   UpdateActChatbotRequest,
   UpdateManyActChatbotsRequest,
-} from "../../definitions/admin/act-chatbot";
+} from "../../schemas/admin/act-chatbot";
 import { PublicError } from "../../error";
 import { ChatbaseApi } from "../../external/chatbase";
 import prismaClient from "../../prisma";

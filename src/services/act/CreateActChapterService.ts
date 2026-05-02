@@ -1,4 +1,4 @@
-import { CreateActChapterRequest } from "../../definitions/actChatbot";
+import { CreateActChapterRequest } from "../../schemas/actChatbot";
 import prismaClient from "../../prisma";
 
 class CreateActChapterService {

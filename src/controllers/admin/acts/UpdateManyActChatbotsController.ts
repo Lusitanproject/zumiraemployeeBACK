@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { UpdateManyActChatbotsSchema } from "../../../definitions/admin/act-chatbot";
+import { UpdateManyActChatbotsSchema } from "../../../schemas/admin/act-chatbot";
 import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

@@ -1,4 +1,4 @@
-import { DetailResultRequest } from "../../definitions/assessment";
+import { DetailResultRequest } from "../../schemas/assessment";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 

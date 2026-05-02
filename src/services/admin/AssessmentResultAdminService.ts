@@ -1,6 +1,6 @@
 import { Workbook } from "exceljs";
 
-import { AssessmentByCompanyRequest } from "../../definitions/admin/assessment";
+import { AssessmentByCompanyRequest } from "../../schemas/admin/assessment";
 import prismaClient from "../../prisma";
 import { calculateResultScores } from "../../utils/calculateResultScores";
 

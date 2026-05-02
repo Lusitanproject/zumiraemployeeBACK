@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { ListAssessmentsSchema } from "../../../definitions/assessment";
-import { UserIdSchema } from "../../../definitions/common";
+import { ListAssessmentsSchema } from "../../../schemas/assessment";
+import { UserIdSchema } from "../../../schemas/common";
 import { ListAssessmentsService } from "../../../services/assessment/ListAssessmentsService";
 import { parseZodError } from "../../../utils/parseZodError";
 

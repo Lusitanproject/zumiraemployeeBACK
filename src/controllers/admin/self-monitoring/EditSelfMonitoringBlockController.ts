@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { EditSelfMonitoringBlockSchema } from "../../../definitions/admin/self-monitoring";
+import { EditSelfMonitoringBlockSchema } from "../../../schemas/admin/self-monitoring";
 import { SelfMonitoringAdminService } from "../../../services/admin/SelfMonitoringService";
 import { parseZodError } from "../../../utils/parseZodError";
 

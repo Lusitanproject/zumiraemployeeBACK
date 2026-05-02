@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { MessageActChatbotSchema } from "../../definitions/actChatbot";
+import { MessageActChatbotSchema } from "../../schemas/actChatbot";
 import { MessageActChatbotService } from "../../services/act/MessageActChatbotService";
 import { parseZodError } from "../../utils/parseZodError";
 

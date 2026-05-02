@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { CreateActChapterSchema } from "../../../definitions/actChatbot";
-import { UserIdSchema } from "../../../definitions/common";
+import { CreateActChapterSchema } from "../../../schemas/actChatbot";
+import { UserIdSchema } from "../../../schemas/common";
 import { CreateActChapterService } from "../../../services/act/CreateActChapterService";
 import { parseZodError } from "../../../utils/parseZodError";
 

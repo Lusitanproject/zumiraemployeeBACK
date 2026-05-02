@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { RequestParamsIdCUID } from "../../definitions/common";
-import { FindCompanyFeedbackSchema } from "../../definitions/company";
+import { RequestParamsIdCUID } from "../../schemas/common";
+import { FindCompanyFeedbackSchema } from "../../schemas/company";
 import { FindCompanyFeedbackService } from "../../services/company/FindCompanyFeedbackService";
 import { parseZodError } from "../../utils/parseZodError";
 
