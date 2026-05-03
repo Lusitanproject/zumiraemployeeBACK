@@ -28,6 +28,7 @@ class AssessmentResultAdminService {
             name: true,
             email: true,
             companyId: true,
+            customId: true,
           },
         },
         assessmentResultRating: {
