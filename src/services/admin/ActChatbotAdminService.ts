@@ -264,8 +264,6 @@ class ActChatbotAdminService {
       message: `Import concluido. users encontrados=${usersFound.length}; chapters criados=${chaptersFromConversations.length}; mensagens criadas=${createdMessages.count}; usuarios=[${usersFoundSummary}]`,
     };
   }
-
-  async generateAnalysis(id: string, companyId: string) {}
 }
 
 export { ActChatbotAdminService };

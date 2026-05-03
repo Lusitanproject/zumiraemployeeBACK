@@ -30,6 +30,8 @@ import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAl
 import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
 import { SetCompanyAssessmentsController } from "./controllers/admin/companies/SetCompanyAssessmentsController";
 import { UpdateCompanyController } from "./controllers/admin/companies/UpdateCompanyController";
+import { GenerateActAnalysisController } from "./controllers/admin/companies/GenerateActAnalysisController";
+import { FindActAnalysisController } from "./controllers/admin/companies/FindActAnalysisController";
 import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
 import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
 import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
@@ -200,6 +202,16 @@ router.get("/companies/:id/feedback", isAuthenticated, new FindCompanyFeedbackCo
 router.post("/companies/:id/assessments", isAuthenticated, new SetCompanyAssessmentsController().handle);
 router.post("/companies/admin", isAuthenticated, new CreateCompanyController().handle);
 router.put("/companies/admin/:id", isAuthenticated, new UpdateCompanyController().handle);
+router.post(
+  "/companies/admin/:companyId/acts/:actChatbotId/analysis",
+  isAuthenticated,
+  new GenerateActAnalysisController().handle,
+);
+router.get(
+  "/companies/admin/:companyId/acts/:actChatbotId/analysis",
+  isAuthenticated,
+  new FindActAnalysisController().handle,
+);
 
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController().handle);
