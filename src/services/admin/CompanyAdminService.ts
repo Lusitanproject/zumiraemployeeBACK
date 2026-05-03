@@ -436,6 +436,88 @@ Formato obrigatório de resposta:
       items,
     };
   }
+
+  async generateAllUserFeedback(companyId: string) {
+    const company = await prismaClient.company.findFirst({
+      where: { id: companyId },
+      include: {
+        users: {
+          select: { id: true },
+        },
+      },
+    });
+
+    if (!company) throw new PublicError("Empresa não encontrada");
+
+    const userIds = company.users.map((u) => u.id);
+    if (userIds.length === 0) {
+      return {
+        companyId,
+        queuedCount: 0,
+        message: "Empresa sem usuários",
+      };
+    }
+
+    // Get all assessment results for users in this company
+    const allResults = await prismaClient.assessmentResult.findMany({
+      where: {
+        userId: {
+          in: userIds,
+        },
+      },
+      select: {
+        id: true,
+        userId: true,
+        assessmentId: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    if (allResults.length === 0) {
+      return {
+        companyId,
+        queuedCount: 0,
+        message: "Empresa sem resultados de avaliação",
+      };
+    }
+
+    // Deduplicate: keep only the latest result for each userId + assessmentId pair
+    const latestByPair = new Map<string, (typeof allResults)[0]>();
+    for (const result of allResults) {
+      const key = `${result.userId}#${result.assessmentId}`;
+      if (!latestByPair.has(key)) {
+        latestByPair.set(key, result);
+      }
+    }
+
+    const uniquePairs = Array.from(latestByPair.values());
+    console.log(
+      `Iniciando geração de feedback para empresa ${companyId}: ${uniquePairs.length} pares usuário+avaliação`,
+    );
+
+    // Import GenerateUserFeedbackService dynamically to avoid circular dependency
+    const { GenerateUserFeedbackService } = await import("../assessment/GenerateUserFeedbackService");
+
+    // Fire and forget: dispatch all without awaiting
+    uniquePairs.forEach((pair) => {
+      const generateService = new GenerateUserFeedbackService();
+      generateService.execute({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
+        console.error(
+          `Erro ao gerar feedback para usuário ${pair.userId} em avaliação ${pair.assessmentId}: `,
+          error instanceof Error ? error.message : String(error),
+        );
+      });
+    });
+
+    return {
+      companyId,
+      queuedCount: uniquePairs.length,
+      message: `${uniquePairs.length} gerações de feedback enfileiradas com sucesso`,
+    };
+  }
 }
 
 export { CompanyAdminService };
