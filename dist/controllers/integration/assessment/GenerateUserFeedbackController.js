@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationGenerateUserFeedbackController = void 0;
 const zod_1 = require("zod");
-const common_1 = require("../../../definitions/common");
+const common_1 = require("../../../schemas/common");
 const GenerateUserFeedbackService_1 = require("../../../services/assessment/GenerateUserFeedbackService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const GenerateFeedbackSchema = zod_1.z.object({

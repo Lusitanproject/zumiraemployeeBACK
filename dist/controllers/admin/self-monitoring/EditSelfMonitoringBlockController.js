@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EditSelfMonitoringBlocksController = void 0;
 const zod_1 = require("zod");
-const self_monitoring_1 = require("../../../definitions/admin/self-monitoring");
+const self_monitoring_1 = require("../../../schemas/admin/self-monitoring");
 const SelfMonitoringService_1 = require("../../../services/admin/SelfMonitoringService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParamSchema = zod_1.z.object({

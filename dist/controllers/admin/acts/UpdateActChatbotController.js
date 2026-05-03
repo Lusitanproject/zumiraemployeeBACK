@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateActChatbotController = void 0;
-const act_chatbot_1 = require("../../../definitions/admin/act-chatbot");
+const act_chatbot_1 = require("../../../schemas/admin/act-chatbot");
 const ActChatbotAdminService_1 = require("../../../services/admin/ActChatbotAdminService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class UpdateActChatbotController {

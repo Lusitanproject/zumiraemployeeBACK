@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationListAssessmentsController = void 0;
-const assessment_1 = require("../../../definitions/assessment");
-const common_1 = require("../../../definitions/common");
+const assessment_1 = require("../../../schemas/assessment");
+const common_1 = require("../../../schemas/common");
 const ListAssessmentsService_1 = require("../../../services/assessment/ListAssessmentsService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class IntegrationListAssessmentsController {

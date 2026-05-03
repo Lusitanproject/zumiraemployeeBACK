@@ -18,8 +18,10 @@ const CreateActChatbotController_1 = require("./controllers/admin/acts/CreateAct
 const FindActChatbotController_1 = require("./controllers/admin/acts/FindActChatbotController");
 const FindAllActChatbotsController_1 = require("./controllers/admin/acts/FindAllActChatbotsController");
 const FindByTrailController_1 = require("./controllers/admin/acts/FindByTrailController");
+const FindByCompanyController_1 = require("./controllers/admin/acts/FindByCompanyController");
 const UpdateActChatbotController_1 = require("./controllers/admin/acts/UpdateActChatbotController");
 const UpdateManyActChatbotsController_1 = require("./controllers/admin/acts/UpdateManyActChatbotsController");
+const ImportChatbaseChaptersController_1 = require("./controllers/admin/acts/ImportChatbaseChaptersController");
 const DuplicateAssessmentController_1 = require("./controllers/admin/assessments/DuplicateAssessmentController");
 const FindAllAssessmentsController_1 = require("./controllers/admin/assessments/FindAllAssessmentsController");
 const FindQuestionByAssessmentController_1 = require("./controllers/admin/assessments/FindQuestionByAssessmentController");
@@ -34,6 +36,8 @@ const FindAllFeedbacksController_1 = require("./controllers/admin/companies/Find
 const FindCompanyController_1 = require("./controllers/admin/companies/FindCompanyController");
 const SetCompanyAssessmentsController_1 = require("./controllers/admin/companies/SetCompanyAssessmentsController");
 const UpdateCompanyController_1 = require("./controllers/admin/companies/UpdateCompanyController");
+const GenerateActAnalysisController_1 = require("./controllers/admin/companies/GenerateActAnalysisController");
+const FindActAnalysisController_1 = require("./controllers/admin/companies/FindActAnalysisController");
 const CreateDimensionController_1 = require("./controllers/admin/dimensions/CreateDimensionController");
 const EditDimensionController_1 = require("./controllers/admin/dimensions/EditDimensionController");
 const FindAllDimensionController_1 = require("./controllers/admin/dimensions/FindAllDimensionController");
@@ -87,6 +91,11 @@ const ListNotificationsController_1 = require("./controllers/notification/ListNo
 const ReadNotificationController_1 = require("./controllers/notification/ReadNotificationController");
 const ListSelfMonitoringBlockResultsController_1 = require("./controllers/self-monitoring-block/ListSelfMonitoringBlockResultsController");
 const ListSelfMonitoringBlocksController_1 = require("./controllers/self-monitoring-block/ListSelfMonitoringBlocksController");
+const CreatePsychosocialFactorController_1 = require("./controllers/admin/psychosocial-factors/CreatePsychosocialFactorController");
+const FindAllPsychosocialFactorsController_1 = require("./controllers/admin/psychosocial-factors/FindAllPsychosocialFactorsController");
+const FindPsychosocialFactorController_1 = require("./controllers/admin/psychosocial-factors/FindPsychosocialFactorController");
+const UpdatePsychosocialFactorController_1 = require("./controllers/admin/psychosocial-factors/UpdatePsychosocialFactorController");
+const DeletePsychosocialFactorController_1 = require("./controllers/admin/psychosocial-factors/DeletePsychosocialFactorController");
 const CompileActChapterController_2 = require("./controllers/integration/act/CompileActChapterController");
 const CreateActChapterController_2 = require("./controllers/integration/act/CreateActChapterController");
 const GetActChapterController_2 = require("./controllers/integration/act/GetActChapterController");
@@ -165,6 +174,12 @@ router.put("/self-monitoring/admin/:id", isAuthenticated_1.isAuthenticated, new 
 router.get("/self-monitoring/admin/:id", isAuthenticated_1.isAuthenticated, new FindSelfMonitoringBlockController_1.FindSelfMonitoringBlocksController().handle);
 router.get("/self-monitoring/results/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new ListSelfMonitoringBlockResultsController_1.ListSelfMonitoringBlockResultsController().handle);
 router.get("/self-monitoring/dimensions/:selfMonitoringBlockId", isAuthenticated_1.isAuthenticated, new FindBySelfMonitoringController_1.FindDimensionByBlockController().handle);
+// ROTAS PSYCHOSOCIAL FACTORS
+router.get("/psychosocial-factors", isAuthenticated_1.isAuthenticated, new FindAllPsychosocialFactorsController_1.FindAllPsychosocialFactorsController().handle);
+router.post("/psychosocial-factors", isAuthenticated_1.isAuthenticated, new CreatePsychosocialFactorController_1.CreatePsychosocialFactorController().handle);
+router.get("/psychosocial-factors/:id", isAuthenticated_1.isAuthenticated, new FindPsychosocialFactorController_1.FindPsychosocialFactorController().handle);
+router.put("/psychosocial-factors/:id", isAuthenticated_1.isAuthenticated, new UpdatePsychosocialFactorController_1.UpdatePsychosocialFactorController().handle);
+router.delete("/psychosocial-factors/:id", isAuthenticated_1.isAuthenticated, new DeletePsychosocialFactorController_1.DeletePsychosocialFactorController().handle);
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated_1.isAuthenticated, new FindAllCompaniesController_1.FindAllCompaniesController().handle);
 router.get("/companies/feedback", isAuthenticated_1.isAuthenticated, new FindAllFeedbacksController_1.FindAllFeedbacksController().handle);
@@ -173,6 +188,8 @@ router.get("/companies/:id/feedback", isAuthenticated_1.isAuthenticated, new Fin
 router.post("/companies/:id/assessments", isAuthenticated_1.isAuthenticated, new SetCompanyAssessmentsController_1.SetCompanyAssessmentsController().handle);
 router.post("/companies/admin", isAuthenticated_1.isAuthenticated, new CreateCompanyController_1.CreateCompanyController().handle);
 router.put("/companies/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateCompanyController_1.UpdateCompanyController().handle);
+router.post("/companies/admin/:companyId/acts/:actChatbotId/analysis", isAuthenticated_1.isAuthenticated, new GenerateActAnalysisController_1.GenerateActAnalysisController().handle);
+router.get("/companies/admin/:companyId/acts/:actChatbotId/analysis", isAuthenticated_1.isAuthenticated, new FindActAnalysisController_1.FindActAnalysisController().handle);
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController_1.ListNationalitiesController().handle);
 router.post("/nationalities/admin", isAuthenticated_1.isAuthenticated, new CreateNationalityController_1.CreateNationalityController().handle);
@@ -194,10 +211,12 @@ router.delete("/notifications/:notificationId", isAuthenticated_1.isAuthenticate
 // ROTAS ACTS
 router.get("/acts/admin", isAuthenticated_1.isAuthenticated, new FindAllActChatbotsController_1.FindAllActChatbotsController().handle);
 router.get("/acts/admin/by-trail", isAuthenticated_1.isAuthenticated, new FindByTrailController_1.FindByTrailController().handle);
+router.get("/acts/admin/by-company", isAuthenticated_1.isAuthenticated, new FindByCompanyController_1.FindByCompanyController().handle);
 router.get("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new FindActChatbotController_1.FindActChatbotController().handle);
 router.put("/acts/admin/update-many", isAuthenticated_1.isAuthenticated, new UpdateManyActChatbotsController_1.UpdateManyActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateActChatbotController_1.UpdateActChatbotController().handle);
 router.post("/acts/admin", isAuthenticated_1.isAuthenticated, new CreateActChatbotController_1.CreateActChatbotController().handle);
+router.post("/acts/admin/:id/import-chatbase-chapters", isAuthenticated_1.isAuthenticated, new ImportChatbaseChaptersController_1.ImportChatbaseChaptersController().handle);
 router.get("/acts", isAuthenticated_1.isAuthenticated, new GetActsDataController_1.GetActsDataController().handle);
 router.get("/acts/chapters", isAuthenticated_1.isAuthenticated, new GetActChapterController_1.GetActChapterController().handle);
 router.put("/acts/next", isAuthenticated_1.isAuthenticated, new MoveToNextActController_1.MoveToNextActController().handle);

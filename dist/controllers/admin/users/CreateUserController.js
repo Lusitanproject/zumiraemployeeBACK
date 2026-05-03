@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserController = void 0;
-const users_1 = require("../../../definitions/admin/users");
+const users_1 = require("../../../schemas/admin/users");
 const error_1 = require("../../../error");
 const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
 const RoleAdminService_1 = require("../../../services/admin/RoleAdminService");

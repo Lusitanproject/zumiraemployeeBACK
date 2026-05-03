@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EditDimensionController = void 0;
-const dimension_1 = require("../../../definitions/admin/dimension");
+const dimension_1 = require("../../../schemas/admin/dimension");
 const DimensionAdminService_1 = require("../../../services/admin/DimensionAdminService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class EditDimensionController {

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserController = void 0;
-const user_1 = require("../../definitions/user");
+const user_1 = require("../../schemas/user");
 const CreateUserService_1 = require("../../services/user/CreateUserService");
 const parseZodError_1 = require("../../utils/parseZodError");
 class CreateUserController {

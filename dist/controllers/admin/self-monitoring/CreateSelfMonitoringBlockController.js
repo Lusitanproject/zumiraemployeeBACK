@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateSelfMonitoringBlocksController = void 0;
-const self_monitoring_1 = require("../../../definitions/admin/self-monitoring");
+const self_monitoring_1 = require("../../../schemas/admin/self-monitoring");
 const SelfMonitoringService_1 = require("../../../services/admin/SelfMonitoringService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class CreateSelfMonitoringBlocksController {

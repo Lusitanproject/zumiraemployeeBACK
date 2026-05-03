@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompileActChapterService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
-const generateOpenAiResponse_1 = require("../../utils/generateOpenAiResponse");
+const openai_1 = require("../../external/openai");
 class CompileActChapterService {
     async execute({ actChapterId, userId }) {
         const chapter = await prisma_1.default.actChapter.findFirst({
@@ -26,7 +26,8 @@ class CompileActChapterService {
             content: m.content,
             role: "user",
         }));
-        const response = await (0, generateOpenAiResponse_1.generateOpenAiResponse)({
+        const openai = new openai_1.OpenAiApi();
+        const response = await openai.generateResponse({
             messages,
             instructions: chapter.actChatbot.compilationInstructions,
         });
