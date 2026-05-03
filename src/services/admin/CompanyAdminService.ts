@@ -17,12 +17,12 @@ interface ActAnalysisItem {
   factor: {
     id: string;
     name: string;
-    selfMonitoringBlock: {
-      id: string;
-      title: string;
-    } | null;
-    _count: Record<string, number>;
   };
+  selfMonitoringBlock: {
+    id: string;
+    name: string;
+  };
+  count: number;
 }
 
 type FindActAnalysisResult =
@@ -350,35 +350,90 @@ Formato obrigatório de resposta:
       }
     }
 
-    const analysisRows = await prismaClient.actMessagesPsychosocialFactors.findMany({
-      where: {
-        analysisBatch: {
-          companyActAnalysisId: analysis.id,
-        },
-      },
+    // Filtros
+    //   WHERE
+    // u.company_id = ${companyId}
+    // AND (${gender}::text IS NULL OR u.gender = ${gender})
+    // AND (${area}::text IS NULL OR u.area = ${area})
 
-      select: {
-        factor: {
-          select: {
-            id: true,
-            name: true,
-            selfMonitoringBlock: {
-              select: {
-                id: true,
-                title: true,
-              },
-            },
-            _count: true,
-          },
-        },
-      },
-    });
+    const result = (await prismaClient.$queryRaw`
+      WITH filtered AS (
+        SELECT
+          cab.company_act_analysis_id AS act_analysis_id,
+          ampf.factor_id
+        FROM act_messages_psychosocial_factors ampf
 
-    console.log(`Análise pronta com ${analysisRows.length} registros`);
+        JOIN company_act_analysis_batches cab
+          ON cab.id = ampf.analysis_batch_id
+
+        JOIN act_chapter_messages m
+          ON m.id = ampf.message_id
+
+        JOIN act_chapters c
+          ON c.id = m.act_chapter_id
+
+        JOIN users u
+          ON u.id = c.user_id
+
+
+      ),
+
+      aggregated AS (
+        SELECT
+          act_analysis_id,
+          factor_id,
+          COUNT(*)::int AS total
+        FROM filtered
+        GROUP BY act_analysis_id, factor_id
+      ),
+
+      counted AS (
+        SELECT COUNT(*)::int AS full_count FROM aggregated
+      )
+
+      SELECT
+        a.act_analysis_id,
+        a.factor_id,
+        a.total,
+        c.full_count,
+        f.id as factor_id_full,
+        f.name as factor_name,
+        smb.id as smb_id,
+        smb.title as smb_title
+      FROM aggregated a
+      CROSS JOIN counted c
+      JOIN psychosocial_factors f ON f.id = a.factor_id
+      LEFT JOIN self_monitoring_blocks smb ON f.self_monitoring_block_id = smb.id
+      ORDER BY a.total DESC
+    `) as Array<{
+      act_analysis_id: string;
+      factor_id: string;
+      total: number;
+      full_count: number;
+      factor_id_full: string;
+      factor_name: string;
+      smb_id: string;
+      smb_title: string;
+    }>;
+
+    // Paginacao
+    // LIMIT ${limit}
+    // OFFSET ${offset};
+
+    const items: ActAnalysisItem[] = result.map((r) => ({
+      factor: {
+        id: r.factor_id_full,
+        name: r.factor_name,
+      },
+      selfMonitoringBlock: { id: r.smb_id, name: r.smb_title! },
+      count: r.total,
+    }));
+
+    console.log(`Análise pronta com ${items.length} registros`);
 
     return {
       available: true,
-      items: analysisRows,
+      items,
     };
   }
 }
