@@ -30,6 +30,10 @@ export const FindByTrailSchema = z.object({
   trailId: z.string().cuid(),
 });
 
+export const FindByCompanySchema = z.object({
+  companyId: z.string().cuid(),
+});
+
 export const ImportChatbaseChaptersSchema = z.object({
   chatbaseChatbotId: z.string().nonempty(),
 });

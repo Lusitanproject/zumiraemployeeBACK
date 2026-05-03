@@ -13,6 +13,7 @@ import { CreateActChatbotController } from "./controllers/admin/acts/CreateActCh
 import { FindActChatbotController } from "./controllers/admin/acts/FindActChatbotController";
 import { FindAllActChatbotsController } from "./controllers/admin/acts/FindAllActChatbotsController";
 import { FindByTrailController } from "./controllers/admin/acts/FindByTrailController";
+import { FindByCompanyController } from "./controllers/admin/acts/FindByCompanyController";
 import { UpdateActChatbotController } from "./controllers/admin/acts/UpdateActChatbotController";
 import { UpdateManyActChatbotsController } from "./controllers/admin/acts/UpdateManyActChatbotsController";
 import { ImportChatbaseChaptersController } from "./controllers/admin/acts/ImportChatbaseChaptersController";
@@ -236,6 +237,7 @@ router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotif
 // ROTAS ACTS
 router.get("/acts/admin", isAuthenticated, new FindAllActChatbotsController().handle);
 router.get("/acts/admin/by-trail", isAuthenticated, new FindByTrailController().handle);
+router.get("/acts/admin/by-company", isAuthenticated, new FindByCompanyController().handle);
 router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().handle);
 router.put("/acts/admin/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);

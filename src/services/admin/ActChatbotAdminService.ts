@@ -1,4 +1,4 @@
-import { ChapterType } from "@prisma/client";
+import { ChapterType, Prisma } from "@prisma/client";
 import {
   CreateActChatbotRequest,
   ImportChatbaseChaptersRequest,
@@ -10,6 +10,16 @@ import { ChatbaseApi } from "../../external/chatbase";
 import prismaClient from "../../prisma";
 
 class ActChatbotAdminService {
+  private readonly actListSelect = {
+    id: true,
+    name: true,
+    description: true,
+    icon: true,
+    index: true,
+    trailId: true,
+    createdAt: true,
+  } satisfies Prisma.ActChatbotSelect;
+
   async find(id: string) {
     const bot = await prismaClient.actChatbot.findFirst({
       where: {
@@ -43,14 +53,7 @@ class ActChatbotAdminService {
 
   async findAll() {
     const bots = await prismaClient.actChatbot.findMany({
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        icon: true,
-        index: true,
-        trailId: true,
-      },
+      select: this.actListSelect,
 
       orderBy: {
         index: "asc",
@@ -62,14 +65,7 @@ class ActChatbotAdminService {
 
   async findByTrail(trailId: string) {
     const bots = await prismaClient.actChatbot.findMany({
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        icon: true,
-        index: true,
-        trailId: true,
-      },
+      select: this.actListSelect,
 
       where: {
         trailId,
@@ -81,6 +77,23 @@ class ActChatbotAdminService {
     });
 
     return { items: bots };
+  }
+
+  async findByCompany(companyId: string) {
+    const company = await prismaClient.company.findFirst({
+      where: {
+        id: companyId,
+      },
+      select: {
+        trailId: true,
+      },
+    });
+
+    if (!company) {
+      throw new PublicError("Company not found");
+    }
+
+    return await this.findByTrail(company.trailId);
   }
 
   async create(data: CreateActChatbotRequest) {
