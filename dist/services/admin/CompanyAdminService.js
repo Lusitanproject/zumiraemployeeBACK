@@ -374,7 +374,7 @@ Formato obrigatório de resposta:
             items,
         };
     }
-    async generateAllUserFeedback(companyId) {
+    async generateAllUserFeedback(companyId, sync = true) {
         const company = await prisma_1.default.company.findFirst({
             where: { id: companyId },
             include: {
@@ -429,17 +429,21 @@ Formato obrigatório de resposta:
         console.log(`Iniciando geração de feedback para empresa ${companyId}: ${uniquePairs.length} pares usuário+avaliação`);
         // Import GenerateUserFeedbackService dynamically to avoid circular dependency
         const { GenerateUserFeedbackService } = await Promise.resolve().then(() => __importStar(require("../assessment/GenerateUserFeedbackService")));
-        // Fire and forget: dispatch all without awaiting
-        uniquePairs.forEach((pair) => {
+        const tasks = uniquePairs.map(async (pair) => {
             const generateService = new GenerateUserFeedbackService();
-            generateService.execute({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
+            return generateService.execute({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
                 console.error(`Erro ao gerar feedback para usuário ${pair.userId} em avaliação ${pair.assessmentId}: `, error instanceof Error ? error.message : String(error));
             });
         });
+        if (sync) {
+            await Promise.all(tasks);
+        }
         return {
             companyId,
             queuedCount: uniquePairs.length,
-            message: `${uniquePairs.length} gerações de feedback enfileiradas com sucesso`,
+            message: sync
+                ? `${uniquePairs.length} feedbacks gerados com sucesso`
+                : `${uniquePairs.length} gerações de feedback enfileiradas com sucesso`,
         };
     }
 }
