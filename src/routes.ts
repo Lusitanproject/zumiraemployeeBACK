@@ -33,6 +33,7 @@ import { SetCompanyAssessmentsController } from "./controllers/admin/companies/S
 import { UpdateCompanyController } from "./controllers/admin/companies/UpdateCompanyController";
 import { GenerateActAnalysisController } from "./controllers/admin/companies/GenerateActAnalysisController";
 import { FindActAnalysisController } from "./controllers/admin/companies/FindActAnalysisController";
+import { GenerateAllUserFeedbackController } from "./controllers/admin/companies/GenerateAllUserFeedbackController";
 import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
 import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
 import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
@@ -212,6 +213,11 @@ router.get(
   "/companies/admin/:companyId/acts/:actChatbotId/analysis",
   isAuthenticated,
   new FindActAnalysisController().handle,
+);
+router.post(
+  "/companies/admin/:companyId/feedback/users",
+  isAuthenticated,
+  new GenerateAllUserFeedbackController().handle,
 );
 
 // ROTAS NATIONALITY
