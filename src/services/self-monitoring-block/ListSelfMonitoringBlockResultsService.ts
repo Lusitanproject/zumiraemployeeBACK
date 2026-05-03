@@ -1,4 +1,4 @@
-import { ListSelfMonitoringBlockResultsRequest } from "../../definitions/selfMonitoringBlock";
+import { ListSelfMonitoringBlockResultsRequest } from "../../schemas/selfMonitoringBlock";
 import prismaClient from "../../prisma";
 
 class ListSelfMonitoringBlockResultsService {

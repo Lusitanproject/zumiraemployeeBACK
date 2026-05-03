@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateResultRatingsController = void 0;
 const zod_1 = require("zod");
-const assessment_1 = require("../../../definitions/admin/assessment");
+const assessment_1 = require("../../../schemas/admin/assessment");
 const AssessmentResultRatingAdminService_1 = require("../../../services/admin/AssessmentResultRatingAdminService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParamSchema = zod_1.z.object({

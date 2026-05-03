@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CreateUserSchema } from "../../../definitions/admin/users";
+import { CreateUserSchema } from "../../../schemas/admin/users";
 import { PublicError } from "../../../error";
 import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
 import { RoleAdminService } from "../../../services/admin/RoleAdminService";

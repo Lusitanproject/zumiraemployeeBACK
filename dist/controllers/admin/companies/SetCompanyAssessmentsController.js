@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SetCompanyAssessmentsController = void 0;
 const zod_1 = require("zod");
-const company_1 = require("../../../definitions/company");
+const company_1 = require("../../../schemas/company");
 const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParam = zod_1.z.object({

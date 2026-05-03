@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { ListSelfMonitoringBlockResultsSchema } from "../../definitions/selfMonitoringBlock";
+import { ListSelfMonitoringBlockResultsSchema } from "../../schemas/selfMonitoringBlock";
 import { ListSelfMonitoringBlockResultsService } from "../../services/self-monitoring-block/ListSelfMonitoringBlockResultsService";
 import { parseZodError } from "../../utils/parseZodError";
 

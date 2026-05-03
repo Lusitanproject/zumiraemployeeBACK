@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateNotificationTypeController = void 0;
-const notification_1 = require("../../../definitions/admin/notification");
+const notification_1 = require("../../../schemas/admin/notification");
 const NotificationTypeAdminService_1 = require("../../../services/admin/NotificationTypeAdminService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class UpdateNotificationTypeController {

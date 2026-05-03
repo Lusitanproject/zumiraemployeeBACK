@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CreateTrailSchema } from "../../../definitions/admin/trail";
+import { CreateTrailSchema } from "../../../schemas/admin/trail";
 import { TrailAdminService } from "../../../services/admin/TrailAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindUserByController = void 0;
 const parseZodError_1 = require("../../../utils/parseZodError");
 const UserAdminService_1 = require("../../../services/admin/UserAdminService");
-const users_1 = require("../../../definitions/admin/users");
+const users_1 = require("../../../schemas/admin/users");
 class FindUserByController {
     async handle(req, res) {
         const { success, data, error } = users_1.FindUserBySchema.safeParse(req.query);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { UserIdSchema } from "../../../definitions/common";
+import { UserIdSchema } from "../../../schemas/common";
 import { GenerateCompanyFeedbackService } from "../../../services/assessment/GenerateCompanyFeedbackService";
 import { parseZodError } from "../../../utils/parseZodError";
 

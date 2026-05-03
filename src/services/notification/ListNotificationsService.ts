@@ -1,4 +1,4 @@
-import { ListNotificationsRequest } from "../../definitions/notification";
+import { ListNotificationsRequest } from "../../schemas/notification";
 import prismaClient from "../../prisma";
 
 class ListNotificationsService {

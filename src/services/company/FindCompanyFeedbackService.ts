@@ -1,4 +1,4 @@
-import { FindCompanyFeedbackRequest } from "../../definitions/company";
+import { FindCompanyFeedbackRequest } from "../../schemas/company";
 import prismaClient from "../../prisma";
 
 class FindCompanyFeedbackService {

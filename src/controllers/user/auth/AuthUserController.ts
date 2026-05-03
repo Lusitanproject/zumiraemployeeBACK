@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { AuthUserService } from "../../../services/user/auth/AuthUserService";
 import { parseZodError } from "../../../utils/parseZodError";
-import { AuthUserSchema } from "../../../definitions/user";
+import { AuthUserSchema } from "../../../schemas/user";
 class AuthUserController {
   async handle(req: Request, res: Response) {
     const { success, data, error } = AuthUserSchema.safeParse(req.body);

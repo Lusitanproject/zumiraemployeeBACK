@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CreateAssessmentSchema } from "../../definitions/admin/assessment";
+import { CreateAssessmentSchema } from "../../schemas/admin/assessment";
 import { CreateAssessmentService } from "../../services/assessment/CreateAssessmentService";
 import { parseZodError } from "../../utils/parseZodError";
 

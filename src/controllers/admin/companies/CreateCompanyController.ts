@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CreateCompanySchema } from "../../../definitions/admin/company";
+import { CreateCompanySchema } from "../../../schemas/admin/company";
 import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
 import { assertPermissions } from "../../../utils/assertPermissions";
 import { parseZodError } from "../../../utils/parseZodError";

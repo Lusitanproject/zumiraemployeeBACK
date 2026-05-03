@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageActChatbotService = void 0;
 const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
-const generateOpenAiResponse_1 = require("../../utils/generateOpenAiResponse");
+const openai_1 = require("../../external/openai");
 class MessageActChatbotService {
     async execute({ content, actChapterId, userId }) {
         const conv = await prisma_1.default.actChapter.findFirst({
@@ -43,7 +43,8 @@ class MessageActChatbotService {
         }));
         if (conv.actChatbot.initialMessage)
             historyAndInput.unshift({ role: "assistant", content: conv.actChatbot.initialMessage });
-        const response = await (0, generateOpenAiResponse_1.generateOpenAiResponse)({
+        const openai = new openai_1.OpenAiApi();
+        const response = await openai.generateResponse({
             instructions: bot.messageInstructions + `\nO nome do usuário é: ${conv.user.name.split(" ")[0]}`,
             messages: historyAndInput,
         });

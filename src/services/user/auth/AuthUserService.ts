@@ -2,7 +2,7 @@ import { sign } from "jsonwebtoken";
 
 import { PublicError } from "../../../error";
 import prismaClient from "../../../prisma";
-import { AuthUserRequest } from "../../../definitions/user";
+import { AuthUserRequest } from "../../../schemas/user";
 import { User } from "@prisma/client";
 import { verify } from "argon2";
 

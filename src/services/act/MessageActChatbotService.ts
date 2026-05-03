@@ -1,7 +1,7 @@
-import { MessageActChatbotRequest } from "../../definitions/actChatbot";
+import { MessageActChatbotRequest } from "../../schemas/actChatbot";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
-import { generateOpenAiResponse, GenerateOpenAiResponseRequest } from "../../utils/generateOpenAiResponse";
+import { OpenAiApi, GenerateOpenAiResponseRequest } from "../../external/openai";
 
 class MessageActChatbotService {
   async execute({ content, actChapterId, userId }: MessageActChatbotRequest) {
@@ -44,7 +44,8 @@ class MessageActChatbotService {
     if (conv.actChatbot.initialMessage)
       historyAndInput.unshift({ role: "assistant", content: conv.actChatbot.initialMessage });
 
-    const response = await generateOpenAiResponse({
+    const openai = new OpenAiApi();
+    const response = await openai.generateResponse({
       instructions: bot.messageInstructions + `\nO nome do usuário é: ${conv.user.name.split(" ")[0]}`,
       messages: historyAndInput,
     });

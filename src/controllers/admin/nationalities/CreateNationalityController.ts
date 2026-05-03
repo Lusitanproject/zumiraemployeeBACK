@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CreateNationalitySchema } from "../../../definitions/admin/nationality";
+import { CreateNationalitySchema } from "../../../schemas/admin/nationality";
 import { NationalityAdminService } from "../../../services/admin/NationalityAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

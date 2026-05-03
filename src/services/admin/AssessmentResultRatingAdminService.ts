@@ -1,6 +1,6 @@
 import equal from "fast-deep-equal";
 
-import { UpdateRatingsRequest } from "../../definitions/admin/assessment";
+import { UpdateRatingsRequest } from "../../schemas/admin/assessment";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 
@@ -28,7 +28,7 @@ class AssessmentResultRatingAdminService {
 
     const newRatings = data.ratings.filter((r) => !r.id);
     const deletedRatings = assessment.assessmentResultRatings.filter(
-      (r1) => !data.ratings.some((r2) => r1.id === r2.id)
+      (r1) => !data.ratings.some((r2) => r1.id === r2.id),
     );
     const updatedRatings = data.ratings.filter((r1) => {
       if (!r1.id) return false;
@@ -61,7 +61,7 @@ class AssessmentResultRatingAdminService {
             id: r.id,
           },
           data: { risk: r.risk, profile: r.profile, color: r.color },
-        })
+        }),
       ),
     ]);
 

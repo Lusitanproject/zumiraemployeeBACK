@@ -1,4 +1,4 @@
-import { CreateNotificationTypeRequest, UpdateNotificationTypeRequest } from "../../definitions/admin/notification";
+import { CreateNotificationTypeRequest, UpdateNotificationTypeRequest } from "../../schemas/admin/notification";
 import prismaClient from "../../prisma";
 
 class NotificationTypeAdminService {

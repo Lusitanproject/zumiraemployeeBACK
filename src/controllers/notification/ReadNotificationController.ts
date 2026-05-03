@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { NotificationIdSchema } from "../../definitions/notification";
+import { NotificationIdSchema } from "../../schemas/notification";
 import { ReadNotificationService } from "../../services/notification/ReadNotificationService";
 import { parseZodError } from "../../utils/parseZodError";
 

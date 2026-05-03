@@ -1,4 +1,4 @@
-import { CreateNationalityRequest, UpdateNationalityRequest } from "../../definitions/admin/nationality";
+import { CreateNationalityRequest, UpdateNationalityRequest } from "../../schemas/admin/nationality";
 import prismaClient from "../../prisma";
 
 class NationalityAdminService {

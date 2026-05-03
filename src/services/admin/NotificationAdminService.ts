@@ -2,7 +2,7 @@ import {
   CreateNotificationRequest,
   DeleteNotificationRequest,
   UpdateNotificationRequest,
-} from "../../definitions/notification";
+} from "../../schemas/notification";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 

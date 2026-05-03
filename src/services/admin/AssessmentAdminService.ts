@@ -1,4 +1,4 @@
-import { UpdateAssessment } from "../../definitions/admin/assessment";
+import { UpdateAssessment } from "../../schemas/admin/assessment";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 

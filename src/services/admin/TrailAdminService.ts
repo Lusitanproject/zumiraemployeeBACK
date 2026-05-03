@@ -1,4 +1,4 @@
-import { CreateTrailRequest, UpdateTrailRequest } from "../../definitions/admin/trail";
+import { CreateTrailRequest, UpdateTrailRequest } from "../../schemas/admin/trail";
 import prismaClient from "../../prisma";
 
 class TrailAdminService {

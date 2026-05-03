@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { parseZodError } from "../../../utils/parseZodError";
 import { UserAdminService } from "../../../services/admin/UserAdminService";
-import { FindUserBySchema } from "../../../definitions/admin/users";
+import { FindUserBySchema } from "../../../schemas/admin/users";
 
 class FindUserByController {
   async handle(req: Request, res: Response) {

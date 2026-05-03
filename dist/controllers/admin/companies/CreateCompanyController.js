@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateCompanyController = void 0;
-const company_1 = require("../../../definitions/admin/company");
+const company_1 = require("../../../schemas/admin/company");
 const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
 const assertPermissions_1 = require("../../../utils/assertPermissions");
 const parseZodError_1 = require("../../../utils/parseZodError");

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindCompanyFeedbackController = void 0;
-const common_1 = require("../../definitions/common");
-const company_1 = require("../../definitions/company");
+const common_1 = require("../../schemas/common");
+const company_1 = require("../../schemas/company");
 const FindCompanyFeedbackService_1 = require("../../services/company/FindCompanyFeedbackService");
 const parseZodError_1 = require("../../utils/parseZodError");
 class FindCompanyFeedbackController {

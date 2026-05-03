@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FindTrailController = void 0;
-const common_1 = require("../../../definitions/common");
+const common_1 = require("../../../schemas/common");
 const TrailAdminService_1 = require("../../../services/admin/TrailAdminService");
 class FindTrailController {
     async handle(req, res) {
