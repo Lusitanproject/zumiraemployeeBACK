@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { RequestParamsIdCUID } from "../../../definitions/common";
+import { RequestParamsIdCUID } from "../../../schemas/common";
 import { AssessmentAdminService } from "../../../services/admin/AssessmentAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

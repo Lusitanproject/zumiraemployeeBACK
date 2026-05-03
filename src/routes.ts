@@ -13,8 +13,10 @@ import { CreateActChatbotController } from "./controllers/admin/acts/CreateActCh
 import { FindActChatbotController } from "./controllers/admin/acts/FindActChatbotController";
 import { FindAllActChatbotsController } from "./controllers/admin/acts/FindAllActChatbotsController";
 import { FindByTrailController } from "./controllers/admin/acts/FindByTrailController";
+import { FindByCompanyController } from "./controllers/admin/acts/FindByCompanyController";
 import { UpdateActChatbotController } from "./controllers/admin/acts/UpdateActChatbotController";
 import { UpdateManyActChatbotsController } from "./controllers/admin/acts/UpdateManyActChatbotsController";
+import { ImportChatbaseChaptersController } from "./controllers/admin/acts/ImportChatbaseChaptersController";
 import { DuplicateAssessmentController } from "./controllers/admin/assessments/DuplicateAssessmentController";
 import { FindAllAssessmentsController } from "./controllers/admin/assessments/FindAllAssessmentsController";
 import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
@@ -29,6 +31,8 @@ import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAl
 import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
 import { SetCompanyAssessmentsController } from "./controllers/admin/companies/SetCompanyAssessmentsController";
 import { UpdateCompanyController } from "./controllers/admin/companies/UpdateCompanyController";
+import { GenerateActAnalysisController } from "./controllers/admin/companies/GenerateActAnalysisController";
+import { FindActAnalysisController } from "./controllers/admin/companies/FindActAnalysisController";
 import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
 import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
 import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
@@ -82,6 +86,11 @@ import { ListNotificationsController } from "./controllers/notification/ListNoti
 import { ReadNotificationController } from "./controllers/notification/ReadNotificationController";
 import { ListSelfMonitoringBlockResultsController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlockResultsController";
 import { ListSelfMonitoringBlocksController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlocksController";
+import { CreatePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/CreatePsychosocialFactorController";
+import { FindAllPsychosocialFactorsController } from "./controllers/admin/psychosocial-factors/FindAllPsychosocialFactorsController";
+import { FindPsychosocialFactorController } from "./controllers/admin/psychosocial-factors/FindPsychosocialFactorController";
+import { UpdatePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/UpdatePsychosocialFactorController";
+import { DeletePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/DeletePsychosocialFactorController";
 import { IntegrationCompileActChapterController } from "./controllers/integration/act/CompileActChapterController";
 import { IntegrationCreateActChapterController } from "./controllers/integration/act/CreateActChapterController";
 import { IntegrationGetActChapterController } from "./controllers/integration/act/GetActChapterController";
@@ -179,6 +188,13 @@ router.get(
   new FindDimensionByBlockController().handle,
 );
 
+// ROTAS PSYCHOSOCIAL FACTORS
+router.get("/psychosocial-factors", isAuthenticated, new FindAllPsychosocialFactorsController().handle);
+router.post("/psychosocial-factors", isAuthenticated, new CreatePsychosocialFactorController().handle);
+router.get("/psychosocial-factors/:id", isAuthenticated, new FindPsychosocialFactorController().handle);
+router.put("/psychosocial-factors/:id", isAuthenticated, new UpdatePsychosocialFactorController().handle);
+router.delete("/psychosocial-factors/:id", isAuthenticated, new DeletePsychosocialFactorController().handle);
+
 // ROTAS COMPANY
 router.get("/companies", isAuthenticated, new FindAllCompaniesController().handle);
 router.get("/companies/feedback", isAuthenticated, new FindAllFeedbacksController().handle);
@@ -187,6 +203,16 @@ router.get("/companies/:id/feedback", isAuthenticated, new FindCompanyFeedbackCo
 router.post("/companies/:id/assessments", isAuthenticated, new SetCompanyAssessmentsController().handle);
 router.post("/companies/admin", isAuthenticated, new CreateCompanyController().handle);
 router.put("/companies/admin/:id", isAuthenticated, new UpdateCompanyController().handle);
+router.post(
+  "/companies/admin/:companyId/acts/:actChatbotId/analysis",
+  isAuthenticated,
+  new GenerateActAnalysisController().handle,
+);
+router.get(
+  "/companies/admin/:companyId/acts/:actChatbotId/analysis",
+  isAuthenticated,
+  new FindActAnalysisController().handle,
+);
 
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController().handle);
@@ -211,10 +237,12 @@ router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotif
 // ROTAS ACTS
 router.get("/acts/admin", isAuthenticated, new FindAllActChatbotsController().handle);
 router.get("/acts/admin/by-trail", isAuthenticated, new FindByTrailController().handle);
+router.get("/acts/admin/by-company", isAuthenticated, new FindByCompanyController().handle);
 router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().handle);
 router.put("/acts/admin/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
 router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);
 router.post("/acts/admin", isAuthenticated, new CreateActChatbotController().handle);
+router.post("/acts/admin/:id/import-chatbase-chapters", isAuthenticated, new ImportChatbaseChaptersController().handle);
 router.get("/acts", isAuthenticated, new GetActsDataController().handle);
 router.get("/acts/chapters", isAuthenticated, new GetActChapterController().handle);
 router.put("/acts/next", isAuthenticated, new MoveToNextActController().handle);

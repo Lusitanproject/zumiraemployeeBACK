@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReadAlertController = void 0;
-const alert_1 = require("../../definitions/alert");
+const alert_1 = require("../../schemas/alert");
 const ReadAlertService_1 = require("../../services/alert/ReadAlertService");
 const parseZodError_1 = require("../../utils/parseZodError");
 class ReadAlertController {

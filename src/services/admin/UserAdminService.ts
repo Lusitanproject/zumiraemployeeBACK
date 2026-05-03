@@ -5,7 +5,7 @@ import {
   CreateUserSchema,
   FindUserByRequest,
   UpdateUserSchema,
-} from "../../definitions/admin/users";
+} from "../../schemas/admin/users";
 import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
 

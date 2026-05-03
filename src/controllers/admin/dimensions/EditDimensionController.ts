@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { EditDimensionSchema } from "../../../definitions/admin/dimension";
+import { EditDimensionSchema } from "../../../schemas/admin/dimension";
 import { DimensionAdminService } from "../../../services/admin/DimensionAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

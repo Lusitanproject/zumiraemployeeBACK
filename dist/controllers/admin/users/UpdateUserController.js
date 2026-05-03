@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateUserController = void 0;
 const zod_1 = require("zod");
-const users_1 = require("../../../definitions/admin/users");
+const users_1 = require("../../../schemas/admin/users");
 const CompanyAdminService_1 = require("../../../services/admin/CompanyAdminService");
 const RoleAdminService_1 = require("../../../services/admin/RoleAdminService");
 const UserAdminService_1 = require("../../../services/admin/UserAdminService");

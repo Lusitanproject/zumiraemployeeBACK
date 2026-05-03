@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateNationalityController = void 0;
-const nationality_1 = require("../../../definitions/admin/nationality");
+const nationality_1 = require("../../../schemas/admin/nationality");
 const NationalityAdminService_1 = require("../../../services/admin/NationalityAdminService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class CreateNationalityController {

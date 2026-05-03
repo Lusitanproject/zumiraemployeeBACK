@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { UserIdSchema } from "../../../definitions/common";
+import { UserIdSchema } from "../../../schemas/common";
 import { MoveToNextActService } from "../../../services/act/MoveToNextActService";
 import { parseZodError } from "../../../utils/parseZodError";
 

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { ListAlertsSchema } from "../../definitions/alert";
+import { ListAlertsSchema } from "../../schemas/alert";
 import { ListAlertsService } from "../../services/alert/ListAlertsService";
 import { parseZodError } from "../../utils/parseZodError";
 

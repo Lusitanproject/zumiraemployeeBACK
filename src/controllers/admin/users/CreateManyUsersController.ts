@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CreateManyUsersSchema, CreateUserSchema } from "../../../definitions/admin/users";
+import { CreateManyUsersSchema, CreateUserSchema } from "../../../schemas/admin/users";
 import { UserAdminService } from "../../../services/admin/UserAdminService";
 import { assertPermissions } from "../../../utils/assertPermissions";
 import { parseZodError } from "../../../utils/parseZodError";

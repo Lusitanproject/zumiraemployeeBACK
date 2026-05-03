@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { UpdateNationalitySchema } from "../../../definitions/admin/nationality";
-import { RequestParamsIdCUID } from "../../../definitions/common";
+import { UpdateNationalitySchema } from "../../../schemas/admin/nationality";
+import { RequestParamsIdCUID } from "../../../schemas/common";
 import { NationalityAdminService } from "../../../services/admin/NationalityAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

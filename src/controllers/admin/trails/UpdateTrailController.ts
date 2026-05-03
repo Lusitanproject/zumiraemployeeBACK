@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { UpdateTrailSchema } from "../../../definitions/admin/trail";
-import { RequestParamsIdCUID } from "../../../definitions/common";
+import { UpdateTrailSchema } from "../../../schemas/admin/trail";
+import { RequestParamsIdCUID } from "../../../schemas/common";
 import { TrailAdminService } from "../../../services/admin/TrailAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

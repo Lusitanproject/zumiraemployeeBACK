@@ -1,4 +1,4 @@
-import { CreateUserRequest } from "../../definitions/user";
+import { CreateUserRequest } from "../../schemas/user";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { hash } from "argon2";

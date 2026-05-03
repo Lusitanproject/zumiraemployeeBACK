@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { RequestParamsIdCUID } from "../../../definitions/common";
+import { RequestParamsIdCUID } from "../../../schemas/common";
 import { NationalityAdminService } from "../../../services/admin/NationalityAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

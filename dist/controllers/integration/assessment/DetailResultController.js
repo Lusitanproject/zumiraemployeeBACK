@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationDetailResultController = void 0;
 const zod_1 = require("zod");
-const common_1 = require("../../../definitions/common");
+const common_1 = require("../../../schemas/common");
 const DetailResultService_1 = require("../../../services/assessment/DetailResultService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParamSchema = zod_1.z.object({

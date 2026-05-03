@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { AssessmentByCompanySchema } from "../../../definitions/admin/assessment";
+import { AssessmentByCompanySchema } from "../../../schemas/admin/assessment";
 import { AssessmentResultAdminService } from "../../../services/admin/AssessmentResultAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

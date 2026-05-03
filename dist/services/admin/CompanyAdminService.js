@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompanyAdminService = void 0;
 const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
+const openai_1 = require("../../external/openai");
 class CompanyAdminService {
     async find(companyId) {
         const company = await prisma_1.default.company.findFirst({
@@ -99,6 +100,246 @@ class CompanyAdminService {
                 },
             }),
         ]);
+    }
+    async buildPsychosocialPrompt(factors) {
+        const factorsJson = JSON.stringify(factors);
+        return `
+Você é um classificador técnico especializado em fatores psicossociais em comunicações corporativas.
+
+Sua tarefa é analisar mensagens de uma conversa e identificar somente os fatores psicossociais que realmente se aplicam às mensagens enviadas por usuários.
+
+Os fatores disponíveis são:
+
+${factorsJson}
+
+Você receberá um JSON contendo:
+
+- messages: lista de mensagens da conversa, onde cada item possui:
+  - id
+  - role
+  - content
+
+Objetivo:
+
+Avaliar somente mensagens cujo role seja "user" e retornar apenas as combinações positivas (mensagem x fator) em que exista aderência real.
+
+Regras obrigatórias:
+
+1. Analise apenas mensagens com role igual a "user".
+2. Ignore mensagens com qualquer outro role no resultado final.
+3. Considere todas as mensagens da conversa como contexto para interpretação.
+4. Avalie todos os fatores listados acima para cada mensagem elegível.
+5. O campo factor_id é string.
+6. Retorne somente fatores com aderência positiva.
+7. Não retorne fatores negativos, inconclusivos ou nulos.
+8. Se o factor_id for nulo, indefinido ou não aplicável, não inclua item em results.
+9. Utilize somente os fatores fornecidos.
+10. Nunca invente fatores.
+11. Considere significado semântico, tom, intenção e sinais indiretos.
+12. Seja criterioso e conservador. Só classifique quando houver evidência razoável.
+13. Se nenhuma mensagem de role "user" possuir aderência a qualquer fator, retorne results vazio.
+14. Retorne apenas JSON válido.
+15. Não inclua explicações, comentários ou texto adicional.
+
+Formato obrigatório de resposta:
+
+{
+  "associations": [
+    {
+      "message_id": "string",
+      "factor_id": "string"
+    }
+  ]
+}
+`.trim();
+    }
+    async generateActAnalysis(id, actChatbotId) {
+        console.log(`Gerando análise para a empresa ${id} e o chatbot ${actChatbotId}`);
+        const factors = await prisma_1.default.psychosocialFactor.findMany({
+            select: {
+                id: true,
+                name: true,
+                description: true,
+            },
+        });
+        const chapters = await prisma_1.default.actChapter.findMany({
+            where: {
+                actChatbot: {
+                    id: actChatbotId,
+                },
+                user: {
+                    companyId: id,
+                },
+            },
+            include: {
+                messages: {
+                    select: {
+                        id: true,
+                        role: true,
+                        content: true,
+                    },
+                },
+            },
+        });
+        const newAnalysis = await prisma_1.default.companyActAnalysis.create({
+            data: {
+                actChatbotId,
+                companyId: id,
+            },
+        });
+        const instructions = await this.buildPsychosocialPrompt(factors);
+        const batchItems = chapters.map((chapter) => ({
+            customId: chapter.id,
+            messages: [{ content: JSON.stringify(chapter.messages), role: "user" }],
+        }));
+        const openai = new openai_1.OpenAiApi();
+        const batchResult = await openai.createBatch({ instructions, batchItems });
+        console.log(`Lote OpenAI criado com ${batchItems.length} itens`);
+        await prisma_1.default.companyActAnalysisBatch.create({
+            data: {
+                batchId: batchResult.batchId,
+                companyActAnalysisId: newAnalysis.id,
+            },
+        });
+    }
+    async retrieveAndSaveResults(storedBatches) {
+        const openai = new openai_1.OpenAiApi();
+        const pendingBatches = storedBatches.filter((batch) => batch.status !== "completed");
+        const batchResults = await Promise.all(pendingBatches.map((pending) => openai.retrieveBatchResult(pending.batchId)));
+        batchResults.forEach(({ batchId, status }) => {
+            console.log(`Lote OpenAI ${batchId} retornou status ${status}`);
+        });
+        batchResults.forEach(({ batchId, results }) => {
+            results === null || results === void 0 ? void 0 : results.forEach(({ customId, data }) => {
+                console.log(`Lote OpenAI ${batchId} resultado ${customId !== null && customId !== void 0 ? customId : "sem customId"}: ${JSON.stringify(data, null, 2)}`);
+            });
+        });
+        const newCompletedBatchResults = batchResults.filter((batchRes) => batchRes.status === "completed");
+        const allDone = newCompletedBatchResults.length === pendingBatches.length;
+        console.log(`Lotes processados: total ${storedBatches.length}, concluídos ${newCompletedBatchResults.length}, pendentes ${pendingBatches.length - newCompletedBatchResults.length}`);
+        const externalToLocalBatchId = pendingBatches.reduce((prev, curr) => {
+            prev.set(curr.batchId, curr.id);
+            return prev;
+        }, new Map());
+        await prisma_1.default.actMessagesPsychosocialFactors.createMany({
+            data: newCompletedBatchResults.flatMap(({ results, batchId }) => {
+                var _a;
+                return (_a = results === null || results === void 0 ? void 0 : results.flatMap(({ data }) => data
+                    ? data.associations.map((a) => ({
+                        factorId: a.factor_id,
+                        messageId: a.message_id,
+                        analysisBatchId: externalToLocalBatchId.get(batchId),
+                    }))
+                    : [])) !== null && _a !== void 0 ? _a : [];
+            }),
+        });
+        await Promise.all(batchResults.map(({ batchId, status }) => prisma_1.default.companyActAnalysisBatch.update({
+            where: {
+                id: externalToLocalBatchId.get(batchId),
+            },
+            data: {
+                status,
+            },
+        })));
+        return allDone;
+    }
+    async findActAnalysis(id, actChatbotId) {
+        console.log(`Buscando análise da empresa ${id} para o chatbot ${actChatbotId}`);
+        const analysis = await prisma_1.default.companyActAnalysis.findFirst({
+            orderBy: {
+                createdAt: "desc",
+            },
+            where: {
+                companyId: id,
+                actChatbotId,
+            },
+            include: {
+                companyActAnalysisBatches: true,
+            },
+        });
+        if (!analysis) {
+            throw new error_1.PublicError("No act analysis for this company was found.");
+        }
+        const alreadySaved = analysis.companyActAnalysisBatches.every((batch) => batch.status === "completed");
+        if (!alreadySaved) {
+            console.log("Análise com pendências, tentando atualizar os lotes");
+            const allDone = await this.retrieveAndSaveResults(analysis.companyActAnalysisBatches);
+            if (!allDone) {
+                console.log("Análise ainda pendente");
+                return { available: false };
+            }
+        }
+        // Filtros
+        //   WHERE
+        // u.company_id = ${companyId}
+        // AND (${gender}::text IS NULL OR u.gender = ${gender})
+        // AND (${area}::text IS NULL OR u.area = ${area})
+        const result = (await prisma_1.default.$queryRaw `
+      WITH filtered AS (
+        SELECT
+          cab.company_act_analysis_id AS act_analysis_id,
+          ampf.factor_id
+        FROM act_messages_psychosocial_factors ampf
+
+        JOIN company_act_analysis_batches cab
+          ON cab.id = ampf.analysis_batch_id
+
+        JOIN act_chapter_messages m
+          ON m.id = ampf.message_id
+
+        JOIN act_chapters c
+          ON c.id = m.act_chapter_id
+
+        JOIN users u
+          ON u.id = c.user_id
+
+
+      ),
+
+      aggregated AS (
+        SELECT
+          act_analysis_id,
+          factor_id,
+          COUNT(*)::int AS total
+        FROM filtered
+        GROUP BY act_analysis_id, factor_id
+      ),
+
+      counted AS (
+        SELECT COUNT(*)::int AS full_count FROM aggregated
+      )
+
+      SELECT
+        a.act_analysis_id,
+        a.factor_id,
+        a.total,
+        c.full_count,
+        f.id as factor_id_full,
+        f.name as factor_name,
+        smb.id as smb_id,
+        smb.title as smb_title
+      FROM aggregated a
+      CROSS JOIN counted c
+      JOIN psychosocial_factors f ON f.id = a.factor_id
+      LEFT JOIN self_monitoring_blocks smb ON f.self_monitoring_block_id = smb.id
+      ORDER BY a.total DESC
+    `);
+        // Paginacao
+        // LIMIT ${limit}
+        // OFFSET ${offset};
+        const items = result.map((r) => ({
+            factor: {
+                id: r.factor_id_full,
+                name: r.factor_name,
+            },
+            selfMonitoringBlock: { id: r.smb_id, name: r.smb_title },
+            count: r.total,
+        }));
+        console.log(`Análise pronta com ${items.length} registros`);
+        return {
+            available: true,
+            items,
+        };
     }
 }
 exports.CompanyAdminService = CompanyAdminService;

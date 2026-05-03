@@ -1,6 +1,6 @@
 import { Workbook } from "exceljs";
 
-import { AssessmentByCompanyRequest } from "../../definitions/admin/assessment";
+import { AssessmentByCompanyRequest } from "../../schemas/admin/assessment";
 import prismaClient from "../../prisma";
 import { calculateResultScores } from "../../utils/calculateResultScores";
 
@@ -28,6 +28,7 @@ class AssessmentResultAdminService {
             name: true,
             email: true,
             companyId: true,
+            customId: true,
           },
         },
         assessmentResultRating: {

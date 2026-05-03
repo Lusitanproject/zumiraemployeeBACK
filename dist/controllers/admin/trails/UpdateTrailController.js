@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateTrailController = void 0;
-const trail_1 = require("../../../definitions/admin/trail");
-const common_1 = require("../../../definitions/common");
+const trail_1 = require("../../../schemas/admin/trail");
+const common_1 = require("../../../schemas/common");
 const TrailAdminService_1 = require("../../../services/admin/TrailAdminService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class UpdateTrailController {

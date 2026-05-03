@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { UpdateRatingsSchema } from "../../../definitions/admin/assessment";
+import { UpdateRatingsSchema } from "../../../schemas/admin/assessment";
 import { AssessmentResultRatingAdminService } from "../../../services/admin/AssessmentResultRatingAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 

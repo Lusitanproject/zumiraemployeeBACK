@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthUserController = void 0;
 const AuthUserService_1 = require("../../../services/user/auth/AuthUserService");
 const parseZodError_1 = require("../../../utils/parseZodError");
-const user_1 = require("../../../definitions/user");
+const user_1 = require("../../../schemas/user");
 class AuthUserController {
     async handle(req, res) {
         const { success, data, error } = user_1.AuthUserSchema.safeParse(req.body);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { UpdateUserSchema } from "../../../definitions/admin/users";
+import { UpdateUserSchema } from "../../../schemas/admin/users";
 import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
 import { RoleAdminService } from "../../../services/admin/RoleAdminService";
 import { UserAdminService } from "../../../services/admin/UserAdminService";

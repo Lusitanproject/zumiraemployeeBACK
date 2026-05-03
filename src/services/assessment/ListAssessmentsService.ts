@@ -1,4 +1,4 @@
-import { ListAssessmentsRequest } from "../../definitions/assessment";
+import { ListAssessmentsRequest } from "../../schemas/assessment";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 class ListAssessmentsService {
