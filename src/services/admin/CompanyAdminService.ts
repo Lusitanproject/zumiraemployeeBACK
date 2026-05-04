@@ -47,7 +47,8 @@ type FindActAnalysisResult =
       available: true;
       items: ActAnalysisItem[];
       totalScore: number;
-      positivePercentage: number;
+      positiveScore: number;
+      negativeScore: number;
       selfMonitoringBlocks: SelfMonitoringBlockSummary[];
     };
 
@@ -456,7 +457,9 @@ Formato obrigatório de resposta:
       .filter((item) => item.factor.wheight > 0)
       .reduce((sum, item) => sum + item.factor.weightedScore, 0);
 
-    const positivePercentage = totalScore > 0 ? (positiveScore / totalScore) * 100 : 0;
+    const negativeScore = items
+      .filter((item) => item.factor.wheight <= 0)
+      .reduce((sum, item) => sum + item.factor.weightedScore, 0);
 
     const blockMap = new Map<string, SelfMonitoringBlockSummary>();
     for (const item of items) {
@@ -485,7 +488,8 @@ Formato obrigatório de resposta:
       available: true,
       items,
       totalScore,
-      positivePercentage,
+      positiveScore,
+      negativeScore,
       selfMonitoringBlocks,
     };
   }
