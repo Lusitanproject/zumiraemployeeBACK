@@ -375,7 +375,9 @@ Formato obrigatório de resposta:
         const positiveScore = items
             .filter((item) => item.factor.wheight > 0)
             .reduce((sum, item) => sum + item.factor.weightedScore, 0);
-        const positivePercentage = totalScore > 0 ? (positiveScore / totalScore) * 100 : 0;
+        const negativeScore = items
+            .filter((item) => item.factor.wheight <= 0)
+            .reduce((sum, item) => sum + item.factor.weightedScore, 0);
         const blockMap = new Map();
         for (const item of items) {
             const { id, name } = item.selfMonitoringBlock;
@@ -399,7 +401,8 @@ Formato obrigatório de resposta:
             available: true,
             items,
             totalScore,
-            positivePercentage,
+            positiveScore,
+            negativeScore,
             selfMonitoringBlocks,
         };
     }
