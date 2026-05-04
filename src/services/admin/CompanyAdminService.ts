@@ -317,6 +317,7 @@ Formato obrigatório de resposta:
               : [],
           ) ?? [],
       ),
+      skipDuplicates: true,
     });
 
     await Promise.all(
