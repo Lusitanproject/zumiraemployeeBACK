@@ -500,7 +500,7 @@ model ActMessagesPsychosocialFactors {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  message       ActChapterMessage       @relation(fields: [messageId], references: [id])
+  message       ActChapterMessage       @relation(fields: [messageId], references: [id], onDelete: Cascade)
   factor        PsychosocialFactor      @relation(fields: [factorId], references: [id])
   analysisBatch CompanyActAnalysisBatch @relation(fields: [analysisBatchId], references: [id])
 

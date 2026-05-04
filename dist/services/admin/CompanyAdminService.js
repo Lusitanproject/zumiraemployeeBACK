@@ -265,6 +265,7 @@ Formato obrigatório de resposta:
                     }))
                     : [])) !== null && _a !== void 0 ? _a : [];
             }),
+            skipDuplicates: true,
         });
         await Promise.all(batchResults.map(({ batchId, status }) => prisma_1.default.companyActAnalysisBatch.update({
             where: {
@@ -403,6 +404,7 @@ Formato obrigatório de resposta:
             totalScore,
             positiveScore,
             negativeScore,
+            absoluteScore: positiveScore + Math.abs(negativeScore),
             selfMonitoringBlocks,
         };
     }
