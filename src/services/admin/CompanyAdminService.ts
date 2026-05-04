@@ -49,6 +49,7 @@ type FindActAnalysisResult =
       totalScore: number;
       positiveScore: number;
       negativeScore: number;
+      absoluteScore: number;
       selfMonitoringBlocks: SelfMonitoringBlockSummary[];
     };
 
@@ -490,6 +491,7 @@ Formato obrigatório de resposta:
       totalScore,
       positiveScore,
       negativeScore,
+      absoluteScore: positiveScore + Math.abs(negativeScore),
       selfMonitoringBlocks,
     };
   }

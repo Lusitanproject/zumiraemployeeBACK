@@ -403,6 +403,7 @@ Formato obrigatório de resposta:
             totalScore,
             positiveScore,
             negativeScore,
+            absoluteScore: positiveScore + Math.abs(negativeScore),
             selfMonitoringBlocks,
         };
     }
