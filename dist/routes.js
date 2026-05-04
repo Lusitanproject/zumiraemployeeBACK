@@ -38,6 +38,7 @@ const SetCompanyAssessmentsController_1 = require("./controllers/admin/companies
 const UpdateCompanyController_1 = require("./controllers/admin/companies/UpdateCompanyController");
 const GenerateActAnalysisController_1 = require("./controllers/admin/companies/GenerateActAnalysisController");
 const FindActAnalysisController_1 = require("./controllers/admin/companies/FindActAnalysisController");
+const FindActAnalysisFactorMessagesController_1 = require("./controllers/admin/companies/FindActAnalysisFactorMessagesController");
 const GenerateAllUserFeedbackController_1 = require("./controllers/admin/companies/GenerateAllUserFeedbackController");
 const CreateDimensionController_1 = require("./controllers/admin/dimensions/CreateDimensionController");
 const EditDimensionController_1 = require("./controllers/admin/dimensions/EditDimensionController");
@@ -191,6 +192,7 @@ router.post("/companies/admin", isAuthenticated_1.isAuthenticated, new CreateCom
 router.put("/companies/admin/:id", isAuthenticated_1.isAuthenticated, new UpdateCompanyController_1.UpdateCompanyController().handle);
 router.post("/companies/admin/:companyId/acts/:actChatbotId/analysis", isAuthenticated_1.isAuthenticated, new GenerateActAnalysisController_1.GenerateActAnalysisController().handle);
 router.get("/companies/admin/:companyId/acts/:actChatbotId/analysis", isAuthenticated_1.isAuthenticated, new FindActAnalysisController_1.FindActAnalysisController().handle);
+router.get("/companies/admin/:companyId/acts/:actChatbotId/analysis/factors/:factorId/messages", isAuthenticated_1.isAuthenticated, new FindActAnalysisFactorMessagesController_1.FindActAnalysisFactorMessagesController().handle);
 router.post("/companies/admin/:companyId/feedback/users", isAuthenticated_1.isAuthenticated, new GenerateAllUserFeedbackController_1.GenerateAllUserFeedbackController().handle);
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController_1.ListNationalitiesController().handle);

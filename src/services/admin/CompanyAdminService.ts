@@ -336,20 +336,11 @@ Formato obrigatório de resposta:
     return allDone;
   }
 
-  async findActAnalysis(id: string, actChatbotId: string): Promise<FindActAnalysisResult> {
-    console.log(`Buscando análise da empresa ${id} para o chatbot ${actChatbotId}`);
-
+  private async resolveLatestActAnalysis(companyId: string, actChatbotId: string) {
     const analysis = await prismaClient.companyActAnalysis.findFirst({
-      orderBy: {
-        createdAt: "desc",
-      },
-      where: {
-        companyId: id,
-        actChatbotId,
-      },
-      include: {
-        companyActAnalysisBatches: true,
-      },
+      orderBy: { createdAt: "desc" },
+      where: { companyId, actChatbotId },
+      include: { companyActAnalysisBatches: true },
     });
 
     if (!analysis) {
@@ -359,15 +350,23 @@ Formato obrigatório de resposta:
     const alreadySaved = analysis.companyActAnalysisBatches.every((batch) => batch.status === "completed");
 
     if (!alreadySaved) {
-      console.log("Análise com pendências, tentando atualizar os lotes");
-
       const allDone = await this.retrieveAndSaveResults(analysis.companyActAnalysisBatches);
 
       if (!allDone) {
-        console.log("Análise ainda pendente");
-
-        return { available: false };
+        return null;
       }
+    }
+
+    return analysis;
+  }
+
+  async findActAnalysis(id: string, actChatbotId: string): Promise<FindActAnalysisResult> {
+    console.log(`Buscando análise da empresa ${id} para o chatbot ${actChatbotId}`);
+
+    const analysis = await this.resolveLatestActAnalysis(id, actChatbotId);
+
+    if (!analysis) {
+      return { available: false };
     }
 
     // Filtros
@@ -495,6 +494,30 @@ Formato obrigatório de resposta:
       absoluteScore: positiveScore + Math.abs(negativeScore),
       selfMonitoringBlocks,
     };
+  }
+
+  async findActAnalysisFactorMessages(companyId: string, actChatbotId: string, factorId: string) {
+    const analysis = await this.resolveLatestActAnalysis(companyId, actChatbotId);
+
+    if (!analysis) {
+      return { available: false as const };
+    }
+
+    const batchIds = analysis.companyActAnalysisBatches.map((b) => b.id);
+
+    const associations = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: {
+        factorId,
+        analysisBatchId: { in: batchIds },
+      },
+      include: {
+        message: true,
+      },
+    });
+
+    const messages = associations.map((a) => a.message);
+
+    return { available: true as const, messages };
   }
 
   async generateAllUserFeedback(companyId: string, sync = true) {
