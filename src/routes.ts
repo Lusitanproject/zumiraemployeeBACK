@@ -33,6 +33,7 @@ import { SetCompanyAssessmentsController } from "./controllers/admin/companies/S
 import { UpdateCompanyController } from "./controllers/admin/companies/UpdateCompanyController";
 import { GenerateActAnalysisController } from "./controllers/admin/companies/GenerateActAnalysisController";
 import { FindActAnalysisController } from "./controllers/admin/companies/FindActAnalysisController";
+import { FindActAnalysisFactorMessagesController } from "./controllers/admin/companies/FindActAnalysisFactorMessagesController";
 import { GenerateAllUserFeedbackController } from "./controllers/admin/companies/GenerateAllUserFeedbackController";
 import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
 import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
@@ -213,6 +214,11 @@ router.get(
   "/companies/admin/:companyId/acts/:actChatbotId/analysis",
   isAuthenticated,
   new FindActAnalysisController().handle,
+);
+router.get(
+  "/companies/admin/:companyId/acts/:actChatbotId/analysis/factors/:factorId/messages",
+  isAuthenticated,
+  new FindActAnalysisFactorMessagesController().handle,
 );
 router.post(
   "/companies/admin/:companyId/feedback/users",
