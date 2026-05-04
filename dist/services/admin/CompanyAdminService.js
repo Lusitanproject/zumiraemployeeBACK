@@ -349,6 +349,7 @@ Formato obrigatório de resposta:
         c.full_count,
         f.id as factor_id_full,
         f.name as factor_name,
+        f.wheight as factor_wheight,
         smb.id as smb_id,
         smb.title as smb_title
       FROM aggregated a
@@ -364,14 +365,42 @@ Formato obrigatório de resposta:
             factor: {
                 id: r.factor_id_full,
                 name: r.factor_name,
+                wheight: r.factor_wheight,
+                weightedScore: r.factor_wheight * r.total,
             },
             selfMonitoringBlock: { id: r.smb_id, name: r.smb_title },
             count: r.total,
         }));
+        const totalScore = items.reduce((sum, item) => sum + item.factor.weightedScore, 0);
+        const positiveScore = items
+            .filter((item) => item.factor.wheight > 0)
+            .reduce((sum, item) => sum + item.factor.weightedScore, 0);
+        const positivePercentage = totalScore > 0 ? (positiveScore / totalScore) * 100 : 0;
+        const blockMap = new Map();
+        for (const item of items) {
+            const { id, name } = item.selfMonitoringBlock;
+            if (!blockMap.has(id)) {
+                blockMap.set(id, { id, name, topFactors: [] });
+            }
+            blockMap.get(id).topFactors.push({
+                id: item.factor.id,
+                name: item.factor.name,
+                wheight: item.factor.wheight,
+                weightedScore: item.factor.weightedScore,
+                count: item.count,
+            });
+        }
+        for (const block of blockMap.values()) {
+            block.topFactors.sort((a, b) => b.weightedScore - a.weightedScore);
+        }
+        const selfMonitoringBlocks = Array.from(blockMap.values());
         console.log(`Análise pronta com ${items.length} registros`);
         return {
             available: true,
             items,
+            totalScore,
+            positivePercentage,
+            selfMonitoringBlocks,
         };
     }
     async generateAllUserFeedback(companyId, sync = true) {
