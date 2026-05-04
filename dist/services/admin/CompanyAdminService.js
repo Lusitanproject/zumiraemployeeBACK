@@ -277,31 +277,29 @@ Formato obrigatório de resposta:
         })));
         return allDone;
     }
-    async findActAnalysis(id, actChatbotId) {
-        console.log(`Buscando análise da empresa ${id} para o chatbot ${actChatbotId}`);
+    async resolveLatestActAnalysis(companyId, actChatbotId) {
         const analysis = await prisma_1.default.companyActAnalysis.findFirst({
-            orderBy: {
-                createdAt: "desc",
-            },
-            where: {
-                companyId: id,
-                actChatbotId,
-            },
-            include: {
-                companyActAnalysisBatches: true,
-            },
+            orderBy: { createdAt: "desc" },
+            where: { companyId, actChatbotId },
+            include: { companyActAnalysisBatches: true },
         });
         if (!analysis) {
             throw new error_1.PublicError("No act analysis for this company was found.");
         }
         const alreadySaved = analysis.companyActAnalysisBatches.every((batch) => batch.status === "completed");
         if (!alreadySaved) {
-            console.log("Análise com pendências, tentando atualizar os lotes");
             const allDone = await this.retrieveAndSaveResults(analysis.companyActAnalysisBatches);
             if (!allDone) {
-                console.log("Análise ainda pendente");
-                return { available: false };
+                return null;
             }
+        }
+        return analysis;
+    }
+    async findActAnalysis(id, actChatbotId) {
+        console.log(`Buscando análise da empresa ${id} para o chatbot ${actChatbotId}`);
+        const analysis = await this.resolveLatestActAnalysis(id, actChatbotId);
+        if (!analysis) {
+            return { available: false };
         }
         // Filtros
         //   WHERE
@@ -407,6 +405,24 @@ Formato obrigatório de resposta:
             absoluteScore: positiveScore + Math.abs(negativeScore),
             selfMonitoringBlocks,
         };
+    }
+    async findActAnalysisFactorMessages(companyId, actChatbotId, factorId) {
+        const analysis = await this.resolveLatestActAnalysis(companyId, actChatbotId);
+        if (!analysis) {
+            return { available: false };
+        }
+        const batchIds = analysis.companyActAnalysisBatches.map((b) => b.id);
+        const associations = await prisma_1.default.actMessagesPsychosocialFactors.findMany({
+            where: {
+                factorId,
+                analysisBatchId: { in: batchIds },
+            },
+            include: {
+                message: true,
+            },
+        });
+        const messages = associations.map((a) => a.message);
+        return { available: true, messages };
     }
     async generateAllUserFeedback(companyId, sync = true) {
         const company = await prisma_1.default.company.findFirst({
