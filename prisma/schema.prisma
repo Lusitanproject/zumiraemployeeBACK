@@ -504,6 +504,6 @@ model ActMessagesPsychosocialFactors {
   factor        PsychosocialFactor      @relation(fields: [factorId], references: [id])
   analysisBatch CompanyActAnalysisBatch @relation(fields: [analysisBatchId], references: [id])
 
-  @@id(fields: [messageId, factorId])
+  @@id(fields: [messageId, factorId, analysisBatchId])
   @@map("act_messages_psychosocial_factors")
 }
