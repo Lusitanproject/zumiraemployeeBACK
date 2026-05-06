@@ -17,7 +17,6 @@ async function sendEmail(user: User, code: string) {
     },
   });
 
-  const url = "https://www.zumira.com.br/verificar";
   const html = `
     <p>Olá ${user.name},</p>
 
@@ -44,8 +43,7 @@ async function sendEmail(user: User, code: string) {
       html: html,
     });
   } catch (err) {
-    if (err instanceof Error) devLog(`Error sending email to ${user.email}`, err.message);
-    throw new Error("Erro ao enviar e-mail");
+    throw new Error(`Erro ao enviar e-mail: ${err}`);
   }
 }
 
