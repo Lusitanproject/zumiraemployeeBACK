@@ -43,6 +43,7 @@ async function sendEmail(user: User, code: string) {
       html: html,
     });
   } catch (err) {
+    console.log(`Erro enviando email: ${err}`);
     throw new Error(`Erro ao enviar e-mail: ${err}`);
   }
 }
