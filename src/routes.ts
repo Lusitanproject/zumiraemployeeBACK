@@ -52,7 +52,12 @@ import { FindAllTypesController } from "./controllers/admin/notifications/FindAl
 import { FindNotificationTypeController } from "./controllers/admin/notifications/FindNotificationTypeController";
 import { UpdateNotificationController } from "./controllers/admin/notifications/UpdateNotificationController";
 import { UpdateNotificationTypeController } from "./controllers/admin/notifications/UpdateNotificationTypeController";
+import { CreateRoleController } from "./controllers/admin/roles/CreateRoleController";
 import { FindAllRolesController } from "./controllers/admin/roles/FindAllRolesController";
+import { UpdateRoleController } from "./controllers/admin/roles/UpdateRoleController";
+import { DeleteRoleController } from "./controllers/admin/roles/DeleteRoleController";
+import { SetRolePermissionsController } from "./controllers/admin/roles/SetRolePermissionsController";
+import { FindAllPermissionsController } from "./controllers/admin/permissions/FindAllPermissionsController";
 import { CreateSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/CreateSelfMonitoringBlockController";
 import { EditSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/EditSelfMonitoringBlockController";
 import { ListAllSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindAllSelfMonitoringBlocksController";
@@ -134,6 +139,13 @@ router.post("/users/admin/create-many", isAuthenticated, new CreateManyUsersCont
 
 // ROTAS PERFIS
 router.get("/roles", isAuthenticated, new FindAllRolesController().handle);
+router.post("/roles/admin", isAuthenticated, new CreateRoleController().handle);
+router.put("/roles/admin/:id", isAuthenticated, new UpdateRoleController().handle);
+router.delete("/roles/admin/:id", isAuthenticated, new DeleteRoleController().handle);
+router.put("/roles/admin/:id/permissions", isAuthenticated, new SetRolePermissionsController().handle);
+
+// ROTAS PERMISSOES
+router.get("/permissions/admin", isAuthenticated, new FindAllPermissionsController().handle);
 
 // ROTAS PSYCHOLOGICAL DIMENSION
 router.post("/dimensions", isAuthenticated, new CreateDimensionController().handle);
