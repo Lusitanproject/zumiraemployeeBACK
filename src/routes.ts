@@ -54,6 +54,7 @@ import { UpdateNotificationController } from "./controllers/admin/notifications/
 import { UpdateNotificationTypeController } from "./controllers/admin/notifications/UpdateNotificationTypeController";
 import { CreateRoleController } from "./controllers/admin/roles/CreateRoleController";
 import { FindAllRolesController } from "./controllers/admin/roles/FindAllRolesController";
+import { FindRoleController } from "./controllers/admin/roles/FindRoleController";
 import { UpdateRoleController } from "./controllers/admin/roles/UpdateRoleController";
 import { DeleteRoleController } from "./controllers/admin/roles/DeleteRoleController";
 import { SetRolePermissionsController } from "./controllers/admin/roles/SetRolePermissionsController";
@@ -139,6 +140,7 @@ router.post("/users/admin/create-many", isAuthenticated, new CreateManyUsersCont
 
 // ROTAS PERFIS
 router.get("/roles", isAuthenticated, new FindAllRolesController().handle);
+router.get("/roles/admin/:id", isAuthenticated, new FindRoleController().handle);
 router.post("/roles/admin", isAuthenticated, new CreateRoleController().handle);
 router.put("/roles/admin/:id", isAuthenticated, new UpdateRoleController().handle);
 router.delete("/roles/admin/:id", isAuthenticated, new DeleteRoleController().handle);

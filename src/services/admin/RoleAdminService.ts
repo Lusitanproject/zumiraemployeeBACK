@@ -4,8 +4,11 @@ class RoleAdminService {
   async find(roleId: string) {
     const role = await prismaClient.role.findUnique({
       where: { id: roleId },
+      include: { rolePermissions: { select: { permission: true } } },
     });
-    return role;
+    if (!role) return null;
+    const { rolePermissions, ...rest } = role;
+    return { ...rest, permissions: rolePermissions.map((p) => p.permission) };
   }
 
   async findAll() {
