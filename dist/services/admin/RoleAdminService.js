@@ -9,8 +9,12 @@ class RoleAdminService {
     async find(roleId) {
         const role = await prisma_1.default.role.findUnique({
             where: { id: roleId },
+            include: { rolePermissions: { select: { permission: true } } },
         });
-        return role;
+        if (!role)
+            return null;
+        const { rolePermissions, ...rest } = role;
+        return { ...rest, permissions: rolePermissions.map((p) => p.permission) };
     }
     async findAll() {
         const role = await prisma_1.default.role.findMany();
@@ -27,6 +31,20 @@ class RoleAdminService {
             data: { slug },
         });
         return role;
+    }
+    async update({ id, slug }) {
+        return await prisma_1.default.role.update({ where: { id }, data: { slug } });
+    }
+    async delete(id) {
+        return await prisma_1.default.role.delete({ where: { id } });
+    }
+    async setPermissions(roleId, permissions) {
+        await prisma_1.default.$transaction([
+            prisma_1.default.rolePermission.deleteMany({ where: { roleId } }),
+            prisma_1.default.rolePermission.createMany({
+                data: permissions.map((permission) => ({ roleId, permission })),
+            }),
+        ]);
     }
 }
 exports.RoleAdminService = RoleAdminService;

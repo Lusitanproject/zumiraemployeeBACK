@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminNationalityRouter = void 0;
+const express_1 = require("express");
+const CreateNationalityController_1 = require("../../controllers/admin/nationalities/CreateNationalityController");
+const FindAllNationalitiesController_1 = require("../../controllers/admin/nationalities/FindAllNationalitiesController");
+const FindNationalityController_1 = require("../../controllers/admin/nationalities/FindNationalityController");
+const UpdateNationalityController_1 = require("../../controllers/admin/nationalities/UpdateNationalityController");
+const isAuthenticated_1 = require("../../middlewares/isAuthenticated");
+const adminNationalityRouter = (0, express_1.Router)();
+exports.adminNationalityRouter = adminNationalityRouter;
+adminNationalityRouter.post("/", isAuthenticated_1.isAuthenticated, new CreateNationalityController_1.CreateNationalityController().handle);
+adminNationalityRouter.get("/", isAuthenticated_1.isAuthenticated, new FindAllNationalitiesController_1.FindAllNationalitiesController().handle);
+adminNationalityRouter.get("/:id", isAuthenticated_1.isAuthenticated, new FindNationalityController_1.FindNationalityController().handle);
+adminNationalityRouter.put("/:id", isAuthenticated_1.isAuthenticated, new UpdateNationalityController_1.UpdateNationalityController().handle);

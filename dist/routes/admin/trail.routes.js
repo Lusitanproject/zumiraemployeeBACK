@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.adminTrailRouter = void 0;
+const express_1 = require("express");
+const CreateTrailController_copy_1 = require("../../controllers/admin/trails/CreateTrailController copy");
+const FindAllTrailsController_1 = require("../../controllers/admin/trails/FindAllTrailsController");
+const FindTrailController_1 = require("../../controllers/admin/trails/FindTrailController");
+const UpdateTrailController_1 = require("../../controllers/admin/trails/UpdateTrailController");
+const isAuthenticated_1 = require("../../middlewares/isAuthenticated");
+const adminTrailRouter = (0, express_1.Router)();
+exports.adminTrailRouter = adminTrailRouter;
+adminTrailRouter.post("/", isAuthenticated_1.isAuthenticated, new CreateTrailController_copy_1.CreateTrailController().handle);
+adminTrailRouter.get("/", isAuthenticated_1.isAuthenticated, new FindAllTrailsController_1.FindAllTrailsController().handle);
+adminTrailRouter.get("/:id", isAuthenticated_1.isAuthenticated, new FindTrailController_1.FindTrailController().handle);
+adminTrailRouter.put("/:id", isAuthenticated_1.isAuthenticated, new UpdateTrailController_1.UpdateTrailController().handle);

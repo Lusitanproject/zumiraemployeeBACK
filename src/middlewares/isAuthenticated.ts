@@ -15,11 +15,7 @@ async function getUserData(userId: string): Promise<Request["user"]> {
     include: {
       role: {
         include: {
-          rolePermissions: {
-            include: {
-              permission: true,
-            },
-          },
+          rolePermissions: true,
         },
       },
     },
@@ -30,7 +26,7 @@ async function getUserData(userId: string): Promise<Request["user"]> {
   return {
     id: user.id,
     role: user.role.slug,
-    permissions: user.role.rolePermissions.map((p) => p.permission.slug),
+    permissions: user.role.rolePermissions.map((p) => p.permission),
     currentChatbotId: user.currentActChatbotId,
   };
 }
