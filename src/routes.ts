@@ -54,6 +54,7 @@ import { UpdateNotificationController } from "./controllers/admin/notifications/
 import { UpdateNotificationTypeController } from "./controllers/admin/notifications/UpdateNotificationTypeController";
 import { CreateRoleController } from "./controllers/admin/roles/CreateRoleController";
 import { FindAllRolesController } from "./controllers/admin/roles/FindAllRolesController";
+import { FindRoleController } from "./controllers/admin/roles/FindRoleController";
 import { UpdateRoleController } from "./controllers/admin/roles/UpdateRoleController";
 import { DeleteRoleController } from "./controllers/admin/roles/DeleteRoleController";
 import { SetRolePermissionsController } from "./controllers/admin/roles/SetRolePermissionsController";
@@ -128,46 +129,47 @@ router.post("/auth/verify", new AuthUserController().handle);
 
 // ROTAS USERS
 router.post("/users", new CreateUserController().handle);
-router.post("/users/admin", isAuthenticated, new AdminCreateUserController().handle);
-router.get("/users/admin/find-by", isAuthenticated, new FindUserByController().handle);
-router.put("/users/admin/:id", isAuthenticated, new UpdateUserController().handle);
-router.delete("/users/:id", isAuthenticated, new DeleteUserController().handle);
-router.get("/users", isAuthenticated, new ListAllUsersController().handle);
-router.get("/users/:userId", isAuthenticated, new FindUserController().handle);
-router.get("/users/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);
-router.post("/users/admin/create-many", isAuthenticated, new CreateManyUsersController().handle);
+router.post("/admin/users", isAuthenticated, new AdminCreateUserController().handle);
+router.get("/admin/users/find-by", isAuthenticated, new FindUserByController().handle);
+router.put("/admin/users/:id", isAuthenticated, new UpdateUserController().handle);
+router.delete("/admin/users/:id", isAuthenticated, new DeleteUserController().handle);
+router.get("/admin/users", isAuthenticated, new ListAllUsersController().handle);
+router.get("/admin/users/:userId", isAuthenticated, new FindUserController().handle);
+router.get("/admin/users/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);
+router.post("/admin/users/create-many", isAuthenticated, new CreateManyUsersController().handle);
 
 // ROTAS PERFIS
-router.get("/roles", isAuthenticated, new FindAllRolesController().handle);
-router.post("/roles/admin", isAuthenticated, new CreateRoleController().handle);
-router.put("/roles/admin/:id", isAuthenticated, new UpdateRoleController().handle);
-router.delete("/roles/admin/:id", isAuthenticated, new DeleteRoleController().handle);
-router.put("/roles/admin/:id/permissions", isAuthenticated, new SetRolePermissionsController().handle);
+router.get("/admin/roles", isAuthenticated, new FindAllRolesController().handle);
+router.get("/admin/roles/:id", isAuthenticated, new FindRoleController().handle);
+router.post("/admin/roles", isAuthenticated, new CreateRoleController().handle);
+router.put("/admin/roles/:id", isAuthenticated, new UpdateRoleController().handle);
+router.delete("/admin/roles/:id", isAuthenticated, new DeleteRoleController().handle);
+router.put("/admin/roles/:id/permissions", isAuthenticated, new SetRolePermissionsController().handle);
 
 // ROTAS PERMISSOES
-router.get("/permissions/admin", isAuthenticated, new FindAllPermissionsController().handle);
+router.get("/admin/permissions", isAuthenticated, new FindAllPermissionsController().handle);
 
 // ROTAS PSYCHOLOGICAL DIMENSION
-router.post("/dimensions", isAuthenticated, new CreateDimensionController().handle);
-router.get("/dimensions", isAuthenticated, new FindAllDimensionsController().handle);
-router.get("/dimensions/:psychologicalDimensionId", isAuthenticated, new FindDimensionController().handle);
-router.put("/dimensions/:psychologicalDimensionId", isAuthenticated, new EditDimensionController().handle);
+router.post("/admin/dimensions", isAuthenticated, new CreateDimensionController().handle);
+router.get("/admin/dimensions", isAuthenticated, new FindAllDimensionsController().handle);
+router.get("/admin/dimensions/:psychologicalDimensionId", isAuthenticated, new FindDimensionController().handle);
+router.put("/admin/dimensions/:psychologicalDimensionId", isAuthenticated, new EditDimensionController().handle);
 
 // ROTAS RESULTS
 router.get("/assessments/results", isAuthenticated, new ListResultsController().handle);
-router.get("/assessments/results/admin", isAuthenticated, new FindResultsFilteredController().handle);
-router.get("/assessments/results/admin/download-report", isAuthenticated, new GenerateExcelReportController().handle);
+router.get("/admin/assessments/results", isAuthenticated, new FindResultsFilteredController().handle);
+router.get("/admin/assessments/results/download-report", isAuthenticated, new GenerateExcelReportController().handle);
 router.get("/assessments/results/:id", isAuthenticated, new DetailResultController().handle);
 router.post("/assessments/results", isAuthenticated, new CreateResultController().handle);
 
 // ROTAS QUESTIONS
 router.post("/assessments/questions", isAuthenticated, new CreateQuestionController().handle);
 router.put("/assessments/questions/:id", isAuthenticated, new UpdateQuestionsController().handle);
-router.get("/assessments/questions/:assessmentId", isAuthenticated, new FindQuestionByAssessmentController().handle);
+router.get("/admin/assessments/questions/:assessmentId", isAuthenticated, new FindQuestionByAssessmentController().handle);
 
 // ROTAS RESULT RATINGS
-router.get("/assessments/ratings/:id", isAuthenticated, new FindResultRatingsByAssessmentController().handle);
-router.put("/assessments/ratings/:id", isAuthenticated, new UpdateResultRatingsController().handle);
+router.get("/admin/assessments/ratings/:id", isAuthenticated, new FindResultRatingsByAssessmentController().handle);
+router.put("/admin/assessments/ratings/:id", isAuthenticated, new UpdateResultRatingsController().handle);
 
 // ROTAS ALERTS
 router.get("/assessments/alerts", isAuthenticated, new ListAlertsController().handle);
@@ -176,97 +178,97 @@ router.put("/assessments/alerts/:id/read", isAuthenticated, new ReadAlertControl
 // ROTAS ASSESSMENT
 router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
 router.get("/assessments/company", isAuthenticated, new ListCompanyAssessmentsController().handle);
-router.get("/assessments/admin", isAuthenticated, new FindAllAssessmentsController().handle);
+router.get("/admin/assessments", isAuthenticated, new FindAllAssessmentsController().handle);
 router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
-router.get("/assessments/admin/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
+router.get("/admin/assessments/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
 router.post("/assessments", isAuthenticated, new CreateAssessmentController().handle);
-router.post("/assessments/admin/duplicate/:id", isAuthenticated, new DuplicateAssessmentController().handle);
+router.post("/admin/assessments/duplicate/:id", isAuthenticated, new DuplicateAssessmentController().handle);
 router.post("/assessments/feedback/users/:id", isAuthenticated, new GenerateUserFeedbackController().handle);
 router.post("/assessments/feedback/companies/:id", isAuthenticated, new GenerateCompanyFeedbackController().handle);
-router.put("/assessments/:id", isAuthenticated, new UpdateAssessmentController().handle);
+router.put("/admin/assessments/:id", isAuthenticated, new UpdateAssessmentController().handle);
 
 // ROTAS SELF MONITORING
 router.get("/self-monitoring", isAuthenticated, new ListSelfMonitoringBlocksController().handle);
-router.get("/self-monitoring/admin", isAuthenticated, new ListAllSelfMonitoringBlocksController().handle);
-router.post("/self-monitoring/admin", isAuthenticated, new CreateSelfMonitoringBlocksController().handle);
-router.put("/self-monitoring/admin/:id", isAuthenticated, new EditSelfMonitoringBlocksController().handle);
-router.get("/self-monitoring/admin/:id", isAuthenticated, new FindSelfMonitoringBlocksController().handle);
+router.get("/admin/self-monitoring", isAuthenticated, new ListAllSelfMonitoringBlocksController().handle);
+router.post("/admin/self-monitoring", isAuthenticated, new CreateSelfMonitoringBlocksController().handle);
+router.put("/admin/self-monitoring/:id", isAuthenticated, new EditSelfMonitoringBlocksController().handle);
+router.get("/admin/self-monitoring/:id", isAuthenticated, new FindSelfMonitoringBlocksController().handle);
 router.get(
   "/self-monitoring/results/:selfMonitoringBlockId",
   isAuthenticated,
   new ListSelfMonitoringBlockResultsController().handle,
 );
 router.get(
-  "/self-monitoring/dimensions/:selfMonitoringBlockId",
+  "/admin/self-monitoring/dimensions/:selfMonitoringBlockId",
   isAuthenticated,
   new FindDimensionByBlockController().handle,
 );
 
 // ROTAS PSYCHOSOCIAL FACTORS
-router.get("/psychosocial-factors", isAuthenticated, new FindAllPsychosocialFactorsController().handle);
-router.post("/psychosocial-factors", isAuthenticated, new CreatePsychosocialFactorController().handle);
-router.get("/psychosocial-factors/:id", isAuthenticated, new FindPsychosocialFactorController().handle);
-router.put("/psychosocial-factors/:id", isAuthenticated, new UpdatePsychosocialFactorController().handle);
-router.delete("/psychosocial-factors/:id", isAuthenticated, new DeletePsychosocialFactorController().handle);
+router.get("/admin/psychosocial-factors", isAuthenticated, new FindAllPsychosocialFactorsController().handle);
+router.post("/admin/psychosocial-factors", isAuthenticated, new CreatePsychosocialFactorController().handle);
+router.get("/admin/psychosocial-factors/:id", isAuthenticated, new FindPsychosocialFactorController().handle);
+router.put("/admin/psychosocial-factors/:id", isAuthenticated, new UpdatePsychosocialFactorController().handle);
+router.delete("/admin/psychosocial-factors/:id", isAuthenticated, new DeletePsychosocialFactorController().handle);
 
 // ROTAS COMPANY
-router.get("/companies", isAuthenticated, new FindAllCompaniesController().handle);
-router.get("/companies/feedback", isAuthenticated, new FindAllFeedbacksController().handle);
-router.get("/companies/:companyId", isAuthenticated, new FindCompanyController().handle);
+router.get("/admin/companies", isAuthenticated, new FindAllCompaniesController().handle);
+router.get("/admin/companies/feedback", isAuthenticated, new FindAllFeedbacksController().handle);
+router.get("/admin/companies/:companyId", isAuthenticated, new FindCompanyController().handle);
 router.get("/companies/:id/feedback", isAuthenticated, new FindCompanyFeedbackController().handle);
-router.post("/companies/:id/assessments", isAuthenticated, new SetCompanyAssessmentsController().handle);
-router.post("/companies/admin", isAuthenticated, new CreateCompanyController().handle);
-router.put("/companies/admin/:id", isAuthenticated, new UpdateCompanyController().handle);
+router.post("/admin/companies/:id/assessments", isAuthenticated, new SetCompanyAssessmentsController().handle);
+router.post("/admin/companies", isAuthenticated, new CreateCompanyController().handle);
+router.put("/admin/companies/:id", isAuthenticated, new UpdateCompanyController().handle);
 router.post(
-  "/companies/admin/:companyId/acts/:actChatbotId/analysis",
+  "/admin/companies/:companyId/acts/:actChatbotId/analysis",
   isAuthenticated,
   new GenerateActAnalysisController().handle,
 );
 router.get(
-  "/companies/admin/:companyId/acts/:actChatbotId/analysis",
+  "/admin/companies/:companyId/acts/:actChatbotId/analysis",
   isAuthenticated,
   new FindActAnalysisController().handle,
 );
 router.get(
-  "/companies/admin/:companyId/acts/:actChatbotId/analysis/factors/:factorId/messages",
+  "/admin/companies/:companyId/acts/:actChatbotId/analysis/factors/:factorId/messages",
   isAuthenticated,
   new FindActAnalysisFactorMessagesController().handle,
 );
 router.post(
-  "/companies/admin/:companyId/feedback/users",
+  "/admin/companies/:companyId/feedback/users",
   isAuthenticated,
   new GenerateAllUserFeedbackController().handle,
 );
 
 // ROTAS NATIONALITY
 router.get("/nationalities", new ListNationalitiesController().handle);
-router.post("/nationalities/admin", isAuthenticated, new CreateNationalityController().handle);
-router.get("/nationalities/admin", isAuthenticated, new FindAllNationalitiesController().handle);
-router.get("/nationalities/admin/:id", isAuthenticated, new FindNationalityController().handle);
-router.put("/nationalities/admin/:id", isAuthenticated, new UpdateNationalityController().handle);
+router.post("/admin/nationalities", isAuthenticated, new CreateNationalityController().handle);
+router.get("/admin/nationalities", isAuthenticated, new FindAllNationalitiesController().handle);
+router.get("/admin/nationalities/:id", isAuthenticated, new FindNationalityController().handle);
+router.put("/admin/nationalities/:id", isAuthenticated, new UpdateNationalityController().handle);
 
 // ROTAS NOTIFICATION
 router.get("/notifications", isAuthenticated, new ListNotificationsController().handle);
-router.get("/notifications/admin", isAuthenticated, new FindAllNotificationsController().handle);
-router.get("/notifications/admin/types", isAuthenticated, new FindAllTypesController().handle);
-router.get("/notifications/admin/types/:id", isAuthenticated, new FindNotificationTypeController().handle);
+router.get("/admin/notifications", isAuthenticated, new FindAllNotificationsController().handle);
+router.get("/admin/notifications/types", isAuthenticated, new FindAllTypesController().handle);
+router.get("/admin/notifications/types/:id", isAuthenticated, new FindNotificationTypeController().handle);
 router.get("/notifications/:notificationId", isAuthenticated, new DetailNotificationController().handle);
-router.put("/notifications/:notificationId", isAuthenticated, new UpdateNotificationController().handle);
+router.put("/admin/notifications/:notificationId", isAuthenticated, new UpdateNotificationController().handle);
 router.put("/notifications/:notificationId/read", isAuthenticated, new ReadNotificationController().handle);
-router.put("/notifications/admin/types/:id", isAuthenticated, new UpdateNotificationTypeController().handle);
-router.post("/notifications", isAuthenticated, new CreateNotificationController().handle);
-router.post("/notifications/admin/types", isAuthenticated, new CreateNotificationTypeController().handle);
-router.delete("/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
+router.put("/admin/notifications/types/:id", isAuthenticated, new UpdateNotificationTypeController().handle);
+router.post("/admin/notifications", isAuthenticated, new CreateNotificationController().handle);
+router.post("/admin/notifications/types", isAuthenticated, new CreateNotificationTypeController().handle);
+router.delete("/admin/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
 
 // ROTAS ACTS
-router.get("/acts/admin", isAuthenticated, new FindAllActChatbotsController().handle);
-router.get("/acts/admin/by-trail", isAuthenticated, new FindByTrailController().handle);
-router.get("/acts/admin/by-company", isAuthenticated, new FindByCompanyController().handle);
-router.get("/acts/admin/:id", isAuthenticated, new FindActChatbotController().handle);
-router.put("/acts/admin/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
-router.put("/acts/admin/:id", isAuthenticated, new UpdateActChatbotController().handle);
-router.post("/acts/admin", isAuthenticated, new CreateActChatbotController().handle);
-router.post("/acts/admin/:id/import-chatbase-chapters", isAuthenticated, new ImportChatbaseChaptersController().handle);
+router.get("/admin/acts", isAuthenticated, new FindAllActChatbotsController().handle);
+router.get("/admin/acts/by-trail", isAuthenticated, new FindByTrailController().handle);
+router.get("/admin/acts/by-company", isAuthenticated, new FindByCompanyController().handle);
+router.get("/admin/acts/:id", isAuthenticated, new FindActChatbotController().handle);
+router.put("/admin/acts/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
+router.put("/admin/acts/:id", isAuthenticated, new UpdateActChatbotController().handle);
+router.post("/admin/acts", isAuthenticated, new CreateActChatbotController().handle);
+router.post("/admin/acts/:id/import-chatbase-chapters", isAuthenticated, new ImportChatbaseChaptersController().handle);
 router.get("/acts", isAuthenticated, new GetActsDataController().handle);
 router.get("/acts/chapters", isAuthenticated, new GetActChapterController().handle);
 router.put("/acts/next", isAuthenticated, new MoveToNextActController().handle);
@@ -276,10 +278,10 @@ router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterCont
 router.put("/acts/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
 router.get("/acts/full-story", isAuthenticated, new GetFullStoryController().handle);
 
-router.post("/trails/admin", isAuthenticated, new CreateTrailController().handle);
-router.get("/trails/admin", isAuthenticated, new FindAllTrailsController().handle);
-router.get("/trails/admin/:id", isAuthenticated, new FindTrailController().handle);
-router.put("/trails/admin/:id", isAuthenticated, new UpdateTrailController().handle);
+router.post("/admin/trails", isAuthenticated, new CreateTrailController().handle);
+router.get("/admin/trails", isAuthenticated, new FindAllTrailsController().handle);
+router.get("/admin/trails/:id", isAuthenticated, new FindTrailController().handle);
+router.put("/admin/trails/:id", isAuthenticated, new UpdateTrailController().handle);
 
 // ROTAS INTEGRATIONS
 router.get("/integrations/assessments/results", isAuthenticated, new IntegrationListResultsController().handle);
