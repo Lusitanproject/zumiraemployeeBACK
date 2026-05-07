@@ -395,7 +395,7 @@ Formato obrigatório de resposta:
         JOIN users u
           ON u.id = c.user_id
 
-
+        WHERE cab.company_act_analysis_id = ${analysis.id}
       ),
 
       aggregated AS (
