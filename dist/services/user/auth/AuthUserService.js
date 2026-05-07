@@ -1,0 +1,71 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthUserService = void 0;
+const jsonwebtoken_1 = require("jsonwebtoken");
+const error_1 = require("../../../error");
+const prisma_1 = __importDefault(require("../../../prisma"));
+const argon2_1 = require("argon2");
+async function authByPassword(user, password) {
+    const passwordMatch = user.password ? await (0, argon2_1.verify)(user.password, password) : false;
+    if (!passwordMatch)
+        throw new error_1.PublicError("Usuário ou senha inválidos");
+}
+async function authByCode(user, code) {
+    const storedCode = await prisma_1.default.authCode.findFirst({
+        where: {
+            userId: user.id,
+            code,
+        },
+    });
+    if (!storedCode || storedCode.expiresAt < new Date())
+        throw new error_1.PublicError("Código inválido ou expirado");
+}
+class AuthUserService {
+    async execute({ email, password, code }) {
+        const user = await prisma_1.default.user.findUnique({
+            where: {
+                email: email,
+            },
+            include: {
+                role: true,
+            },
+        });
+        if (!user) {
+            throw new error_1.PublicError("E-mail não cadastrado");
+        }
+        if (!password && !code) {
+            throw new error_1.PublicError("Por favor informe o código de autênticação ou senha");
+        }
+        if (password) {
+            await authByPassword(user, password);
+        }
+        if (code) {
+            await authByCode(user, code);
+        }
+        const token = (0, jsonwebtoken_1.sign)({
+            email: user.email,
+        }, process.env.JWT_SECRET, {
+            subject: String(user.id),
+            expiresIn: "30d",
+        });
+        const now = new Date().getTime();
+        const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30); // Expiração em 30 dias
+        return {
+            // TODO Remover dados de user da root
+            name: user.name,
+            gender: user.gender,
+            act: user.currentActChatbotId,
+            role: user.role.slug,
+            token: token,
+            expiresAt: expiresAt,
+            user: (() => {
+                const { password, ...response } = user;
+                return { ...response };
+            })(),
+        };
+    }
+}
+exports.AuthUserService = AuthUserService;
