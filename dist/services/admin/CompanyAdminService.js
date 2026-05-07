@@ -197,6 +197,7 @@ Formato obrigatório de resposta:
         });
         const chapters = await prisma_1.default.actChapter.findMany({
             where: {
+                type: "REGULAR",
                 actChatbot: {
                     id: actChatbotId,
                 },

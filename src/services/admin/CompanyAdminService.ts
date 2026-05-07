@@ -228,6 +228,7 @@ Formato obrigatório de resposta:
 
     const chapters = await prismaClient.actChapter.findMany({
       where: {
+        type: "REGULAR",
         actChatbot: {
           id: actChatbotId,
         },
