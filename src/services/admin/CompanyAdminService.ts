@@ -442,6 +442,30 @@ Formato obrigatório de resposta:
     // LIMIT ${limit}
     // OFFSET ${offset};
 
+    console.log(`[findActAnalysis] query executada com analysis.id=${analysis.id}:\n${`
+      WITH filtered AS (
+        SELECT cab.company_act_analysis_id AS act_analysis_id, ampf.factor_id
+        FROM act_messages_psychosocial_factors ampf
+        JOIN company_act_analysis_batches cab ON cab.id = ampf.analysis_batch_id
+        JOIN act_chapter_messages m ON m.id = ampf.message_id
+        JOIN act_chapters c ON c.id = m.act_chapter_id
+        JOIN users u ON u.id = c.user_id
+        WHERE cab.company_act_analysis_id = '${analysis.id}'
+      ),
+      aggregated AS (
+        SELECT act_analysis_id, factor_id, COUNT(*)::int AS total
+        FROM filtered GROUP BY act_analysis_id, factor_id
+      ),
+      counted AS (SELECT COUNT(*)::int AS full_count FROM aggregated)
+      SELECT a.act_analysis_id, a.factor_id, a.total, c.full_count,
+        f.id as factor_id_full, f.name as factor_name, f.wheight as factor_wheight,
+        smb.id as smb_id, smb.title as smb_title
+      FROM aggregated a CROSS JOIN counted c
+      JOIN psychosocial_factors f ON f.id = a.factor_id
+      LEFT JOIN self_monitoring_blocks smb ON f.self_monitoring_block_id = smb.id
+      ORDER BY a.total DESC
+    `}`);
+
     const items: ActAnalysisItem[] = result.map((r) => ({
       factor: {
         id: r.factor_id_full,
