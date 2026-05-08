@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FindUserBySchema = exports.CreateCompanySchema = exports.UpdateUserSchema = exports.FindByEmailSchema = exports.CreateManyUsersSchema = exports.CreateUserSchema = void 0;
+exports.SearchUsersSchema = exports.GetUserFiltersSchema = exports.FindUserBySchema = exports.CreateCompanySchema = exports.UpdateUserSchema = exports.FindByEmailSchema = exports.CreateManyUsersSchema = exports.CreateUserSchema = void 0;
 const zod_1 = require("zod");
 const common_1 = require("../common");
 exports.CreateUserSchema = zod_1.z.object({
@@ -49,3 +49,36 @@ exports.FindUserBySchema = zod_1.z
 })
     .refine((data) => Object.values(data).filter(Boolean).length > 0, // Verifica se ha ao menos um valor presente no objeto
 "At least one of the fields (id, email, customId or phoneNumber) must be provided");
+const USER_FILTER_COLUMNS = [
+    "gender",
+    "occupation",
+    "occupationLevel",
+    "area",
+    "location",
+    "skinColor",
+    "hasDisability",
+    "roleId",
+    "companyId",
+    "nationalityId",
+];
+exports.GetUserFiltersSchema = zod_1.z.object({
+    columns: zod_1.z
+        .union([zod_1.z.string(), zod_1.z.array(zod_1.z.string())])
+        .transform((v) => (Array.isArray(v) ? v : [v]))
+        .pipe(zod_1.z.array(zod_1.z.enum(USER_FILTER_COLUMNS)).min(1)),
+});
+exports.SearchUsersSchema = zod_1.z.object({
+    page: zod_1.z.coerce.number().int().min(1).default(1),
+    pageSize: zod_1.z.coerce.number().int().min(1).max(100).default(10),
+    search: zod_1.z.string().optional(),
+    companyId: zod_1.z.string().cuid().optional(),
+    roleId: zod_1.z.string().uuid().optional(),
+    gender: zod_1.z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
+    occupation: zod_1.z.string().optional(),
+    occupationLevel: zod_1.z.string().optional(),
+    area: zod_1.z.string().optional(),
+    location: zod_1.z.string().optional(),
+    skinColor: zod_1.z.string().optional(),
+    hasDisability: zod_1.z.string().optional().transform((v) => (v === undefined ? undefined : v === "true")),
+    nationalityId: zod_1.z.string().cuid().optional(),
+});
