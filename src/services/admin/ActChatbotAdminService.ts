@@ -271,18 +271,28 @@ class ActChatbotAdminService {
     const importedUserIds = new Set(chaptersFromConversations.map((chapter) => chapter.userId));
     const usersFound = storedUsers.filter((u) => importedUserIds.has(u.id));
 
-    const conversationsWithoutUser = conversations.filter((conv) => {
-      const phone = normalizePhone(conv.form_submission?.phone);
-      return !phoneToUserId.has(phone);
-    });
-    console.log(
-      `[importChatbaseChapters] ${conversationsWithoutUser.length} conversa(s) sem usuário correspondente: ${conversationsWithoutUser.map((conv) => `phone=${normalizePhone(conv.form_submission?.phone) || "(sem telefone)"} conversaId=${conv.id}`).join(", ")}`,
-    );
+    const conversationsWithoutUser = conversations
+      .filter((conv) => {
+        const phone = normalizePhone(conv.form_submission?.phone);
+        return !phoneToUserId.has(phone);
+      })
+      .map((conv) => ({
+        conversationId: conv.id,
+        phone: normalizePhone(conv.form_submission?.phone) || null,
+        name: conv.form_submission?.name || null,
+      }));
 
-    const usersFoundSummary = usersFound.map((u) => `${u.name} (${u.phoneNumber})`).join(", ");
+    const usersFoundStructured = usersFound.map((u) => ({
+      userId: u.id,
+      name: u.name,
+      phone: u.phoneNumber,
+    }));
 
     return {
-      message: `Import concluido. users encontrados=${usersFound.length}; chapters criados=${chaptersFromConversations.length}; mensagens criadas=${createdMessages.count}; usuarios=[${usersFoundSummary}]`,
+      chaptersCreated: chaptersFromConversations.length,
+      messagesCreated: createdMessages.count,
+      usersFound: usersFoundStructured,
+      conversationsWithoutUser,
     };
   }
 }
