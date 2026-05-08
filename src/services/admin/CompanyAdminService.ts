@@ -39,6 +39,71 @@ interface SelfMonitoringBlockSummary {
   }>;
 }
 
+interface ActAnalysisFilters {
+  gender?: string;
+  area?: string;
+  location?: string;
+  occupation?: string;
+  occupationLevel?: string;
+  skinColor?: string;
+  hasDisability?: boolean;
+  nationalityId?: string;
+}
+
+type UserGroupColumn =
+  | "gender"
+  | "area"
+  | "location"
+  | "occupation"
+  | "occupationLevel"
+  | "skinColor"
+  | "hasDisability"
+  | "nationalityId"
+  | "age";
+
+type RangeBucket = { label: string; min: number; max: number };
+
+type SegmentScores = {
+  positiveScore: number;
+  negativeScore: number;
+  totalScore: number;
+  absoluteScore: number;
+  wellnessPercentage: number;
+};
+
+type AnalysisSegmentGroup = SegmentScores & { value: string | null };
+
+type FindActAnalysisSegmentsResult =
+  | { available: false }
+  | { available: true; column: UserGroupColumn; groups: AnalysisSegmentGroup[] };
+
+type FactorWeightItem = {
+  id: string;
+  name: string;
+  wheight: number;
+  count: number;
+  totalWeight: number;
+};
+
+type FindActAnalysisFactorWeightsResult =
+  | { available: false }
+  | { available: true; factors: FactorWeightItem[]; userCount: number };
+
+type AnalysisReport = {
+  userCount: number;
+  overall: SegmentScores;
+  byArea: AnalysisSegmentGroup[];
+  byGender: AnalysisSegmentGroup[];
+  byDisability: AnalysisSegmentGroup[];
+  byOccupationLevel: AnalysisSegmentGroup[];
+  byAgeRange: AnalysisSegmentGroup[];
+  factorWeights: FactorWeightItem[];
+};
+
+type GenerateAnalysisReportResult =
+  | { available: false }
+  | { available: true; report: AnalysisReport };
+
 type FindActAnalysisResult =
   | {
       available: false;
@@ -361,7 +426,11 @@ Formato obrigatório de resposta:
     return analysis;
   }
 
-  async findActAnalysis(id: string, actChatbotId: string): Promise<FindActAnalysisResult> {
+  async findActAnalysis(
+    id: string,
+    actChatbotId: string,
+    filters: ActAnalysisFilters = {},
+  ): Promise<FindActAnalysisResult> {
     console.log(`Buscando análise da empresa ${id} para o chatbot ${actChatbotId}`);
 
     const analysis = await this.resolveLatestActAnalysis(id, actChatbotId);
@@ -370,11 +439,14 @@ Formato obrigatório de resposta:
       return { available: false };
     }
 
-    // Filtros
-    //   WHERE
-    // u.company_id = ${companyId}
-    // AND (${gender}::text IS NULL OR u.gender = ${gender})
-    // AND (${area}::text IS NULL OR u.area = ${area})
+    const gender = filters.gender ?? null;
+    const area = filters.area ?? null;
+    const location = filters.location ?? null;
+    const occupation = filters.occupation ?? null;
+    const occupationLevel = filters.occupationLevel ?? null;
+    const skinColor = filters.skinColor ?? null;
+    const hasDisability = filters.hasDisability ?? null;
+    const nationalityId = filters.nationalityId ?? null;
 
     const result = (await prismaClient.$queryRaw`
       WITH filtered AS (
@@ -396,6 +468,14 @@ Formato obrigatório de resposta:
           ON u.id = c.user_id
 
         WHERE cab.company_act_analysis_id = ${analysis.id}
+          AND (${gender}::text IS NULL OR u.gender::text = ${gender})
+          AND (${area}::text IS NULL OR u.area = ${area})
+          AND (${location}::text IS NULL OR u.location = ${location})
+          AND (${occupation}::text IS NULL OR u.occupation = ${occupation})
+          AND (${occupationLevel}::text IS NULL OR u.occupation_level = ${occupationLevel})
+          AND (${skinColor}::text IS NULL OR u.skin_color = ${skinColor})
+          AND (${hasDisability}::boolean IS NULL OR u.has_disability = ${hasDisability}::boolean)
+          AND (${nationalityId}::text IS NULL OR u.nationality_id = ${nationalityId})
       ),
 
       aggregated AS (
@@ -605,6 +685,174 @@ Formato obrigatório de resposta:
       message: sync
         ? `${uniquePairs.length} feedbacks gerados com sucesso`
         : `${uniquePairs.length} gerações de feedback enfileiradas com sucesso`,
+    };
+  }
+
+  /**
+   * Agrupa as declarações de fatores psicossociais pelo valor de uma coluna do usuário
+   * e calcula os scores para cada grupo.
+   *
+   * @param id - ID da empresa
+   * @param actChatbotId - ID do chatbot ACT
+   * @param column - Coluna do usuário para agrupamento. Use "age" para agrupar por faixa etária
+   *                 (derivada do birthdate).
+   * @param ranges - Buckets opcionais para colunas numéricas. Obrigatório para agrupamento
+   *                 por faixa etária. Ex: [{ label: "18-30", min: 18, max: 30 }].
+   *                 Valores fora de todos os buckets são agrupados em "null".
+   *
+   * @returns `{ available: false }` se não houver análise disponível,
+   *          ou `{ available: true, groups }` onde cada chave de `groups` é um valor
+   *          distinto da coluna (ou "null" para ausentes/fora de range).
+   *          Cada grupo contém: positiveScore, negativeScore, totalScore, absoluteScore, wellnessPercentage.
+   *          wellnessPercentage = positiveScore / absoluteScore * 100
+   */
+  async findActAnalysisSegments(
+    id: string,
+    actChatbotId: string,
+    column: UserGroupColumn,
+    ranges?: RangeBucket[],
+  ): Promise<FindActAnalysisSegmentsResult> {
+    const analysis = await this.resolveLatestActAnalysis(id, actChatbotId);
+    if (!analysis) return { available: false };
+
+    const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: {
+        message: { actChapter: { user: { companyId: id } } },
+        analysisBatch: { companyActAnalysisId: analysis.id },
+      },
+      include: {
+        message: { select: { actChapter: { select: { userId: true } } } },
+        factor: { select: { wheight: true } },
+      },
+    });
+
+    const includedUsers = await prismaClient.user.findMany({
+      where: { id: { in: declarations.map((d) => d.message.actChapter.userId) } },
+    });
+
+    const userMap = new Map(includedUsers.map((u) => [u.id, u]));
+
+    const resolveKey = (userId: string): string => {
+      const user = userMap.get(userId);
+      if (!user) return "null";
+
+      if (column === "age") {
+        if (!user.birthdate) return "null";
+        const age = Math.floor((Date.now() - new Date(user.birthdate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        if (!ranges?.length) return String(age);
+        // Intervalo fechado em min, aberto em max: [min, max). Ex: {min:18, max:30} captura 18–29.
+        const bucket = ranges.find((r) => age >= r.min && age < r.max);
+        return bucket?.label ?? "null";
+      }
+
+      // Para colunas string/enum/boolean, usa o valor bruto como chave. Ausente → "null".
+      return String((user as Record<string, unknown>)[column] ?? "null");
+    };
+
+    // Cada declaração vira um wheight na lista do grupo correspondente ao valor da coluna do usuário.
+    const byGroup = new Map<string, number[]>();
+    for (const d of declarations) {
+      const key = resolveKey(d.message.actChapter.userId);
+      if (!byGroup.has(key)) byGroup.set(key, []);
+      byGroup.get(key)!.push(d.factor.wheight);
+    }
+
+    const groups: AnalysisSegmentGroup[] = [];
+    for (const [key, wheights] of byGroup) {
+      const positiveScore = wheights.filter((w) => w > 0).reduce((s, w) => s + w, 0);
+      const negativeScore = wheights.filter((w) => w <= 0).reduce((s, w) => s + w, 0);
+      const totalScore = positiveScore + negativeScore;
+      const absoluteScore = positiveScore + Math.abs(negativeScore);
+      const wellnessPercentage = absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0;
+      groups.push({ value: key === "null" ? null : key, positiveScore, negativeScore, totalScore, absoluteScore, wellnessPercentage });
+    }
+
+    return { available: true, column, groups };
+  }
+
+  async findActAnalysisFactorWeights(
+    id: string,
+    actChatbotId: string,
+  ): Promise<FindActAnalysisFactorWeightsResult> {
+    const analysis = await this.resolveLatestActAnalysis(id, actChatbotId);
+    if (!analysis) return { available: false };
+
+    const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: {
+        message: { actChapter: { user: { companyId: id } } },
+        analysisBatch: { companyActAnalysisId: analysis.id },
+      },
+      include: {
+        factor: { select: { id: true, name: true, wheight: true } },
+        message: { select: { actChapter: { select: { userId: true } } } },
+      },
+    });
+
+    const factorMap = new Map<string, { factor: (typeof declarations)[0]["factor"]; count: number }>();
+    const userIds = new Set<string>();
+    for (const d of declarations) {
+      userIds.add(d.message.actChapter.userId);
+      const entry = factorMap.get(d.factorId);
+      if (entry) {
+        entry.count++;
+      } else {
+        factorMap.set(d.factorId, { factor: d.factor, count: 1 });
+      }
+    }
+
+    const factors: FactorWeightItem[] = Array.from(factorMap.values()).map(({ factor, count }) => ({
+      id: factor.id,
+      name: factor.name,
+      wheight: factor.wheight,
+      count,
+      totalWeight: factor.wheight * count,
+    }));
+
+    return { available: true, factors, userCount: userIds.size };
+  }
+
+  async generateAnalysisReport(
+    id: string,
+    actChatbotId: string,
+  ): Promise<GenerateAnalysisReportResult> {
+    const [byArea, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] = await Promise.all([
+      this.findActAnalysisSegments(id, actChatbotId, "area"),
+      this.findActAnalysisSegments(id, actChatbotId, "gender"),
+      this.findActAnalysisSegments(id, actChatbotId, "hasDisability"),
+      this.findActAnalysisSegments(id, actChatbotId, "occupationLevel"),
+      this.findActAnalysisSegments(id, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
+      this.findActAnalysisFactorWeights(id, actChatbotId),
+    ]);
+
+    if (!byArea.available) return { available: false };
+
+    const factorWeights = weightsResult.available ? weightsResult.factors : [];
+
+    // Overall derivado dos factor weights — sem DB call extra
+    const positiveScore = factorWeights.filter((f) => f.wheight > 0).reduce((s, f) => s + f.totalWeight, 0);
+    const negativeScore = factorWeights.filter((f) => f.wheight <= 0).reduce((s, f) => s + f.totalWeight, 0);
+    const totalScore = positiveScore + negativeScore;
+    const absoluteScore = positiveScore + Math.abs(negativeScore);
+    const overall: SegmentScores = {
+      positiveScore,
+      negativeScore,
+      totalScore,
+      absoluteScore,
+      wellnessPercentage: absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0,
+    };
+
+    return {
+      available: true,
+      report: {
+        userCount: weightsResult.available ? weightsResult.userCount : 0,
+        overall,
+        byArea: byArea.groups,
+        byGender: byGender.available ? byGender.groups : [],
+        byDisability: byDisability.available ? byDisability.groups : [],
+        byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
+        byAgeRange: byAgeRange.available ? byAgeRange.groups : [],
+        factorWeights,
+      },
     };
   }
 }

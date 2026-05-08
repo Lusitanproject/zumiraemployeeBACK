@@ -225,6 +225,12 @@ class ActChatbotAdminService {
         });
         const importedUserIds = new Set(chaptersFromConversations.map((chapter) => chapter.userId));
         const usersFound = storedUsers.filter((u) => importedUserIds.has(u.id));
+        const conversationsWithoutUser = conversations.filter((conv) => {
+            var _a;
+            const phone = normalizePhone((_a = conv.form_submission) === null || _a === void 0 ? void 0 : _a.phone);
+            return !phoneToUserId.has(phone);
+        });
+        console.log(`[importChatbaseChapters] ${conversationsWithoutUser.length} conversa(s) sem usuário correspondente: ${conversationsWithoutUser.map((conv) => { var _a; return `phone=${normalizePhone((_a = conv.form_submission) === null || _a === void 0 ? void 0 : _a.phone) || "(sem telefone)"} conversaId=${conv.id}`; }).join(", ")}`);
         const usersFoundSummary = usersFound.map((u) => `${u.name} (${u.phoneNumber})`).join(", ");
         return {
             message: `Import concluido. users encontrados=${usersFound.length}; chapters criados=${chaptersFromConversations.length}; mensagens criadas=${createdMessages.count}; usuarios=[${usersFoundSummary}]`,

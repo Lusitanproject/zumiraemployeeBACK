@@ -9,6 +9,7 @@ const FindAllCompaniesController_1 = require("../../controllers/admin/companies/
 const FindAllFeedbacksController_1 = require("../../controllers/admin/companies/FindAllFeedbacksController");
 const FindCompanyController_1 = require("../../controllers/admin/companies/FindCompanyController");
 const GenerateActAnalysisController_1 = require("../../controllers/admin/companies/GenerateActAnalysisController");
+const GenerateAnalysisReportController_1 = require("../../controllers/admin/companies/GenerateAnalysisReportController");
 const GenerateAllUserFeedbackController_1 = require("../../controllers/admin/companies/GenerateAllUserFeedbackController");
 const SetCompanyAssessmentsController_1 = require("../../controllers/admin/companies/SetCompanyAssessmentsController");
 const UpdateCompanyController_1 = require("../../controllers/admin/companies/UpdateCompanyController");
@@ -22,6 +23,7 @@ adminCompanyRouter.post("/", isAuthenticated_1.isAuthenticated, new CreateCompan
 adminCompanyRouter.put("/:id", isAuthenticated_1.isAuthenticated, new UpdateCompanyController_1.UpdateCompanyController().handle);
 adminCompanyRouter.post("/:id/assessments", isAuthenticated_1.isAuthenticated, new SetCompanyAssessmentsController_1.SetCompanyAssessmentsController().handle);
 adminCompanyRouter.post("/:companyId/acts/:actChatbotId/analysis", isAuthenticated_1.isAuthenticated, new GenerateActAnalysisController_1.GenerateActAnalysisController().handle);
+adminCompanyRouter.get("/:companyId/acts/:actChatbotId/analysis/report", isAuthenticated_1.isAuthenticated, new GenerateAnalysisReportController_1.GenerateAnalysisReportController().handle);
 adminCompanyRouter.get("/:companyId/acts/:actChatbotId/analysis", isAuthenticated_1.isAuthenticated, new FindActAnalysisController_1.FindActAnalysisController().handle);
 adminCompanyRouter.get("/:companyId/acts/:actChatbotId/analysis/factors/:factorId/messages", isAuthenticated_1.isAuthenticated, new FindActAnalysisFactorMessagesController_1.FindActAnalysisFactorMessagesController().handle);
 adminCompanyRouter.post("/:companyId/feedback/users", isAuthenticated_1.isAuthenticated, new GenerateAllUserFeedbackController_1.GenerateAllUserFeedbackController().handle);

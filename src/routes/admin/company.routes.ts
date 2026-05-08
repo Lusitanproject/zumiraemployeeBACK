@@ -7,6 +7,7 @@ import { FindAllCompaniesController } from "../../controllers/admin/companies/Fi
 import { FindAllFeedbacksController } from "../../controllers/admin/companies/FindAllFeedbacksController";
 import { FindCompanyController } from "../../controllers/admin/companies/FindCompanyController";
 import { GenerateActAnalysisController } from "../../controllers/admin/companies/GenerateActAnalysisController";
+import { GenerateAnalysisReportController } from "../../controllers/admin/companies/GenerateAnalysisReportController";
 import { GenerateAllUserFeedbackController } from "../../controllers/admin/companies/GenerateAllUserFeedbackController";
 import { SetCompanyAssessmentsController } from "../../controllers/admin/companies/SetCompanyAssessmentsController";
 import { UpdateCompanyController } from "../../controllers/admin/companies/UpdateCompanyController";
@@ -24,6 +25,11 @@ adminCompanyRouter.post(
   "/:companyId/acts/:actChatbotId/analysis",
   isAuthenticated,
   new GenerateActAnalysisController().handle,
+);
+adminCompanyRouter.get(
+  "/:companyId/acts/:actChatbotId/analysis/report",
+  isAuthenticated,
+  new GenerateAnalysisReportController().handle,
 );
 adminCompanyRouter.get(
   "/:companyId/acts/:actChatbotId/analysis",
