@@ -1,0 +1,366 @@
+import { Request, Response, Router } from "express";
+import nodemailer from "nodemailer";
+
+import { CompileActChapterController } from "./controllers/act/CompileActChapterController";
+import { CreateActChapterController } from "./controllers/act/CreateActChapterController";
+import { GetActChapterController } from "./controllers/act/GetActChapterController";
+import { GetActsDataController } from "./controllers/act/GetActsDataController";
+import { GetFullStoryController } from "./controllers/act/GetFullStoryController";
+import { MessageActChatbotController } from "./controllers/act/MessageActChatbotController";
+import { MoveToNextActController } from "./controllers/act/MoveToNextActController";
+import { UpdateActChapterController } from "./controllers/act/UpdateActChapterController";
+import { CreateActChatbotController } from "./controllers/admin/acts/CreateActChatbotController";
+import { FindActChatbotController } from "./controllers/admin/acts/FindActChatbotController";
+import { FindAllActChatbotsController } from "./controllers/admin/acts/FindAllActChatbotsController";
+import { FindByTrailController } from "./controllers/admin/acts/FindByTrailController";
+import { FindByCompanyController } from "./controllers/admin/acts/FindByCompanyController";
+import { UpdateActChatbotController } from "./controllers/admin/acts/UpdateActChatbotController";
+import { UpdateManyActChatbotsController } from "./controllers/admin/acts/UpdateManyActChatbotsController";
+import { ImportChatbaseChaptersController } from "./controllers/admin/acts/ImportChatbaseChaptersController";
+import { DuplicateAssessmentController } from "./controllers/admin/assessments/DuplicateAssessmentController";
+import { FindAllAssessmentsController } from "./controllers/admin/assessments/FindAllAssessmentsController";
+import { FindQuestionByAssessmentController } from "./controllers/admin/assessments/FindQuestionByAssessmentController";
+import { FindResultRatingsByAssessmentController } from "./controllers/admin/assessments/FindResultRatingsByAssessmentController";
+import { FindResultsFilteredController } from "./controllers/admin/assessments/FindResultsFilteredController";
+import { GenerateExcelReportController } from "./controllers/admin/assessments/GenerateExcelReportController";
+import { UpdateAssessmentController } from "./controllers/admin/assessments/UpdateAssessmentController";
+import { UpdateResultRatingsController } from "./controllers/admin/assessments/UpdateResultRatingsController";
+import { CreateCompanyController } from "./controllers/admin/companies/CreateCompanyController";
+import { FindAllCompaniesController } from "./controllers/admin/companies/FindAllCompaniesController";
+import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAllFeedbacksController";
+import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
+import { SetCompanyAssessmentsController } from "./controllers/admin/companies/SetCompanyAssessmentsController";
+import { UpdateCompanyController } from "./controllers/admin/companies/UpdateCompanyController";
+import { GenerateActAnalysisController } from "./controllers/admin/companies/GenerateActAnalysisController";
+import { FindActAnalysisController } from "./controllers/admin/companies/FindActAnalysisController";
+import { FindActAnalysisFactorMessagesController } from "./controllers/admin/companies/FindActAnalysisFactorMessagesController";
+import { GenerateAllUserFeedbackController } from "./controllers/admin/companies/GenerateAllUserFeedbackController";
+import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
+import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";
+import { FindAllDimensionsController } from "./controllers/admin/dimensions/FindAllDimensionController";
+import { FindDimensionByBlockController } from "./controllers/admin/dimensions/FindBySelfMonitoringController";
+import { FindDimensionController } from "./controllers/admin/dimensions/FindDimensionController";
+import { CreateNationalityController } from "./controllers/admin/nationalities/CreateNationalityController";
+import { FindAllNationalitiesController } from "./controllers/admin/nationalities/FindAllNationalitiesController";
+import { FindNationalityController } from "./controllers/admin/nationalities/FindNationalityController";
+import { UpdateNationalityController } from "./controllers/admin/nationalities/UpdateNationalityController";
+import { CreateNotificationController } from "./controllers/admin/notifications/CreateNotificationController";
+import { CreateNotificationTypeController } from "./controllers/admin/notifications/CreateNotificationTypeController";
+import { DeleteNotificationController } from "./controllers/admin/notifications/DeleteNotificationController";
+import { FindAllNotificationsController } from "./controllers/admin/notifications/FindAllNotificationsController";
+import { FindAllTypesController } from "./controllers/admin/notifications/FindAllTypesController";
+import { FindNotificationTypeController } from "./controllers/admin/notifications/FindNotificationTypeController";
+import { UpdateNotificationController } from "./controllers/admin/notifications/UpdateNotificationController";
+import { UpdateNotificationTypeController } from "./controllers/admin/notifications/UpdateNotificationTypeController";
+import { CreateRoleController } from "./controllers/admin/roles/CreateRoleController";
+import { FindAllRolesController } from "./controllers/admin/roles/FindAllRolesController";
+import { FindRoleController } from "./controllers/admin/roles/FindRoleController";
+import { UpdateRoleController } from "./controllers/admin/roles/UpdateRoleController";
+import { DeleteRoleController } from "./controllers/admin/roles/DeleteRoleController";
+import { SetRolePermissionsController } from "./controllers/admin/roles/SetRolePermissionsController";
+import { FindAllPermissionsController } from "./controllers/admin/permissions/FindAllPermissionsController";
+import { CreateSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/CreateSelfMonitoringBlockController";
+import { EditSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/EditSelfMonitoringBlockController";
+import { ListAllSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindAllSelfMonitoringBlocksController";
+import { FindSelfMonitoringBlocksController } from "./controllers/admin/self-monitoring/FindSelfMonitoringBlockController";
+import { CreateTrailController } from "./controllers/admin/trails/CreateTrailController copy";
+import { FindAllTrailsController } from "./controllers/admin/trails/FindAllTrailsController";
+import { FindTrailController } from "./controllers/admin/trails/FindTrailController";
+import { UpdateTrailController } from "./controllers/admin/trails/UpdateTrailController";
+import { CreateUserController as AdminCreateUserController } from "./controllers/admin/users/CreateUserController";
+import { DeleteUserController } from "./controllers/admin/users/DeleteUserController";
+import { FindUserController } from "./controllers/admin/users/FindUserController";
+import { ListAllUsersController } from "./controllers/admin/users/ListAllUsersController";
+import { ListUsersByCompanyController } from "./controllers/admin/users/ListUsersByCompanyController";
+import { UpdateUserController } from "./controllers/admin/users/UpdateUserController";
+import { ListAlertsController } from "./controllers/alert/ListAlertsController";
+import { ReadAlertController } from "./controllers/alert/ReadAlertController";
+import { AssessmentDetailForAdminController } from "./controllers/assessment/AssessmentDetailForAdminController";
+import { CreateAssessmentController } from "./controllers/assessment/CreateAssessmentController";
+import { CreateQuestionController } from "./controllers/assessment/CreateQuestionController";
+import { CreateResultController } from "./controllers/assessment/CreateResultController";
+import { DetailAssessmentController } from "./controllers/assessment/DetailAssessmentController";
+import { DetailResultController } from "./controllers/assessment/DetailResultController";
+import { GenerateCompanyFeedbackController } from "./controllers/assessment/GenerateCompanyFeedbackController";
+import { GenerateUserFeedbackController } from "./controllers/assessment/GenerateUserFeedbackController";
+import { ListAssessmentsController } from "./controllers/assessment/ListAssessmentsController";
+import { ListCompanyAssessmentsController } from "./controllers/assessment/ListCompanyAssessmentsController";
+import { ListResultsController } from "./controllers/assessment/ListResultsController";
+import { UpdateQuestionsController } from "./controllers/assessment/UpdateQuestionsController";
+import { FindCompanyFeedbackController } from "./controllers/company/FindCompanyFeedbackController";
+import { ListNationalitiesController } from "./controllers/nationality/ListNationalitiesController";
+import { DetailNotificationController } from "./controllers/notification/DetailNotificationController";
+import { ListNotificationsController } from "./controllers/notification/ListNotificationsController";
+import { ReadNotificationController } from "./controllers/notification/ReadNotificationController";
+import { ListSelfMonitoringBlockResultsController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlockResultsController";
+import { ListSelfMonitoringBlocksController } from "./controllers/self-monitoring-block/ListSelfMonitoringBlocksController";
+import { CreatePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/CreatePsychosocialFactorController";
+import { FindAllPsychosocialFactorsController } from "./controllers/admin/psychosocial-factors/FindAllPsychosocialFactorsController";
+import { FindPsychosocialFactorController } from "./controllers/admin/psychosocial-factors/FindPsychosocialFactorController";
+import { UpdatePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/UpdatePsychosocialFactorController";
+import { DeletePsychosocialFactorController } from "./controllers/admin/psychosocial-factors/DeletePsychosocialFactorController";
+import { IntegrationCompileActChapterController } from "./controllers/integration/act/CompileActChapterController";
+import { IntegrationCreateActChapterController } from "./controllers/integration/act/CreateActChapterController";
+import { IntegrationGetActChapterController } from "./controllers/integration/act/GetActChapterController";
+import { IntegrationGetActsDataController } from "./controllers/integration/act/GetActsDataController";
+import { IntegrationGetFullStoryController } from "./controllers/integration/act/GetFullStoryController";
+import { IntegrationMessageActChatbotController } from "./controllers/integration/act/MessageActChatbotController";
+import { IntegrationMoveToNextActController } from "./controllers/integration/act/MoveToNextActController";
+import { IntegrationUpdateActChapterController } from "./controllers/integration/act/UpdateActChapterController";
+import { IntegrationCreateResultController } from "./controllers/integration/assessment/CreateResultController";
+import { IntegrationDetailAssessmentController } from "./controllers/integration/assessment/DetailAssessmentController";
+import { IntegrationDetailResultController } from "./controllers/integration/assessment/DetailResultController";
+import { IntegrationGenerateCompanyFeedbackController } from "./controllers/integration/assessment/GenerateCompanyFeedbackController";
+import { IntegrationGenerateUserFeedbackController } from "./controllers/integration/assessment/GenerateUserFeedbackController";
+import { IntegrationListAssessmentsController } from "./controllers/integration/assessment/ListAssessmentsController";
+import { IntegrationListResultsController } from "./controllers/integration/assessment/ListResultsController";
+import { AuthUserController } from "./controllers/user/auth/AuthUserController";
+import { SendCodeController } from "./controllers/user/auth/SendCodeController";
+import { CreateUserController } from "./controllers/user/CreateUserController";
+import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { FindUserByController } from "./controllers/admin/users/FindUserByController";
+import { CreateManyUsersController } from "./controllers/admin/users/CreateManyUsersController";
+
+const router = Router();
+
+// ROTAS AUTH
+router.post("/auth/email", new SendCodeController().handle);
+router.post("/auth/verify", new AuthUserController().handle);
+
+// ROTAS USERS
+router.post("/users", new CreateUserController().handle);
+router.post("/admin/users", isAuthenticated, new AdminCreateUserController().handle);
+router.get("/admin/users/find-by", isAuthenticated, new FindUserByController().handle);
+router.put("/admin/users/:id", isAuthenticated, new UpdateUserController().handle);
+router.delete("/admin/users/:id", isAuthenticated, new DeleteUserController().handle);
+router.get("/admin/users", isAuthenticated, new ListAllUsersController().handle);
+router.get("/admin/users/:userId", isAuthenticated, new FindUserController().handle);
+router.get("/admin/users/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);
+router.post("/admin/users/create-many", isAuthenticated, new CreateManyUsersController().handle);
+
+// ROTAS PERFIS
+router.get("/admin/roles", isAuthenticated, new FindAllRolesController().handle);
+router.get("/admin/roles/:id", isAuthenticated, new FindRoleController().handle);
+router.post("/admin/roles", isAuthenticated, new CreateRoleController().handle);
+router.put("/admin/roles/:id", isAuthenticated, new UpdateRoleController().handle);
+router.delete("/admin/roles/:id", isAuthenticated, new DeleteRoleController().handle);
+router.put("/admin/roles/:id/permissions", isAuthenticated, new SetRolePermissionsController().handle);
+
+// ROTAS PERMISSOES
+router.get("/admin/permissions", isAuthenticated, new FindAllPermissionsController().handle);
+
+// ROTAS PSYCHOLOGICAL DIMENSION
+router.post("/admin/dimensions", isAuthenticated, new CreateDimensionController().handle);
+router.get("/admin/dimensions", isAuthenticated, new FindAllDimensionsController().handle);
+router.get("/admin/dimensions/:psychologicalDimensionId", isAuthenticated, new FindDimensionController().handle);
+router.put("/admin/dimensions/:psychologicalDimensionId", isAuthenticated, new EditDimensionController().handle);
+
+// ROTAS RESULTS
+router.get("/assessments/results", isAuthenticated, new ListResultsController().handle);
+router.get("/admin/assessments/results", isAuthenticated, new FindResultsFilteredController().handle);
+router.get("/admin/assessments/results/download-report", isAuthenticated, new GenerateExcelReportController().handle);
+router.get("/assessments/results/:id", isAuthenticated, new DetailResultController().handle);
+router.post("/assessments/results", isAuthenticated, new CreateResultController().handle);
+
+// ROTAS QUESTIONS
+router.post("/assessments/questions", isAuthenticated, new CreateQuestionController().handle);
+router.put("/assessments/questions/:id", isAuthenticated, new UpdateQuestionsController().handle);
+router.get("/admin/assessments/questions/:assessmentId", isAuthenticated, new FindQuestionByAssessmentController().handle);
+
+// ROTAS RESULT RATINGS
+router.get("/admin/assessments/ratings/:id", isAuthenticated, new FindResultRatingsByAssessmentController().handle);
+router.put("/admin/assessments/ratings/:id", isAuthenticated, new UpdateResultRatingsController().handle);
+
+// ROTAS ALERTS
+router.get("/assessments/alerts", isAuthenticated, new ListAlertsController().handle);
+router.put("/assessments/alerts/:id/read", isAuthenticated, new ReadAlertController().handle);
+
+// ROTAS ASSESSMENT
+router.get("/assessments", isAuthenticated, new ListAssessmentsController().handle);
+router.get("/assessments/company", isAuthenticated, new ListCompanyAssessmentsController().handle);
+router.get("/admin/assessments", isAuthenticated, new FindAllAssessmentsController().handle);
+router.get("/assessments/:id", isAuthenticated, new DetailAssessmentController().handle);
+router.get("/admin/assessments/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
+router.post("/assessments", isAuthenticated, new CreateAssessmentController().handle);
+router.post("/admin/assessments/duplicate/:id", isAuthenticated, new DuplicateAssessmentController().handle);
+router.post("/assessments/feedback/users/:id", isAuthenticated, new GenerateUserFeedbackController().handle);
+router.post("/assessments/feedback/companies/:id", isAuthenticated, new GenerateCompanyFeedbackController().handle);
+router.put("/admin/assessments/:id", isAuthenticated, new UpdateAssessmentController().handle);
+
+// ROTAS SELF MONITORING
+router.get("/self-monitoring", isAuthenticated, new ListSelfMonitoringBlocksController().handle);
+router.get("/admin/self-monitoring", isAuthenticated, new ListAllSelfMonitoringBlocksController().handle);
+router.post("/admin/self-monitoring", isAuthenticated, new CreateSelfMonitoringBlocksController().handle);
+router.put("/admin/self-monitoring/:id", isAuthenticated, new EditSelfMonitoringBlocksController().handle);
+router.get("/admin/self-monitoring/:id", isAuthenticated, new FindSelfMonitoringBlocksController().handle);
+router.get(
+  "/self-monitoring/results/:selfMonitoringBlockId",
+  isAuthenticated,
+  new ListSelfMonitoringBlockResultsController().handle,
+);
+router.get(
+  "/admin/self-monitoring/dimensions/:selfMonitoringBlockId",
+  isAuthenticated,
+  new FindDimensionByBlockController().handle,
+);
+
+// ROTAS PSYCHOSOCIAL FACTORS
+router.get("/admin/psychosocial-factors", isAuthenticated, new FindAllPsychosocialFactorsController().handle);
+router.post("/admin/psychosocial-factors", isAuthenticated, new CreatePsychosocialFactorController().handle);
+router.get("/admin/psychosocial-factors/:id", isAuthenticated, new FindPsychosocialFactorController().handle);
+router.put("/admin/psychosocial-factors/:id", isAuthenticated, new UpdatePsychosocialFactorController().handle);
+router.delete("/admin/psychosocial-factors/:id", isAuthenticated, new DeletePsychosocialFactorController().handle);
+
+// ROTAS COMPANY
+router.get("/admin/companies", isAuthenticated, new FindAllCompaniesController().handle);
+router.get("/admin/companies/feedback", isAuthenticated, new FindAllFeedbacksController().handle);
+router.get("/admin/companies/:companyId", isAuthenticated, new FindCompanyController().handle);
+router.get("/companies/:id/feedback", isAuthenticated, new FindCompanyFeedbackController().handle);
+router.post("/admin/companies/:id/assessments", isAuthenticated, new SetCompanyAssessmentsController().handle);
+router.post("/admin/companies", isAuthenticated, new CreateCompanyController().handle);
+router.put("/admin/companies/:id", isAuthenticated, new UpdateCompanyController().handle);
+router.post(
+  "/admin/companies/:companyId/acts/:actChatbotId/analysis",
+  isAuthenticated,
+  new GenerateActAnalysisController().handle,
+);
+router.get(
+  "/admin/companies/:companyId/acts/:actChatbotId/analysis",
+  isAuthenticated,
+  new FindActAnalysisController().handle,
+);
+router.get(
+  "/admin/companies/:companyId/acts/:actChatbotId/analysis/factors/:factorId/messages",
+  isAuthenticated,
+  new FindActAnalysisFactorMessagesController().handle,
+);
+router.post(
+  "/admin/companies/:companyId/feedback/users",
+  isAuthenticated,
+  new GenerateAllUserFeedbackController().handle,
+);
+
+// ROTAS NATIONALITY
+router.get("/nationalities", new ListNationalitiesController().handle);
+router.post("/admin/nationalities", isAuthenticated, new CreateNationalityController().handle);
+router.get("/admin/nationalities", isAuthenticated, new FindAllNationalitiesController().handle);
+router.get("/admin/nationalities/:id", isAuthenticated, new FindNationalityController().handle);
+router.put("/admin/nationalities/:id", isAuthenticated, new UpdateNationalityController().handle);
+
+// ROTAS NOTIFICATION
+router.get("/notifications", isAuthenticated, new ListNotificationsController().handle);
+router.get("/admin/notifications", isAuthenticated, new FindAllNotificationsController().handle);
+router.get("/admin/notifications/types", isAuthenticated, new FindAllTypesController().handle);
+router.get("/admin/notifications/types/:id", isAuthenticated, new FindNotificationTypeController().handle);
+router.get("/notifications/:notificationId", isAuthenticated, new DetailNotificationController().handle);
+router.put("/admin/notifications/:notificationId", isAuthenticated, new UpdateNotificationController().handle);
+router.put("/notifications/:notificationId/read", isAuthenticated, new ReadNotificationController().handle);
+router.put("/admin/notifications/types/:id", isAuthenticated, new UpdateNotificationTypeController().handle);
+router.post("/admin/notifications", isAuthenticated, new CreateNotificationController().handle);
+router.post("/admin/notifications/types", isAuthenticated, new CreateNotificationTypeController().handle);
+router.delete("/admin/notifications/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
+
+// ROTAS ACTS
+router.get("/admin/acts", isAuthenticated, new FindAllActChatbotsController().handle);
+router.get("/admin/acts/by-trail", isAuthenticated, new FindByTrailController().handle);
+router.get("/admin/acts/by-company", isAuthenticated, new FindByCompanyController().handle);
+router.get("/admin/acts/:id", isAuthenticated, new FindActChatbotController().handle);
+router.put("/admin/acts/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
+router.put("/admin/acts/:id", isAuthenticated, new UpdateActChatbotController().handle);
+router.post("/admin/acts", isAuthenticated, new CreateActChatbotController().handle);
+router.post("/admin/acts/:id/import-chatbase-chapters", isAuthenticated, new ImportChatbaseChaptersController().handle);
+router.get("/acts", isAuthenticated, new GetActsDataController().handle);
+router.get("/acts/chapters", isAuthenticated, new GetActChapterController().handle);
+router.put("/acts/next", isAuthenticated, new MoveToNextActController().handle);
+router.post("/acts/message", isAuthenticated, new MessageActChatbotController().handle);
+router.post("/acts/new-chapter", isAuthenticated, new CreateActChapterController().handle);
+router.post("/acts/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
+router.put("/acts/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
+router.get("/acts/full-story", isAuthenticated, new GetFullStoryController().handle);
+
+router.post("/admin/trails", isAuthenticated, new CreateTrailController().handle);
+router.get("/admin/trails", isAuthenticated, new FindAllTrailsController().handle);
+router.get("/admin/trails/:id", isAuthenticated, new FindTrailController().handle);
+router.put("/admin/trails/:id", isAuthenticated, new UpdateTrailController().handle);
+
+// ROTAS INTEGRATIONS
+router.get("/integrations/assessments/results", isAuthenticated, new IntegrationListResultsController().handle);
+router.get("/integrations/assessments/results/:id", isAuthenticated, new IntegrationDetailResultController().handle);
+router.post("/integrations/assessments/results", isAuthenticated, new IntegrationCreateResultController().handle);
+
+router.get("/integrations/assessments", isAuthenticated, new IntegrationListAssessmentsController().handle);
+router.get("/integrations/assessments/:id", isAuthenticated, new IntegrationDetailAssessmentController().handle);
+router.post(
+  "/integrations/assessments/feedback/users/:id",
+  isAuthenticated,
+  new IntegrationGenerateUserFeedbackController().handle,
+);
+router.post(
+  "/integrations/assessments/feedback/companies/:id",
+  isAuthenticated,
+  new IntegrationGenerateCompanyFeedbackController().handle,
+);
+
+router.get("/integrations/acts", isAuthenticated, new IntegrationGetActsDataController().handle);
+router.get("/integrations/acts/chapters", isAuthenticated, new IntegrationGetActChapterController().handle);
+router.put("/integrations/acts/next", isAuthenticated, new IntegrationMoveToNextActController().handle);
+router.post("/integrations/acts/message", isAuthenticated, new IntegrationMessageActChatbotController().handle);
+router.post("/integrations/acts/new-chapter", isAuthenticated, new IntegrationCreateActChapterController().handle);
+router.post(
+  "/integrations/acts/chapters/compile",
+  isAuthenticated,
+  new IntegrationCompileActChapterController().handle,
+);
+router.put(
+  "/integrations/acts/chapters/:actChapterId",
+  isAuthenticated,
+  new IntegrationUpdateActChapterController().handle,
+);
+router.get("/integrations/acts/full-story", isAuthenticated, new IntegrationGetFullStoryController().handle);
+
+router.post("/leads", async (req: Request, res: Response) => {
+  const { name, email, phone, company, message, plan } = req.body;
+
+  // Validação dos campos obrigatórios
+  if (!name || !email) {
+    return res.status(400).json({ error: "Name, email and plan are required." });
+  }
+
+  const leadInfo =
+    "Este e-mail foi gerado a partir da captura de leads do site Zumira.\n" +
+    `Nome: ${name}\n` +
+    `Email: ${email}\n` +
+    `Telefone: ${phone || "Não informado"}\n` +
+    `Empresa: ${company || "Não informado"}\n` +
+    `Plano: ${plan || "Nenhum"}\n` +
+    `Mensagem: ${message || "Não informado"}`;
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  try {
+    await transporter.sendMail({
+      from: {
+        name: "Zumira",
+        address: process.env.EMAIL_USER!,
+      },
+      to: process.env.LEAD_CAPTURE_EMAIL ?? "zumirajobs@gmail.com",
+      subject: "Captura de leads zumira",
+      text: leadInfo,
+    });
+    console.log("sent email");
+    res.status(200).json({ success: true });
+  } catch {
+    console.log("failed to send email");
+    res.status(500).json({ error: "Erro ao enviar e-mail" });
+  }
+});
+
+export { router };

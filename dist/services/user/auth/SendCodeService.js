@@ -12,14 +12,13 @@ const devLog_1 = require("../../../utils/devLog");
 async function sendEmail(user, code) {
     const transporter = nodemailer_1.default.createTransport({
         host: process.env.EMAIL_HOST,
-        port: 587,
-        secure: false,
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
         },
     });
-    const url = "https://www.zumira.com.br/verificar";
     const html = `
     <p>Olá ${user.name},</p>
 
@@ -46,9 +45,7 @@ async function sendEmail(user, code) {
         });
     }
     catch (err) {
-        if (err instanceof Error)
-            (0, devLog_1.devLog)(`Error sending email to ${user.email}`, err.message);
-        throw new Error("Erro ao enviar e-mail");
+        throw new Error(`Erro ao enviar e-mail: ${err}`);
     }
 }
 class SendCodeService {

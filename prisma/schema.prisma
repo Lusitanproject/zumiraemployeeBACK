@@ -56,7 +56,7 @@ model User {
   occupationLevel     String?     @map("occupation_level")
   area                String?
   location            String?
-  skinColor           String?
+  skinColor           String?     @map("skin_color")
   hasDisability       Boolean?    @map("has_disability")
   birthdate           DateTime?
   admissionDate       DateTime?   @map("admission_date")
@@ -81,18 +81,6 @@ model User {
   @@map("users")
 }
 
-model Permission {
-  id          String   @id @default(uuid())
-  slug        String   @unique
-  description String
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  rolePermissions RolePermission[]
-
-  @@map("permissions")
-}
-
 model Role {
   id        String   @id @default(uuid())
   slug      String   @unique
@@ -106,15 +94,14 @@ model Role {
 }
 
 model RolePermission {
-  roleId       String   @map("role_id")
-  permissionId String   @map("permission_id")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  roleId     String   @map("role_id")
+  permission String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
-  role       Role       @relation(fields: [roleId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
 
-  @@id([roleId, permissionId])
+  @@id([roleId, permission])
   @@map("roles_permissions")
 }
 
