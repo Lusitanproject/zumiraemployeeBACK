@@ -161,6 +161,90 @@ class UserAdminService {
         const { password: _password, ...response } = user;
         return { ...response };
     }
+    async getFilters(columns) {
+        const result = {};
+        const SCALAR_COLUMNS = ["gender", "occupation", "occupationLevel", "area", "location", "skinColor", "hasDisability"];
+        await Promise.all(columns.map(async (col) => {
+            if (SCALAR_COLUMNS.includes(col)) {
+                const rows = await prisma_1.default.user.findMany({
+                    select: { [col]: true },
+                    distinct: [col],
+                    where: { [col]: { not: null } },
+                    orderBy: { [col]: "asc" },
+                });
+                result[col] = rows.map((r) => r[col]);
+            }
+            else if (col === "roleId") {
+                const rows = await prisma_1.default.user.findMany({
+                    select: { role: { select: { id: true, slug: true } } },
+                    distinct: ["roleId"],
+                    orderBy: { role: { slug: "asc" } },
+                });
+                result[col] = rows.map((r) => r.role);
+            }
+            else if (col === "companyId") {
+                const rows = await prisma_1.default.user.findMany({
+                    select: { company: { select: { id: true, name: true } } },
+                    distinct: ["companyId"],
+                    where: { companyId: { not: null } },
+                    orderBy: { company: { name: "asc" } },
+                });
+                result[col] = rows.map((r) => r.company);
+            }
+            else if (col === "nationalityId") {
+                const rows = await prisma_1.default.user.findMany({
+                    select: { nationality: { select: { id: true, name: true } } },
+                    distinct: ["nationalityId"],
+                    where: { nationalityId: { not: null } },
+                    orderBy: { nationality: { name: "asc" } },
+                });
+                result[col] = rows.map((r) => r.nationality);
+            }
+        }));
+        return result;
+    }
+    async search({ page, pageSize, search, companyId, roleId, gender, occupation, occupationLevel, area, location, skinColor, hasDisability, nationalityId, }) {
+        const where = {
+            ...(companyId && { companyId }),
+            ...(roleId && { roleId }),
+            ...(gender && { gender }),
+            ...(occupation && { occupation: { contains: occupation, mode: "insensitive" } }),
+            ...(occupationLevel && { occupationLevel: { contains: occupationLevel, mode: "insensitive" } }),
+            ...(area && { area: { contains: area, mode: "insensitive" } }),
+            ...(location && { location: { contains: location, mode: "insensitive" } }),
+            ...(skinColor && { skinColor: { contains: skinColor, mode: "insensitive" } }),
+            ...(hasDisability !== undefined && { hasDisability }),
+            ...(nationalityId && { nationalityId }),
+            ...(search && {
+                OR: [
+                    { name: { contains: search, mode: "insensitive" } },
+                    { email: { contains: search, mode: "insensitive" } },
+                ],
+            }),
+        };
+        const skip = (page - 1) * pageSize;
+        const [total, rawUsers] = await prisma_1.default.$transaction([
+            prisma_1.default.user.count({ where }),
+            prisma_1.default.user.findMany({
+                where,
+                skip,
+                take: pageSize,
+                include: {
+                    company: { select: { id: true, name: true } },
+                    role: { select: { id: true, slug: true } },
+                },
+                orderBy: { createdAt: "desc" },
+            }),
+        ]);
+        const users = rawUsers.map(({ password: _p, ...u }) => u);
+        return {
+            users,
+            total,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize),
+        };
+    }
     async delete(id) {
         await prisma_1.default.user.delete({ where: { id } });
     }

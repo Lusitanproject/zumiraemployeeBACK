@@ -9,6 +9,8 @@ const FindUserByController_1 = require("../../controllers/admin/users/FindUserBy
 const FindUserController_1 = require("../../controllers/admin/users/FindUserController");
 const ListAllUsersController_1 = require("../../controllers/admin/users/ListAllUsersController");
 const ListUsersByCompanyController_1 = require("../../controllers/admin/users/ListUsersByCompanyController");
+const GetUserFiltersController_1 = require("../../controllers/admin/users/GetUserFiltersController");
+const SearchUsersController_1 = require("../../controllers/admin/users/SearchUsersController");
 const UpdateUserController_1 = require("../../controllers/admin/users/UpdateUserController");
 const isAuthenticated_1 = require("../../middlewares/isAuthenticated");
 const adminUserRouter = (0, express_1.Router)();
@@ -16,6 +18,8 @@ exports.adminUserRouter = adminUserRouter;
 adminUserRouter.post("/", isAuthenticated_1.isAuthenticated, new CreateUserController_1.CreateUserController().handle);
 adminUserRouter.post("/create-many", isAuthenticated_1.isAuthenticated, new CreateManyUsersController_1.CreateManyUsersController().handle);
 adminUserRouter.get("/find-by", isAuthenticated_1.isAuthenticated, new FindUserByController_1.FindUserByController().handle);
+adminUserRouter.get("/search", isAuthenticated_1.isAuthenticated, new SearchUsersController_1.SearchUsersController().handle);
+adminUserRouter.get("/filters", isAuthenticated_1.isAuthenticated, new GetUserFiltersController_1.GetUserFiltersController().handle);
 adminUserRouter.get("/", isAuthenticated_1.isAuthenticated, new ListAllUsersController_1.ListAllUsersController().handle);
 adminUserRouter.get("/company/:companyId", isAuthenticated_1.isAuthenticated, new ListUsersByCompanyController_1.ListUsersByCompanyController().handle);
 adminUserRouter.get("/:userId", isAuthenticated_1.isAuthenticated, new FindUserController_1.FindUserController().handle);

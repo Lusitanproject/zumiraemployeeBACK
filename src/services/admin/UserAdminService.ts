@@ -4,6 +4,8 @@ import {
   CreateManyUsersSchema,
   CreateUserSchema,
   FindUserByRequest,
+  SearchUsersRequest,
+  UserFilterColumn,
   UpdateUserSchema,
 } from "../../schemas/admin/users";
 import prismaClient from "../../prisma";
@@ -191,6 +193,112 @@ class UserAdminService {
     const { password: _password, ...response } = user;
 
     return { ...response };
+  }
+
+  async getFilters(columns: UserFilterColumn[]) {
+    const result: Record<string, unknown> = {};
+
+    const SCALAR_COLUMNS = ["gender", "occupation", "occupationLevel", "area", "location", "skinColor", "hasDisability"] as const;
+
+    await Promise.all(
+      columns.map(async (col) => {
+        if ((SCALAR_COLUMNS as readonly string[]).includes(col)) {
+          const rows = await prismaClient.user.findMany({
+            select: { [col]: true },
+            distinct: [col as never],
+            where: { [col]: { not: null } },
+            orderBy: { [col]: "asc" },
+          });
+          result[col] = rows.map((r) => r[col as keyof typeof r]);
+        } else if (col === "roleId") {
+          const rows = await prismaClient.user.findMany({
+            select: { role: { select: { id: true, slug: true } } },
+            distinct: ["roleId"],
+            orderBy: { role: { slug: "asc" } },
+          });
+          result[col] = rows.map((r) => r.role);
+        } else if (col === "companyId") {
+          const rows = await prismaClient.user.findMany({
+            select: { company: { select: { id: true, name: true } } },
+            distinct: ["companyId"],
+            where: { companyId: { not: null } },
+            orderBy: { company: { name: "asc" } },
+          });
+          result[col] = rows.map((r) => r.company);
+        } else if (col === "nationalityId") {
+          const rows = await prismaClient.user.findMany({
+            select: { nationality: { select: { id: true, name: true } } },
+            distinct: ["nationalityId"],
+            where: { nationalityId: { not: null } },
+            orderBy: { nationality: { name: "asc" } },
+          });
+          result[col] = rows.map((r) => r.nationality);
+        }
+      }),
+    );
+
+    return result;
+  }
+
+  async search({
+    page,
+    pageSize,
+    search,
+    companyId,
+    roleId,
+    gender,
+    occupation,
+    occupationLevel,
+    area,
+    location,
+    skinColor,
+    hasDisability,
+    nationalityId,
+  }: SearchUsersRequest) {
+    const where = {
+      ...(companyId && { companyId }),
+      ...(roleId && { roleId }),
+      ...(gender && { gender }),
+      ...(occupation && { occupation: { contains: occupation, mode: "insensitive" as const } }),
+      ...(occupationLevel && { occupationLevel: { contains: occupationLevel, mode: "insensitive" as const } }),
+      ...(area && { area: { contains: area, mode: "insensitive" as const } }),
+      ...(location && { location: { contains: location, mode: "insensitive" as const } }),
+      ...(skinColor && { skinColor: { contains: skinColor, mode: "insensitive" as const } }),
+      ...(hasDisability !== undefined && { hasDisability }),
+      ...(nationalityId && { nationalityId }),
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: "insensitive" as const } },
+          { email: { contains: search, mode: "insensitive" as const } },
+        ],
+      }),
+    };
+
+    const skip = (page - 1) * pageSize;
+
+    const [total, rawUsers] = await prismaClient.$transaction([
+      prismaClient.user.count({ where }),
+      prismaClient.user.findMany({
+        where,
+        skip,
+        take: pageSize,
+        include: {
+          company: { select: { id: true, name: true } },
+          role: { select: { id: true, slug: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+
+    const users = rawUsers.map(({ password: _p, ...u }) => u);
+
+    return {
+      users,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 
   async delete(id: string) {
