@@ -56,7 +56,7 @@ model User {
   occupationLevel     String?     @map("occupation_level")
   area                String?
   location            String?
-  skinColor           String?
+  skinColor           String?     @map("skin_color")
   hasDisability       Boolean?    @map("has_disability")
   birthdate           DateTime?
   admissionDate       DateTime?   @map("admission_date")
