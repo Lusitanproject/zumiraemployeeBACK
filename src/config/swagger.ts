@@ -6,8 +6,6 @@ const docsBaseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : `http://localhost:${process.env.PORT ?? "3000"}`;
 
-console.log(docsBaseUrl);
-
 const srcRoutes = ["./src/routes/*.ts", "./src/routes/admin/*.ts"];
 
 const distRoutes = ["./dist/routes/*.js", "./dist/routes/admin/*.js"];
