@@ -18,7 +18,7 @@ class GenerateActAnalysisController {
     if (!parsedQuery.success) throw new Error(parseZodError(parsedQuery.error));
 
     const actAnalysisService = new ActAnalysisAdminService();
-    await actAnalysisService.generateActAnalysis(parsedQuery.data.companyId, parsedParams.data.actChatbotId);
+    await actAnalysisService.generate(parsedQuery.data.companyId, parsedParams.data.actChatbotId);
 
     return res.json({
       status: "SUCCESS",

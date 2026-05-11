@@ -18,7 +18,7 @@ class GenerateAnalysisReportController {
     if (!parsedQuery.success) throw new Error(parseZodError(parsedQuery.error));
 
     const actAnalysisService = new ActAnalysisAdminService();
-    const result = await actAnalysisService.generateAnalysisReport(
+    const result = await actAnalysisService.generateReport(
       parsedQuery.data.companyId,
       parsedParams.data.actChatbotId,
     );

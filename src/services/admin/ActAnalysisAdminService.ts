@@ -38,6 +38,7 @@ interface SelfMonitoringBlockSummary {
 }
 
 interface ActAnalysisFilters {
+  search?: string;
   gender?: string;
   area?: string;
   location?: string;
@@ -102,13 +103,21 @@ type GenerateAnalysisReportResult =
   | { available: false }
   | { available: true; report: AnalysisReport };
 
-type FindActAnalysisResult =
-  | {
-      available: false;
-    }
+type FindActAnalysisItemsResult =
+  | { available: false }
   | {
       available: true;
       items: ActAnalysisItem[];
+      total: number;
+      page: number;
+      pageSize: number;
+      totalPages: number;
+    };
+
+type FindActAnalysisSummaryResult =
+  | { available: false }
+  | {
+      available: true;
       totalScore: number;
       positiveScore: number;
       negativeScore: number;
@@ -235,7 +244,7 @@ Formato obrigatório de resposta:
     return allDone;
   }
 
-  private async resolveLatestActAnalysis(companyId: string, actChatbotId: string) {
+  private async resolveLatest(companyId: string, actChatbotId: string) {
     const analysis = await prismaClient.companyActAnalysis.findFirst({
       orderBy: { createdAt: "desc" },
       where: { companyId, actChatbotId },
@@ -259,7 +268,7 @@ Formato obrigatório de resposta:
     return analysis;
   }
 
-  async generateActAnalysis(companyId: string, actChatbotId: string) {
+  async generate(companyId: string, actChatbotId: string) {
     console.log(`Gerando análise para a empresa ${companyId} e o chatbot ${actChatbotId}`);
 
     const factors = await prismaClient.psychosocialFactor.findMany({
@@ -317,29 +326,18 @@ Formato obrigatório de resposta:
     });
   }
 
-  async findActAnalysis(
-    companyId: string,
-    actChatbotId: string,
-    filters: ActAnalysisFilters = {},
-  ): Promise<FindActAnalysisResult> {
-    console.log(`Buscando análise da empresa ${companyId} para o chatbot ${actChatbotId}`);
-
-    const analysis = await this.resolveLatestActAnalysis(companyId, actChatbotId);
-
-    if (!analysis) {
-      return { available: false };
-    }
-
+  private async queryRows(analysisId: string, filters: ActAnalysisFilters): Promise<ActAnalysisItem[]> {
     const gender = filters.gender ?? null;
     const area = filters.area ?? null;
     const location = filters.location ?? null;
+    const search = filters.search ?? null;
     const occupation = filters.occupation ?? null;
     const occupationLevel = filters.occupationLevel ?? null;
     const skinColor = filters.skinColor ?? null;
     const hasDisability = filters.hasDisability ?? null;
     const nationalityId = filters.nationalityId ?? null;
 
-    const result = (await prismaClient.$queryRaw`
+    const rows = (await prismaClient.$queryRaw`
       WITH filtered AS (
         SELECT
           cab.company_act_analysis_id AS act_analysis_id,
@@ -358,7 +356,7 @@ Formato obrigatório de resposta:
         JOIN users u
           ON u.id = c.user_id
 
-        WHERE cab.company_act_analysis_id = ${analysis.id}
+        WHERE cab.company_act_analysis_id = ${analysisId}
           AND (${gender}::text IS NULL OR u.gender::text = ${gender})
           AND (${area}::text IS NULL OR u.area = ${area})
           AND (${location}::text IS NULL OR u.location = ${location})
@@ -376,32 +374,24 @@ Formato obrigatório de resposta:
           COUNT(*)::int AS total
         FROM filtered
         GROUP BY act_analysis_id, factor_id
-      ),
-
-      counted AS (
-        SELECT COUNT(*)::int AS full_count FROM aggregated
       )
 
       SELECT
-        a.act_analysis_id,
         a.factor_id,
         a.total,
-        c.full_count,
         f.id as factor_id_full,
         f.name as factor_name,
         f.wheight as factor_wheight,
         smb.id as smb_id,
         smb.title as smb_title
       FROM aggregated a
-      CROSS JOIN counted c
       JOIN psychosocial_factors f ON f.id = a.factor_id
       LEFT JOIN self_monitoring_blocks smb ON f.self_monitoring_block_id = smb.id
+      WHERE (${search}::text IS NULL OR f.name ILIKE '%' || ${search} || '%')
       ORDER BY a.total DESC
     `) as Array<{
-      act_analysis_id: string;
       factor_id: string;
       total: number;
-      full_count: number;
       factor_id_full: string;
       factor_name: string;
       factor_wheight: number;
@@ -409,11 +399,7 @@ Formato obrigatório de resposta:
       smb_title: string;
     }>;
 
-    // Paginacao
-    // LIMIT ${limit}
-    // OFFSET ${offset};
-
-    const items: ActAnalysisItem[] = result.map((r) => ({
+    return rows.map((r) => ({
       factor: {
         id: r.factor_id_full,
         name: r.factor_name,
@@ -423,6 +409,53 @@ Formato obrigatório de resposta:
       selfMonitoringBlock: { id: r.smb_id, name: r.smb_title! },
       count: r.total,
     }));
+  }
+
+  async find(
+    companyId: string,
+    actChatbotId: string,
+    filters: ActAnalysisFilters = {},
+    pagination: { page: number; pageSize: number } = { page: 1, pageSize: 10 },
+  ): Promise<FindActAnalysisItemsResult> {
+    console.log(`Buscando análise da empresa ${companyId} para o chatbot ${actChatbotId}`);
+
+    const analysis = await this.resolveLatest(companyId, actChatbotId);
+
+    if (!analysis) {
+      return { available: false };
+    }
+
+    const allItems = await this.queryRows(analysis.id, filters);
+
+    const { page, pageSize } = pagination;
+    const total = allItems.length;
+    const offset = (page - 1) * pageSize;
+    const items = allItems.slice(offset, offset + pageSize);
+
+    console.log(`Análise pronta com ${total} registros, retornando página ${page}`);
+
+    return {
+      available: true,
+      items,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
+  }
+
+  async findSummary(
+    companyId: string,
+    actChatbotId: string,
+    filters: ActAnalysisFilters = {},
+  ): Promise<FindActAnalysisSummaryResult> {
+    const analysis = await this.resolveLatest(companyId, actChatbotId);
+
+    if (!analysis) {
+      return { available: false };
+    }
+
+    const items = await this.queryRows(analysis.id, filters);
 
     const totalScore = items.reduce((sum, item) => sum + item.factor.weightedScore, 0);
 
@@ -453,23 +486,18 @@ Formato obrigatório de resposta:
       block.topFactors.sort((a, b) => b.weightedScore - a.weightedScore);
     }
 
-    const selfMonitoringBlocks = Array.from(blockMap.values());
-
-    console.log(`Análise pronta com ${items.length} registros`);
-
     return {
       available: true,
-      items,
       totalScore,
       positiveScore,
       negativeScore,
       absoluteScore: positiveScore + Math.abs(negativeScore),
-      selfMonitoringBlocks,
+      selfMonitoringBlocks: Array.from(blockMap.values()),
     };
   }
 
-  async findActAnalysisFactorMessages(companyId: string, actChatbotId: string, factorId: string) {
-    const analysis = await this.resolveLatestActAnalysis(companyId, actChatbotId);
+  async findFactorMessages(companyId: string, actChatbotId: string, factorId: string) {
+    const analysis = await this.resolveLatest(companyId, actChatbotId);
 
     if (!analysis) {
       return { available: false as const };
@@ -492,13 +520,13 @@ Formato obrigatório de resposta:
     return { available: true as const, messages };
   }
 
-  async findActAnalysisSegments(
+  async findSegments(
     companyId: string,
     actChatbotId: string,
     column: UserGroupColumn,
     ranges?: RangeBucket[],
   ): Promise<FindActAnalysisSegmentsResult> {
-    const analysis = await this.resolveLatestActAnalysis(companyId, actChatbotId);
+    const analysis = await this.resolveLatest(companyId, actChatbotId);
     if (!analysis) return { available: false };
 
     const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
@@ -556,11 +584,11 @@ Formato obrigatório de resposta:
     return { available: true, column, groups };
   }
 
-  async findActAnalysisFactorWeights(
+  async findFactorWeights(
     companyId: string,
     actChatbotId: string,
   ): Promise<FindActAnalysisFactorWeightsResult> {
-    const analysis = await this.resolveLatestActAnalysis(companyId, actChatbotId);
+    const analysis = await this.resolveLatest(companyId, actChatbotId);
     if (!analysis) return { available: false };
 
     const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
@@ -597,17 +625,17 @@ Formato obrigatório de resposta:
     return { available: true, factors, userCount: userIds.size };
   }
 
-  async generateAnalysisReport(
+  async generateReport(
     companyId: string,
     actChatbotId: string,
   ): Promise<GenerateAnalysisReportResult> {
     const [byArea, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] = await Promise.all([
-      this.findActAnalysisSegments(companyId, actChatbotId, "area"),
-      this.findActAnalysisSegments(companyId, actChatbotId, "gender"),
-      this.findActAnalysisSegments(companyId, actChatbotId, "hasDisability"),
-      this.findActAnalysisSegments(companyId, actChatbotId, "occupationLevel"),
-      this.findActAnalysisSegments(companyId, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
-      this.findActAnalysisFactorWeights(companyId, actChatbotId),
+      this.findSegments(companyId, actChatbotId, "area"),
+      this.findSegments(companyId, actChatbotId, "gender"),
+      this.findSegments(companyId, actChatbotId, "hasDisability"),
+      this.findSegments(companyId, actChatbotId, "occupationLevel"),
+      this.findSegments(companyId, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
+      this.findFactorWeights(companyId, actChatbotId),
     ]);
 
     if (!byArea.available) return { available: false };
@@ -646,7 +674,8 @@ Formato obrigatório de resposta:
 export { ActAnalysisAdminService };
 export type {
   ActAnalysisFilters,
-  FindActAnalysisResult,
+  FindActAnalysisItemsResult,
+  FindActAnalysisSummaryResult,
   FindActAnalysisSegmentsResult,
   FindActAnalysisFactorWeightsResult,
   GenerateAnalysisReportResult,

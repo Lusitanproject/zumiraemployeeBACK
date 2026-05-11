@@ -17,10 +17,15 @@ class FindActAnalysisController {
     const parsedQuery = FindActAnalysisQuerySchema.safeParse(req.query);
     if (!parsedQuery.success) throw new Error(parseZodError(parsedQuery.error));
 
-    const { companyId, ...filters } = parsedQuery.data;
+    const { companyId, page, pageSize, ...filters } = parsedQuery.data;
 
     const actAnalysisService = new ActAnalysisAdminService();
-    const analysis = await actAnalysisService.findActAnalysis(companyId, parsedParams.data.actChatbotId, filters);
+    const analysis = await actAnalysisService.find(
+      companyId,
+      parsedParams.data.actChatbotId,
+      filters,
+      { page, pageSize },
+    );
 
     return res.json({
       status: "SUCCESS",

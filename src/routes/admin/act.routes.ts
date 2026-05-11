@@ -10,6 +10,7 @@ import { UpdateActChatbotController } from "../../controllers/admin/acts/UpdateA
 import { UpdateManyActChatbotsController } from "../../controllers/admin/acts/UpdateManyActChatbotsController";
 import { FindActAnalysisController } from "../../controllers/admin/acts/analysis/FindActAnalysisController";
 import { FindActAnalysisFactorMessagesController } from "../../controllers/admin/acts/analysis/FindActAnalysisFactorMessagesController";
+import { FindActAnalysisSummaryController } from "../../controllers/admin/acts/analysis/FindActAnalysisSummaryController";
 import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
 import { GenerateAnalysisReportController } from "../../controllers/admin/acts/analysis/GenerateAnalysisReportController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
@@ -509,13 +510,31 @@ adminActRouter.post("/:actChatbotId/analysis", isAuthenticated, new GenerateActA
  *           type: string
  *           enum: ["true", "false"]
  *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Busca textual no nome do fator psicossocial
+ *       - in: query
  *         name: nationalityId
  *         schema:
  *           type: string
  *           format: cuid
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           minimum: 1
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           minimum: 1
+ *           maximum: 100
  *     responses:
  *       200:
- *         description: Dados da análise com status do batch
+ *         description: Itens paginados da análise
  *         content:
  *           application/json:
  *             schema:
@@ -526,6 +545,87 @@ adminActRouter.post("/:actChatbotId/analysis", isAuthenticated, new GenerateActA
  *         $ref: '#/components/responses/Unauthorized'
  */
 adminActRouter.get("/:actChatbotId/analysis", isAuthenticated, new FindActAnalysisController().handle);
+
+/**
+ * @swagger
+ * /admin/acts/{actChatbotId}/analysis/summary:
+ *   get:
+ *     summary: "[Admin] Sumário de scores da análise de ACT"
+ *     description: >
+ *       Retorna os scores calculados (totalScore, positiveScore, negativeScore, absoluteScore)
+ *       e os blocos de automonitoramento com seus fatores, sempre calculados sobre **todos** os
+ *       dados filtrados, independente de paginação.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: query
+ *         name: gender
+ *         schema:
+ *           type: string
+ *           enum: [MALE, FEMALE, OTHER]
+ *       - in: query
+ *         name: area
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: occupation
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: occupationLevel
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: skinColor
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: hasDisability
+ *         schema:
+ *           type: string
+ *           enum: ["true", "false"]
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Busca textual no nome do fator psicossocial
+ *       - in: query
+ *         name: nationalityId
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *     responses:
+ *       200:
+ *         description: Scores consolidados da análise
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+adminActRouter.get("/:actChatbotId/analysis/summary", isAuthenticated, new FindActAnalysisSummaryController().handle);
 
 /**
  * @swagger
