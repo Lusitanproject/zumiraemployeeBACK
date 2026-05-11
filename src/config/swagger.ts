@@ -6,8 +6,6 @@ const docsBaseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : `http://localhost:${process.env.PORT ?? "3000"}`;
 
-console.log(docsBaseUrl);
-
 const srcRoutes = ["./src/routes/*.ts", "./src/routes/admin/*.ts"];
 
 const distRoutes = ["./dist/routes/*.js", "./dist/routes/admin/*.js"];
@@ -155,41 +153,20 @@ const options: swaggerJSDoc.Options = {
             id: { type: "string", format: "uuid" },
             name: { type: "string" },
             email: { type: "string", format: "email" },
-            phoneNumber: {
-              type: "string",
-              nullable: true,
-              description: "Telefone celular (somente dígitos após normalização)",
-            },
+            phoneNumber: { type: "string", nullable: true, description: "Telefone celular (somente dígitos após normalização)" },
             customId: {
               type: "string",
               nullable: true,
               description: "Identificador externo do usuário no sistema do cliente (ex: matrícula de RH)",
             },
             occupation: { type: "string", nullable: true, description: "Cargo ou função do colaborador" },
-            occupationLevel: {
-              type: "string",
-              nullable: true,
-              description: "Nível hierárquico do cargo (ex: 'Júnior', 'Sênior', 'Gerência')",
-            },
+            occupationLevel: { type: "string", nullable: true, description: "Nível hierárquico do cargo (ex: 'Júnior', 'Sênior', 'Gerência')" },
             area: { type: "string", nullable: true, description: "Área ou departamento do colaborador" },
             location: { type: "string", nullable: true, description: "Localidade/unidade onde o colaborador atua" },
-            skinColor: {
-              type: "string",
-              nullable: true,
-              description: "Autodeclaração de cor/raça (campo demográfico)",
-            },
-            hasDisability: {
-              type: "boolean",
-              nullable: true,
-              description: "Indica se o colaborador possui deficiência",
-            },
+            skinColor: { type: "string", nullable: true, description: "Autodeclaração de cor/raça (campo demográfico)" },
+            hasDisability: { type: "boolean", nullable: true, description: "Indica se o colaborador possui deficiência" },
             birthdate: { type: "string", format: "date-time", nullable: true },
-            admissionDate: {
-              type: "string",
-              format: "date-time",
-              nullable: true,
-              description: "Data de admissão na empresa",
-            },
+            admissionDate: { type: "string", format: "date-time", nullable: true, description: "Data de admissão na empresa" },
             gender: {
               type: "string",
               enum: ["MALE", "FEMALE", "OTHER"],
@@ -210,8 +187,7 @@ const options: swaggerJSDoc.Options = {
         },
         SelfMonitoringBlock: {
           type: "object",
-          description:
-            "Bloco temático de automonitoramento que agrupa avaliações e dimensões (ex: 'Saúde Mental', 'Clima Organizacional')",
+          description: "Bloco temático de automonitoramento que agrupa avaliações e dimensões (ex: 'Saúde Mental', 'Clima Organizacional')",
           properties: {
             id: { type: "string", format: "cuid" },
             title: { type: "string" },
@@ -241,8 +217,7 @@ const options: swaggerJSDoc.Options = {
             name: { type: "string" },
             wheight: {
               type: "integer",
-              description:
-                "Peso/relevância do fator na análise (campo nomeado 'wheight' no schema — não é typo editável no banco)",
+              description: "Peso/relevância do fator na análise (campo nomeado 'wheight' no schema — não é typo editável no banco)",
             },
             description: { type: "string" },
             selfMonitoringBlockId: { type: "string" },
@@ -325,8 +300,7 @@ const options: swaggerJSDoc.Options = {
             operationType: {
               type: "string",
               enum: ["SUM", "AVERAGE"],
-              description:
-                "Define como o score final é calculado: SUM = soma dos valores das respostas; AVERAGE = média dos valores",
+              description: "Define como o score final é calculado: SUM = soma dos valores das respostas; AVERAGE = média dos valores",
             },
             public: {
               type: "boolean",
@@ -354,8 +328,7 @@ const options: swaggerJSDoc.Options = {
             feedback: {
               type: "string",
               nullable: true,
-              description:
-                "Feedback textual gerado pela IA após análise das respostas — null até ser solicitada a geração",
+              description: "Feedback textual gerado pela IA após análise das respostas — null até ser solicitada a geração",
             },
             assessmentResultRatingId: {
               type: "string",
@@ -376,11 +349,7 @@ const options: swaggerJSDoc.Options = {
           properties: {
             id: { type: "string", format: "uuid" },
             assessmentResultId: { type: "string", format: "uuid" },
-            assessmentResultRatingId: {
-              type: "string",
-              format: "uuid",
-              description: "Faixa de risco que disparou o alerta",
-            },
+            assessmentResultRatingId: { type: "string", format: "uuid", description: "Faixa de risco que disparou o alerta" },
             read: { type: "boolean", description: "false = alerta ainda não visualizado pelo destinatário" },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
@@ -429,14 +398,12 @@ const options: swaggerJSDoc.Options = {
             compilation: {
               type: "string",
               nullable: true,
-              description:
-                "Narrativa final compilada das mensagens do capítulo pela IA — null até o capítulo ser compilado",
+              description: "Narrativa final compilada das mensagens do capítulo pela IA — null até o capítulo ser compilado",
             },
             type: {
               type: "string",
               enum: ["REGULAR", "ADMIN_TEST"],
-              description:
-                "REGULAR = capítulo real de um usuário; ADMIN_TEST = capítulo criado para teste administrativo",
+              description: "REGULAR = capítulo real de um usuário; ADMIN_TEST = capítulo criado para teste administrativo",
             },
             actChatbotId: { type: "string", format: "cuid" },
             userId: { type: "string", format: "uuid" },
@@ -490,8 +457,7 @@ const options: swaggerJSDoc.Options = {
             actionUrl: {
               type: "string",
               nullable: true,
-              description:
-                "URL de deep link para a ação relacionada à notificação (ex: link para resultado de avaliação)",
+              description: "URL de deep link para a ação relacionada à notificação (ex: link para resultado de avaliação)",
             },
             notificationTypeId: { type: "string", format: "cuid" },
             type: { $ref: "#/components/schemas/NotificationType" },
