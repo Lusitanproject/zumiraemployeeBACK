@@ -8,6 +8,10 @@ import { FindByTrailController } from "../../controllers/admin/acts/FindByTrailC
 import { ImportChatbaseChaptersController } from "../../controllers/admin/acts/ImportChatbaseChaptersController";
 import { UpdateActChatbotController } from "../../controllers/admin/acts/UpdateActChatbotController";
 import { UpdateManyActChatbotsController } from "../../controllers/admin/acts/UpdateManyActChatbotsController";
+import { FindActAnalysisController } from "../../controllers/admin/acts/analysis/FindActAnalysisController";
+import { FindActAnalysisFactorMessagesController } from "../../controllers/admin/acts/analysis/FindActAnalysisFactorMessagesController";
+import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
+import { GenerateAnalysisReportController } from "../../controllers/admin/acts/analysis/GenerateAnalysisReportController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
 
 const adminActRouter = Router();
@@ -406,5 +410,220 @@ adminActRouter.post("/", isAuthenticated, new CreateActChatbotController().handl
  *         $ref: '#/components/responses/NotFound'
  */
 adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, new ImportChatbaseChaptersController().handle);
+
+/**
+ * @swagger
+ * /admin/acts/{actChatbotId}/analysis:
+ *   post:
+ *     summary: "[Admin] Gerar análise de ACT da empresa"
+ *     description: >
+ *       Dispara a análise em lote (batch) dos capítulos de um ACT para todos os colaboradores de uma empresa.
+ *       A análise identifica os fatores psicossociais presentes nas mensagens dos capítulos usando a API de batch da OpenAI.
+ *       O processamento é assíncrono — o status pode ser acompanhado pelos campos `BatchStatus`.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT a analisar
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     responses:
+ *       200:
+ *         description: Análise iniciada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+adminActRouter.post("/:actChatbotId/analysis", isAuthenticated, new GenerateActAnalysisController().handle);
+
+/**
+ * @swagger
+ * /admin/acts/{actChatbotId}/analysis:
+ *   get:
+ *     summary: "[Admin] Buscar análise de ACT da empresa"
+ *     description: >
+ *       Retorna os dados da análise de ACT de uma empresa, incluindo o status do batch assíncrono.
+ *       `BatchStatus` pode ser: `in_progress`, `completed`, `failed`, `cancelled`, `cancelling`, `validating`, `finalizing`, `expired`.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: query
+ *         name: gender
+ *         schema:
+ *           type: string
+ *           enum: [MALE, FEMALE, OTHER]
+ *       - in: query
+ *         name: area
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: occupation
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: occupationLevel
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: skinColor
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: hasDisability
+ *         schema:
+ *           type: string
+ *           enum: ["true", "false"]
+ *       - in: query
+ *         name: nationalityId
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *     responses:
+ *       200:
+ *         description: Dados da análise com status do batch
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+adminActRouter.get("/:actChatbotId/analysis", isAuthenticated, new FindActAnalysisController().handle);
+
+/**
+ * @swagger
+ * /admin/acts/{actChatbotId}/analysis/report:
+ *   get:
+ *     summary: "[Admin] Obter relatório de análise de ACT"
+ *     description: >
+ *       Retorna o relatório consolidado da análise de ACT de uma empresa, incluindo os fatores psicossociais identificados e sua frequência.
+ *       O relatório só está disponível após a análise (`BatchStatus: completed`) ser concluída.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     responses:
+ *       200:
+ *         description: Relatório de análise
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+adminActRouter.get("/:actChatbotId/analysis/report", isAuthenticated, new GenerateAnalysisReportController().handle);
+
+/**
+ * @swagger
+ * /admin/acts/{actChatbotId}/analysis/factors/{factorId}/messages:
+ *   get:
+ *     summary: "[Admin] Listar mensagens de um fator psicossocial na análise"
+ *     description: >
+ *       Retorna as mensagens dos capítulos que foram identificadas como relacionadas a um fator psicossocial específico.
+ *       Útil para visualizar as evidências textuais que embasaram a identificação do fator.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: path
+ *         name: factorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do fator psicossocial
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     responses:
+ *       200:
+ *         description: Mensagens associadas ao fator
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ActChapterMessage'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+adminActRouter.get(
+  "/:actChatbotId/analysis/factors/:factorId/messages",
+  isAuthenticated,
+  new FindActAnalysisFactorMessagesController().handle,
+);
 
 export { adminActRouter };

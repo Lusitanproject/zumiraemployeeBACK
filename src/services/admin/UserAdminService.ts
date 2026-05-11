@@ -198,7 +198,15 @@ class UserAdminService {
   async getFilters(columns: UserFilterColumn[]) {
     const result: Record<string, unknown> = {};
 
-    const SCALAR_COLUMNS = ["gender", "occupation", "occupationLevel", "area", "location", "skinColor", "hasDisability"] as const;
+    const SCALAR_COLUMNS = [
+      "gender",
+      "occupation",
+      "occupationLevel",
+      "area",
+      "location",
+      "skinColor",
+      "hasDisability",
+    ] as const;
 
     await Promise.all(
       columns.map(async (col) => {
