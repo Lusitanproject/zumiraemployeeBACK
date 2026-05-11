@@ -15,32 +15,499 @@ import { isAuthenticated } from "../../middlewares/isAuthenticated";
 
 const adminCompanyRouter = Router();
 
+/**
+ * @swagger
+ * /admin/companies:
+ *   get:
+ *     summary: "[Admin] Listar empresas"
+ *     description: Retorna todas as empresas participantes cadastradas no sistema.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de empresas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     companies:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Company'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
 adminCompanyRouter.get("/", isAuthenticated, new FindAllCompaniesController().handle);
+
+/**
+ * @swagger
+ * /admin/companies/feedback:
+ *   get:
+ *     summary: "[Admin] Listar todos os feedbacks de empresas"
+ *     description: Retorna todos os feedbacks consolidados gerados por IA para empresas em relação a avaliações.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de feedbacks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/CompanyAssessmentFeedback'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
 adminCompanyRouter.get("/feedback", isAuthenticated, new FindAllFeedbacksController().handle);
+
+/**
+ * @swagger
+ * /admin/companies/{companyId}:
+ *   get:
+ *     summary: "[Admin] Detalhar empresa"
+ *     description: Retorna os dados de uma empresa específica, incluindo a trilha vinculada e as avaliações disponíveis.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     responses:
+ *       200:
+ *         description: Dados da empresa
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   $ref: '#/components/schemas/Company'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 adminCompanyRouter.get("/:companyId", isAuthenticated, new FindCompanyController().handle);
+
+/**
+ * @swagger
+ * /admin/companies:
+ *   post:
+ *     summary: "[Admin] Criar empresa"
+ *     description: >
+ *       Cria uma nova empresa participante. Requer permissão `manage-company`.
+ *       O `trailId` vincula a empresa a uma trilha/programa de intervenção, determinando quais ACTs e assessments serão disponibilizados.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - trailId
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 1
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: E-mail de contato da empresa
+ *               trailId:
+ *                 type: string
+ *                 format: cuid
+ *                 description: ID da trilha/programa de intervenção ao qual a empresa pertencerá
+ *     responses:
+ *       200:
+ *         description: Empresa criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   $ref: '#/components/schemas/Company'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
 adminCompanyRouter.post("/", isAuthenticated, new CreateCompanyController().handle);
+
+/**
+ * @swagger
+ * /admin/companies/{id}:
+ *   put:
+ *     summary: "[Admin] Atualizar empresa"
+ *     description: Atualiza os dados de uma empresa. Todos os campos são opcionais.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               trailId:
+ *                 type: string
+ *                 format: cuid
+ *     responses:
+ *       200:
+ *         description: Empresa atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   $ref: '#/components/schemas/Company'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 adminCompanyRouter.put("/:id", isAuthenticated, new UpdateCompanyController().handle);
+
+/**
+ * @swagger
+ * /admin/companies/{id}/assessments:
+ *   post:
+ *     summary: "[Admin] Vincular avaliações a uma empresa"
+ *     description: >
+ *       Define quais avaliações estão disponíveis para os usuários de uma empresa específica.
+ *       Operação idempotente: substitui integralmente as avaliações vinculadas.
+ *       Afeta apenas avaliações com `public: false` — avaliações públicas já são visíveis a todos.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - assessmentIds
+ *             properties:
+ *               assessmentIds:
+ *                 type: array
+ *                 description: IDs das avaliações a vincular à empresa (substitui as existentes)
+ *                 items:
+ *                   type: string
+ *                   format: cuid
+ *     responses:
+ *       200:
+ *         description: Avaliações vinculadas com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 adminCompanyRouter.post("/:id/assessments", isAuthenticated, new SetCompanyAssessmentsController().handle);
+
+/**
+ * @swagger
+ * /admin/companies/{companyId}/acts/{actChatbotId}/analysis:
+ *   post:
+ *     summary: "[Admin] Gerar análise de ACT da empresa"
+ *     description: >
+ *       Dispara a análise em lote (batch) dos capítulos de um ACT para todos os colaboradores de uma empresa.
+ *       A análise identifica os fatores psicossociais presentes nas mensagens dos capítulos usando a API de batch da OpenAI.
+ *       O processamento é assíncrono — o status pode ser acompanhado pelos campos `BatchStatus`.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT a analisar
+ *     responses:
+ *       200:
+ *         description: Análise iniciada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 adminCompanyRouter.post(
   "/:companyId/acts/:actChatbotId/analysis",
   isAuthenticated,
   new GenerateActAnalysisController().handle,
 );
+
+/**
+ * @swagger
+ * /admin/companies/{companyId}/acts/{actChatbotId}/analysis/report:
+ *   get:
+ *     summary: "[Admin] Obter relatório de análise de ACT"
+ *     description: >
+ *       Retorna o relatório consolidado da análise de ACT de uma empresa, incluindo os fatores psicossociais identificados e sua frequência.
+ *       O relatório só está disponível após a análise (`BatchStatus: completed`) ser concluída.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *     responses:
+ *       200:
+ *         description: Relatório de análise
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 adminCompanyRouter.get(
   "/:companyId/acts/:actChatbotId/analysis/report",
   isAuthenticated,
   new GenerateAnalysisReportController().handle,
 );
+
+/**
+ * @swagger
+ * /admin/companies/{companyId}/acts/{actChatbotId}/analysis:
+ *   get:
+ *     summary: "[Admin] Buscar análise de ACT da empresa"
+ *     description: >
+ *       Retorna os dados da análise de ACT de uma empresa, incluindo o status do batch assíncrono.
+ *       `BatchStatus` pode ser: `in_progress`, `completed`, `failed`, `cancelled`, `cancelling`, `validating`, `finalizing`, `expired`.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *     responses:
+ *       200:
+ *         description: Dados da análise com status do batch
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 adminCompanyRouter.get(
   "/:companyId/acts/:actChatbotId/analysis",
   isAuthenticated,
   new FindActAnalysisController().handle,
 );
+
+/**
+ * @swagger
+ * /admin/companies/{companyId}/acts/{actChatbotId}/analysis/factors/{factorId}/messages:
+ *   get:
+ *     summary: "[Admin] Listar mensagens de um fator psicossocial na análise"
+ *     description: >
+ *       Retorna as mensagens dos capítulos que foram identificadas como relacionadas a um fator psicossocial específico.
+ *       Útil para visualizar as evidências textuais que embasaram a identificação do fator.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: path
+ *         name: factorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do fator psicossocial
+ *     responses:
+ *       200:
+ *         description: Mensagens associadas ao fator
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ActChapterMessage'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 adminCompanyRouter.get(
   "/:companyId/acts/:actChatbotId/analysis/factors/:factorId/messages",
   isAuthenticated,
   new FindActAnalysisFactorMessagesController().handle,
 );
+
+/**
+ * @swagger
+ * /admin/companies/{companyId}/feedback/users:
+ *   post:
+ *     summary: "[Admin] Gerar feedback individual para todos os usuários de uma empresa"
+ *     description: >
+ *       Enfileira a geração de feedback individual via IA para todos os colaboradores de uma empresa que ainda não possuem feedback.
+ *       O processamento é assíncrono — cada usuário recebe o feedback em `AssessmentResult.feedback` ao ser processado.
+ *       Retorna `queuedCount` indicando quantos feedbacks foram enfileirados.
+ *     tags: [Admin - Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     responses:
+ *       200:
+ *         description: Feedbacks enfileirados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     companyId:
+ *                       type: string
+ *                       format: cuid
+ *                     queuedCount:
+ *                       type: integer
+ *                       description: Quantidade de feedbacks enfileirados para geração
+ *                     message:
+ *                       type: string
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 adminCompanyRouter.post(
   "/:companyId/feedback/users",
   isAuthenticated,
