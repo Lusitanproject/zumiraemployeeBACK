@@ -3,6 +3,7 @@ import { CompanyActAnalysisBatch, PsychosocialFactor } from "@prisma/client";
 import { PublicError } from "../../error";
 import { CreateOpenAiBatchRequest, OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
+import { UserAdminService } from "./UserAdminService";
 
 interface ActAnalysisBatchResult {
   associations: {
@@ -48,6 +49,19 @@ interface ActAnalysisFilters {
   hasDisability?: boolean;
   nationalityId?: string;
 }
+
+const ANALYSIS_FILTER_COLUMNS = [
+  "gender",
+  "occupation",
+  "occupationLevel",
+  "area",
+  "location",
+  "skinColor",
+  "hasDisability",
+  "nationalityId",
+] as const;
+
+type AnalysisFilterColumn = (typeof ANALYSIS_FILTER_COLUMNS)[number];
 
 type UserGroupColumn =
   | "gender"
@@ -496,6 +510,27 @@ Formato obrigatório de resposta:
     };
   }
 
+  async getUserFilters(companyId: string, actChatbotId: string, columns: AnalysisFilterColumn[]) {
+    const analysis = await this.resolveLatest(companyId, actChatbotId);
+
+    if (!analysis) {
+      return { available: false as const };
+    }
+
+    const batchIds = analysis.companyActAnalysisBatches.map((b) => b.id);
+
+    const factorAssocs = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: { analysisBatchId: { in: batchIds } },
+      select: { message: { select: { actChapter: { select: { userId: true } } } } },
+    });
+
+    const userIds = [...new Set(factorAssocs.map((a) => a.message.actChapter.userId))];
+
+    const filters = await new UserAdminService().getFilters(columns, userIds);
+
+    return { available: true as const, filters };
+  }
+
   async findFactorMessages(companyId: string, actChatbotId: string, factorId: string) {
     const analysis = await this.resolveLatest(companyId, actChatbotId);
 
@@ -672,7 +707,9 @@ Formato obrigatório de resposta:
 }
 
 export { ActAnalysisAdminService };
+export { ANALYSIS_FILTER_COLUMNS };
 export type {
+  AnalysisFilterColumn,
   ActAnalysisFilters,
   FindActAnalysisItemsResult,
   FindActAnalysisSummaryResult,

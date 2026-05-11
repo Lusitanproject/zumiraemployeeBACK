@@ -31,6 +31,26 @@ export const FindActAnalysisSummaryQuerySchema = z.object({
   ...analysisFilters,
 });
 
+const ANALYSIS_FILTER_COLUMNS = [
+  "gender",
+  "occupation",
+  "occupationLevel",
+  "area",
+  "location",
+  "skinColor",
+  "hasDisability",
+  "nationalityId",
+] as const;
+
+export const GetAnalysisUserFiltersSchema = z.object({
+  companyId: z.string().cuid(),
+  columns: z
+    .union([z.string(), z.array(z.string())])
+    .transform((v) => (Array.isArray(v) ? v : [v]))
+    .pipe(z.array(z.enum(ANALYSIS_FILTER_COLUMNS)).min(1)),
+});
+
 export type ActAnalysisCompanyQuery = z.infer<typeof ActAnalysisCompanyQuerySchema>;
 export type FindActAnalysisQuery = z.infer<typeof FindActAnalysisQuerySchema>;
 export type FindActAnalysisSummaryQuery = z.infer<typeof FindActAnalysisSummaryQuerySchema>;
+export type GetAnalysisUserFiltersQuery = z.infer<typeof GetAnalysisUserFiltersSchema>;

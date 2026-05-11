@@ -195,8 +195,10 @@ class UserAdminService {
     return { ...response };
   }
 
-  async getFilters(columns: UserFilterColumn[]) {
+  async getFilters(columns: UserFilterColumn[], userIds?: string[]) {
     const result: Record<string, unknown> = {};
+
+    const idFilter = userIds ? { id: { in: userIds } } : {};
 
     const SCALAR_COLUMNS = [
       "gender",
@@ -214,7 +216,7 @@ class UserAdminService {
           const rows = await prismaClient.user.findMany({
             select: { [col]: true },
             distinct: [col as never],
-            where: { [col]: { not: null } },
+            where: { ...idFilter, [col]: { not: null } },
             orderBy: { [col]: "asc" },
           });
           result[col] = rows.map((r) => r[col as keyof typeof r]);
@@ -222,6 +224,7 @@ class UserAdminService {
           const rows = await prismaClient.user.findMany({
             select: { role: { select: { id: true, slug: true } } },
             distinct: ["roleId"],
+            where: idFilter,
             orderBy: { role: { slug: "asc" } },
           });
           result[col] = rows.map((r) => r.role);
@@ -229,7 +232,7 @@ class UserAdminService {
           const rows = await prismaClient.user.findMany({
             select: { company: { select: { id: true, name: true } } },
             distinct: ["companyId"],
-            where: { companyId: { not: null } },
+            where: { ...idFilter, companyId: { not: null } },
             orderBy: { company: { name: "asc" } },
           });
           result[col] = rows.map((r) => r.company);
@@ -237,7 +240,7 @@ class UserAdminService {
           const rows = await prismaClient.user.findMany({
             select: { nationality: { select: { id: true, name: true } } },
             distinct: ["nationalityId"],
-            where: { nationalityId: { not: null } },
+            where: { ...idFilter, nationalityId: { not: null } },
             orderBy: { nationality: { name: "asc" } },
           });
           result[col] = rows.map((r) => r.nationality);

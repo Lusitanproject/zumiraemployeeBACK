@@ -13,6 +13,7 @@ import { FindActAnalysisFactorMessagesController } from "../../controllers/admin
 import { FindActAnalysisSummaryController } from "../../controllers/admin/acts/analysis/FindActAnalysisSummaryController";
 import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
 import { GenerateAnalysisReportController } from "../../controllers/admin/acts/analysis/GenerateAnalysisReportController";
+import { GetAnalysisUserFiltersController } from "../../controllers/admin/acts/analysis/GetAnalysisUserFiltersController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
 
 const adminActRouter = Router();
@@ -626,6 +627,58 @@ adminActRouter.get("/:actChatbotId/analysis", isAuthenticated, new FindActAnalys
  *         $ref: '#/components/responses/Unauthorized'
  */
 adminActRouter.get("/:actChatbotId/analysis/summary", isAuthenticated, new FindActAnalysisSummaryController().handle);
+
+/**
+ * @swagger
+ * /admin/acts/{actChatbotId}/analysis/user-filters:
+ *   get:
+ *     summary: "[Admin] Filtros de usuário disponíveis na análise"
+ *     description: >
+ *       Retorna os valores distintos das colunas de perfil dos usuários contemplados na análise,
+ *       permitindo popular os selects de filtro no front-end.
+ *       Aceita múltiplos valores para `columns` via query string repetida (`columns=gender&columns=area`).
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: query
+ *         name: columns
+ *         required: true
+ *         style: form
+ *         explode: true
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum: [gender, occupation, occupationLevel, area, location, skinColor, hasDisability, nationalityId]
+ *         description: Colunas cujos valores distintos devem ser retornados
+ *     responses:
+ *       200:
+ *         description: Filtros disponíveis para os usuários da análise
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+adminActRouter.get("/:actChatbotId/analysis/user-filters", isAuthenticated, new GetAnalysisUserFiltersController().handle);
 
 /**
  * @swagger
