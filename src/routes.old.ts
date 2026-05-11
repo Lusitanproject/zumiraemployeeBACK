@@ -31,9 +31,9 @@ import { FindAllFeedbacksController } from "./controllers/admin/companies/FindAl
 import { FindCompanyController } from "./controllers/admin/companies/FindCompanyController";
 import { SetCompanyAssessmentsController } from "./controllers/admin/companies/SetCompanyAssessmentsController";
 import { UpdateCompanyController } from "./controllers/admin/companies/UpdateCompanyController";
-import { GenerateActAnalysisController } from "./controllers/admin/companies/GenerateActAnalysisController";
-import { FindActAnalysisController } from "./controllers/admin/companies/FindActAnalysisController";
-import { FindActAnalysisFactorMessagesController } from "./controllers/admin/companies/FindActAnalysisFactorMessagesController";
+import { GenerateActAnalysisController } from "./controllers/admin/acts/analysis/GenerateActAnalysisController";
+import { FindActAnalysisController } from "./controllers/admin/acts/analysis/FindActAnalysisController";
+import { FindActAnalysisFactorMessagesController } from "./controllers/admin/acts/analysis/FindActAnalysisFactorMessagesController";
 import { GenerateAllUserFeedbackController } from "./controllers/admin/companies/GenerateAllUserFeedbackController";
 import { CreateDimensionController } from "./controllers/admin/dimensions/CreateDimensionController";
 import { EditDimensionController } from "./controllers/admin/dimensions/EditDimensionController";

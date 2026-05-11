@@ -161,15 +161,24 @@ class UserAdminService {
         const { password: _password, ...response } = user;
         return { ...response };
     }
-    async getFilters(columns) {
+    async getFilters(columns, userIds) {
         const result = {};
-        const SCALAR_COLUMNS = ["gender", "occupation", "occupationLevel", "area", "location", "skinColor", "hasDisability"];
+        const idFilter = userIds ? { id: { in: userIds } } : {};
+        const SCALAR_COLUMNS = [
+            "gender",
+            "occupation",
+            "occupationLevel",
+            "area",
+            "location",
+            "skinColor",
+            "hasDisability",
+        ];
         await Promise.all(columns.map(async (col) => {
             if (SCALAR_COLUMNS.includes(col)) {
                 const rows = await prisma_1.default.user.findMany({
                     select: { [col]: true },
                     distinct: [col],
-                    where: { [col]: { not: null } },
+                    where: { ...idFilter, [col]: { not: null } },
                     orderBy: { [col]: "asc" },
                 });
                 result[col] = rows.map((r) => r[col]);
@@ -178,6 +187,7 @@ class UserAdminService {
                 const rows = await prisma_1.default.user.findMany({
                     select: { role: { select: { id: true, slug: true } } },
                     distinct: ["roleId"],
+                    where: idFilter,
                     orderBy: { role: { slug: "asc" } },
                 });
                 result[col] = rows.map((r) => r.role);
@@ -186,7 +196,7 @@ class UserAdminService {
                 const rows = await prisma_1.default.user.findMany({
                     select: { company: { select: { id: true, name: true } } },
                     distinct: ["companyId"],
-                    where: { companyId: { not: null } },
+                    where: { ...idFilter, companyId: { not: null } },
                     orderBy: { company: { name: "asc" } },
                 });
                 result[col] = rows.map((r) => r.company);
@@ -195,7 +205,7 @@ class UserAdminService {
                 const rows = await prisma_1.default.user.findMany({
                     select: { nationality: { select: { id: true, name: true } } },
                     distinct: ["nationalityId"],
-                    where: { nationalityId: { not: null } },
+                    where: { ...idFilter, nationalityId: { not: null } },
                     orderBy: { nationality: { name: "asc" } },
                 });
                 result[col] = rows.map((r) => r.nationality);

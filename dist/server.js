@@ -7,10 +7,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 require("express-async-errors");
 const express_1 = __importDefault(require("express"));
-const kleur_1 = __importDefault(require("kleur"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_1 = require("./config/swagger");
-const error_1 = require("./error");
+const errorHandler_1 = require("./middlewares/errorHandler");
+const requestLogger_1 = require("./middlewares/requestLogger");
 const routes_1 = require("./routes");
 const app = (0, express_1.default)();
 const swaggerServeHandlers = swagger_ui_express_1.default.serve;
@@ -19,48 +19,11 @@ const requestBodyLimit = (_a = process.env.REQUEST_BODY_LIMIT) !== null && _a !=
 app.use(express_1.default.json({ limit: requestBodyLimit }));
 app.use(express_1.default.urlencoded({ extended: true, limit: requestBodyLimit }));
 app.use((0, cors_1.default)());
-app.use((req, res, next) => {
-    const startedAt = process.hrtime.bigint();
-    console.log(`${kleur_1.default.cyan(req.method)} ${kleur_1.default.blue(req.originalUrl)} - incoming`);
-    const originalJson = res.json.bind(res);
-    res.json = (body) => {
-        res.locals.responseBody = body;
-        return originalJson(body);
-    };
-    res.on("finish", () => {
-        const durationMs = Number(process.hrtime.bigint() - startedAt) / 1000000;
-        const statusCode = res.statusCode;
-        const statusColor = statusCode >= 500 ? kleur_1.default.red : statusCode >= 400 ? kleur_1.default.yellow : kleur_1.default.green;
-        const errorMessage = res.locals.errorMessage;
-        const errorLog = errorMessage ? ` ${kleur_1.default.red(`error=\"${errorMessage}\"`)}` : "";
-        const body = res.locals.responseBody;
-        const bodyLog = body !== undefined ? `\n  ${kleur_1.default.yellow("body:")} ${JSON.stringify(body, null, 2)}` : "";
-        console.log(`${kleur_1.default.cyan(req.method)} ${kleur_1.default.blue(req.originalUrl)} - ${statusColor(String(statusCode))} ${kleur_1.default.gray(`${durationMs.toFixed(1)}ms`)}${errorLog}${bodyLog}`);
-    });
-    next();
-});
+app.use(requestLogger_1.requestLogger);
 app.use("/docs", ...swaggerServeHandlers, swaggerSetupHandler);
 app.get("/docs-json", (_req, res) => res.json(swagger_1.swaggerSpec));
 app.use(routes_1.router);
-app.use((err, req, res, _next) => {
-    console.error(`${kleur_1.default.red(req.method)} ${kleur_1.default.red(req.url)}: ${err.stack}`);
-    if (err.type === "entity.too.large" || err.name === "PayloadTooLargeError") {
-        return res.status(413).json({
-            status: "ERROR",
-            message: "Payload muito grande",
-        });
-    }
-    if (err instanceof error_1.PublicError) {
-        return res.status(400).json({
-            status: "ERROR",
-            message: err.message,
-        });
-    }
-    return res.status(500).json({
-        status: "ERROR",
-        message: "Erro interno",
-    });
-});
+app.use(errorHandler_1.errorHandler);
 app.listen(process.env.PORT, () => {
     console.log(`\nServer hosted in localhost:${process.env.PORT}\n`);
 });
