@@ -1,31 +1,26 @@
 import { ListSelfMonitoringBlockResultsRequest } from "../../schemas/selfMonitoringBlock";
 import prismaClient from "../../prisma";
 
-class ListSelfMonitoringBlockResultsService {
-  async execute({ userId, selfMonitoringBlockId }: ListSelfMonitoringBlockResultsRequest) {
-    const results = await prismaClient.assessmentResult.findMany({
-      where: {
-        userId,
-        assessment: {
-          selfMonitoringBlockId,
-        },
-      },
+class SelfMonitoringBlockService {
+  async list() {
+    const blocks = await prismaClient.selfMonitoringBlock.findMany({
+      select: { id: true, title: true, summary: true, icon: true },
+      where: { assessments: { some: {} } },
+    });
 
+    return { blocks };
+  }
+
+  async listResults({ userId, selfMonitoringBlockId }: ListSelfMonitoringBlockResultsRequest) {
+    const results = await prismaClient.assessmentResult.findMany({
+      where: { userId, assessment: { selfMonitoringBlockId } },
       include: {
         assessment: {
           include: {
-            assessmentQuestions: {
-              include: {
-                psychologicalDimension: true,
-              },
-            },
+            assessmentQuestions: { include: { psychologicalDimension: true } },
           },
         },
-        assessmentResultRating: {
-          select: {
-            risk: true,
-          },
-        },
+        assessmentResultRating: { select: { risk: true } },
       },
     });
 
@@ -59,4 +54,4 @@ class ListSelfMonitoringBlockResultsService {
   }
 }
 
-export { ListSelfMonitoringBlockResultsService };
+export { SelfMonitoringBlockService };

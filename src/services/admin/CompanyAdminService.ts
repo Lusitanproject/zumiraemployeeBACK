@@ -174,12 +174,12 @@ class CompanyAdminService {
       `Iniciando geração de feedback para empresa ${companyId}: ${uniquePairs.length} pares usuário+avaliação`,
     );
 
-    // Import GenerateUserFeedbackService dynamically to avoid circular dependency
-    const { GenerateUserFeedbackService } = await import("../assessment/GenerateUserFeedbackService");
+    // Import AssessmentService dynamically to avoid circular dependency
+    const { AssessmentService } = await import("../assessment/AssessmentService");
 
     const tasks = uniquePairs.map(async (pair) => {
-      const generateService = new GenerateUserFeedbackService();
-      return generateService.execute({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
+      const generateService = new AssessmentService();
+      return generateService.generateUserFeedback({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
         console.error(
           `Erro ao gerar feedback para usuário ${pair.userId} em avaliação ${pair.assessmentId}: `,
           error instanceof Error ? error.message : String(error),

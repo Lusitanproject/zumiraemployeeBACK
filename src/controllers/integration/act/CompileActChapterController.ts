@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { CompileActChapterSchema } from "../../../schemas/actChatbot";
-import { CompileActChapterService } from "../../../services/act/CompileActChapterService";
+import { ActService } from "../../../services/act/ActService";
 import { parseZodError } from "../../../utils/parseZodError";
 import { UserIdSchema } from "../../../schemas/common";
 
@@ -16,8 +16,8 @@ class IntegrationCompileActChapterController {
 
     const { userId } = userIdData;
 
-    const service = new CompileActChapterService();
-    const result = await service.execute({ ...data, userId });
+    const service = new ActService();
+    const result = await service.compileChapter({ ...data, userId });
 
     return res.json({ status: "SUCCESS", data: result });
   }

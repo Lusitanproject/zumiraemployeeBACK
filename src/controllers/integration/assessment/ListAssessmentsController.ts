@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { ListAssessmentsSchema } from "../../../schemas/assessment";
 import { UserIdSchema } from "../../../schemas/common";
-import { ListAssessmentsService } from "../../../services/assessment/ListAssessmentsService";
+import { AssessmentService } from "../../../services/assessment/AssessmentService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class IntegrationListAssessmentsController {
@@ -17,8 +17,8 @@ class IntegrationListAssessmentsController {
 
     const { userId } = userIdData;
 
-    const listAssessments = new ListAssessmentsService();
-    const assessments = await listAssessments.execute({ ...data, userId });
+    const listAssessments = new AssessmentService();
+    const assessments = await listAssessments.list({ ...data, userId });
 
     return res.json({ status: "SUCCESS", data: assessments });
   }

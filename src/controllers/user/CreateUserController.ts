@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { CreateUserSchema } from "../../schemas/user";
-import { CreateUserService } from "../../services/user/CreateUserService";
+import { UserService } from "../../services/user/UserService";
 import { parseZodError } from "../../utils/parseZodError";
 
 class CreateUserController {
@@ -10,8 +10,8 @@ class CreateUserController {
 
     if (!success) throw new Error(parseZodError(error));
 
-    const createUser = new CreateUserService();
-    const user = await createUser.execute(data);
+    const createUser = new UserService();
+    const user = await createUser.create(data);
 
     return res.json({ status: "SUCCESS", data: user });
   }

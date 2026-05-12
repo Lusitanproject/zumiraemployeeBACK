@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { DetailAssessmentService } from "../../services/assessment/DetailAssessmentService";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
 import { assertPermissions } from "../../utils/assertPermissions";
 import { parseZodError } from "../../utils/parseZodError";
 
@@ -20,8 +20,8 @@ class DetailAssessmentController {
     const userId = req.user.id;
     const { id: assessmentId } = data;
 
-    const detailAssessment = new DetailAssessmentService();
-    const assessment = await detailAssessment.execute({ userId, assessmentId });
+    const detailAssessment = new AssessmentService();
+    const assessment = await detailAssessment.detail({ userId, assessmentId });
 
     return res.json({ status: "SUCCESS", data: assessment });
   }

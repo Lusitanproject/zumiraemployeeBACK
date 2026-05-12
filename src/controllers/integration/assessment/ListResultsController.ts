@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { UserIdSchema } from "../../../schemas/common";
-import { ListResultsService } from "../../../services/assessment/ListResultsService";
+import { AssessmentService } from "../../../services/assessment/AssessmentService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class IntegrationListResultsController {
@@ -12,8 +12,8 @@ class IntegrationListResultsController {
 
     const { userId } = userIdData;
 
-    const service = new ListResultsService();
-    const results = await service.execute(userId);
+    const service = new AssessmentService();
+    const results = await service.listResults(userId);
 
     return res.json({ status: "SUCCESS", data: results });
   }

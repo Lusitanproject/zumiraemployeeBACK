@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { UserIdSchema } from "../../../schemas/common";
-import { GetFullStoryService } from "../../../services/act/GetFullStoryService";
+import { ActService } from "../../../services/act/ActService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class IntegrationGetFullStoryController {
@@ -12,8 +12,8 @@ class IntegrationGetFullStoryController {
 
     const { userId } = userIdData;
 
-    const service = new GetFullStoryService();
-    const result = await service.execute(userId);
+    const service = new ActService();
+    const result = await service.getFullStory(userId);
 
     return res.json({ status: "SUCCESS", data: result });
   }

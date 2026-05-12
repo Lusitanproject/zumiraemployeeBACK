@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { CreatePsychologicalDimensionService } from "../../services/psychological-dimension/CreatePsychologicalDimensionService";
+import { PsychologicalDimensionService } from "../../services/psychological-dimension/PsychologicalDimensionService";
 import { assertPermissions } from "../../utils/assertPermissions";
 import { parseZodError } from "../../utils/parseZodError";
 
@@ -21,8 +21,8 @@ class CreatePsychologicalDimensionController {
 
     const { acronym, name, selfMonitoringBlockId } = data;
 
-    const createDimension = new CreatePsychologicalDimensionService();
-    const dimension = await createDimension.execute({ acronym, name, selfMonitoringBlockId });
+    const createDimension = new PsychologicalDimensionService();
+    const dimension = await createDimension.create({ acronym, name, selfMonitoringBlockId });
 
     return res.json({ status: "SUCCESS", data: dimension });
   }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { UpdateQuestionsService } from "../../services/assessment/UpdateQuestionsService";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
 import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParamSchema = z.object({
@@ -34,8 +34,8 @@ class UpdateQuestionsController {
 
     if (!success) throw new Error(parseZodError(error));
 
-    const updateQuestions = new UpdateQuestionsService();
-    await updateQuestions.execute({ ...data, assessmentId });
+    const updateQuestions = new AssessmentService();
+    await updateQuestions.updateQuestions({ ...data, assessmentId });
 
     return res.json({ status: "SUCCESS", data: {} });
   }

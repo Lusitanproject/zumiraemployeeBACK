@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { UserIdSchema } from "../../../schemas/common";
-import { CreateResultService } from "../../../services/assessment/CreateResultService";
+import { AssessmentService } from "../../../services/assessment/AssessmentService";
 import { assertPermissions } from "../../../utils/assertPermissions";
 import { parseZodError } from "../../../utils/parseZodError";
 
@@ -31,8 +31,8 @@ class IntegrationCreateResultController {
     const { userId } = userIdData;
     const { assessmentId, answers } = data;
 
-    const createResult = new CreateResultService();
-    const result = await createResult.execute({ userId, assessmentId, answers });
+    const createResult = new AssessmentService();
+    const result = await createResult.createResult({ userId, assessmentId, answers });
 
     return res.json({ status: "SUCCESS", data: result });
   }
