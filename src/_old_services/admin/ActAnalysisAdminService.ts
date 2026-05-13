@@ -1,4 +1,4 @@
-import { CompanyActAnalysisBatch, PsychosocialFactor } from "@prisma/client";
+import { CompanyActAnalysisBatch, MessageFactorAuthor, PsychosocialFactor } from "@prisma/client";
 
 import { PublicError } from "../../error";
 import { CreateOpenAiBatchRequest, OpenAiApi } from "../../external/openai";
@@ -113,9 +113,7 @@ type AnalysisReport = {
   factorWeights: FactorWeightItem[];
 };
 
-type GenerateAnalysisReportResult =
-  | { available: false }
-  | { available: true; report: AnalysisReport };
+type GenerateAnalysisReportResult = { available: false } | { available: true; report: AnalysisReport };
 
 type FindActAnalysisItemsResult =
   | { available: false }
@@ -235,6 +233,7 @@ Formato obrigatório de resposta:
                   factorId: a.factor_id,
                   messageId: a.message_id,
                   analysisBatchId: externalToLocalBatchId.get(batchId)!,
+                  author: MessageFactorAuthor.AI,
                 }))
               : [],
           ) ?? [],
@@ -613,16 +612,20 @@ Formato obrigatório de resposta:
       const totalScore = positiveScore + negativeScore;
       const absoluteScore = positiveScore + Math.abs(negativeScore);
       const wellnessPercentage = absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0;
-      groups.push({ value: key === "null" ? null : key, positiveScore, negativeScore, totalScore, absoluteScore, wellnessPercentage });
+      groups.push({
+        value: key === "null" ? null : key,
+        positiveScore,
+        negativeScore,
+        totalScore,
+        absoluteScore,
+        wellnessPercentage,
+      });
     }
 
     return { available: true, column, groups };
   }
 
-  async findFactorWeights(
-    companyId: string,
-    actChatbotId: string,
-  ): Promise<FindActAnalysisFactorWeightsResult> {
+  async findFactorWeights(companyId: string, actChatbotId: string): Promise<FindActAnalysisFactorWeightsResult> {
     const analysis = await this.resolveLatest(companyId, actChatbotId);
     if (!analysis) return { available: false };
 
@@ -660,10 +663,7 @@ Formato obrigatório de resposta:
     return { available: true, factors, userCount: userIds.size };
   }
 
-  async generateReport(
-    companyId: string,
-    actChatbotId: string,
-  ): Promise<GenerateAnalysisReportResult> {
+  async generateReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
     const [byArea, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] = await Promise.all([
       this.findSegments(companyId, actChatbotId, "area"),
       this.findSegments(companyId, actChatbotId, "gender"),

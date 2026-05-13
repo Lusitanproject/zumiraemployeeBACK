@@ -45,10 +45,15 @@ enum BatchStatus {
   cancelled
 }
 
+enum MessageFactorAuthor {
+  HUMAN
+  AI
+}
+
 model User {
   id                  String      @id @default(uuid())
   email               String      @unique
-  phoneNumber         String? @map("phone_number")
+  phoneNumber         String?     @map("phone_number")
   password            String?
   name                String
   customId            String?     @map("custom_id")
@@ -119,13 +124,13 @@ model AuthCode {
 }
 
 model Company {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  trailId   String @map("trail_id")
-  vectorStoreId String? @map("vector_store_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  trailId       String   @map("trail_id")
+  vectorStoreId String?  @map("vector_store_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   trail                       Trail                        @relation(fields: [trailId], references: [id])
   users                       User[]
@@ -425,12 +430,13 @@ model ActChapter {
 }
 
 model ActChapterMessage {
-  id           String      @id @default(cuid())
-  actChapterId String      @map("act_chapter_id")
-  content      String
-  role         MessageRole
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
+  id               String      @id @default(cuid())
+  actChapterId     String      @map("act_chapter_id")
+  content          String
+  anonymousContent String?     @map("anonymous_content")
+  role             MessageRole
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
 
   actChapter                     ActChapter                       @relation(fields: [actChapterId], references: [id], onDelete: Cascade)
   actMessagesPsychosocialFactors ActMessagesPsychosocialFactors[]
@@ -482,16 +488,18 @@ model CompanyActAnalysisBatch {
 }
 
 model ActMessagesPsychosocialFactors {
-  messageId       String   @map("message_id")
-  factorId        String   @map("factor_id")
-  analysisBatchId String   @map("analysis_batch_id")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id              String              @id @default(cuid())
+  messageId       String              @map("message_id")
+  factorId        String              @map("factor_id")
+  analysisBatchId String              @map("analysis_batch_id")
+  effective       Boolean             @default(true)
+  author          MessageFactorAuthor
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
 
   message       ActChapterMessage       @relation(fields: [messageId], references: [id], onDelete: Cascade)
   factor        PsychosocialFactor      @relation(fields: [factorId], references: [id])
   analysisBatch CompanyActAnalysisBatch @relation(fields: [analysisBatchId], references: [id])
 
-  @@id(fields: [messageId, factorId, analysisBatchId])
   @@map("act_messages_psychosocial_factors")
 }

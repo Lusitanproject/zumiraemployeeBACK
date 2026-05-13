@@ -1,4 +1,4 @@
-import { CompanyActAnalysisBatch, Prisma } from "@prisma/client";
+import { CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
 
 import {
   CompileActChapterRequest,
@@ -56,8 +56,15 @@ interface SelfMonitoringBlockSummary {
 }
 
 export type UserGroupColumn =
-  | "gender" | "area" | "location" | "occupation" | "occupationLevel"
-  | "skinColor" | "hasDisability" | "nationalityId" | "age";
+  | "gender"
+  | "area"
+  | "location"
+  | "occupation"
+  | "occupationLevel"
+  | "skinColor"
+  | "hasDisability"
+  | "nationalityId"
+  | "age";
 
 export type RangeBucket = { label: string; min: number; max: number };
 
@@ -118,7 +125,7 @@ function getProgress(
     title: string;
     compilation: string | null;
     actChatbotId: string;
-  }[]
+  }[],
 ) {
   const _bots = [...bots].sort((a, b) => a.index - b.index);
 
@@ -459,6 +466,7 @@ class ActService {
                   factorId: a.factor_id,
                   messageId: a.message_id,
                   analysisBatchId: externalToLocalBatchId.get(batchId)!,
+                  author: MessageFactorAuthor.AI,
                 }))
               : [],
           ) ?? [],
@@ -543,12 +551,22 @@ class ActService {
       WHERE (${search}::text IS NULL OR f.name ILIKE '%' || ${search} || '%')
       ORDER BY a.total DESC
     `) as Array<{
-      factor_id: string; total: number; factor_id_full: string;
-      factor_name: string; factor_wheight: number; smb_id: string; smb_title: string;
+      factor_id: string;
+      total: number;
+      factor_id_full: string;
+      factor_name: string;
+      factor_wheight: number;
+      smb_id: string;
+      smb_title: string;
     }>;
 
     return rows.map((r) => ({
-      factor: { id: r.factor_id_full, name: r.factor_name, wheight: r.factor_wheight, weightedScore: r.factor_wheight * r.total },
+      factor: {
+        id: r.factor_id_full,
+        name: r.factor_name,
+        wheight: r.factor_wheight,
+        weightedScore: r.factor_wheight * r.total,
+      },
       selfMonitoringBlock: { id: r.smb_id, name: r.smb_title! },
       count: r.total,
     }));
@@ -607,13 +625,23 @@ class ActService {
       const totalScore = positiveScore + negativeScore;
       const absoluteScore = positiveScore + Math.abs(negativeScore);
       const wellnessPercentage = absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0;
-      groups.push({ value: key === "null" ? null : key, positiveScore, negativeScore, totalScore, absoluteScore, wellnessPercentage });
+      groups.push({
+        value: key === "null" ? null : key,
+        positiveScore,
+        negativeScore,
+        totalScore,
+        absoluteScore,
+        wellnessPercentage,
+      });
     }
 
     return { available: true, column, groups };
   }
 
-  private async findAnalysisFactorWeights(companyId: string, actChatbotId: string): Promise<FindActAnalysisFactorWeightsResult> {
+  private async findAnalysisFactorWeights(
+    companyId: string,
+    actChatbotId: string,
+  ): Promise<FindActAnalysisFactorWeightsResult> {
     const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
     if (!analysis) return { available: false };
 
@@ -628,16 +656,24 @@ class ActService {
       },
     });
 
-    const factorMap = new Map<string, { factor: typeof declarations[0]["factor"]; count: number }>();
+    const factorMap = new Map<string, { factor: (typeof declarations)[0]["factor"]; count: number }>();
     const userIds = new Set<string>();
     for (const d of declarations) {
       userIds.add(d.message.actChapter.userId);
       const entry = factorMap.get(d.factorId);
-      if (entry) { entry.count++; } else { factorMap.set(d.factorId, { factor: d.factor, count: 1 }); }
+      if (entry) {
+        entry.count++;
+      } else {
+        factorMap.set(d.factorId, { factor: d.factor, count: 1 });
+      }
     }
 
     const factors: FactorWeightItem[] = Array.from(factorMap.values()).map(({ factor, count }) => ({
-      id: factor.id, name: factor.name, wheight: factor.wheight, count, totalWeight: factor.wheight * count,
+      id: factor.id,
+      name: factor.name,
+      wheight: factor.wheight,
+      count,
+      totalWeight: factor.wheight * count,
     }));
 
     return { available: true, factors, userCount: userIds.size };
@@ -674,16 +710,23 @@ class ActService {
     const items = await this.queryAnalysisRows(analysis.id, filters);
 
     const totalScore = items.reduce((sum, item) => sum + item.factor.weightedScore, 0);
-    const positiveScore = items.filter((item) => item.factor.wheight > 0).reduce((sum, item) => sum + item.factor.weightedScore, 0);
-    const negativeScore = items.filter((item) => item.factor.wheight <= 0).reduce((sum, item) => sum + item.factor.weightedScore, 0);
+    const positiveScore = items
+      .filter((item) => item.factor.wheight > 0)
+      .reduce((sum, item) => sum + item.factor.weightedScore, 0);
+    const negativeScore = items
+      .filter((item) => item.factor.wheight <= 0)
+      .reduce((sum, item) => sum + item.factor.weightedScore, 0);
 
     const blockMap = new Map<string, SelfMonitoringBlockSummary>();
     for (const item of items) {
       const { id, name } = item.selfMonitoringBlock;
       if (!blockMap.has(id)) blockMap.set(id, { id, name, topFactors: [] });
       blockMap.get(id)!.topFactors.push({
-        id: item.factor.id, name: item.factor.name, wheight: item.factor.wheight,
-        weightedScore: item.factor.weightedScore, count: item.count,
+        id: item.factor.id,
+        name: item.factor.name,
+        wheight: item.factor.wheight,
+        weightedScore: item.factor.weightedScore,
+        count: item.count,
       });
     }
     for (const block of blockMap.values()) {
@@ -749,7 +792,10 @@ class ActService {
     const totalScore = positiveScore + negativeScore;
     const absoluteScore = positiveScore + Math.abs(negativeScore);
     const overall: SegmentScores = {
-      positiveScore, negativeScore, totalScore, absoluteScore,
+      positiveScore,
+      negativeScore,
+      totalScore,
+      absoluteScore,
       wellnessPercentage: absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0,
     };
 
