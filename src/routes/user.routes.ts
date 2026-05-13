@@ -1,8 +1,129 @@
 import { Router } from "express";
 
 import { CreateUserController } from "../controllers/user/CreateUserController";
+import { DeleteUserController } from "../controllers/user/DeleteUserController";
+import { FindUserByController } from "../controllers/user/FindUserByController";
+import { FindUserController } from "../controllers/user/FindUserController";
+import { GetUserFiltersController } from "../controllers/user/GetUserFiltersController";
+import { ListAllUsersController } from "../controllers/user/ListAllUsersController";
+import { ListUsersByCompanyController } from "../controllers/user/ListUsersByCompanyController";
+import { SearchUsersController } from "../controllers/user/SearchUsersController";
+import { UpdateUserController } from "../controllers/user/UpdateUserController";
+import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 const userRouter = Router();
+
+/**
+ * @swagger
+ * /users/search:
+ *   get:
+ *     summary: Busca paginada e filtrada de usuários
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resultados paginados
+ */
+userRouter.get("/search", isAuthenticated, new SearchUsersController().handle);
+
+/**
+ * @swagger
+ * /users/filters:
+ *   get:
+ *     summary: Obter valores disponíveis para filtros de usuário
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Valores únicos por campo
+ */
+userRouter.get("/filters", isAuthenticated, new GetUserFiltersController().handle);
+
+/**
+ * @swagger
+ * /users/find-by:
+ *   get:
+ *     summary: Buscar usuário por identificador único
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuário encontrado
+ */
+userRouter.get("/find-by", isAuthenticated, new FindUserByController().handle);
+
+/**
+ * @swagger
+ * /users/company/{companyId}:
+ *   get:
+ *     summary: Listar usuários de uma empresa
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuários da empresa
+ */
+userRouter.get("/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Listar todos os usuários
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista completa de usuários
+ */
+userRouter.get("/", isAuthenticated, new ListAllUsersController().handle);
+
+/**
+ * @swagger
+ * /users/{userId}:
+ *   get:
+ *     summary: Detalhar usuário
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dados do usuário
+ */
+userRouter.get("/:userId", isAuthenticated, new FindUserController().handle);
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     summary: Atualizar usuário
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado
+ */
+userRouter.put("/:id", isAuthenticated, new UpdateUserController().handle);
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Excluir usuário
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuário excluído
+ */
+userRouter.delete("/:id", isAuthenticated, new DeleteUserController().handle);
 
 /**
  * @swagger

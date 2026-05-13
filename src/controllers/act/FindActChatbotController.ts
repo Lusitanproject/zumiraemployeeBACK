@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
+import { ActService } from "../../services/act/ActService";
+import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
   id: z.string().cuid(),
@@ -14,8 +14,8 @@ class FindActChatbotController {
 
     if (!success) throw new Error(parseZodError(error));
 
-    const service = new ActChatbotAdminService();
-    const result = await service.find(data.id);
+    const service = new ActService();
+    const result = await service.findById(data.id);
 
     return res.json({ status: "SUCCESS", data: result });
   }

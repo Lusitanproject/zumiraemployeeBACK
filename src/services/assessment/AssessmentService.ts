@@ -2,11 +2,13 @@ import { AssessmentResultRating, Prisma } from "@prisma/client";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
 
-import { CreateAssessment } from "../../schemas/admin/assessment";
+import { CreateAssessment, AssessmentResultFilterColumn, SearchAssessmentResultsQuery } from "../../schemas/admin/assessment";
 import { DetailResultRequest, ListAssessmentsRequest } from "../../schemas/assessment";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { devLog } from "../../utils/devLog";
+import { calculateResultScores } from "../../utils/calculateResultScores";
+import { UserService } from "../user/UserService";
 
 interface QuestionRequest {
   assessmentId: string;
@@ -716,6 +718,79 @@ class AssessmentService {
     const endTime = new Date();
     const timeDiffInSeconds = (endTime.getTime() - startTime.getTime()) / 1000;
     console.log(`Updated assessment ${assessmentId} questions in ${timeDiffInSeconds} seconds`);
+  }
+  private async processResults(results: Array<{
+    id: string;
+    user: { id: string; name: string | null; email: string; companyId: string | null; customId: string | null };
+    assessmentResultRating: { risk: string; profile: string; color: string } | null;
+    createdAt: Date;
+  }>) {
+    const aux: Record<string, typeof results[0]> = {};
+    for (const result of results) {
+      if (!aux[result.user.id] || new Date(aux[result.user.id].createdAt) < new Date(result.createdAt)) {
+        aux[result.user.id] = result;
+      }
+    }
+    const lastResults = Object.values(aux);
+    const scores = await calculateResultScores(lastResults.map((r) => r.id));
+    return lastResults.map((r) => ({
+      ...r,
+      scores: scores.find((s) => s.assessmentResultId === r.id)?.scores,
+    }));
+  }
+
+  async searchResults(assessmentId: string, { companyId, search, page, pageSize, gender, area, location, occupation, occupationLevel, skinColor, hasDisability, nationalityId }: SearchAssessmentResultsQuery) {
+    const RESULT_SELECT = {
+      id: true,
+      user: { select: { id: true, name: true, email: true, companyId: true, customId: true } },
+      assessmentResultRating: { select: { risk: true, profile: true, color: true } },
+      createdAt: true,
+    } as const;
+
+    const results = await prismaClient.assessmentResult.findMany({
+      where: {
+        assessmentId,
+        feedback: { not: null },
+        assessmentResultRatingId: { not: null },
+        ...(search && { assessmentResultRating: { profile: { contains: search, mode: "insensitive" } } }),
+        user: {
+          ...(companyId && { companyId }),
+          ...(gender && { gender }),
+          ...(area && { area }),
+          ...(location && { location }),
+          ...(occupation && { occupation }),
+          ...(occupationLevel && { occupationLevel }),
+          ...(skinColor && { skinColor }),
+          ...(hasDisability !== undefined && { hasDisability }),
+          ...(nationalityId && { nationalityId }),
+        },
+      },
+      select: RESULT_SELECT,
+    });
+
+    const allItems = await this.processResults(results);
+    const total = allItems.length;
+    const offset = (page - 1) * pageSize;
+    const items = allItems.slice(offset, offset + pageSize);
+
+    return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
+  }
+
+  async getResultUserFilters(assessmentId: string, companyId: string | undefined, columns: AssessmentResultFilterColumn[]) {
+    const rows = await prismaClient.assessmentResult.findMany({
+      where: {
+        assessmentId,
+        feedback: { not: null },
+        assessmentResultRatingId: { not: null },
+        ...(companyId && { user: { companyId } }),
+      },
+      select: { userId: true },
+      distinct: ["userId"],
+    });
+
+    const userIds = rows.map((r) => r.userId);
+    const filters = await new UserService().getFilters(columns, userIds);
+    return { filters };
   }
 }
 

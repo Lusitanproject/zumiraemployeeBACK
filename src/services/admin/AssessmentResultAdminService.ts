@@ -1,13 +1,8 @@
 import { Workbook } from "exceljs";
 
-import {
-  AssessmentByCompanyRequest,
-  AssessmentResultFilterColumn,
-  SearchAssessmentResultsQuery,
-} from "../../schemas/admin/assessment";
+import { AssessmentByCompanyRequest } from "../../schemas/admin/assessment";
 import prismaClient from "../../prisma";
 import { calculateResultScores } from "../../utils/calculateResultScores";
-import { UserAdminService } from "./UserAdminService";
 
 const RESULT_SELECT = {
   id: true,
@@ -69,55 +64,6 @@ class AssessmentResultAdminService {
     const items = await this.processResults(results);
 
     return { items };
-  }
-
-  async search(assessmentId: string, { companyId, search, page, pageSize, gender, area, location, occupation, occupationLevel, skinColor, hasDisability, nationalityId }: SearchAssessmentResultsQuery) {
-    const results = await prismaClient.assessmentResult.findMany({
-      where: {
-        assessmentId,
-        feedback: { not: null },
-        assessmentResultRatingId: { not: null },
-        ...(search && { assessmentResultRating: { profile: { contains: search, mode: "insensitive" } } }),
-        user: {
-          ...(companyId && { companyId }),
-          ...(gender && { gender }),
-          ...(area && { area }),
-          ...(location && { location }),
-          ...(occupation && { occupation }),
-          ...(occupationLevel && { occupationLevel }),
-          ...(skinColor && { skinColor }),
-          ...(hasDisability !== undefined && { hasDisability }),
-          ...(nationalityId && { nationalityId }),
-        },
-      },
-      select: RESULT_SELECT,
-    });
-
-    const allItems = await this.processResults(results);
-
-    const total = allItems.length;
-    const offset = (page - 1) * pageSize;
-    const items = allItems.slice(offset, offset + pageSize);
-
-    return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
-  }
-
-  async getUserFilters(assessmentId: string, companyId: string | undefined, columns: AssessmentResultFilterColumn[]) {
-    const rows = await prismaClient.assessmentResult.findMany({
-      where: {
-        assessmentId,
-        feedback: { not: null },
-        assessmentResultRatingId: { not: null },
-        ...(companyId && { user: { companyId } }),
-      },
-      select: { userId: true },
-      distinct: ["userId"],
-    });
-
-    const userIds = rows.map((r) => r.userId);
-    const filters = await new UserAdminService().getFilters(columns, userIds);
-
-    return { filters };
   }
 
   async generateExcelReport({ assessmentId, companyId }: AssessmentByCompanyRequest) {

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 
-import { SearchUsersSchema } from "../../../schemas/admin/users";
-import { UserAdminService } from "../../../services/admin/UserAdminService";
-import { assertPermissions } from "../../../utils/assertPermissions";
-import { parseZodError } from "../../../utils/parseZodError";
+import { SearchUsersSchema } from "../../schemas/admin/users";
+import { UserService } from "../../services/user/UserService";
+import { assertPermissions } from "../../utils/assertPermissions";
+import { parseZodError } from "../../utils/parseZodError";
 
 class SearchUsersController {
   async handle(req: Request, res: Response) {
@@ -15,7 +15,7 @@ class SearchUsersController {
       return res.status(400).json({ status: "ERROR", message: parseZodError(error) });
     }
 
-    const userService = new UserAdminService();
+    const userService = new UserService();
     const result = await userService.search(data);
 
     return res.json({ status: "SUCCESS", data: result });

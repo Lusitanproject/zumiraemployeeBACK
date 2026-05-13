@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { GetAnalysisUserFiltersSchema } from "../../../../schemas/admin/act-analysis";
-import { ActAnalysisAdminService } from "../../../../services/admin/ActAnalysisAdminService";
-import { parseZodError } from "../../../../utils/parseZodError";
+import { GetAnalysisUserFiltersSchema } from "../../schemas/admin/act-analysis";
+import { ActService } from "../../services/act/ActService";
+import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
   actChatbotId: z.string().cuid(),
@@ -19,12 +19,8 @@ class GetAnalysisUserFiltersController {
 
     const { companyId, columns } = parsedQuery.data;
 
-    const actAnalysisService = new ActAnalysisAdminService();
-    const result = await actAnalysisService.getUserFilters(
-      companyId,
-      parsedParams.data.actChatbotId,
-      columns,
-    );
+    const service = new ActService();
+    const result = await service.getAnalysisUserFilters(companyId, parsedParams.data.actChatbotId, columns);
 
     return res.json({ status: "SUCCESS", data: result });
   }

@@ -1,4 +1,4 @@
-import { ChapterType, Prisma } from "@prisma/client";
+import { ChapterType, Prisma, PsychosocialFactor } from "@prisma/client";
 import {
   CreateActChatbotRequest,
   ImportChatbaseChaptersRequest,
@@ -7,6 +7,7 @@ import {
 } from "../../schemas/admin/act-chatbot";
 import { PublicError } from "../../error";
 import { ChatbaseApi } from "../../external/chatbase";
+import { CreateOpenAiBatchRequest, OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
 
 class ActChatbotAdminService {
@@ -19,37 +20,6 @@ class ActChatbotAdminService {
     trailId: true,
     createdAt: true,
   } satisfies Prisma.ActChatbotSelect;
-
-  async find(id: string) {
-    const bot = await prismaClient.actChatbot.findFirst({
-      where: {
-        id,
-      },
-
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        icon: true,
-        initialMessage: true,
-        messageInstructions: true,
-        compilationInstructions: true,
-        index: true,
-        trailId: true,
-        actChapters: {
-          where: {
-            type: "ADMIN_TEST",
-          },
-          select: {
-            id: true,
-            title: true,
-          },
-        },
-      },
-    });
-
-    return bot;
-  }
 
   async findAll() {
     const bots = await prismaClient.actChatbot.findMany({
@@ -77,23 +47,6 @@ class ActChatbotAdminService {
     });
 
     return { items: bots };
-  }
-
-  async findByCompany(companyId: string) {
-    const company = await prismaClient.company.findFirst({
-      where: {
-        id: companyId,
-      },
-      select: {
-        trailId: true,
-      },
-    });
-
-    if (!company) {
-      throw new PublicError("Company not found");
-    }
-
-    return await this.findByTrail(company.trailId);
   }
 
   async create(data: CreateActChatbotRequest) {
@@ -294,6 +247,97 @@ class ActChatbotAdminService {
       usersFound: usersFoundStructured,
       conversationsWithoutUser,
     };
+  }
+
+  async generateAnalysis(companyId: string, actChatbotId: string) {
+    console.log(`Gerando análise para a empresa ${companyId} e o chatbot ${actChatbotId}`);
+
+    const factors = await prismaClient.psychosocialFactor.findMany({
+      select: { id: true, name: true, description: true },
+    });
+
+    const chapters = await prismaClient.actChapter.findMany({
+      where: {
+        type: "REGULAR",
+        actChatbot: { id: actChatbotId },
+        user: { companyId },
+      },
+      include: {
+        messages: { select: { id: true, role: true, content: true } },
+      },
+    });
+
+    const newAnalysis = await prismaClient.companyActAnalysis.create({
+      data: { actChatbotId, companyId },
+    });
+
+    const instructions = await this.buildPsychosocialPrompt(factors);
+    const batchItems: CreateOpenAiBatchRequest["batchItems"] = chapters.map((chapter) => ({
+      customId: chapter.id,
+      messages: [{ content: JSON.stringify(chapter.messages), role: "user" }],
+    }));
+
+    const openai = new OpenAiApi();
+    const batchResult = await openai.createBatch({ instructions, batchItems });
+
+    console.log(`Lote OpenAI criado com ${batchItems.length} itens`);
+
+    await prismaClient.companyActAnalysisBatch.create({
+      data: { batchId: batchResult.batchId, companyActAnalysisId: newAnalysis.id },
+    });
+  }
+
+  private async buildPsychosocialPrompt(factors: Partial<PsychosocialFactor>[]) {
+    const factorsJson = JSON.stringify(factors);
+    return `
+Você é um classificador técnico especializado em fatores psicossociais em comunicações corporativas.
+
+Sua tarefa é analisar mensagens de uma conversa e identificar somente os fatores psicossociais que realmente se aplicam às mensagens enviadas por usuários.
+
+Os fatores disponíveis são:
+
+${factorsJson}
+
+Você receberá um JSON contendo:
+
+- messages: lista de mensagens da conversa, onde cada item possui:
+  - id
+  - role
+  - content
+
+Objetivo:
+
+Avaliar somente mensagens cujo role seja "user" e retornar apenas as combinações positivas (mensagem x fator) em que exista aderência real.
+
+Regras obrigatórias:
+
+1. Analise apenas mensagens com role igual a "user".
+2. Ignore mensagens com qualquer outro role no resultado final.
+3. Considere todas as mensagens da conversa como contexto para interpretação.
+4. Avalie todos os fatores listados acima para cada mensagem elegível.
+5. O campo factor_id é string.
+6. Retorne somente fatores com aderência positiva.
+7. Não retorne fatores negativos, inconclusivos ou nulos.
+8. Se o factor_id for nulo, indefinido ou não aplicável, não inclua item em results.
+9. Utilize somente os fatores fornecidos.
+10. Nunca invente fatores.
+11. Considere significado semântico, tom, intenção e sinais indiretos.
+12. Seja criterioso e conservador. Só classifique quando houver evidência razoável.
+13. Se nenhuma mensagem de role "user" possuir aderência a qualquer fator, retorne results vazio.
+14. Retorne apenas JSON válido.
+15. Não inclua explicações, comentários ou texto adicional.
+
+Formato obrigatório de resposta:
+
+{
+  "associations": [
+    {
+      "message_id": "string",
+      "factor_id": "string"
+    }
+  ]
+}
+`.trim();
   }
 }
 

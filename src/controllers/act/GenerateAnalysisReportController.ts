@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { ActAnalysisCompanyQuerySchema } from "../../../../schemas/admin/act-analysis";
-import { ActAnalysisAdminService } from "../../../../services/admin/ActAnalysisAdminService";
-import { parseZodError } from "../../../../utils/parseZodError";
+import { ActAnalysisCompanyQuerySchema } from "../../schemas/admin/act-analysis";
+import { ActService } from "../../services/act/ActService";
+import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
   actChatbotId: z.string().cuid(),
@@ -17,16 +17,10 @@ class GenerateAnalysisReportController {
     const parsedQuery = ActAnalysisCompanyQuerySchema.safeParse(req.query);
     if (!parsedQuery.success) throw new Error(parseZodError(parsedQuery.error));
 
-    const actAnalysisService = new ActAnalysisAdminService();
-    const result = await actAnalysisService.generateReport(
-      parsedQuery.data.companyId,
-      parsedParams.data.actChatbotId,
-    );
+    const service = new ActService();
+    const result = await service.generateAnalysisReport(parsedQuery.data.companyId, parsedParams.data.actChatbotId);
 
-    return res.json({
-      status: "SUCCESS",
-      data: result,
-    });
+    return res.json({ status: "SUCCESS", data: result });
   }
 }
 

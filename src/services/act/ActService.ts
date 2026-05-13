@@ -1,3 +1,5 @@
+import { CompanyActAnalysisBatch, Prisma } from "@prisma/client";
+
 import {
   CompileActChapterRequest,
   CreateActChapterRequest,
@@ -8,6 +10,104 @@ import {
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { OpenAiApi, GenerateOpenAiResponseRequest } from "../../external/openai";
+import { UserService } from "../user/UserService";
+
+// ── Analysis types ────────────────────────────────────────────────────────────
+
+export const ANALYSIS_FILTER_COLUMNS = [
+  "gender",
+  "occupation",
+  "occupationLevel",
+  "area",
+  "location",
+  "skinColor",
+  "hasDisability",
+  "nationalityId",
+] as const;
+
+export type AnalysisFilterColumn = (typeof ANALYSIS_FILTER_COLUMNS)[number];
+
+export interface ActAnalysisFilters {
+  search?: string;
+  gender?: string;
+  area?: string;
+  location?: string;
+  occupation?: string;
+  occupationLevel?: string;
+  skinColor?: string;
+  hasDisability?: boolean;
+  nationalityId?: string;
+}
+
+interface ActAnalysisBatchResult {
+  associations: { message_id: string; factor_id: string }[];
+}
+
+interface ActAnalysisItem {
+  factor: { id: string; name: string; wheight: number; weightedScore: number };
+  selfMonitoringBlock: { id: string; name: string };
+  count: number;
+}
+
+interface SelfMonitoringBlockSummary {
+  id: string;
+  name: string;
+  topFactors: Array<{ id: string; name: string; wheight: number; weightedScore: number; count: number }>;
+}
+
+export type UserGroupColumn =
+  | "gender" | "area" | "location" | "occupation" | "occupationLevel"
+  | "skinColor" | "hasDisability" | "nationalityId" | "age";
+
+export type RangeBucket = { label: string; min: number; max: number };
+
+export type SegmentScores = {
+  positiveScore: number;
+  negativeScore: number;
+  totalScore: number;
+  absoluteScore: number;
+  wellnessPercentage: number;
+};
+
+export type AnalysisSegmentGroup = SegmentScores & { value: string | null };
+
+export type FindActAnalysisSegmentsResult =
+  | { available: false }
+  | { available: true; column: UserGroupColumn; groups: AnalysisSegmentGroup[] };
+
+export type FactorWeightItem = { id: string; name: string; wheight: number; count: number; totalWeight: number };
+
+export type FindActAnalysisFactorWeightsResult =
+  | { available: false }
+  | { available: true; factors: FactorWeightItem[]; userCount: number };
+
+export type AnalysisReport = {
+  userCount: number;
+  overall: SegmentScores;
+  byArea: AnalysisSegmentGroup[];
+  byGender: AnalysisSegmentGroup[];
+  byDisability: AnalysisSegmentGroup[];
+  byOccupationLevel: AnalysisSegmentGroup[];
+  byAgeRange: AnalysisSegmentGroup[];
+  factorWeights: FactorWeightItem[];
+};
+
+export type GenerateAnalysisReportResult = { available: false } | { available: true; report: AnalysisReport };
+
+export type FindActAnalysisItemsResult =
+  | { available: false }
+  | { available: true; items: ActAnalysisItem[]; total: number; page: number; pageSize: number; totalPages: number };
+
+export type FindActAnalysisSummaryResult =
+  | { available: false }
+  | {
+      available: true;
+      totalScore: number;
+      positiveScore: number;
+      negativeScore: number;
+      absoluteScore: number;
+      selfMonitoringBlocks: SelfMonitoringBlockSummary[];
+    };
 
 function getProgress(
   bots: { id: string; name: string; description: string; icon: string; index: number }[],
@@ -275,6 +375,397 @@ class ActService {
     });
 
     return result;
+  }
+
+  // ── ActChatbot methods ────────────────────────────────────────────────────
+
+  async findById(id: string) {
+    const bot = await prismaClient.actChatbot.findFirst({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        icon: true,
+        initialMessage: true,
+        messageInstructions: true,
+        compilationInstructions: true,
+        index: true,
+        trailId: true,
+        actChapters: {
+          where: { type: "ADMIN_TEST" },
+          select: { id: true, title: true },
+        },
+      },
+    });
+    return bot;
+  }
+
+  async findByCompany(companyId: string) {
+    const company = await prismaClient.company.findFirst({
+      where: { id: companyId },
+      select: { trailId: true },
+    });
+
+    if (!company) throw new PublicError("Company not found");
+
+    const actListSelect = {
+      id: true,
+      name: true,
+      description: true,
+      icon: true,
+      index: true,
+      trailId: true,
+      createdAt: true,
+    } satisfies Prisma.ActChatbotSelect;
+
+    const bots = await prismaClient.actChatbot.findMany({
+      select: actListSelect,
+      where: { trailId: company.trailId },
+      orderBy: { index: "asc" },
+    });
+
+    return { items: bots };
+  }
+
+  // ── Analysis private helpers ──────────────────────────────────────────────
+
+  private async retrieveAndSaveAnalysisResults(storedBatches: CompanyActAnalysisBatch[]): Promise<boolean> {
+    const openai = new OpenAiApi();
+    const pendingBatches = storedBatches.filter((batch) => batch.status !== "completed");
+
+    const batchResults = await Promise.all(
+      pendingBatches.map((pending) => openai.retrieveBatchResult<ActAnalysisBatchResult>(pending.batchId)),
+    );
+
+    batchResults.forEach(({ batchId, status }) => {
+      console.log(`Lote OpenAI ${batchId} retornou status ${status}`);
+    });
+
+    const newCompletedBatchResults = batchResults.filter((batchRes) => batchRes.status === "completed");
+    const allDone = newCompletedBatchResults.length === pendingBatches.length;
+
+    const externalToLocalBatchId = pendingBatches.reduce((prev, curr) => {
+      prev.set(curr.batchId, curr.id);
+      return prev;
+    }, new Map<string, string>());
+
+    await prismaClient.actMessagesPsychosocialFactors.createMany({
+      data: newCompletedBatchResults.flatMap(
+        ({ results, batchId }) =>
+          results?.flatMap(({ data }) =>
+            data
+              ? data.associations.map((a) => ({
+                  factorId: a.factor_id,
+                  messageId: a.message_id,
+                  analysisBatchId: externalToLocalBatchId.get(batchId)!,
+                }))
+              : [],
+          ) ?? [],
+      ),
+      skipDuplicates: true,
+    });
+
+    await Promise.all(
+      batchResults.map(({ batchId, status }) =>
+        prismaClient.companyActAnalysisBatch.update({
+          where: { id: externalToLocalBatchId.get(batchId)! },
+          data: { status },
+        }),
+      ),
+    );
+
+    return allDone;
+  }
+
+  private async resolveLatestAnalysis(companyId: string, actChatbotId: string) {
+    const analysis = await prismaClient.companyActAnalysis.findFirst({
+      orderBy: { createdAt: "desc" },
+      where: { companyId, actChatbotId },
+      include: { companyActAnalysisBatches: true },
+    });
+
+    if (!analysis) throw new PublicError("No act analysis for this company was found.");
+
+    const alreadySaved = analysis.companyActAnalysisBatches.every((batch) => batch.status === "completed");
+
+    if (!alreadySaved) {
+      const allDone = await this.retrieveAndSaveAnalysisResults(analysis.companyActAnalysisBatches);
+      if (!allDone) return null;
+    }
+
+    return analysis;
+  }
+
+  private async queryAnalysisRows(analysisId: string, filters: ActAnalysisFilters): Promise<ActAnalysisItem[]> {
+    const gender = filters.gender ?? null;
+    const area = filters.area ?? null;
+    const location = filters.location ?? null;
+    const search = filters.search ?? null;
+    const occupation = filters.occupation ?? null;
+    const occupationLevel = filters.occupationLevel ?? null;
+    const skinColor = filters.skinColor ?? null;
+    const hasDisability = filters.hasDisability ?? null;
+    const nationalityId = filters.nationalityId ?? null;
+
+    const rows = (await prismaClient.$queryRaw`
+      WITH filtered AS (
+        SELECT
+          cab.company_act_analysis_id AS act_analysis_id,
+          ampf.factor_id
+        FROM act_messages_psychosocial_factors ampf
+        JOIN company_act_analysis_batches cab ON cab.id = ampf.analysis_batch_id
+        JOIN act_chapter_messages m ON m.id = ampf.message_id
+        JOIN act_chapters c ON c.id = m.act_chapter_id
+        JOIN users u ON u.id = c.user_id
+        WHERE cab.company_act_analysis_id = ${analysisId}
+          AND (${gender}::text IS NULL OR u.gender::text = ${gender})
+          AND (${area}::text IS NULL OR u.area = ${area})
+          AND (${location}::text IS NULL OR u.location = ${location})
+          AND (${occupation}::text IS NULL OR u.occupation = ${occupation})
+          AND (${occupationLevel}::text IS NULL OR u.occupation_level = ${occupationLevel})
+          AND (${skinColor}::text IS NULL OR u.skin_color = ${skinColor})
+          AND (${hasDisability}::boolean IS NULL OR u.has_disability = ${hasDisability}::boolean)
+          AND (${nationalityId}::text IS NULL OR u.nationality_id = ${nationalityId})
+      ),
+      aggregated AS (
+        SELECT act_analysis_id, factor_id, COUNT(*)::int AS total
+        FROM filtered
+        GROUP BY act_analysis_id, factor_id
+      )
+      SELECT
+        a.factor_id, a.total,
+        f.id as factor_id_full, f.name as factor_name, f.wheight as factor_wheight,
+        smb.id as smb_id, smb.title as smb_title
+      FROM aggregated a
+      JOIN psychosocial_factors f ON f.id = a.factor_id
+      LEFT JOIN self_monitoring_blocks smb ON f.self_monitoring_block_id = smb.id
+      WHERE (${search}::text IS NULL OR f.name ILIKE '%' || ${search} || '%')
+      ORDER BY a.total DESC
+    `) as Array<{
+      factor_id: string; total: number; factor_id_full: string;
+      factor_name: string; factor_wheight: number; smb_id: string; smb_title: string;
+    }>;
+
+    return rows.map((r) => ({
+      factor: { id: r.factor_id_full, name: r.factor_name, wheight: r.factor_wheight, weightedScore: r.factor_wheight * r.total },
+      selfMonitoringBlock: { id: r.smb_id, name: r.smb_title! },
+      count: r.total,
+    }));
+  }
+
+  private async findAnalysisSegments(
+    companyId: string,
+    actChatbotId: string,
+    column: UserGroupColumn,
+    ranges?: RangeBucket[],
+  ): Promise<FindActAnalysisSegmentsResult> {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis) return { available: false };
+
+    const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: {
+        message: { actChapter: { user: { companyId } } },
+        analysisBatch: { companyActAnalysisId: analysis.id },
+      },
+      include: {
+        message: { select: { actChapter: { select: { userId: true } } } },
+        factor: { select: { wheight: true } },
+      },
+    });
+
+    const includedUsers = await prismaClient.user.findMany({
+      where: { id: { in: declarations.map((d) => d.message.actChapter.userId) } },
+    });
+
+    const userMap = new Map(includedUsers.map((u) => [u.id, u]));
+
+    const resolveKey = (userId: string): string => {
+      const user = userMap.get(userId);
+      if (!user) return "null";
+      if (column === "age") {
+        if (!user.birthdate) return "null";
+        const age = Math.floor((Date.now() - new Date(user.birthdate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        if (!ranges?.length) return String(age);
+        const bucket = ranges.find((r) => age >= r.min && age < r.max);
+        return bucket?.label ?? "null";
+      }
+      return String((user as Record<string, unknown>)[column] ?? "null");
+    };
+
+    const byGroup = new Map<string, number[]>();
+    for (const d of declarations) {
+      const key = resolveKey(d.message.actChapter.userId);
+      if (!byGroup.has(key)) byGroup.set(key, []);
+      byGroup.get(key)!.push(d.factor.wheight);
+    }
+
+    const groups: AnalysisSegmentGroup[] = [];
+    for (const [key, wheights] of byGroup) {
+      const positiveScore = wheights.filter((w) => w > 0).reduce((s, w) => s + w, 0);
+      const negativeScore = wheights.filter((w) => w <= 0).reduce((s, w) => s + w, 0);
+      const totalScore = positiveScore + negativeScore;
+      const absoluteScore = positiveScore + Math.abs(negativeScore);
+      const wellnessPercentage = absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0;
+      groups.push({ value: key === "null" ? null : key, positiveScore, negativeScore, totalScore, absoluteScore, wellnessPercentage });
+    }
+
+    return { available: true, column, groups };
+  }
+
+  private async findAnalysisFactorWeights(companyId: string, actChatbotId: string): Promise<FindActAnalysisFactorWeightsResult> {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis) return { available: false };
+
+    const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: {
+        message: { actChapter: { user: { companyId } } },
+        analysisBatch: { companyActAnalysisId: analysis.id },
+      },
+      include: {
+        factor: { select: { id: true, name: true, wheight: true } },
+        message: { select: { actChapter: { select: { userId: true } } } },
+      },
+    });
+
+    const factorMap = new Map<string, { factor: typeof declarations[0]["factor"]; count: number }>();
+    const userIds = new Set<string>();
+    for (const d of declarations) {
+      userIds.add(d.message.actChapter.userId);
+      const entry = factorMap.get(d.factorId);
+      if (entry) { entry.count++; } else { factorMap.set(d.factorId, { factor: d.factor, count: 1 }); }
+    }
+
+    const factors: FactorWeightItem[] = Array.from(factorMap.values()).map(({ factor, count }) => ({
+      id: factor.id, name: factor.name, wheight: factor.wheight, count, totalWeight: factor.wheight * count,
+    }));
+
+    return { available: true, factors, userCount: userIds.size };
+  }
+
+  // ── Analysis public methods ───────────────────────────────────────────────
+
+  async findAnalysis(
+    companyId: string,
+    actChatbotId: string,
+    filters: ActAnalysisFilters = {},
+    pagination: { page: number; pageSize: number } = { page: 1, pageSize: 10 },
+  ): Promise<FindActAnalysisItemsResult> {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis) return { available: false };
+
+    const allItems = await this.queryAnalysisRows(analysis.id, filters);
+    const { page, pageSize } = pagination;
+    const total = allItems.length;
+    const offset = (page - 1) * pageSize;
+    const items = allItems.slice(offset, offset + pageSize);
+
+    return { available: true, items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
+  }
+
+  async findAnalysisSummary(
+    companyId: string,
+    actChatbotId: string,
+    filters: ActAnalysisFilters = {},
+  ): Promise<FindActAnalysisSummaryResult> {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis) return { available: false };
+
+    const items = await this.queryAnalysisRows(analysis.id, filters);
+
+    const totalScore = items.reduce((sum, item) => sum + item.factor.weightedScore, 0);
+    const positiveScore = items.filter((item) => item.factor.wheight > 0).reduce((sum, item) => sum + item.factor.weightedScore, 0);
+    const negativeScore = items.filter((item) => item.factor.wheight <= 0).reduce((sum, item) => sum + item.factor.weightedScore, 0);
+
+    const blockMap = new Map<string, SelfMonitoringBlockSummary>();
+    for (const item of items) {
+      const { id, name } = item.selfMonitoringBlock;
+      if (!blockMap.has(id)) blockMap.set(id, { id, name, topFactors: [] });
+      blockMap.get(id)!.topFactors.push({
+        id: item.factor.id, name: item.factor.name, wheight: item.factor.wheight,
+        weightedScore: item.factor.weightedScore, count: item.count,
+      });
+    }
+    for (const block of blockMap.values()) {
+      block.topFactors.sort((a, b) => b.weightedScore - a.weightedScore);
+    }
+
+    return {
+      available: true,
+      totalScore,
+      positiveScore,
+      negativeScore,
+      absoluteScore: positiveScore + Math.abs(negativeScore),
+      selfMonitoringBlocks: Array.from(blockMap.values()),
+    };
+  }
+
+  async getAnalysisUserFilters(companyId: string, actChatbotId: string, columns: AnalysisFilterColumn[]) {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis) return { available: false as const };
+
+    const batchIds = analysis.companyActAnalysisBatches.map((b) => b.id);
+
+    const factorAssocs = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: { analysisBatchId: { in: batchIds } },
+      select: { message: { select: { actChapter: { select: { userId: true } } } } },
+    });
+
+    const userIds = [...new Set(factorAssocs.map((a) => a.message.actChapter.userId))];
+    const filters = await new UserService().getFilters(columns, userIds);
+
+    return { available: true as const, filters };
+  }
+
+  async findAnalysisFactorMessages(companyId: string, actChatbotId: string, factorId: string) {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis) return { available: false as const };
+
+    const batchIds = analysis.companyActAnalysisBatches.map((b) => b.id);
+
+    const associations = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: { factorId, analysisBatchId: { in: batchIds } },
+      include: { message: true },
+    });
+
+    return { available: true as const, messages: associations.map((a) => a.message) };
+  }
+
+  async generateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
+    const [byArea, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] = await Promise.all([
+      this.findAnalysisSegments(companyId, actChatbotId, "area"),
+      this.findAnalysisSegments(companyId, actChatbotId, "gender"),
+      this.findAnalysisSegments(companyId, actChatbotId, "hasDisability"),
+      this.findAnalysisSegments(companyId, actChatbotId, "occupationLevel"),
+      this.findAnalysisSegments(companyId, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
+      this.findAnalysisFactorWeights(companyId, actChatbotId),
+    ]);
+
+    if (!byArea.available) return { available: false };
+
+    const factorWeights = weightsResult.available ? weightsResult.factors : [];
+    const positiveScore = factorWeights.filter((f) => f.wheight > 0).reduce((s, f) => s + f.totalWeight, 0);
+    const negativeScore = factorWeights.filter((f) => f.wheight <= 0).reduce((s, f) => s + f.totalWeight, 0);
+    const totalScore = positiveScore + negativeScore;
+    const absoluteScore = positiveScore + Math.abs(negativeScore);
+    const overall: SegmentScores = {
+      positiveScore, negativeScore, totalScore, absoluteScore,
+      wellnessPercentage: absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0,
+    };
+
+    return {
+      available: true,
+      report: {
+        userCount: weightsResult.available ? weightsResult.userCount : 0,
+        overall,
+        byArea: byArea.groups,
+        byGender: byGender.available ? byGender.groups : [],
+        byDisability: byDisability.available ? byDisability.groups : [],
+        byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
+        byAgeRange: byAgeRange.available ? byAgeRange.groups : [],
+        factorWeights,
+      },
+    };
   }
 }
 

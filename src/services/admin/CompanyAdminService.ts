@@ -6,21 +6,6 @@ import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 
 class CompanyAdminService {
-  async find(companyId: string) {
-    const company = await prismaClient.company.findFirst({
-      where: { id: companyId },
-      include: {
-        companyAvailableAssessments: {
-          select: {
-            assessmentId: true,
-          },
-        },
-      },
-    });
-
-    return company;
-  }
-
   async findAll() {
     const companies = await prismaClient.company.findMany();
     return companies;

@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { UpdateUserSchema } from "../../../schemas/admin/users";
-import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
-import { RoleAdminService } from "../../../services/admin/RoleAdminService";
-import { UserAdminService } from "../../../services/admin/UserAdminService";
-import { assertPermissions } from "../../../utils/assertPermissions";
-import { parseZodError } from "../../../utils/parseZodError";
-import { PublicError } from "../../../error";
+import { UpdateUserSchema } from "../../schemas/admin/users";
+import { CompanyService } from "../../services/company/CompanyService";
+import { RoleAdminService } from "../../services/admin/RoleAdminService";
+import { UserService } from "../../services/user/UserService";
+import { assertPermissions } from "../../utils/assertPermissions";
+import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
   id: z.string().uuid(),
@@ -31,10 +30,7 @@ class UpdateUserController {
       const role = await roleService.find(roleId);
 
       if (!role) {
-        return res.status(400).json({
-          status: "ERROR",
-          message: "O perfil de usuário informado é inválido",
-        });
+        return res.status(400).json({ status: "ERROR", message: "O perfil de usuário informado é inválido" });
       }
 
       if (role.slug === "admin" && req.user.role !== "admin") {
@@ -46,18 +42,15 @@ class UpdateUserController {
     }
 
     if (companyId) {
-      const companyService = new CompanyAdminService();
+      const companyService = new CompanyService();
       const company = await companyService.find(companyId);
 
       if (!company) {
-        return res.status(400).json({
-          status: "ERROR",
-          message: "A empresa informada não é válida",
-        });
+        return res.status(400).json({ status: "ERROR", message: "A empresa informada não é válida" });
       }
     }
 
-    const userService = new UserAdminService();
+    const userService = new UserService();
     const user = await userService.update({ id, ...data });
 
     return res.json({ status: "SUCCESS", data: user });

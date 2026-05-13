@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { FindActAnalysisSummaryQuerySchema } from "../../../../schemas/admin/act-analysis";
-import { ActAnalysisAdminService } from "../../../../services/admin/ActAnalysisAdminService";
-import { parseZodError } from "../../../../utils/parseZodError";
+import { FindActAnalysisSummaryQuerySchema } from "../../schemas/admin/act-analysis";
+import { ActService } from "../../services/act/ActService";
+import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
   actChatbotId: z.string().cuid(),
@@ -19,17 +19,10 @@ class FindActAnalysisSummaryController {
 
     const { companyId, ...filters } = parsedQuery.data;
 
-    const actAnalysisService = new ActAnalysisAdminService();
-    const summary = await actAnalysisService.findSummary(
-      companyId,
-      parsedParams.data.actChatbotId,
-      filters,
-    );
+    const service = new ActService();
+    const summary = await service.findAnalysisSummary(companyId, parsedParams.data.actChatbotId, filters);
 
-    return res.json({
-      status: "SUCCESS",
-      data: summary,
-    });
+    return res.json({ status: "SUCCESS", data: summary });
   }
 }
 

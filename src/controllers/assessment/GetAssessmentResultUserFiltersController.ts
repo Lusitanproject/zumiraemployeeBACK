@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { GetAssessmentResultUserFiltersSchema } from "../../../schemas/admin/assessment";
-import { AssessmentResultAdminService } from "../../../services/admin/AssessmentResultAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
+import { GetAssessmentResultUserFiltersSchema } from "../../schemas/admin/assessment";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
+import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({ id: z.string().cuid() });
 
@@ -17,8 +17,8 @@ class GetAssessmentResultUserFiltersController {
 
     const { companyId, columns } = parsedQuery.data;
 
-    const service = new AssessmentResultAdminService();
-    const result = await service.getUserFilters(parsedParams.data.id, companyId, columns);
+    const service = new AssessmentService();
+    const result = await service.getResultUserFilters(parsedParams.data.id, companyId, columns);
 
     return res.json({ status: "SUCCESS", data: result });
   }

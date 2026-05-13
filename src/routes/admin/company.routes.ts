@@ -3,7 +3,6 @@ import { Router } from "express";
 import { CreateCompanyController } from "../../controllers/admin/companies/CreateCompanyController";
 import { FindAllCompaniesController } from "../../controllers/admin/companies/FindAllCompaniesController";
 import { FindAllFeedbacksController } from "../../controllers/admin/companies/FindAllFeedbacksController";
-import { FindCompanyController } from "../../controllers/admin/companies/FindCompanyController";
 import { GenerateAllUserFeedbackController } from "../../controllers/admin/companies/GenerateAllUserFeedbackController";
 import { SetCompanyAssessmentsController } from "../../controllers/admin/companies/SetCompanyAssessmentsController";
 import { UpdateCompanyController } from "../../controllers/admin/companies/UpdateCompanyController";
@@ -71,43 +70,6 @@ adminCompanyRouter.get("/", isAuthenticated, new FindAllCompaniesController().ha
  *         $ref: '#/components/responses/Unauthorized'
  */
 adminCompanyRouter.get("/feedback", isAuthenticated, new FindAllFeedbacksController().handle);
-
-/**
- * @swagger
- * /admin/companies/{companyId}:
- *   get:
- *     summary: "[Admin] Detalhar empresa"
- *     description: Retorna os dados de uma empresa específica, incluindo a trilha vinculada e as avaliações disponíveis.
- *     tags: [Admin - Companies]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: companyId
- *         required: true
- *         schema:
- *           type: string
- *           format: cuid
- *         description: ID da empresa
- *     responses:
- *       200:
- *         description: Dados da empresa
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: SUCCESS
- *                 data:
- *                   $ref: '#/components/schemas/Company'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       404:
- *         $ref: '#/components/responses/NotFound'
- */
-adminCompanyRouter.get("/:companyId", isAuthenticated, new FindCompanyController().handle);
 
 /**
  * @swagger
