@@ -1,9 +1,54 @@
 import { Router } from "express";
 
+import { CreateManyUsersForCompanyController } from "../controllers/company/CreateManyUsersForCompanyController";
+import { CreateUserForCompanyController } from "../controllers/company/CreateUserForCompanyController";
+import { FindCompanyController } from "../controllers/company/FindCompanyController";
 import { FindCompanyFeedbackController } from "../controllers/company/FindCompanyFeedbackController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 const companyRouter = Router();
+
+/**
+ * @swagger
+ * /companies/{companyId}:
+ *   get:
+ *     summary: Detalhar empresa
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dados da empresa
+ */
+companyRouter.get("/:companyId", isAuthenticated, new FindCompanyController().handle);
+
+/**
+ * @swagger
+ * /companies/users:
+ *   post:
+ *     summary: Criar usuário na empresa do usuário autenticado
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuário criado
+ */
+companyRouter.post("/users", isAuthenticated, new CreateUserForCompanyController().handle);
+
+/**
+ * @swagger
+ * /companies/users/batch:
+ *   post:
+ *     summary: Criar múltiplos usuários na empresa do usuário autenticado
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuários criados
+ */
+companyRouter.post("/users/batch", isAuthenticated, new CreateManyUsersForCompanyController().handle);
 
 /**
  * @swagger

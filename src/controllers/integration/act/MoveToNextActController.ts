@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { UserIdSchema } from "../../../schemas/common";
-import { MoveToNextActService } from "../../../services/act/MoveToNextActService";
+import { ActService } from "../../../services/act/ActService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class IntegrationMoveToNextActController {
@@ -12,8 +12,8 @@ class IntegrationMoveToNextActController {
 
     const { userId } = userIdData;
 
-    const service = new MoveToNextActService();
-    const result = await service.execute(userId);
+    const service = new ActService();
+    const result = await service.moveToNext(userId);
 
     return res.json({ status: "SUCCESS", data: result });
   }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { NotificationIdSchema } from "../../schemas/notification";
-import { DetailNotificationService } from "../../services/notification/DetailNotificationService";
+import { NotificationService } from "../../services/notification/NotificationService";
 import { parseZodError } from "../../utils/parseZodError";
 
 class DetailNotificationController {
@@ -10,8 +10,8 @@ class DetailNotificationController {
 
     if (!success) throw new Error(parseZodError(error));
 
-    const service = new DetailNotificationService();
-    const notification = await service.execute(data);
+    const service = new NotificationService();
+    const notification = await service.detail(data);
 
     return res.json({ status: "SUCCESS", data: notification });
   }

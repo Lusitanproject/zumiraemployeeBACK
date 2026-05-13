@@ -4,45 +4,37 @@ import { AssessmentByCompanyRequest } from "../../schemas/admin/assessment";
 import prismaClient from "../../prisma";
 import { calculateResultScores } from "../../utils/calculateResultScores";
 
+const RESULT_SELECT = {
+  id: true,
+  user: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      companyId: true,
+      customId: true,
+    },
+  },
+  assessmentResultRating: {
+    select: {
+      risk: true,
+      profile: true,
+      color: true,
+    },
+  },
+  createdAt: true,
+} as const;
+
+type RawResult = {
+  id: string;
+  user: { id: string; name: string | null; email: string; companyId: string | null; customId: string | null };
+  assessmentResultRating: { risk: string; profile: string; color: string } | null;
+  createdAt: Date;
+};
+
 class AssessmentResultAdminService {
-  async findFiltered({ assessmentId, companyId }: AssessmentByCompanyRequest) {
-    const results = await prismaClient.assessmentResult.findMany({
-      where: {
-        assessmentId,
-        user: {
-          companyId,
-        },
-        feedback: {
-          not: null,
-        },
-        assessmentResultRatingId: {
-          not: null,
-        },
-      },
-
-      select: {
-        id: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            companyId: true,
-            customId: true,
-          },
-        },
-        assessmentResultRating: {
-          select: {
-            risk: true,
-            profile: true,
-            color: true,
-          },
-        },
-        createdAt: true,
-      },
-    });
-
-    const aux: Record<string, (typeof results)[0]> = {};
+  private async processResults(results: RawResult[]) {
+    const aux: Record<string, RawResult> = {};
     for (const result of results) {
       if (!aux[result.user.id] || new Date(aux[result.user.id].createdAt) < new Date(result.createdAt)) {
         aux[result.user.id] = result;
@@ -52,12 +44,26 @@ class AssessmentResultAdminService {
 
     const scores = await calculateResultScores(lastResults.map((r) => r.id));
 
-    const processedData = lastResults.map((r) => ({
+    return lastResults.map((r) => ({
       ...r,
       scores: scores.find((s) => s.assessmentResultId === r.id)?.scores,
     }));
+  }
 
-    return { items: processedData };
+  async findFiltered({ assessmentId, companyId }: AssessmentByCompanyRequest) {
+    const results = await prismaClient.assessmentResult.findMany({
+      where: {
+        assessmentId,
+        user: { companyId },
+        feedback: { not: null },
+        assessmentResultRatingId: { not: null },
+      },
+      select: RESULT_SELECT,
+    });
+
+    const items = await this.processResults(results);
+
+    return { items };
   }
 
   async generateExcelReport({ assessmentId, companyId }: AssessmentByCompanyRequest) {

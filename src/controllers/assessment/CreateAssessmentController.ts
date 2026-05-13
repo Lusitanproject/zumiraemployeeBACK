@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { CreateAssessmentSchema } from "../../schemas/admin/assessment";
-import { CreateAssessmentService } from "../../services/assessment/CreateAssessmentService";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
 import { parseZodError } from "../../utils/parseZodError";
 
 class CreateAssessmentController {
@@ -10,8 +10,8 @@ class CreateAssessmentController {
 
     if (!success) throw new Error(parseZodError(error));
 
-    const createAssessment = new CreateAssessmentService();
-    const assessment = await createAssessment.execute({ ...data });
+    const createAssessment = new AssessmentService();
+    const assessment = await createAssessment.create({ ...data });
 
     return res.json({ status: "SUCCESS", data: assessment });
   }

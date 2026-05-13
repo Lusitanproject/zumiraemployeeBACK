@@ -3,6 +3,8 @@ import { Router } from "express";
 import { ListAlertsController } from "../controllers/alert/ListAlertsController";
 import { ReadAlertController } from "../controllers/alert/ReadAlertController";
 import { CreateAssessmentController } from "../controllers/assessment/CreateAssessmentController";
+import { GetAssessmentResultUserFiltersController } from "../controllers/assessment/GetAssessmentResultUserFiltersController";
+import { SearchAssessmentResultsController } from "../controllers/assessment/SearchAssessmentResultsController";
 import { CreateQuestionController } from "../controllers/assessment/CreateQuestionController";
 import { CreateResultController } from "../controllers/assessment/CreateResultController";
 import { DetailAssessmentController } from "../controllers/assessment/DetailAssessmentController";
@@ -460,6 +462,34 @@ assessmentRouter.get("/company", isAuthenticated, new ListCompanyAssessmentsCont
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
+/**
+ * @swagger
+ * /assessments/{id}/results/user-filters:
+ *   get:
+ *     summary: Filtros de usuários com resultados da avaliação
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Valores distintos por coluna
+ */
+assessmentRouter.get("/:id/results/user-filters", isAuthenticated, new GetAssessmentResultUserFiltersController().handle);
+
+/**
+ * @swagger
+ * /assessments/{id}/results:
+ *   get:
+ *     summary: Buscar resultados paginados de uma avaliação
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resultados paginados
+ */
+assessmentRouter.get("/:id/results", isAuthenticated, new SearchAssessmentResultsController().handle);
+
 assessmentRouter.get("/:id", isAuthenticated, new DetailAssessmentController().handle);
 
 /**

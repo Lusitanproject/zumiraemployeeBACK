@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { ActAnalysisCompanyQuerySchema } from "../../../../schemas/admin/act-analysis";
-import { ActAnalysisAdminService } from "../../../../services/admin/ActAnalysisAdminService";
+import { ActChatbotAdminService } from "../../../../services/admin/ActAdminService";
 import { parseZodError } from "../../../../utils/parseZodError";
 
 const RequestParams = z.object({
@@ -17,8 +17,8 @@ class GenerateActAnalysisController {
     const parsedQuery = ActAnalysisCompanyQuerySchema.safeParse(req.query);
     if (!parsedQuery.success) throw new Error(parseZodError(parsedQuery.error));
 
-    const actAnalysisService = new ActAnalysisAdminService();
-    await actAnalysisService.generate(parsedQuery.data.companyId, parsedParams.data.actChatbotId);
+    const actAnalysisService = new ActChatbotAdminService();
+    await actAnalysisService.generateAnalysis(parsedQuery.data.companyId, parsedParams.data.actChatbotId);
 
     return res.json({
       status: "SUCCESS",

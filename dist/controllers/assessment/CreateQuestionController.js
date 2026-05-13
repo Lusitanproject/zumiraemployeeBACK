@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateQuestionController = void 0;
 const zod_1 = require("zod");
-const CreateQuestionService_1 = require("../../services/assessment/CreateQuestionService");
+const AssessmentService_1 = require("../../services/assessment/AssessmentService");
 const assertPermissions_1 = require("../../utils/assertPermissions");
 const parseZodError_1 = require("../../utils/parseZodError");
 const CreateQuestionSchema = zod_1.z.object({
@@ -23,8 +23,8 @@ class CreateQuestionController {
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const { description, index, assessmentId, psychologicalDimensionId, choices } = data;
-        const createQuestion = new CreateQuestionService_1.CreateQuestionService();
-        const question = await createQuestion.execute({
+        const createQuestion = new AssessmentService_1.AssessmentService();
+        const question = await createQuestion.createQuestion({
             description,
             index,
             assessmentId,

@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 
-import { ListCompanyAssessmentsService } from "../../services/assessment/ListCompanyAssessmentsService";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
 
 class ListCompanyAssessmentsController {
   async handle(req: Request, res: Response) {
-    const listCompanyAssessments = new ListCompanyAssessmentsService();
-    const assessments = await listCompanyAssessments.execute(req.user.id);
+    const listCompanyAssessments = new AssessmentService();
+    const assessments = await listCompanyAssessments.listByCompany(req.user.id);
 
     return res.json({ status: "SUCCESS", data: assessments });
   }

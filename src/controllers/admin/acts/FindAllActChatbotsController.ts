@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
+import { ActChatbotAdminService } from "../../../services/admin/ActAdminService";
 
 class FindAllActChatbotsController {
   async handle(req: Request, res: Response) {

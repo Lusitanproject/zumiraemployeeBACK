@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendCodeController = void 0;
 const zod_1 = require("zod");
-const SendCodeService_1 = require("../../../services/user/auth/SendCodeService");
+const AuthService_1 = require("../../../services/user/AuthService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const CreateCodeSchema = zod_1.z.object({
     email: zod_1.z.string().email(),
@@ -13,8 +13,8 @@ class SendCodeController {
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const { email } = data;
-        const sendCode = new SendCodeService_1.SendCodeService();
-        const response = await sendCode.execute(email);
+        const sendCode = new AuthService_1.AuthService();
+        const response = await sendCode.sendCode(email);
         return res.json({ status: "SUCCESS", data: response });
     }
 }

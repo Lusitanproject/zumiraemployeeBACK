@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateQuestionsController = void 0;
 const zod_1 = require("zod");
-const UpdateQuestionsService_1 = require("../../services/assessment/UpdateQuestionsService");
+const AssessmentService_1 = require("../../services/assessment/AssessmentService");
 const parseZodError_1 = require("../../utils/parseZodError");
 const RequestParamSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
@@ -27,8 +27,8 @@ class UpdateQuestionsController {
         const { success, data, error } = UpdateQuestionsSchema.safeParse(req.body);
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
-        const updateQuestions = new UpdateQuestionsService_1.UpdateQuestionsService();
-        await updateQuestions.execute({ ...data, assessmentId });
+        const updateQuestions = new AssessmentService_1.AssessmentService();
+        await updateQuestions.updateQuestions({ ...data, assessmentId });
         return res.json({ status: "SUCCESS", data: {} });
     }
 }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { ListNotificationsSchema } from "../../schemas/notification";
-import { ListNotificationsService } from "../../services/notification/ListNotificationsService";
+import { NotificationService } from "../../services/notification/NotificationService";
 import { parseZodError } from "../../utils/parseZodError";
 
 class ListNotificationsController {
@@ -12,8 +12,8 @@ class ListNotificationsController {
 
     const userId = req.user.id;
 
-    const listNotifications = new ListNotificationsService();
-    const notifications = await listNotifications.execute({ userId, ...data });
+    const listNotifications = new NotificationService();
+    const notifications = await listNotifications.list({ userId, ...data });
 
     return res.json({ status: "SUCCESS", data: notifications });
   }

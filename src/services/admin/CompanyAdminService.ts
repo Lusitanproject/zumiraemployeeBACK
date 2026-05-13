@@ -6,21 +6,6 @@ import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 
 class CompanyAdminService {
-  async find(companyId: string) {
-    const company = await prismaClient.company.findFirst({
-      where: { id: companyId },
-      include: {
-        companyAvailableAssessments: {
-          select: {
-            assessmentId: true,
-          },
-        },
-      },
-    });
-
-    return company;
-  }
-
   async findAll() {
     const companies = await prismaClient.company.findMany();
     return companies;
@@ -174,12 +159,12 @@ class CompanyAdminService {
       `Iniciando geração de feedback para empresa ${companyId}: ${uniquePairs.length} pares usuário+avaliação`,
     );
 
-    // Import GenerateUserFeedbackService dynamically to avoid circular dependency
-    const { GenerateUserFeedbackService } = await import("../assessment/GenerateUserFeedbackService");
+    // Import AssessmentService dynamically to avoid circular dependency
+    const { AssessmentService } = await import("../assessment/AssessmentService");
 
     const tasks = uniquePairs.map(async (pair) => {
-      const generateService = new GenerateUserFeedbackService();
-      return generateService.execute({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
+      const generateService = new AssessmentService();
+      return generateService.generateUserFeedback({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
         console.error(
           `Erro ao gerar feedback para usuário ${pair.userId} em avaliação ${pair.assessmentId}: `,
           error instanceof Error ? error.message : String(error),

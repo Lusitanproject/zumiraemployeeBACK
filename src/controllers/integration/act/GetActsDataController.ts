@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { UserIdSchema } from "../../../schemas/common";
-import { GetActsDataService } from "../../../services/act/GetActsDataService";
+import { ActService } from "../../../services/act/ActService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class IntegrationGetActsDataController {
@@ -12,8 +12,8 @@ class IntegrationGetActsDataController {
 
     const { userId } = userIdData;
 
-    const service = new GetActsDataService();
-    const result = await service.execute(userId);
+    const service = new ActService();
+    const result = await service.list(userId);
 
     return res.json({ status: "SUCCESS", data: result });
   }

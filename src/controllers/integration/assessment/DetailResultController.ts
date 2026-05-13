@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { UserIdSchema } from "../../../schemas/common";
-import { DetailResultService } from "../../../services/assessment/DetailResultService";
+import { AssessmentService } from "../../../services/assessment/AssessmentService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParamSchema = z.object({
@@ -21,8 +21,8 @@ class IntegrationDetailResultController {
     const { id: assessmentId } = data;
     const { userId } = userIdData;
 
-    const service = new DetailResultService();
-    const result = await service.execute({ userId, assessmentId });
+    const service = new AssessmentService();
+    const result = await service.detailResult({ userId, assessmentId });
 
     return res.json({ status: "SUCCESS", data: result });
   }

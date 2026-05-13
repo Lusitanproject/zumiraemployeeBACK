@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { GetActChapterSchema } from "../../../schemas/actChatbot";
 import { UserIdSchema } from "../../../schemas/common";
-import { GetActChapterService } from "../../../services/act/GetActChapterService";
+import { ActService } from "../../../services/act/ActService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class IntegrationGetActChapterController {
@@ -17,8 +17,8 @@ class IntegrationGetActChapterController {
 
     const { userId } = userIdData;
 
-    const service = new GetActChapterService();
-    const result = await service.execute({ ...data, userId });
+    const service = new ActService();
+    const result = await service.getChapter({ ...data, userId });
 
     return res.json({ status: "SUCCESS", data: result });
   }

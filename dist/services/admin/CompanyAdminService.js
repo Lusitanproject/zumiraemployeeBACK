@@ -40,19 +40,6 @@ exports.CompanyAdminService = void 0;
 const error_1 = require("../../error");
 const prisma_1 = __importDefault(require("../../prisma"));
 class CompanyAdminService {
-    async find(companyId) {
-        const company = await prisma_1.default.company.findFirst({
-            where: { id: companyId },
-            include: {
-                companyAvailableAssessments: {
-                    select: {
-                        assessmentId: true,
-                    },
-                },
-            },
-        });
-        return company;
-    }
     async findAll() {
         const companies = await prisma_1.default.company.findMany();
         return companies;
@@ -186,11 +173,11 @@ class CompanyAdminService {
         }
         const uniquePairs = Array.from(latestByPair.values());
         console.log(`Iniciando geração de feedback para empresa ${companyId}: ${uniquePairs.length} pares usuário+avaliação`);
-        // Import GenerateUserFeedbackService dynamically to avoid circular dependency
-        const { GenerateUserFeedbackService } = await Promise.resolve().then(() => __importStar(require("../assessment/GenerateUserFeedbackService")));
+        // Import AssessmentService dynamically to avoid circular dependency
+        const { AssessmentService } = await Promise.resolve().then(() => __importStar(require("../assessment/AssessmentService")));
         const tasks = uniquePairs.map(async (pair) => {
-            const generateService = new GenerateUserFeedbackService();
-            return generateService.execute({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
+            const generateService = new AssessmentService();
+            return generateService.generateUserFeedback({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
                 console.error(`Erro ao gerar feedback para usuário ${pair.userId} em avaliação ${pair.assessmentId}: `, error instanceof Error ? error.message : String(error));
             });
         });

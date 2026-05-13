@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationDetailAssessmentController = void 0;
 const zod_1 = require("zod");
 const common_1 = require("../../../schemas/common");
-const DetailAssessmentService_1 = require("../../../services/assessment/DetailAssessmentService");
+const AssessmentService_1 = require("../../../services/assessment/AssessmentService");
 const assertPermissions_1 = require("../../../utils/assertPermissions");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const CreateIdSchema = zod_1.z.object({
@@ -20,8 +20,8 @@ class IntegrationDetailAssessmentController {
             throw new Error((0, parseZodError_1.parseZodError)(userIdError));
         const { userId } = userIdData;
         const { id: assessmentId } = data;
-        const detailAssessment = new DetailAssessmentService_1.DetailAssessmentService();
-        const assessment = await detailAssessment.execute({ userId, assessmentId });
+        const detailAssessment = new AssessmentService_1.AssessmentService();
+        const assessment = await detailAssessment.detail({ userId, assessmentId });
         return res.json({ status: "SUCCESS", data: assessment });
     }
 }

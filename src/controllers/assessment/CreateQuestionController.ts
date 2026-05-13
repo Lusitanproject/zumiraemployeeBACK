@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { CreateQuestionService } from "../../services/assessment/CreateQuestionService";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
 import { assertPermissions } from "../../utils/assertPermissions";
 import { parseZodError } from "../../utils/parseZodError";
 
@@ -29,8 +29,8 @@ class CreateQuestionController {
 
     const { description, index, assessmentId, psychologicalDimensionId, choices } = data;
 
-    const createQuestion = new CreateQuestionService();
-    const question = await createQuestion.execute({
+    const createQuestion = new AssessmentService();
+    const question = await createQuestion.createQuestion({
       description,
       index,
       assessmentId,

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationDetailResultController = void 0;
 const zod_1 = require("zod");
 const common_1 = require("../../../schemas/common");
-const DetailResultService_1 = require("../../../services/assessment/DetailResultService");
+const AssessmentService_1 = require("../../../services/assessment/AssessmentService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParamSchema = zod_1.z.object({
     id: zod_1.z.string().cuid(),
@@ -18,8 +18,8 @@ class IntegrationDetailResultController {
             throw new Error((0, parseZodError_1.parseZodError)(userIdError));
         const { id: assessmentId } = data;
         const { userId } = userIdData;
-        const service = new DetailResultService_1.DetailResultService();
-        const result = await service.execute({ userId, assessmentId });
+        const service = new AssessmentService_1.AssessmentService();
+        const result = await service.detailResult({ userId, assessmentId });
         return res.json({ status: "SUCCESS", data: result });
     }
 }

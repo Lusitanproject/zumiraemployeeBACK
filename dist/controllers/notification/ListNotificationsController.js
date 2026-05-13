@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListNotificationsController = void 0;
 const notification_1 = require("../../schemas/notification");
-const ListNotificationsService_1 = require("../../services/notification/ListNotificationsService");
+const NotificationService_1 = require("../../services/notification/NotificationService");
 const parseZodError_1 = require("../../utils/parseZodError");
 class ListNotificationsController {
     async handle(req, res) {
@@ -10,8 +10,8 @@ class ListNotificationsController {
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const userId = req.user.id;
-        const listNotifications = new ListNotificationsService_1.ListNotificationsService();
-        const notifications = await listNotifications.execute({ userId, ...data });
+        const listNotifications = new NotificationService_1.NotificationService();
+        const notifications = await listNotifications.list({ userId, ...data });
         return res.json({ status: "SUCCESS", data: notifications });
     }
 }

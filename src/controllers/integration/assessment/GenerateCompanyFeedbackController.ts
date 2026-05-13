@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { UserIdSchema } from "../../../schemas/common";
-import { GenerateCompanyFeedbackService } from "../../../services/assessment/GenerateCompanyFeedbackService";
+import { AssessmentService } from "../../../services/assessment/AssessmentService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 const GenerateFeedbackSchema = z.object({
@@ -22,8 +22,8 @@ class IntegrationGenerateCompanyFeedbackController {
     const { id: assessmentId } = data;
     const { userId } = userIdData;
 
-    const generateFeedback = new GenerateCompanyFeedbackService();
-    const feedback = await generateFeedback.execute({ userId, assessmentId });
+    const generateFeedback = new AssessmentService();
+    const feedback = await generateFeedback.generateCompanyFeedback({ userId, assessmentId });
 
     return res.json({ status: "SUCCESS", data: feedback });
   }

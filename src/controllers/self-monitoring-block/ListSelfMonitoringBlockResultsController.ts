@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { ListSelfMonitoringBlockResultsSchema } from "../../schemas/selfMonitoringBlock";
-import { ListSelfMonitoringBlockResultsService } from "../../services/self-monitoring-block/ListSelfMonitoringBlockResultsService";
+import { SelfMonitoringBlockService } from "../../services/self-monitoring-block/SelfMonitoringBlockService";
 import { parseZodError } from "../../utils/parseZodError";
 
 class ListSelfMonitoringBlockResultsController {
@@ -13,8 +13,8 @@ class ListSelfMonitoringBlockResultsController {
     const { selfMonitoringBlockId } = data;
     const userId = req.user.id;
 
-    const listResults = new ListSelfMonitoringBlockResultsService();
-    const results = await listResults.execute({ userId, selfMonitoringBlockId });
+    const listResults = new SelfMonitoringBlockService();
+    const results = await listResults.listResults({ userId, selfMonitoringBlockId });
 
     return res.json({ status: "SUCCESS", data: results });
   }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { CompileActChapterSchema } from "../../schemas/actChatbot";
-import { CompileActChapterService } from "../../services/act/CompileActChapterService";
+import { ActService } from "../../services/act/ActService";
 import { parseZodError } from "../../utils/parseZodError";
 
 class CompileActChapterController {
@@ -9,8 +9,8 @@ class CompileActChapterController {
     const { success, data, error } = CompileActChapterSchema.safeParse(req.body);
     if (!success) throw new Error(parseZodError(error));
 
-    const service = new CompileActChapterService();
-    const result = await service.execute({ ...data, userId: req.user.id });
+    const service = new ActService();
+    const result = await service.compileChapter({ ...data, userId: req.user.id });
 
     return res.json({ status: "SUCCESS", data: result });
   }

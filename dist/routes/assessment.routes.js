@@ -5,6 +5,8 @@ const express_1 = require("express");
 const ListAlertsController_1 = require("../controllers/alert/ListAlertsController");
 const ReadAlertController_1 = require("../controllers/alert/ReadAlertController");
 const CreateAssessmentController_1 = require("../controllers/assessment/CreateAssessmentController");
+const GetAssessmentResultUserFiltersController_1 = require("../controllers/assessment/GetAssessmentResultUserFiltersController");
+const SearchAssessmentResultsController_1 = require("../controllers/assessment/SearchAssessmentResultsController");
 const CreateQuestionController_1 = require("../controllers/assessment/CreateQuestionController");
 const CreateResultController_1 = require("../controllers/assessment/CreateResultController");
 const DetailAssessmentController_1 = require("../controllers/assessment/DetailAssessmentController");
@@ -452,6 +454,32 @@ assessmentRouter.get("/company", isAuthenticated_1.isAuthenticated, new ListComp
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
+/**
+ * @swagger
+ * /assessments/{id}/results/user-filters:
+ *   get:
+ *     summary: Filtros de usuários com resultados da avaliação
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Valores distintos por coluna
+ */
+assessmentRouter.get("/:id/results/user-filters", isAuthenticated_1.isAuthenticated, new GetAssessmentResultUserFiltersController_1.GetAssessmentResultUserFiltersController().handle);
+/**
+ * @swagger
+ * /assessments/{id}/results:
+ *   get:
+ *     summary: Buscar resultados paginados de uma avaliação
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resultados paginados
+ */
+assessmentRouter.get("/:id/results", isAuthenticated_1.isAuthenticated, new SearchAssessmentResultsController_1.SearchAssessmentResultsController().handle);
 assessmentRouter.get("/:id", isAuthenticated_1.isAuthenticated, new DetailAssessmentController_1.DetailAssessmentController().handle);
 /**
  * @swagger

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { ImportChatbaseChaptersSchema } from "../../../schemas/admin/act-chatbot";
-import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
+import { ActChatbotAdminService } from "../../../services/admin/ActAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParams = z.object({

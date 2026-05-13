@@ -4,8 +4,15 @@ exports.actRouter = void 0;
 const express_1 = require("express");
 const CompileActChapterController_1 = require("../controllers/act/CompileActChapterController");
 const CreateActChapterController_1 = require("../controllers/act/CreateActChapterController");
+const FindActAnalysisController_1 = require("../controllers/act/FindActAnalysisController");
+const FindActAnalysisFactorMessagesController_1 = require("../controllers/act/FindActAnalysisFactorMessagesController");
+const FindActAnalysisSummaryController_1 = require("../controllers/act/FindActAnalysisSummaryController");
+const FindActChatbotController_1 = require("../controllers/act/FindActChatbotController");
+const FindByCompanyController_1 = require("../controllers/act/FindByCompanyController");
+const GenerateAnalysisReportController_1 = require("../controllers/act/GenerateAnalysisReportController");
 const GetActChapterController_1 = require("../controllers/act/GetActChapterController");
 const GetActsDataController_1 = require("../controllers/act/GetActsDataController");
+const GetAnalysisUserFiltersController_1 = require("../controllers/act/GetAnalysisUserFiltersController");
 const GetFullStoryController_1 = require("../controllers/act/GetFullStoryController");
 const MessageActChatbotController_1 = require("../controllers/act/MessageActChatbotController");
 const MoveToNextActController_1 = require("../controllers/act/MoveToNextActController");
@@ -13,6 +20,19 @@ const UpdateActChapterController_1 = require("../controllers/act/UpdateActChapte
 const isAuthenticated_1 = require("../middlewares/isAuthenticated");
 const actRouter = (0, express_1.Router)();
 exports.actRouter = actRouter;
+/**
+ * @swagger
+ * /acts/by-company:
+ *   get:
+ *     summary: Listar ACTs de uma empresa
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: ACTs disponíveis para a empresa
+ */
+actRouter.get("/by-company", isAuthenticated_1.isAuthenticated, new FindByCompanyController_1.FindByCompanyController().handle);
 /**
  * @swagger
  * /acts:
@@ -347,3 +367,81 @@ actRouter.post("/chapters/compile", isAuthenticated_1.isAuthenticated, new Compi
  *         $ref: '#/components/responses/NotFound'
  */
 actRouter.put("/chapters/:actChapterId", isAuthenticated_1.isAuthenticated, new UpdateActChapterController_1.UpdateActChapterController().handle);
+/**
+ * @swagger
+ * /acts/{id}/analysis/user-filters:
+ *   get:
+ *     summary: Filtros de usuário disponíveis na análise
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Filtros disponíveis
+ */
+actRouter.get("/:actChatbotId/analysis/user-filters", isAuthenticated_1.isAuthenticated, new GetAnalysisUserFiltersController_1.GetAnalysisUserFiltersController().handle);
+/**
+ * @swagger
+ * /acts/{id}/analysis/summary:
+ *   get:
+ *     summary: Sumário de scores da análise de ACT
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Scores consolidados
+ */
+actRouter.get("/:actChatbotId/analysis/summary", isAuthenticated_1.isAuthenticated, new FindActAnalysisSummaryController_1.FindActAnalysisSummaryController().handle);
+/**
+ * @swagger
+ * /acts/{actChatbotId}/analysis/report:
+ *   get:
+ *     summary: Obter relatório de análise de ACT
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Relatório de análise
+ */
+actRouter.get("/:actChatbotId/analysis/report", isAuthenticated_1.isAuthenticated, new GenerateAnalysisReportController_1.GenerateAnalysisReportController().handle);
+/**
+ * @swagger
+ * /acts/{actChatbotId}/analysis/factors/{factorId}/messages:
+ *   get:
+ *     summary: Listar mensagens de um fator psicossocial na análise
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Mensagens associadas ao fator
+ */
+actRouter.get("/:actChatbotId/analysis/factors/:factorId/messages", isAuthenticated_1.isAuthenticated, new FindActAnalysisFactorMessagesController_1.FindActAnalysisFactorMessagesController().handle);
+/**
+ * @swagger
+ * /acts/{actChatbotId}/analysis:
+ *   get:
+ *     summary: Buscar análise de ACT da empresa
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Itens paginados da análise
+ */
+actRouter.get("/:actChatbotId/analysis", isAuthenticated_1.isAuthenticated, new FindActAnalysisController_1.FindActAnalysisController().handle);
+/**
+ * @swagger
+ * /acts/{id}:
+ *   get:
+ *     summary: Detalhar ACT
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dados do ACT
+ */
+actRouter.get("/:id", isAuthenticated_1.isAuthenticated, new FindActChatbotController_1.FindActChatbotController().handle);

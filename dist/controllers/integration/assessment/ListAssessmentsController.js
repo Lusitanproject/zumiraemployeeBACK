@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationListAssessmentsController = void 0;
 const assessment_1 = require("../../../schemas/assessment");
 const common_1 = require("../../../schemas/common");
-const ListAssessmentsService_1 = require("../../../services/assessment/ListAssessmentsService");
+const AssessmentService_1 = require("../../../services/assessment/AssessmentService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class IntegrationListAssessmentsController {
     async handle(req, res) {
@@ -14,8 +14,8 @@ class IntegrationListAssessmentsController {
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const { userId } = userIdData;
-        const listAssessments = new ListAssessmentsService_1.ListAssessmentsService();
-        const assessments = await listAssessments.execute({ ...data, userId });
+        const listAssessments = new AssessmentService_1.AssessmentService();
+        const assessments = await listAssessments.list({ ...data, userId });
         return res.json({ status: "SUCCESS", data: assessments });
     }
 }

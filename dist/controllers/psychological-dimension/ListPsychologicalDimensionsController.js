@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListPsychologicalDimensionsController = void 0;
-const ListPsychologicalDimensionsService_1 = require("../../services/psychological-dimension/ListPsychologicalDimensionsService");
+const PsychologicalDimensionService_1 = require("../../services/psychological-dimension/PsychologicalDimensionService");
 class ListPsychologicalDimensionsController {
     async handle(req, res) {
-        const listDimensions = new ListPsychologicalDimensionsService_1.ListPsychologicalDimensionsService();
-        const dimensions = await listDimensions.execute();
+        const listDimensions = new PsychologicalDimensionService_1.PsychologicalDimensionService();
+        const dimensions = await listDimensions.list();
         return res.json({ status: "SUCCESS", data: { dimensions } });
     }
 }
