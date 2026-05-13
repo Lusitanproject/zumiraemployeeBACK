@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { CreateActChatbotSchema } from "../../../schemas/admin/act-chatbot";
-import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
+import { ActChatbotAdminService } from "../../../services/admin/ActAdminService";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class CreateActChatbotController {

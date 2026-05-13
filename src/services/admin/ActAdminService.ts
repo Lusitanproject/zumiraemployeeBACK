@@ -10,7 +10,7 @@ import { ChatbaseApi } from "../../external/chatbase";
 import { CreateOpenAiBatchRequest, OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
 
-class ActChatbotAdminService {
+class ActAdminService {
   private readonly actListSelect = {
     id: true,
     name: true,
@@ -341,4 +341,4 @@ Formato obrigatório de resposta:
   }
 }
 
-export { ActChatbotAdminService };
+export { ActAdminService as ActChatbotAdminService };
