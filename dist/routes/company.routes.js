@@ -2,10 +2,52 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.companyRouter = void 0;
 const express_1 = require("express");
+const CreateManyUsersForCompanyController_1 = require("../controllers/company/CreateManyUsersForCompanyController");
+const CreateUserForCompanyController_1 = require("../controllers/company/CreateUserForCompanyController");
+const FindCompanyController_1 = require("../controllers/company/FindCompanyController");
 const FindCompanyFeedbackController_1 = require("../controllers/company/FindCompanyFeedbackController");
 const isAuthenticated_1 = require("../middlewares/isAuthenticated");
 const companyRouter = (0, express_1.Router)();
 exports.companyRouter = companyRouter;
+/**
+ * @swagger
+ * /companies/{companyId}:
+ *   get:
+ *     summary: Detalhar empresa
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dados da empresa
+ */
+companyRouter.get("/:companyId", isAuthenticated_1.isAuthenticated, new FindCompanyController_1.FindCompanyController().handle);
+/**
+ * @swagger
+ * /companies/users:
+ *   post:
+ *     summary: Criar usuário na empresa do usuário autenticado
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuário criado
+ */
+companyRouter.post("/users", isAuthenticated_1.isAuthenticated, new CreateUserForCompanyController_1.CreateUserForCompanyController().handle);
+/**
+ * @swagger
+ * /companies/users/batch:
+ *   post:
+ *     summary: Criar múltiplos usuários na empresa do usuário autenticado
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Usuários criados
+ */
+companyRouter.post("/users/batch", isAuthenticated_1.isAuthenticated, new CreateManyUsersForCompanyController_1.CreateManyUsersForCompanyController().handle);
 /**
  * @swagger
  * /companies/{id}/feedback:

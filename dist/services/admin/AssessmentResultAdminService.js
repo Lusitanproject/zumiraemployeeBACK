@@ -7,42 +7,28 @@ exports.AssessmentResultAdminService = void 0;
 const exceljs_1 = require("exceljs");
 const prisma_1 = __importDefault(require("../../prisma"));
 const calculateResultScores_1 = require("../../utils/calculateResultScores");
+const RESULT_SELECT = {
+    id: true,
+    user: {
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            companyId: true,
+            customId: true,
+        },
+    },
+    assessmentResultRating: {
+        select: {
+            risk: true,
+            profile: true,
+            color: true,
+        },
+    },
+    createdAt: true,
+};
 class AssessmentResultAdminService {
-    async findFiltered({ assessmentId, companyId }) {
-        const results = await prisma_1.default.assessmentResult.findMany({
-            where: {
-                assessmentId,
-                user: {
-                    companyId,
-                },
-                feedback: {
-                    not: null,
-                },
-                assessmentResultRatingId: {
-                    not: null,
-                },
-            },
-            select: {
-                id: true,
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        companyId: true,
-                        customId: true,
-                    },
-                },
-                assessmentResultRating: {
-                    select: {
-                        risk: true,
-                        profile: true,
-                        color: true,
-                    },
-                },
-                createdAt: true,
-            },
-        });
+    async processResults(results) {
         const aux = {};
         for (const result of results) {
             if (!aux[result.user.id] || new Date(aux[result.user.id].createdAt) < new Date(result.createdAt)) {
@@ -51,14 +37,26 @@ class AssessmentResultAdminService {
         }
         const lastResults = Object.values(aux);
         const scores = await (0, calculateResultScores_1.calculateResultScores)(lastResults.map((r) => r.id));
-        const processedData = lastResults.map((r) => {
+        return lastResults.map((r) => {
             var _a;
             return ({
                 ...r,
                 scores: (_a = scores.find((s) => s.assessmentResultId === r.id)) === null || _a === void 0 ? void 0 : _a.scores,
             });
         });
-        return { items: processedData };
+    }
+    async findFiltered({ assessmentId, companyId }) {
+        const results = await prisma_1.default.assessmentResult.findMany({
+            where: {
+                assessmentId,
+                user: { companyId },
+                feedback: { not: null },
+                assessmentResultRatingId: { not: null },
+            },
+            select: RESULT_SELECT,
+        });
+        const items = await this.processResults(results);
+        return { items };
     }
     async generateExcelReport({ assessmentId, companyId }) {
         const assessment = await prisma_1.default.assessment.findFirst({

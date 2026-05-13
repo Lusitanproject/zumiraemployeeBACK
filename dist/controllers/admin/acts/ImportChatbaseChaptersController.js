@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImportChatbaseChaptersController = void 0;
 const zod_1 = require("zod");
 const act_chatbot_1 = require("../../../schemas/admin/act-chatbot");
-const ActChatbotAdminService_1 = require("../../../services/admin/ActChatbotAdminService");
+const ActAdminService_1 = require("../../../services/admin/ActAdminService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 const RequestParams = zod_1.z.object({
     id: zod_1.z.string().cuid(),
@@ -16,7 +16,7 @@ class ImportChatbaseChaptersController {
         const parsedBody = act_chatbot_1.ImportChatbaseChaptersSchema.safeParse(req.body);
         if (!parsedBody.success)
             throw new Error((0, parseZodError_1.parseZodError)(parsedBody.error));
-        const service = new ActChatbotAdminService_1.ActChatbotAdminService();
+        const service = new ActAdminService_1.ActChatbotAdminService();
         const result = await service.importChatbaseChapters({ id: parsedParams.data.id, ...parsedBody.data });
         return res.json({ status: "SUCCESS", data: result });
     }

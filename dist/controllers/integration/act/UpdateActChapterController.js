@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationUpdateActChapterController = void 0;
 const actChatbot_1 = require("../../../schemas/actChatbot");
 const common_1 = require("../../../schemas/common");
-const UpdateActChapterService_1 = require("../../../services/act/UpdateActChapterService");
+const ActService_1 = require("../../../services/act/ActService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class IntegrationUpdateActChapterController {
     async handle(req, res) {
@@ -14,8 +14,8 @@ class IntegrationUpdateActChapterController {
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const { userId } = userIdData;
-        const service = new UpdateActChapterService_1.UpdateActChapterService();
-        const result = await service.execute({ ...data, userId });
+        const service = new ActService_1.ActService();
+        const result = await service.updateChapter({ ...data, userId });
         return res.json({ status: "SUCCESS", data: result });
     }
 }

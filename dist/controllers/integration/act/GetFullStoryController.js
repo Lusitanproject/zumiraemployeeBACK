@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationGetFullStoryController = void 0;
 const common_1 = require("../../../schemas/common");
-const GetFullStoryService_1 = require("../../../services/act/GetFullStoryService");
+const ActService_1 = require("../../../services/act/ActService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class IntegrationGetFullStoryController {
     async handle(req, res) {
@@ -10,8 +10,8 @@ class IntegrationGetFullStoryController {
         if (!userIdSuccess)
             throw new Error((0, parseZodError_1.parseZodError)(userIdError));
         const { userId } = userIdData;
-        const service = new GetFullStoryService_1.GetFullStoryService();
-        const result = await service.execute(userId);
+        const service = new ActService_1.ActService();
+        const result = await service.getFullStory(userId);
         return res.json({ status: "SUCCESS", data: result });
     }
 }

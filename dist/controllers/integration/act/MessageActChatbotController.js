@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IntegrationMessageActChatbotController = void 0;
 const actChatbot_1 = require("../../../schemas/actChatbot");
 const common_1 = require("../../../schemas/common");
-const MessageActChatbotService_1 = require("../../../services/act/MessageActChatbotService");
+const ActService_1 = require("../../../services/act/ActService");
 const parseZodError_1 = require("../../../utils/parseZodError");
 class IntegrationMessageActChatbotController {
     async handle(req, res) {
@@ -14,8 +14,8 @@ class IntegrationMessageActChatbotController {
         if (!success)
             throw Error((0, parseZodError_1.parseZodError)(error));
         const { userId } = userIdData;
-        const service = new MessageActChatbotService_1.MessageActChatbotService();
-        const result = await service.execute({ ...data, userId });
+        const service = new ActService_1.ActService();
+        const result = await service.message({ ...data, userId });
         return res.json({ status: "SUCCESS", data: result });
     }
 }

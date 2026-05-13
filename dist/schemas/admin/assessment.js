@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AssessmentByCompanySchema = exports.UpdateRatingsSchema = exports.UpdateAssessmentSchema = exports.CreateAssessmentSchema = void 0;
+exports.GetAssessmentResultUserFiltersSchema = exports.SearchAssessmentResultsQuerySchema = exports.ASSESSMENT_RESULT_FILTER_COLUMNS = exports.AssessmentByCompanySchema = exports.UpdateRatingsSchema = exports.UpdateAssessmentSchema = exports.CreateAssessmentSchema = void 0;
 const client_1 = require("@prisma/client");
 const zod_1 = require("zod");
 exports.CreateAssessmentSchema = zod_1.z.object({
@@ -39,4 +39,41 @@ exports.UpdateRatingsSchema = zod_1.z.object({
 exports.AssessmentByCompanySchema = zod_1.z.object({
     assessmentId: zod_1.z.string().cuid(),
     companyId: zod_1.z.string().cuid().optional(),
+});
+exports.ASSESSMENT_RESULT_FILTER_COLUMNS = [
+    "gender",
+    "occupation",
+    "occupationLevel",
+    "area",
+    "location",
+    "skinColor",
+    "hasDisability",
+    "nationalityId",
+];
+const assessmentResultFilters = {
+    gender: zod_1.z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
+    area: zod_1.z.string().optional(),
+    location: zod_1.z.string().optional(),
+    occupation: zod_1.z.string().optional(),
+    occupationLevel: zod_1.z.string().optional(),
+    skinColor: zod_1.z.string().optional(),
+    hasDisability: zod_1.z
+        .string()
+        .optional()
+        .transform((v) => (v === undefined ? undefined : v === "true")),
+    nationalityId: zod_1.z.string().cuid().optional(),
+};
+exports.SearchAssessmentResultsQuerySchema = zod_1.z.object({
+    companyId: zod_1.z.string().cuid().optional(),
+    search: zod_1.z.string().optional(),
+    ...assessmentResultFilters,
+    page: zod_1.z.coerce.number().int().min(1).default(1),
+    pageSize: zod_1.z.coerce.number().int().min(1).max(100).default(10),
+});
+exports.GetAssessmentResultUserFiltersSchema = zod_1.z.object({
+    companyId: zod_1.z.string().cuid().optional(),
+    columns: zod_1.z
+        .union([zod_1.z.string(), zod_1.z.array(zod_1.z.string())])
+        .transform((v) => (Array.isArray(v) ? v : [v]))
+        .pipe(zod_1.z.array(zod_1.z.enum(exports.ASSESSMENT_RESULT_FILTER_COLUMNS)).min(1)),
 });

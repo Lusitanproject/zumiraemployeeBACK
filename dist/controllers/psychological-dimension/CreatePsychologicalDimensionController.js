@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatePsychologicalDimensionController = void 0;
 const zod_1 = require("zod");
-const CreatePsychologicalDimensionService_1 = require("../../services/psychological-dimension/CreatePsychologicalDimensionService");
+const PsychologicalDimensionService_1 = require("../../services/psychological-dimension/PsychologicalDimensionService");
 const assertPermissions_1 = require("../../utils/assertPermissions");
 const parseZodError_1 = require("../../utils/parseZodError");
 const CreateDimensionSchema = zod_1.z.object({
@@ -17,8 +17,8 @@ class CreatePsychologicalDimensionController {
         if (!success)
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const { acronym, name, selfMonitoringBlockId } = data;
-        const createDimension = new CreatePsychologicalDimensionService_1.CreatePsychologicalDimensionService();
-        const dimension = await createDimension.execute({ acronym, name, selfMonitoringBlockId });
+        const createDimension = new PsychologicalDimensionService_1.PsychologicalDimensionService();
+        const dimension = await createDimension.create({ acronym, name, selfMonitoringBlockId });
         return res.json({ status: "SUCCESS", data: dimension });
     }
 }

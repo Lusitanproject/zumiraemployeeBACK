@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateResultController = void 0;
 const zod_1 = require("zod");
-const CreateResultService_1 = require("../../services/assessment/CreateResultService");
+const AssessmentService_1 = require("../../services/assessment/AssessmentService");
 const assertPermissions_1 = require("../../utils/assertPermissions");
 const parseZodError_1 = require("../../utils/parseZodError");
 const CreateResultSchema = zod_1.z.object({
@@ -20,8 +20,8 @@ class CreateResultController {
             throw new Error((0, parseZodError_1.parseZodError)(error));
         const userId = req.user.id;
         const { assessmentId, answers } = data;
-        const createResult = new CreateResultService_1.CreateResultService();
-        const result = await createResult.execute({ userId, assessmentId, answers });
+        const createResult = new AssessmentService_1.AssessmentService();
+        const result = await createResult.createResult({ userId, assessmentId, answers });
         return res.json({ status: "SUCCESS", data: result });
     }
 }
