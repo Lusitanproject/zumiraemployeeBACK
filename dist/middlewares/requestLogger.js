@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requestLogger = requestLogger;
 const kleur_1 = __importDefault(require("kleur"));
+const PRINT_RESPONSE_BODY = process.env.PRINT_RESPONSE_BODY === "true";
 function requestLogger(req, res, next) {
     const startedAt = process.hrtime.bigint();
     console.log(`${kleur_1.default.cyan(req.method)} ${kleur_1.default.blue(req.originalUrl)} - incoming`);
@@ -20,7 +21,7 @@ function requestLogger(req, res, next) {
         const errorMessage = res.locals.errorMessage;
         const errorLog = errorMessage ? ` ${kleur_1.default.red(`error="${errorMessage}"`)}` : "";
         const body = res.locals.responseBody;
-        const bodyLog = body !== undefined ? `\n  ${kleur_1.default.yellow("body:")} ${JSON.stringify(body, null, 2)}` : "";
+        const bodyLog = body !== undefined && PRINT_RESPONSE_BODY ? `\n  ${kleur_1.default.yellow("body:")} ${JSON.stringify(body, null, 2)}` : "";
         console.log(`${kleur_1.default.cyan(req.method)} ${kleur_1.default.blue(req.originalUrl)} - ${statusColor(String(statusCode))} ${kleur_1.default.gray(`${durationMs.toFixed(1)}ms`)}${errorLog}${bodyLog}`);
     });
     next();

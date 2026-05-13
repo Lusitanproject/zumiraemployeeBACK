@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ANALYSIS_FILTER_COLUMNS = exports.ActAnalysisAdminService = void 0;
+const client_1 = require("@prisma/client");
 const error_1 = require("../../error");
 const openai_1 = require("../../external/openai");
 const prisma_1 = __importDefault(require("../../prisma"));
@@ -99,6 +100,7 @@ Formato obrigatório de resposta:
                         factorId: a.factor_id,
                         messageId: a.message_id,
                         analysisBatchId: externalToLocalBatchId.get(batchId),
+                        author: client_1.MessageFactorAuthor.AI,
                     }))
                     : [])) !== null && _a !== void 0 ? _a : [];
             }),
@@ -400,7 +402,14 @@ Formato obrigatório de resposta:
             const totalScore = positiveScore + negativeScore;
             const absoluteScore = positiveScore + Math.abs(negativeScore);
             const wellnessPercentage = absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0;
-            groups.push({ value: key === "null" ? null : key, positiveScore, negativeScore, totalScore, absoluteScore, wellnessPercentage });
+            groups.push({
+                value: key === "null" ? null : key,
+                positiveScore,
+                negativeScore,
+                totalScore,
+                absoluteScore,
+                wellnessPercentage,
+            });
         }
         return { available: true, column, groups };
     }
