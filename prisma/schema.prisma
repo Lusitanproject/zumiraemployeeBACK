@@ -490,17 +490,18 @@ model CompanyActAnalysisBatch {
 model ActMessagesPsychosocialFactors {
   id              String              @id @default(cuid())
   messageId       String              @map("message_id")
-  factorId        String              @map("factor_id")
+  factorId        String?             @map("factor_id")
   analysisBatchId String              @map("analysis_batch_id")
   effective       Boolean             @default(true)
-  nonApplicable   Boolean             @default(false) @map("non_applicable")
   author          MessageFactorAuthor
+  revision        Int                 @default(0)
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
   message       ActChapterMessage       @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  factor        PsychosocialFactor      @relation(fields: [factorId], references: [id])
+  factor        PsychosocialFactor?     @relation(fields: [factorId], references: [id])
   analysisBatch CompanyActAnalysisBatch @relation(fields: [analysisBatchId], references: [id])
 
+  @@unique([messageId, factorId, analysisBatchId, revision])
   @@map("act_messages_psychosocial_factors")
 }

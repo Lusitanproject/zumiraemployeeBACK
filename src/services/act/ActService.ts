@@ -542,6 +542,7 @@ class ActService {
         JOIN users u ON u.id = c.user_id
         WHERE cab.company_act_analysis_id = ${analysisId}
           AND ampf.effective = true
+          AND ampf.factor_id IS NOT NULL
           AND (${gender}::text IS NULL OR u.gender::text = ${gender})
           AND (${area}::text IS NULL OR u.area = ${area})
           AND (${location}::text IS NULL OR u.location = ${location})
@@ -599,6 +600,7 @@ class ActService {
     const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
       where: {
         effective: true,
+        factorId: { not: null },
         message: { actChapter: { user: { companyId } } },
         analysisBatch: { companyActAnalysisId: analysis.id },
       },
@@ -631,7 +633,7 @@ class ActService {
     for (const d of declarations) {
       const key = resolveKey(d.message.actChapter.userId);
       if (!byGroup.has(key)) byGroup.set(key, []);
-      byGroup.get(key)!.push(d.factor.wheight);
+      byGroup.get(key)!.push(d.factor!.wheight);
     }
 
     const groups: AnalysisSegmentGroup[] = [];
@@ -664,6 +666,7 @@ class ActService {
     const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
       where: {
         effective: true,
+        factorId: { not: null },
         message: { actChapter: { user: { companyId } } },
         analysisBatch: { companyActAnalysisId: analysis.id },
       },
@@ -677,20 +680,20 @@ class ActService {
     const userIds = new Set<string>();
     for (const d of declarations) {
       userIds.add(d.message.actChapter.userId);
-      const entry = factorMap.get(d.factorId);
+      const entry = factorMap.get(d.factorId!);
       if (entry) {
         entry.count++;
       } else {
-        factorMap.set(d.factorId, { factor: d.factor, count: 1 });
+        factorMap.set(d.factorId!, { factor: d.factor, count: 1 });
       }
     }
 
     const factors: FactorWeightItem[] = Array.from(factorMap.values()).map(({ factor, count }) => ({
-      id: factor.id,
-      name: factor.name,
-      wheight: factor.wheight,
+      id: factor!.id,
+      name: factor!.name,
+      wheight: factor!.wheight,
       count,
-      totalWeight: factor.wheight * count,
+      totalWeight: factor!.wheight * count,
     }));
 
     return { available: true, factors, userCount: userIds.size };
@@ -767,7 +770,7 @@ class ActService {
     const batchIds = analysis.companyActAnalysisBatches.map((b) => b.id);
 
     const factorAssocs = await prismaClient.actMessagesPsychosocialFactors.findMany({
-      where: { effective: true, analysisBatchId: { in: batchIds } },
+      where: { effective: true, factorId: { not: null }, analysisBatchId: { in: batchIds } },
       select: { message: { select: { actChapter: { select: { userId: true } } } } },
     });
 
@@ -793,41 +796,30 @@ class ActService {
 
   async overrideFactorAssociations(overrides: { associationId: string; newFactorId: string | null }[]): Promise<void> {
     const existingIds = overrides.map((o) => o.associationId);
-    const toReplace = overrides.filter((o) => o.newFactorId !== null);
 
     await prismaClient.$transaction(async (tx) => {
-      if (toReplace.length > 0) {
-        const existing = await tx.actMessagesPsychosocialFactors.findMany({
-          where: { id: { in: toReplace.map((o) => o.associationId) } },
-        });
+      const existing = await tx.actMessagesPsychosocialFactors.findMany({
+        where: { id: { in: existingIds } },
+      });
 
-        await tx.actMessagesPsychosocialFactors.createMany({
-          data: existing.map((e) => {
-            const override = toReplace.find((o) => o.associationId === e.id)!;
-            return {
-              messageId: e.messageId,
-              factorId: override.newFactorId as string,
-              analysisBatchId: e.analysisBatchId,
-              effective: true,
-              author: MessageFactorAuthor.HUMAN,
-            };
-          }),
-        });
-      }
-
-      const toMarkNonApplicable = overrides.filter((o) => o.newFactorId === null).map((o) => o.associationId);
+      await tx.actMessagesPsychosocialFactors.createMany({
+        data: existing.map((e) => {
+          const override = overrides.find((o) => o.associationId === e.id)!;
+          return {
+            messageId: e.messageId,
+            factorId: override.newFactorId,
+            analysisBatchId: e.analysisBatchId,
+            effective: true,
+            author: MessageFactorAuthor.HUMAN,
+            revision: e.revision + 1,
+          };
+        }),
+      });
 
       await tx.actMessagesPsychosocialFactors.updateMany({
         where: { id: { in: existingIds } },
         data: { effective: false },
       });
-
-      if (toMarkNonApplicable.length > 0) {
-        await tx.actMessagesPsychosocialFactors.updateMany({
-          where: { id: { in: toMarkNonApplicable } },
-          data: { nonApplicable: true },
-        });
-      }
     });
   }
 
