@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import kleur from "kleur";
 
+const PRINT_RESPONSE_BODY = process.env.PRINT_RESPONSE_BODY === "true";
+
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const startedAt = process.hrtime.bigint();
 
@@ -19,7 +21,8 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
     const errorMessage = (res.locals as { errorMessage?: string }).errorMessage;
     const errorLog = errorMessage ? ` ${kleur.red(`error="${errorMessage}"`)}` : "";
     const body = res.locals.responseBody;
-    const bodyLog = body !== undefined ? `\n  ${kleur.yellow("body:")} ${JSON.stringify(body, null, 2)}` : "";
+    const bodyLog =
+      body !== undefined && PRINT_RESPONSE_BODY ? `\n  ${kleur.yellow("body:")} ${JSON.stringify(body, null, 2)}` : "";
 
     console.log(
       `${kleur.cyan(req.method)} ${kleur.blue(req.originalUrl)} - ${statusColor(String(statusCode))} ${kleur.gray(

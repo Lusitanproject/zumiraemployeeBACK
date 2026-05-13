@@ -7,6 +7,7 @@ import { ImportChatbaseChaptersController } from "../../controllers/admin/acts/I
 import { UpdateActChatbotController } from "../../controllers/admin/acts/UpdateActChatbotController";
 import { UpdateManyActChatbotsController } from "../../controllers/admin/acts/UpdateManyActChatbotsController";
 import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
+import { OverrideFactorAssociationsController } from "../../controllers/admin/acts/OverrideFactorAssociationsController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
 
 const adminActRouter = Router();
@@ -140,6 +141,57 @@ adminActRouter.get("/by-trail", isAuthenticated, new FindByTrailController().han
  *         $ref: '#/components/responses/Unauthorized'
  */
 adminActRouter.put("/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
+
+/**
+ * @swagger
+ * /admin/acts/analysis/factor-associations:
+ *   put:
+ *     summary: "[Admin] Corrigir associações de fatores psicossociais"
+ *     description: >
+ *       Recebe uma lista de pares `(associationId, newFactorId)`. Para cada par, cria uma nova associação
+ *       com `author = HUMAN` e o novo fator, e marca a associação original como `effective = false`.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - overrides
+ *             properties:
+ *               overrides:
+ *                 type: array
+ *                 minItems: 1
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - associationId
+ *                     - newFactorId
+ *                   properties:
+ *                     associationId:
+ *                       type: string
+ *                       format: cuid
+ *                       description: ID da associação mensagem × fator a ser substituída
+ *                     newFactorId:
+ *                       type: string
+ *                       format: cuid
+ *                       description: ID do novo fator psicossocial correto
+ *     responses:
+ *       200:
+ *         description: Associações corrigidas com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+adminActRouter.put("/analysis/factor-associations", isAuthenticated, new OverrideFactorAssociationsController().handle);
 
 /**
  * @swagger

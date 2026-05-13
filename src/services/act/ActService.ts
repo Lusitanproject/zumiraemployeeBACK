@@ -457,20 +457,34 @@ class ActService {
       return prev;
     }, new Map<string, string>());
 
+    const candidateAssociations = newCompletedBatchResults.flatMap(
+      ({ results, batchId }) =>
+        results?.flatMap(({ data }) =>
+          data
+            ? data.associations.map((a) => ({
+                factorId: a.factor_id,
+                messageId: a.message_id,
+                analysisBatchId: externalToLocalBatchId.get(batchId)!,
+                author: MessageFactorAuthor.AI,
+              }))
+            : [],
+        ) ?? [],
+    );
+
+    const candidateMessageIds = [...new Set(candidateAssociations.map((a) => a.messageId))];
+    const existingMessages = await prismaClient.actChapterMessage.findMany({
+      where: { id: { in: candidateMessageIds } },
+      select: { id: true },
+    });
+    const validMessageIds = new Set(existingMessages.map((m) => m.id));
+
+    const invalidIds = candidateMessageIds.filter((id) => !validMessageIds.has(id));
+    if (invalidIds.length > 0) {
+      console.warn(`[ActService] ${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados:`, invalidIds);
+    }
+
     await prismaClient.actMessagesPsychosocialFactors.createMany({
-      data: newCompletedBatchResults.flatMap(
-        ({ results, batchId }) =>
-          results?.flatMap(({ data }) =>
-            data
-              ? data.associations.map((a) => ({
-                  factorId: a.factor_id,
-                  messageId: a.message_id,
-                  analysisBatchId: externalToLocalBatchId.get(batchId)!,
-                  author: MessageFactorAuthor.AI,
-                }))
-              : [],
-          ) ?? [],
-      ),
+      data: candidateAssociations.filter((a) => validMessageIds.has(a.messageId)),
       skipDuplicates: true,
     });
 
@@ -527,6 +541,7 @@ class ActService {
         JOIN act_chapters c ON c.id = m.act_chapter_id
         JOIN users u ON u.id = c.user_id
         WHERE cab.company_act_analysis_id = ${analysisId}
+          AND ampf.effective = true
           AND (${gender}::text IS NULL OR u.gender::text = ${gender})
           AND (${area}::text IS NULL OR u.area = ${area})
           AND (${location}::text IS NULL OR u.location = ${location})
@@ -583,6 +598,7 @@ class ActService {
 
     const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
       where: {
+        effective: true,
         message: { actChapter: { user: { companyId } } },
         analysisBatch: { companyActAnalysisId: analysis.id },
       },
@@ -647,6 +663,7 @@ class ActService {
 
     const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
       where: {
+        effective: true,
         message: { actChapter: { user: { companyId } } },
         analysisBatch: { companyActAnalysisId: analysis.id },
       },
@@ -750,7 +767,7 @@ class ActService {
     const batchIds = analysis.companyActAnalysisBatches.map((b) => b.id);
 
     const factorAssocs = await prismaClient.actMessagesPsychosocialFactors.findMany({
-      where: { analysisBatchId: { in: batchIds } },
+      where: { effective: true, analysisBatchId: { in: batchIds } },
       select: { message: { select: { actChapter: { select: { userId: true } } } } },
     });
 
@@ -767,11 +784,51 @@ class ActService {
     const batchIds = analysis.companyActAnalysisBatches.map((b) => b.id);
 
     const associations = await prismaClient.actMessagesPsychosocialFactors.findMany({
-      where: { factorId, analysisBatchId: { in: batchIds } },
+      where: { effective: true, factorId, analysisBatchId: { in: batchIds } },
       include: { message: true },
     });
 
-    return { available: true as const, messages: associations.map((a) => a.message) };
+    return { available: true as const, associations };
+  }
+
+  async overrideFactorAssociations(overrides: { associationId: string; newFactorId: string | null }[]): Promise<void> {
+    const existingIds = overrides.map((o) => o.associationId);
+    const toReplace = overrides.filter((o) => o.newFactorId !== null);
+
+    await prismaClient.$transaction(async (tx) => {
+      if (toReplace.length > 0) {
+        const existing = await tx.actMessagesPsychosocialFactors.findMany({
+          where: { id: { in: toReplace.map((o) => o.associationId) } },
+        });
+
+        await tx.actMessagesPsychosocialFactors.createMany({
+          data: existing.map((e) => {
+            const override = toReplace.find((o) => o.associationId === e.id)!;
+            return {
+              messageId: e.messageId,
+              factorId: override.newFactorId as string,
+              analysisBatchId: e.analysisBatchId,
+              effective: true,
+              author: MessageFactorAuthor.HUMAN,
+            };
+          }),
+        });
+      }
+
+      const toMarkNonApplicable = overrides.filter((o) => o.newFactorId === null).map((o) => o.associationId);
+
+      await tx.actMessagesPsychosocialFactors.updateMany({
+        where: { id: { in: existingIds } },
+        data: { effective: false },
+      });
+
+      if (toMarkNonApplicable.length > 0) {
+        await tx.actMessagesPsychosocialFactors.updateMany({
+          where: { id: { in: toMarkNonApplicable } },
+          data: { nonApplicable: true },
+        });
+      }
+    });
   }
 
   async generateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {

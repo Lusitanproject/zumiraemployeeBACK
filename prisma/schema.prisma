@@ -493,6 +493,7 @@ model ActMessagesPsychosocialFactors {
   factorId        String              @map("factor_id")
   analysisBatchId String              @map("analysis_batch_id")
   effective       Boolean             @default(true)
+  nonApplicable   Boolean             @default(false) @map("non_applicable")
   author          MessageFactorAuthor
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")

@@ -50,7 +50,19 @@ export const GetAnalysisUserFiltersSchema = z.object({
     .pipe(z.array(z.enum(ANALYSIS_FILTER_COLUMNS)).min(1)),
 });
 
+export const OverrideFactorAssociationsSchema = z.object({
+  overrides: z
+    .array(
+      z.object({
+        associationId: z.string().cuid(),
+        newFactorId: z.string().cuid().nullable(),
+      }),
+    )
+    .min(1),
+});
+
 export type ActAnalysisCompanyQuery = z.infer<typeof ActAnalysisCompanyQuerySchema>;
 export type FindActAnalysisQuery = z.infer<typeof FindActAnalysisQuerySchema>;
 export type FindActAnalysisSummaryQuery = z.infer<typeof FindActAnalysisSummaryQuerySchema>;
 export type GetAnalysisUserFiltersQuery = z.infer<typeof GetAnalysisUserFiltersSchema>;
+export type OverrideFactorAssociationsRequest = z.infer<typeof OverrideFactorAssociationsSchema>;
