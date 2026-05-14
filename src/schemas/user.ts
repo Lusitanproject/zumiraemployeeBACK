@@ -15,6 +15,7 @@ export const CreateUserSchema = z.object({
   occupation: z.string().nonempty().optional(),
   occupationLevel: z.string().nonempty().optional(),
   area: z.string().nonempty().optional(),
+  similarExposureGroup: z.string().nonempty().optional(),
   location: z.string().nonempty().optional(),
   skinColor: z.string().nonempty().optional(),
   hasDisability: z.boolean().optional(),

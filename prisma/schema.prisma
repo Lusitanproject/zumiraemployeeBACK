@@ -51,27 +51,28 @@ enum MessageFactorAuthor {
 }
 
 model User {
-  id                  String      @id @default(uuid())
-  email               String      @unique
-  phoneNumber         String?     @map("phone_number")
-  password            String?
-  name                String
-  customId            String?     @map("custom_id")
-  occupation          String?
-  occupationLevel     String?     @map("occupation_level")
-  area                String?
-  location            String?
-  skinColor           String?     @map("skin_color")
-  hasDisability       Boolean?    @map("has_disability")
-  birthdate           DateTime?
-  admissionDate       DateTime?   @map("admission_date")
-  gender              UserGender?
-  nationalityId       String?     @map("nationality_id")
-  roleId              String      @map("role_id")
-  companyId           String?     @map("company_id")
-  currentActChatbotId String?     @map("current_act_chatbot_id")
-  createdAt           DateTime    @default(now()) @map("created_at")
-  updatedAt           DateTime    @updatedAt @map("updated_at")
+  id                   String      @id @default(uuid())
+  email                String      @unique
+  phoneNumber          String?     @map("phone_number")
+  password             String?
+  name                 String
+  customId             String?     @map("custom_id")
+  occupation           String?
+  occupationLevel      String?     @map("occupation_level")
+  area                 String?
+  similarExposureGroup String?     @map("similar_exposure_group")
+  location             String?
+  skinColor            String?     @map("skin_color")
+  hasDisability        Boolean?    @map("has_disability")
+  birthdate            DateTime?
+  admissionDate        DateTime?   @map("admission_date")
+  gender               UserGender?
+  nationalityId        String?     @map("nationality_id")
+  roleId               String      @map("role_id")
+  companyId            String?     @map("company_id")
+  currentActChatbotId  String?     @map("current_act_chatbot_id")
+  createdAt            DateTime    @default(now()) @map("created_at")
+  updatedAt            DateTime    @updatedAt @map("updated_at")
 
   nationality               Nationality?               @relation(fields: [nationalityId], references: [id])
   company                   Company?                   @relation(fields: [companyId], references: [id])
@@ -398,7 +399,7 @@ model ActChatbot {
   initialMessage          String?  @map("initial_message")
   messageInstructions     String?  @map("message_instructions")
   compilationInstructions String?  @map("compilation_instructions")
-  trailId                 String
+  trailId                 String   @map("trail_id")
   index                   Int
   createdAt               DateTime @default(now()) @map("created_at")
   updatedAt               DateTime @updatedAt @map("updated_at")
