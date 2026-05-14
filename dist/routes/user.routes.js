@@ -176,6 +176,9 @@ userRouter.delete("/:id", isAuthenticated_1.isAuthenticated, new DeleteUserContr
  *               area:
  *                 type: string
  *                 description: Área ou departamento
+ *               similarExposureGroup:
+ *                 type: string
+ *                 description: Grupo de exposição similar (GES) do colaborador
  *               location:
  *                 type: string
  *                 description: Localidade/unidade de trabalho
