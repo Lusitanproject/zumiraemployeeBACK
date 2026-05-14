@@ -689,13 +689,15 @@ class ActService {
       }
     }
 
-    const factors: FactorWeightItem[] = Array.from(factorMap.values()).map(({ factor, count }) => ({
-      id: factor!.id,
-      name: factor!.name,
-      wheight: factor!.wheight,
-      count,
-      totalWeight: factor!.wheight * count,
-    }));
+    const allFactors = await prismaClient.psychosocialFactor.findMany({
+      select: { id: true, name: true, wheight: true },
+    });
+
+    const factors: FactorWeightItem[] = allFactors.map((f) => {
+      const entry = factorMap.get(f.id);
+      const count = entry?.count ?? 0;
+      return { id: f.id, name: f.name, wheight: f.wheight, count, totalWeight: f.wheight * count };
+    });
 
     return { available: true, factors, userCount: userIds.size };
   }
