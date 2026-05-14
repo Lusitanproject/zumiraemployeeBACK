@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requestLogger = requestLogger;
 const kleur_1 = __importDefault(require("kleur"));
-const PRINT_RESPONSE_BODY = process.env.PRINT_RESPONSE_BODY === "true";
 function requestLogger(req, res, next) {
+    const PRINT_RESPONSE_BODY = process.env.PRINT_RESPONSE_BODY === "true";
     const startedAt = process.hrtime.bigint();
     console.log(`${kleur_1.default.cyan(req.method)} ${kleur_1.default.blue(req.originalUrl)} - incoming`);
     const originalJson = res.json.bind(res);
