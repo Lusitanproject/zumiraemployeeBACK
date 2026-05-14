@@ -19,6 +19,7 @@ export const ANALYSIS_FILTER_COLUMNS = [
   "occupation",
   "occupationLevel",
   "area",
+  "similarExposureGroup",
   "location",
   "skinColor",
   "hasDisability",

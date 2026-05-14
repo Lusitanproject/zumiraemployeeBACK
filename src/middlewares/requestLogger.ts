@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import kleur from "kleur";
 
-const PRINT_RESPONSE_BODY = process.env.PRINT_RESPONSE_BODY === "true";
-
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
+  const PRINT_RESPONSE_BODY = process.env.PRINT_RESPONSE_BODY === "true";
+
   const startedAt = process.hrtime.bigint();
 
   console.log(`${kleur.cyan(req.method)} ${kleur.blue(req.originalUrl)} - incoming`);

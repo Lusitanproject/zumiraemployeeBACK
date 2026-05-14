@@ -1,7 +1,7 @@
 import { hash } from "argon2";
 import { z } from "zod";
 
-import { CreateUserRequest } from "../../schemas/user";
+import { CreateUserRequest, SyncUserItem } from "../../schemas/user";
 import {
   FindUserByRequest,
   SearchUsersRequest,
@@ -241,6 +241,196 @@ class UserService {
 
   async delete(id: string) {
     await prismaClient.user.delete({ where: { id } });
+  }
+
+  // ─── Sync engine ───────────────────────────────────────────────────────────
+
+  private async planSync(companyId: string, items: SyncUserItem[]) {
+    type ConflictType = "CUSTOM_ID_DUPLICATED_IN_DB" | "EMAIL_ALREADY_USED";
+
+    type SyncPlan = {
+      creates:   Array<{ customId: string; data: Omit<SyncUserItem, "customId"> }>;
+      updates:   Array<{ customId: string; userId: string; changes: Record<string, { from: unknown; to: unknown }> }>;
+      unchanged: Array<{ customId: string; userId: string }>;
+      conflicts: Array<{ type: ConflictType; customId: string; email?: string; conflictingUserId?: string }>;
+      errors:    Array<{ customId?: string; field: string; message: string }>;
+    };
+
+    const errors: SyncPlan["errors"] = [];
+    const conflicts: SyncPlan["conflicts"] = [];
+
+    // Step 1: detect duplicate customIds in payload
+    const seen = new Map<string, number>();
+    for (const item of items) seen.set(item.customId, (seen.get(item.customId) ?? 0) + 1);
+
+    const payloadDuplicates = new Set<string>();
+    for (const [id, count] of seen) if (count > 1) payloadDuplicates.add(id);
+
+    const validItems = items.filter((item) => {
+      if (payloadDuplicates.has(item.customId)) {
+        if (!errors.some((e) => e.customId === item.customId)) {
+          errors.push({ customId: item.customId, field: "customId", message: "customId duplicado no payload" });
+        }
+        return false;
+      }
+      return true;
+    });
+
+    if (validItems.length === 0) {
+      return { creates: [], updates: [], unchanged: [], conflicts, errors } satisfies SyncPlan;
+    }
+
+    // Step 2: batch DB lookups
+    const validCustomIds = validItems.map((i) => i.customId);
+    const validEmails    = validItems.map((i) => i.email);
+
+    const selectFields = {
+      id: true, customId: true, companyId: true,
+      email: true, name: true, phoneNumber: true,
+      occupation: true, occupationLevel: true, area: true,
+      similarExposureGroup: true, location: true, skinColor: true,
+      hasDisability: true, birthdate: true, admissionDate: true,
+      gender: true, nationalityId: true,
+    } as const;
+
+    const [byCustomId, byEmail] = await Promise.all([
+      prismaClient.user.findMany({ where: { customId: { in: validCustomIds }, companyId }, select: selectFields }),
+      prismaClient.user.findMany({ where: { email: { in: validEmails } }, select: { id: true, email: true, customId: true, companyId: true } }),
+    ]);
+
+    const customIdMap = new Map<string, typeof byCustomId>();
+    for (const u of byCustomId) {
+      if (!u.customId) continue;
+      const arr = customIdMap.get(u.customId) ?? [];
+      arr.push(u);
+      customIdMap.set(u.customId, arr);
+    }
+
+    const emailMap = new Map<string, typeof byEmail[0]>();
+    for (const u of byEmail) emailMap.set(u.email, u);
+
+    // Step 3: classify
+    const creates:   SyncPlan["creates"]   = [];
+    const updates:   SyncPlan["updates"]   = [];
+    const unchanged: SyncPlan["unchanged"] = [];
+
+    const DIFFABLE_FIELDS = [
+      "email", "name", "phoneNumber", "occupation", "occupationLevel",
+      "area", "similarExposureGroup", "location", "skinColor", "hasDisability",
+      "birthdate", "admissionDate", "gender", "nationalityId",
+    ] as const;
+
+    const normalizeDate = (v: unknown) =>
+      v instanceof Date ? v.toISOString() : v;
+
+    for (const item of validItems) {
+      const candidates = customIdMap.get(item.customId) ?? [];
+      const emailMatch = emailMap.get(item.email);
+
+      if (candidates.length > 1) {
+        conflicts.push({ type: "CUSTOM_ID_DUPLICATED_IN_DB", customId: item.customId, email: item.email });
+        continue;
+      }
+
+      const candidate = candidates[0] ?? null;
+
+      if (emailMatch && candidate && emailMatch.id !== candidate.id) {
+        conflicts.push({ type: "EMAIL_ALREADY_USED", customId: item.customId, email: item.email, conflictingUserId: emailMatch.id });
+        continue;
+      }
+
+      if (emailMatch && !candidate) {
+        conflicts.push({ type: "EMAIL_ALREADY_USED", customId: item.customId, email: item.email, conflictingUserId: emailMatch.id });
+        continue;
+      }
+
+      if (candidate) {
+        const changes: SyncPlan["updates"][0]["changes"] = {};
+        for (const field of DIFFABLE_FIELDS) {
+          const toRaw = item[field as keyof typeof item];
+          if (toRaw === undefined) continue;
+          const fromRaw = candidate[field as keyof typeof candidate];
+          const from = normalizeDate(fromRaw);
+          const to   = normalizeDate(toRaw);
+          if (from !== to) changes[field] = { from, to };
+        }
+
+        if (Object.keys(changes).length > 0) {
+          updates.push({ customId: item.customId, userId: candidate.id, changes });
+        } else {
+          unchanged.push({ customId: item.customId, userId: candidate.id });
+        }
+      } else {
+        const { customId, ...data } = item;
+        creates.push({ customId, data });
+      }
+    }
+
+    return { creates, updates, unchanged, conflicts, errors } satisfies SyncPlan;
+  }
+
+  async previewSync(companyId: string, items: SyncUserItem[]) {
+    const plan = await this.planSync(companyId, items);
+    return {
+      summary: {
+        received:  items.length,
+        toCreate:  plan.creates.length,
+        toUpdate:  plan.updates.length,
+        unchanged: plan.unchanged.length,
+        conflicts: plan.conflicts.length,
+        errors:    plan.errors.length,
+      },
+      ...plan,
+    };
+  }
+
+  async executeSync(companyId: string, items: SyncUserItem[]) {
+    const plan = await this.planSync(companyId, items);
+
+    const failed: Array<{ customId?: string; reason: string }> = [
+      ...plan.conflicts.map((c) => ({ customId: c.customId, reason: c.type })),
+      ...plan.errors.map((e) => ({ customId: e.customId, reason: e.message })),
+    ];
+
+    const unchanged = plan.unchanged.map((u) => ({ customId: u.customId, userId: u.userId }));
+
+    const [role, firstAct] = await Promise.all([
+      prismaClient.role.findFirst({ where: { NOT: { slug: "admin" } } }),
+      prismaClient.actChatbot.findFirst({ orderBy: { index: "asc" } }),
+    ]);
+
+    if (!role) throw new Error("Nenhum cargo não-admin encontrado");
+
+    const created: Array<{ customId: string; userId: string }> = [];
+    for (const op of plan.creates) {
+      try {
+        const user = await prismaClient.user.create({
+          data: { ...op.data, customId: op.customId, companyId, roleId: role.id, currentActChatbotId: firstAct?.id },
+        });
+        created.push({ customId: op.customId, userId: user.id });
+      } catch (err) {
+        failed.push({ customId: op.customId, reason: err instanceof Error ? err.message : "Erro desconhecido" });
+      }
+    }
+
+    const updated: Array<{ customId: string; userId: string }> = [];
+    for (const op of plan.updates) {
+      try {
+        const data = Object.fromEntries(Object.entries(op.changes).map(([k, v]) => [k, v.to]));
+        await prismaClient.user.update({ where: { id: op.userId }, data });
+        updated.push({ customId: op.customId, userId: op.userId });
+      } catch (err) {
+        failed.push({ customId: op.customId, reason: err instanceof Error ? err.message : "Erro desconhecido" });
+      }
+    }
+
+    return {
+      summary: { created: created.length, updated: updated.length, unchanged: unchanged.length, failed: failed.length },
+      created,
+      updated,
+      unchanged,
+      failed,
+    };
   }
 }
 
