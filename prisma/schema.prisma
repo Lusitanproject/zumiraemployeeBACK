@@ -162,6 +162,7 @@ model Assessment {
   description                 String?
   userFeedbackInstructions    String?             @map("user_feedback_instructions")
   companyFeedbackInstructions String?             @map("company_feedback_instructions")
+  consultiveAiInstructions    String?             @map("constultive_ai_instructions")
   operationType               AssessmentOperation @default(AVERAGE) @map("operation_type")
   public                      Boolean             @default(false)
   selfMonitoringBlockId       String              @map("self_monitoring_block_id")
@@ -392,17 +393,19 @@ model Trail {
 }
 
 model ActChatbot {
-  id                      String   @id @default(cuid())
-  name                    String
-  description             String
-  icon                    String
-  initialMessage          String?  @map("initial_message")
-  messageInstructions     String?  @map("message_instructions")
-  compilationInstructions String?  @map("compilation_instructions")
-  trailId                 String   @map("trail_id")
-  index                   Int
-  createdAt               DateTime @default(now()) @map("created_at")
-  updatedAt               DateTime @updatedAt @map("updated_at")
+  id                       String   @id @default(cuid())
+  name                     String
+  description              String
+  icon                     String
+  initialMessage           String?  @map("initial_message")
+  messageInstructions      String?  @map("message_instructions")
+  compilationInstructions  String?  @map("compilation_instructions")
+  reportInstructions       String?  @map("report_instructions")
+  consultiveAiInstructions String?  @map("constultive_ai_instructions")
+  trailId                  String   @map("trail_id")
+  index                    Int
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
 
   trail              Trail                @relation(fields: [trailId], references: [id])
   actChapters        ActChapter[]

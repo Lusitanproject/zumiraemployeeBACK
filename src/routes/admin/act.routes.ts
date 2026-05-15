@@ -4,6 +4,7 @@ import { CreateActChatbotController } from "../../controllers/admin/acts/CreateA
 import { FindAllActChatbotsController } from "../../controllers/admin/acts/FindAllActChatbotsController";
 import { FindByTrailController } from "../../controllers/admin/acts/FindByTrailController";
 import { ImportChatbaseChaptersController } from "../../controllers/admin/acts/ImportChatbaseChaptersController";
+import { FindActChatbotController } from "../../controllers/admin/acts/FindActChatbotController";
 import { UpdateActChatbotController } from "../../controllers/admin/acts/UpdateActChatbotController";
 import { UpdateManyActChatbotsController } from "../../controllers/admin/acts/UpdateManyActChatbotsController";
 import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
@@ -192,6 +193,43 @@ adminActRouter.put("/update-many", isAuthenticated, new UpdateManyActChatbotsCon
  *         $ref: '#/components/responses/Unauthorized'
  */
 adminActRouter.put("/analysis/factor-associations", isAuthenticated, new OverrideFactorAssociationsController().handle);
+
+/**
+ * @swagger
+ * /admin/acts/{id}:
+ *   get:
+ *     summary: "[Admin] Detalhar ACT"
+ *     description: Retorna os dados completos de um ACT, incluindo todos os campos de instrução de IA.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *     responses:
+ *       200:
+ *         description: Dados completos do ACT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   $ref: '#/components/schemas/ActChatbot'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+adminActRouter.get("/:id", isAuthenticated, new FindActChatbotController().handle);
 
 /**
  * @swagger
