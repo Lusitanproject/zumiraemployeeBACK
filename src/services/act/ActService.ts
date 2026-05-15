@@ -899,15 +899,17 @@ class ActService {
         const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
 
         console.log(`[RAG/act] generating RAG response from report`);
-        const ragResponse = await this.buildActRagResponse(actChatbot, report, openAiApi);
+        const { response: ragResponse, reportText } = await this.buildActRagResponse(actChatbot, report, openAiApi);
         console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
 
         const descriptorFileId = await this.syncActChatbotDescriptorFile(actChatbotWithRag, openAiApi);
 
+        const fullRagContent = `${reportText}\n\n${ragResponse.output_text}\n\n${actChatbot.description}`;
+
         const { dbVectorStore } = await createAnalysisVectorStore({
           openAiApi,
           vectorStoreName: `analysis-act-${actChatbotId}`,
-          mainFileContent: `${ragResponse.output_text}\n\n${actChatbot.description}`,
+          mainFileContent: fullRagContent,
           mainFilename: "act-analysis.txt",
           descriptorOpenaiFileId: descriptorFileId,
         });
@@ -935,20 +937,113 @@ class ActService {
     report: AnalysisReport,
     openAiApi: OpenAiApi,
   ) {
+    const classify = (wellnessPercentage: number): string => {
+      const w = wellnessPercentage;
+      const r = 100 - w;
+      if (w >= 80 && r <= 20) return "🟢 Florescimento";
+      if (w >= 60 && r <= 40) return "🟢 Saudável";
+      if (r > 60 && w < 40) return "🔴 Risco Psicossocial";
+      if (r >= 80 && w <= 20) return "🔴 Zona Crítica";
+      return "🟡 Estagnação";
+    };
+
+    const score = Math.round(report.overall.wellnessPercentage);
+    const riskIndex = Math.round(100 - score);
+    const overallClassification = classify(report.overall.wellnessPercentage);
+
+    const riskFactors = report.factorWeights.filter((f) => f.wheight < 0).sort((a, b) => b.count - a.count);
+
+    const wellbeingFactors = report.factorWeights.filter((f) => f.wheight > 0).sort((a, b) => b.count - a.count);
+
+    const factorTable = (factors: FactorWeightItem[]) =>
+      factors.map((f, i) => `| ${i + 1} | ${f.name} | ${f.count} |`).join("\n");
+
+    const segmentTable = (groups: AnalysisSegmentGroup[]) =>
+      groups
+        .filter((g) => g.value !== null)
+        .sort((a, b) => b.wellnessPercentage - a.wellnessPercentage)
+        .map((g) => {
+          const bem = Math.round(g.positiveScore);
+          const risco = Math.round(Math.abs(g.negativeScore));
+          const idx = Math.round(g.wellnessPercentage);
+          return `| ${g.value} | ${bem} | ${risco} | ${idx} | ${classify(g.wellnessPercentage)} |`;
+        })
+        .join("\n");
+
+    const segmentSection = (title: string, groups: AnalysisSegmentGroup[]) => {
+      const rows = segmentTable(groups);
+      if (!rows) return null;
+      return [
+        `## ${title}`,
+        ``,
+        `| Nome | Bem-Estar | Risco | Índice | Classificação |`,
+        `|------|-----------|-------|--------|---------------|`,
+        rows,
+      ].join("\n");
+    };
+
+    const segments = [
+      segmentSection("COMPARAÇÃO POR GÊNERO", report.byGender),
+      segmentSection("COMPARAÇÃO POR GHE", report.bySimilarExposureGroup),
+      segmentSection("COMPARAÇÃO POR NÍVEL DE CARGO", report.byOccupationLevel),
+      segmentSection("COMPARAÇÃO POR FAIXA ETÁRIA", report.byAgeRange),
+      segmentSection("COMPARAÇÃO POR PcD", report.byDisability),
+    ]
+      .filter(Boolean)
+      .join("\n\n---\n\n");
+
     const reportText = [
-      `Relatório de análise - ${actChatbot.name}`,
-      `Usuários: ${report.userCount}`,
-      `Pontuação positiva: ${report.overall.positiveScore.toFixed(2)}`,
-      `Pontuação negativa: ${report.overall.negativeScore.toFixed(2)}`,
-      `Pontuação total: ${report.overall.totalScore.toFixed(2)}`,
-      `Percentual de bem-estar: ${report.overall.wellnessPercentage.toFixed(2)}%`,
-      `Fatores: ${report.factorWeights.map((f) => `${f.name}: ${f.totalWeight}`).join(", ")}`,
+      `# ATO`,
+      `**${actChatbot.name} — ${new Date().getFullYear()}**`,
+      ``,
+      `---`,
+      ``,
+      `## INFORMAÇÕES TÉCNICAS`,
+      ``,
+      `**PARTICIPANTES**`,
+      `${report.userCount}`,
+      ``,
+      `**TIPO DE AVALIAÇÃO**`,
+      `Ato`,
+      ``,
+      `---`,
+      ``,
+      `## RESUMO EXECUTIVO — ÍNDICE GERAL DA EMPRESA`,
+      ``,
+      `**ZUMIRA SCORE: ${score} / 100 — ${overallClassification.replace(/^[^ ]+ /, "")}**`,
+      ``,
+      `| | |`,
+      `|---|---|`,
+      `| **RISCOS PRIORITÁRIOS** | **FORÇAS ORGANIZACIONAIS** |`,
+      `| **${riskIndex}** — índice de risco psicossocial | **${score}%** — índice de bem-estar organizacional |`,
+      ``,
+      `---`,
+      ``,
+      `## RANKING DE RISCO PSICOSSOCIAL`,
+      ``,
+      `| Nº | Fator | Valor |`,
+      `|----|-------|-------|`,
+      factorTable(riskFactors),
+      ``,
+      `---`,
+      ``,
+      `## RANKING DE BEM-ESTAR NO TRABALHO`,
+      ``,
+      `| Nº | Fator | Valor |`,
+      `|----|-------|-------|`,
+      factorTable(wellbeingFactors),
+      ``,
+      `---`,
+      ``,
+      segments,
     ].join("\n");
 
-    return openAiApi.generateResponse({
+    const response = await openAiApi.generateResponse({
       messages: [{ role: "user", content: reportText }],
       instructions: actChatbot.reportInstructions,
     });
+
+    return { response, reportText };
   }
 
   private async syncActChatbotDescriptorFile(
