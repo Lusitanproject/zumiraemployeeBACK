@@ -2,7 +2,11 @@ import { AssessmentResultRating, Prisma } from "@prisma/client";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
 
-import { CreateAssessment, AssessmentResultFilterColumn, SearchAssessmentResultsQuery } from "../../schemas/admin/assessment";
+import {
+  CreateAssessment,
+  AssessmentResultFilterColumn,
+  SearchAssessmentResultsQuery,
+} from "../../schemas/admin/assessment";
 import { DetailResultRequest, ListAssessmentsRequest } from "../../schemas/assessment";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
@@ -159,7 +163,7 @@ async function sendOpenAIMessage(instructions: string | null, message: string) {
 async function generateUserFeedbackResponse(
   instructions: string | null,
   message: string,
-  ratings: AssessmentResultRating[]
+  ratings: AssessmentResultRating[],
 ) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -498,7 +502,7 @@ class AssessmentService {
     const response = await generateUserFeedbackResponse(
       result.assessment.userFeedbackInstructions,
       message,
-      result.assessment.assessmentResultRatings
+      result.assessment.assessmentResultRatings,
     );
 
     const toolCall = response.output[0] as unknown as { arguments: string };
@@ -538,9 +542,7 @@ class AssessmentService {
       where: {
         nationalityId,
         public: true,
-        companyAvailableAssessments: user.companyId
-          ? { some: { companyId: user.companyId } }
-          : undefined,
+        companyAvailableAssessments: user.companyId ? { some: { companyId: user.companyId } } : undefined,
       },
       select: {
         id: true,
@@ -588,6 +590,7 @@ class AssessmentService {
           where: { userId },
           select: { createdAt: true },
         },
+        createdAt: true,
       },
       orderBy: { title: "asc" },
     });
@@ -603,6 +606,7 @@ class AssessmentService {
         lastCompleted: hasResults
           ? new Date(Math.max(...a.assessmentResults.map((r) => new Date(r.createdAt).getTime())))
           : null,
+        createdAt: a.createdAt,
       };
     });
 
@@ -638,7 +642,7 @@ class AssessmentService {
 
     const deletedQuestions = oldQuestions.filter((oldQuestion) => !questions.some((q) => oldQuestion.id === q.id));
     const deletedChoices = oldChoices.filter(
-      (oldChoice) => !questions.some((q) => q.choices.some((c) => oldChoice.id === c.id))
+      (oldChoice) => !questions.some((q) => q.choices.some((c) => oldChoice.id === c.id)),
     );
 
     for (const question of questions) {
@@ -719,13 +723,15 @@ class AssessmentService {
     const timeDiffInSeconds = (endTime.getTime() - startTime.getTime()) / 1000;
     console.log(`Updated assessment ${assessmentId} questions in ${timeDiffInSeconds} seconds`);
   }
-  private async processResults(results: Array<{
-    id: string;
-    user: { id: string; name: string | null; email: string; companyId: string | null; customId: string | null };
-    assessmentResultRating: { risk: string; profile: string; color: string } | null;
-    createdAt: Date;
-  }>) {
-    const aux: Record<string, typeof results[0]> = {};
+  private async processResults(
+    results: Array<{
+      id: string;
+      user: { id: string; name: string | null; email: string; companyId: string | null; customId: string | null };
+      assessmentResultRating: { risk: string; profile: string; color: string } | null;
+      createdAt: Date;
+    }>,
+  ) {
+    const aux: Record<string, (typeof results)[0]> = {};
     for (const result of results) {
       if (!aux[result.user.id] || new Date(aux[result.user.id].createdAt) < new Date(result.createdAt)) {
         aux[result.user.id] = result;
@@ -739,7 +745,23 @@ class AssessmentService {
     }));
   }
 
-  async searchResults(assessmentId: string, { companyId, search, page, pageSize, gender, area, location, occupation, occupationLevel, skinColor, hasDisability, nationalityId }: SearchAssessmentResultsQuery) {
+  async searchResults(
+    assessmentId: string,
+    {
+      companyId,
+      search,
+      page,
+      pageSize,
+      gender,
+      area,
+      location,
+      occupation,
+      occupationLevel,
+      skinColor,
+      hasDisability,
+      nationalityId,
+    }: SearchAssessmentResultsQuery,
+  ) {
     const RESULT_SELECT = {
       id: true,
       user: { select: { id: true, name: true, email: true, companyId: true, customId: true } },
@@ -776,7 +798,11 @@ class AssessmentService {
     return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
   }
 
-  async getResultUserFilters(assessmentId: string, companyId: string | undefined, columns: AssessmentResultFilterColumn[]) {
+  async getResultUserFilters(
+    assessmentId: string,
+    companyId: string | undefined,
+    columns: AssessmentResultFilterColumn[],
+  ) {
     const rows = await prismaClient.assessmentResult.findMany({
       where: {
         assessmentId,
