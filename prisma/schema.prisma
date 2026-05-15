@@ -167,6 +167,8 @@ model Assessment {
   public                      Boolean             @default(false)
   selfMonitoringBlockId       String              @map("self_monitoring_block_id")
   nationalityId               String              @map("nationality_id")
+  openaiFileId                String?             @map("openai_file_id")
+  openaiFileSyncedAt          DateTime?           @map("openai_file_synced_at")
   createdAt                   DateTime            @default(now()) @map("created_at")
   updatedAt                   DateTime            @updatedAt @map("updated_at")
 
@@ -307,16 +309,18 @@ model PsychologicalDimension {
 }
 
 model CompanyAssessmentAnalysis {
-  id           String   @id @default(uuid())
-  text         String
-  companyId    String   @map("company_id")
-  assessmentId String   @map("assessment_id")
-  respondents  Int
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(uuid())
+  text          String
+  companyId     String   @map("company_id")
+  assessmentId  String   @map("assessment_id")
+  respondents   Int
+  vectorStoreId String?  @map("vector_store_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-  company    Company    @relation(fields: [companyId], references: [id])
-  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  company     Company            @relation(fields: [companyId], references: [id])
+  assessment  Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  vectorStore OpenAIVectorStore? @relation(fields: [vectorStoreId], references: [id])
 
   @@map("company_assessment_analysis")
 }
@@ -393,19 +397,21 @@ model Trail {
 }
 
 model ActChatbot {
-  id                       String   @id @default(cuid())
+  id                       String    @id @default(cuid())
   name                     String
   description              String
   icon                     String
-  initialMessage           String?  @map("initial_message")
-  messageInstructions      String?  @map("message_instructions")
-  compilationInstructions  String?  @map("compilation_instructions")
-  reportInstructions       String?  @map("report_instructions")
-  consultiveAiInstructions String?  @map("constultive_ai_instructions")
-  trailId                  String   @map("trail_id")
+  initialMessage           String?   @map("initial_message")
+  messageInstructions      String?   @map("message_instructions")
+  compilationInstructions  String?   @map("compilation_instructions")
+  reportInstructions       String?   @map("report_instructions")
+  consultiveAiInstructions String?   @map("constultive_ai_instructions")
+  trailId                  String    @map("trail_id")
   index                    Int
-  createdAt                DateTime @default(now()) @map("created_at")
-  updatedAt                DateTime @updatedAt @map("updated_at")
+  openaiFileId             String?   @map("openai_file_id")
+  openaiFileSyncedAt       DateTime? @map("openai_file_synced_at")
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
 
   trail              Trail                @relation(fields: [trailId], references: [id])
   actChapters        ActChapter[]
@@ -464,14 +470,17 @@ model PsychosocialFactor {
 }
 
 model CompanyActAnalysis {
-  id           String   @id @default(cuid())
-  actChatbotId String   @map("act_chatbot_id")
-  companyId    String   @map("company_id")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  actChatbotId  String   @map("act_chatbot_id")
+  companyId     String   @map("company_id")
+  text          String?
+  vectorStoreId String?  @map("vector_store_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   actChatbot                ActChatbot                @relation(fields: [actChatbotId], references: [id])
   company                   Company                   @relation(fields: [companyId], references: [id])
+  vectorStore               OpenAIVectorStore?        @relation(fields: [vectorStoreId], references: [id])
   companyActAnalysisBatches CompanyActAnalysisBatch[]
 
   @@map("company_act_analyses")
@@ -508,4 +517,36 @@ model ActMessagesPsychosocialFactors {
 
   @@unique([messageId, factorId, analysisBatchId, revision])
   @@map("act_messages_psychosocial_factors")
+}
+
+model OpenAIFile {
+  id            String   @id @default(cuid())
+  vectorStoreId String   @map("vector_store_id")
+  openaiFileId  String   @unique @map("openai_file_id")
+  filename      String
+  mimeType      String?  @map("mime_type")
+  sizeBytes     BigInt?  @map("size_bytes")
+  checksum      String?
+  status        String   @default("uploaded")
+  metadata      Json?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  vectorStore OpenAIVectorStore @relation(fields: [vectorStoreId], references: [id], onDelete: Cascade)
+
+  @@map("openai_files")
+}
+
+model OpenAIVectorStore {
+  id                  String   @id @default(cuid())
+  openaiVectorStoreId String   @unique @map("openai_vector_store_id")
+  name                String?
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  files                     OpenAIFile[]
+  companyAssessmentAnalyses CompanyAssessmentAnalysis[]
+  companyActAnalyses        CompanyActAnalysis[]
+
+  @@map("openai_vector_stores")
 }

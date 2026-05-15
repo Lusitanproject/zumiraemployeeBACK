@@ -1,6 +1,8 @@
 import { AssessmentResultRating, Prisma } from "@prisma/client";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
+import { OpenAiApi } from "../../external/openai";
+import { syncDescriptorFile, createAnalysisVectorStore } from "../../utils/ragHelper";
 
 import {
   CreateAssessment,
@@ -474,12 +476,35 @@ class AssessmentService {
 
     const response = await sendOpenAIMessage(assessment.companyFeedbackInstructions, message);
 
+    const openAiApi = new OpenAiApi();
+
+    type AssessmentWithRagFields = typeof assessment & {
+      openaiFileId: string | null;
+      openaiFileSyncedAt: Date | null;
+    };
+    const assessmentWithRag = assessment as AssessmentWithRagFields;
+
+    console.log(`[RAG/assessment] starting RAG setup for assessmentId=${assessmentId} companyId=${company.id}`);
+
+    const descriptorFileId = await this.syncAssessmentDescriptorFile(assessmentWithRag, openAiApi);
+
+    const { dbVectorStore } = await createAnalysisVectorStore({
+      openAiApi,
+      vectorStoreName: `analysis-assessment-${assessmentId}`,
+      mainFileContent: response.output_text,
+      mainFilename: "feedback.txt",
+      descriptorOpenaiFileId: descriptorFileId,
+    });
+
+    console.log(`[RAG/assessment] vector store ready: db=${dbVectorStore.id}`);
+
     const assessmentFeedback = await prismaClient.companyAssessmentAnalysis.create({
       data: {
         text: response.output_text,
         companyId: company.id,
         assessmentId,
         respondents: Object.keys(latestResults).length,
+        vectorStoreId: dbVectorStore.id,
       },
       select: { id: true, text: true, companyId: true, assessmentId: true },
     });
@@ -817,6 +842,34 @@ class AssessmentService {
     const userIds = rows.map((r) => r.userId);
     const filters = await new UserService().getFilters(columns, userIds);
     return { filters };
+  }
+
+  private async syncAssessmentDescriptorFile(
+    assessment: { id: string; title: string; summary: string; description: string | null; updatedAt: Date } & {
+      openaiFileId: string | null;
+      openaiFileSyncedAt: Date | null;
+    },
+    openAiApi: OpenAiApi,
+  ): Promise<string | null> {
+    return syncDescriptorFile({
+      openAiApi,
+      currentOpenaiFileId: assessment.openaiFileId,
+      openaiFileSyncedAt: assessment.openaiFileSyncedAt,
+      updatedAt: assessment.updatedAt,
+      fileContent: `Assessment: ${assessment.title}\nResumo: ${assessment.summary}\nDescrição: ${assessment.description ?? ""}`,
+      filenamePrefix: `assessment-${assessment.id}`,
+      checkInUse: () =>
+        prismaClient.companyAssessmentAnalysis.count({
+          where: {
+            assessmentId: assessment.id,
+            vectorStore: { createdAt: { gte: assessment.openaiFileSyncedAt! } },
+          },
+        }),
+      persistUpdate: (newFileId) =>
+        prismaClient.assessment
+          .update({ where: { id: assessment.id }, data: { openaiFileId: newFileId, openaiFileSyncedAt: new Date() } as object })
+          .then(() => undefined),
+    });
   }
 }
 

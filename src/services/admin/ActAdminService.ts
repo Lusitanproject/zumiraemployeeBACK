@@ -301,7 +301,7 @@ class ActAdminService {
       messages: [{ content: JSON.stringify(chapter.messages), role: "user" }],
     }));
 
-    const openai = new OpenAiApi();
+    const openai = new OpenAiApi({ model: "gpt-5.4" });
     const batchResult = await openai.createBatch({ instructions, batchItems });
 
     console.log(`Lote OpenAI criado com ${batchItems.length} itens`);

@@ -1,5 +1,4 @@
 import { CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
-
 import {
   CompileActChapterRequest,
   CreateActChapterRequest,
@@ -10,6 +9,7 @@ import {
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { OpenAiApi, GenerateOpenAiResponseRequest } from "../../external/openai";
+import { syncDescriptorFile, createAnalysisVectorStore } from "../../utils/ragHelper";
 import { UserService } from "../user/UserService";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
@@ -99,6 +99,7 @@ export type AnalysisReport = {
   byOccupationLevel: AnalysisSegmentGroup[];
   byAgeRange: AnalysisSegmentGroup[];
   factorWeights: FactorWeightItem[];
+  aiDescription: string;
 };
 
 export type GenerateAnalysisReportResult = { available: false } | { available: true; report: AnalysisReport };
@@ -482,7 +483,10 @@ class ActService {
 
     const invalidIds = candidateMessageIds.filter((id) => !validMessageIds.has(id));
     if (invalidIds.length > 0) {
-      console.warn(`[ActService] ${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados:`, invalidIds);
+      console.warn(
+        `[ActService] ${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados:`,
+        invalidIds,
+      );
     }
 
     await prismaClient.actMessagesPsychosocialFactors.createMany({
@@ -831,14 +835,21 @@ class ActService {
   }
 
   async generateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
-    const [bySimilarExposureGroup, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] = await Promise.all([
-      this.findAnalysisSegments(companyId, actChatbotId, "similarExposureGroup"),
-      this.findAnalysisSegments(companyId, actChatbotId, "gender", null, { MALE: "Masculino", FEMALE: "Feminino", OTHER: "Outros Gêneros" }),
-      this.findAnalysisSegments(companyId, actChatbotId, "hasDisability", null, { true: "PcD", false: null }),
-      this.findAnalysisSegments(companyId, actChatbotId, "occupationLevel"),
-      this.findAnalysisSegments(companyId, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
-      this.findAnalysisFactorWeights(companyId, actChatbotId),
-    ]);
+    const latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+
+    const [bySimilarExposureGroup, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] =
+      await Promise.all([
+        this.findAnalysisSegments(companyId, actChatbotId, "similarExposureGroup"),
+        this.findAnalysisSegments(companyId, actChatbotId, "gender", null, {
+          MALE: "Masculino",
+          FEMALE: "Feminino",
+          OTHER: "Outros Gêneros",
+        }),
+        this.findAnalysisSegments(companyId, actChatbotId, "hasDisability", null, { true: "PcD", false: null }),
+        this.findAnalysisSegments(companyId, actChatbotId, "occupationLevel"),
+        this.findAnalysisSegments(companyId, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
+        this.findAnalysisFactorWeights(companyId, actChatbotId),
+      ]);
 
     if (!bySimilarExposureGroup.available) return { available: false };
 
@@ -855,19 +866,120 @@ class ActService {
       wellnessPercentage: absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0,
     };
 
-    return {
-      available: true,
-      report: {
-        userCount: weightsResult.available ? weightsResult.userCount : 0,
-        overall,
-        bySimilarExposureGroup: bySimilarExposureGroup.groups,
-        byGender: byGender.available ? byGender.groups : [],
-        byDisability: byDisability.available ? byDisability.groups : [],
-        byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
-        byAgeRange: byAgeRange.available ? byAgeRange.groups : [],
-        factorWeights,
-      },
+    let aiDescription = latestAnalysis?.text ?? "";
+
+    const report: AnalysisReport = {
+      userCount: weightsResult.available ? weightsResult.userCount : 0,
+      overall,
+      bySimilarExposureGroup: bySimilarExposureGroup.groups,
+      byGender: byGender.available ? byGender.groups : [],
+      byDisability: byDisability.available ? byDisability.groups : [],
+      byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
+      byAgeRange: byAgeRange.available ? byAgeRange.groups : [],
+      factorWeights,
+      aiDescription,
     };
+
+    type AnalysisWithRagFields = typeof latestAnalysis & { vectorStoreId?: string | null };
+    const analysisWithRag = latestAnalysis as AnalysisWithRagFields;
+
+    if (analysisWithRag && !analysisWithRag.vectorStoreId) {
+      console.log(`[RAG/act] starting RAG setup for analysis ${analysisWithRag.id} (actChatbotId: ${actChatbotId})`);
+      try {
+        const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
+          where: { id: actChatbotId },
+        });
+
+        type ActChatbotWithRagFields = typeof actChatbot & {
+          openaiFileId: string | null;
+          openaiFileSyncedAt: Date | null;
+        };
+        const actChatbotWithRag = actChatbot as ActChatbotWithRagFields;
+
+        const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
+
+        console.log(`[RAG/act] generating RAG response from report`);
+        const ragResponse = await this.buildActRagResponse(actChatbot, report, openAiApi);
+        console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
+
+        const descriptorFileId = await this.syncActChatbotDescriptorFile(actChatbotWithRag, openAiApi);
+
+        const { dbVectorStore } = await createAnalysisVectorStore({
+          openAiApi,
+          vectorStoreName: `analysis-act-${actChatbotId}`,
+          mainFileContent: `${ragResponse.output_text}\n\n${actChatbot.description}`,
+          mainFilename: "act-analysis.txt",
+          descriptorOpenaiFileId: descriptorFileId,
+        });
+
+        await prismaClient.companyActAnalysis.update({
+          where: { id: analysisWithRag.id },
+          data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id } as object,
+        });
+
+        report.aiDescription = ragResponse.output_text;
+
+        console.log(`[RAG/act] analysis ${analysisWithRag.id} updated with vectorStoreId=${dbVectorStore.id}`);
+      } catch (error) {
+        console.error(`[RAG/act] failed to create RAG for analysis ${analysisWithRag.id}:`, error);
+      }
+    } else if (analysisWithRag?.vectorStoreId) {
+      console.log(`[RAG/act] vector store already exists for analysis ${analysisWithRag.id}, skipping`);
+    }
+
+    return { available: true, report: { ...report } };
+  }
+
+  private async buildActRagResponse(
+    actChatbot: { name: string; reportInstructions: string | null },
+    report: AnalysisReport,
+    openAiApi: OpenAiApi,
+  ) {
+    const reportText = [
+      `Relatório de análise - ${actChatbot.name}`,
+      `Usuários: ${report.userCount}`,
+      `Pontuação positiva: ${report.overall.positiveScore.toFixed(2)}`,
+      `Pontuação negativa: ${report.overall.negativeScore.toFixed(2)}`,
+      `Pontuação total: ${report.overall.totalScore.toFixed(2)}`,
+      `Percentual de bem-estar: ${report.overall.wellnessPercentage.toFixed(2)}%`,
+      `Fatores: ${report.factorWeights.map((f) => `${f.name}: ${f.totalWeight}`).join(", ")}`,
+    ].join("\n");
+
+    return openAiApi.generateResponse({
+      messages: [{ role: "user", content: reportText }],
+      instructions: actChatbot.reportInstructions,
+    });
+  }
+
+  private async syncActChatbotDescriptorFile(
+    actChatbot: { id: string; name: string; description: string; updatedAt: Date } & {
+      openaiFileId: string | null;
+      openaiFileSyncedAt: Date | null;
+    },
+    openAiApi: OpenAiApi,
+  ): Promise<string | null> {
+    return syncDescriptorFile({
+      openAiApi,
+      currentOpenaiFileId: actChatbot.openaiFileId,
+      openaiFileSyncedAt: actChatbot.openaiFileSyncedAt,
+      updatedAt: actChatbot.updatedAt,
+      fileContent: `Ato: ${actChatbot.name}\nDescrição: ${actChatbot.description}`,
+      filenamePrefix: `act-chatbot-${actChatbot.id}`,
+      checkInUse: () =>
+        prismaClient.companyActAnalysis.count({
+          where: {
+            actChatbotId: actChatbot.id,
+            vectorStore: { createdAt: { gte: actChatbot.openaiFileSyncedAt! } },
+          } as object,
+        }),
+      persistUpdate: (newFileId) =>
+        prismaClient.actChatbot
+          .update({
+            where: { id: actChatbot.id },
+            data: { openaiFileId: newFileId, openaiFileSyncedAt: new Date() } as object,
+          })
+          .then(() => undefined),
+    });
   }
 }
 
