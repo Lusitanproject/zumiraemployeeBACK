@@ -7,6 +7,7 @@ import { FindActAnalysisFactorMessagesController } from "../controllers/act/Find
 import { FindActAnalysisSummaryController } from "../controllers/act/FindActAnalysisSummaryController";
 import { FindActChatbotController } from "../controllers/act/FindActChatbotController";
 import { FindByCompanyController } from "../controllers/act/FindByCompanyController";
+import { AnalysisMessageController } from "../controllers/act/AnalysisMessageController";
 import { GenerateAnalysisReportController } from "../controllers/act/GenerateAnalysisReportController";
 import { GetActChapterController } from "../controllers/act/GetActChapterController";
 import { GetActsDataController } from "../controllers/act/GetActsDataController";
@@ -387,6 +388,8 @@ actRouter.put("/chapters/:actChapterId", isAuthenticated, new UpdateActChapterCo
  *       200:
  *         description: Filtros disponíveis
  */
+actRouter.post("/:actChatbotId/analysis/message", isAuthenticated, new AnalysisMessageController().handle);
+
 actRouter.get("/:actChatbotId/analysis/user-filters", isAuthenticated, new GetAnalysisUserFiltersController().handle);
 
 /**

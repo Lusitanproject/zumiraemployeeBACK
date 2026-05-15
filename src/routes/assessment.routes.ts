@@ -9,6 +9,7 @@ import { CreateQuestionController } from "../controllers/assessment/CreateQuesti
 import { CreateResultController } from "../controllers/assessment/CreateResultController";
 import { DetailAssessmentController } from "../controllers/assessment/DetailAssessmentController";
 import { DetailResultController } from "../controllers/assessment/DetailResultController";
+import { AnalysisMessageController } from "../controllers/assessment/AnalysisMessageController";
 import { GenerateCompanyFeedbackController } from "../controllers/assessment/GenerateCompanyFeedbackController";
 import { GenerateUserFeedbackController } from "../controllers/assessment/GenerateUserFeedbackController";
 import { ListAssessmentsController } from "../controllers/assessment/ListAssessmentsController";
@@ -474,6 +475,8 @@ assessmentRouter.get("/company", isAuthenticated, new ListCompanyAssessmentsCont
  *       200:
  *         description: Valores distintos por coluna
  */
+assessmentRouter.post("/:assessmentId/analysis/message", isAuthenticated, new AnalysisMessageController().handle);
+
 assessmentRouter.get("/:id/results/user-filters", isAuthenticated, new GetAssessmentResultUserFiltersController().handle);
 
 /**

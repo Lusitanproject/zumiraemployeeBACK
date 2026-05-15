@@ -1,5 +1,4 @@
 import { CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
-
 import {
   CompileActChapterRequest,
   CreateActChapterRequest,
@@ -10,6 +9,7 @@ import {
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { OpenAiApi, GenerateOpenAiResponseRequest } from "../../external/openai";
+import { syncDescriptorFile, createAnalysisVectorStore } from "../../utils/ragHelper";
 import { UserService } from "../user/UserService";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
@@ -59,6 +59,7 @@ interface SelfMonitoringBlockSummary {
 export type UserGroupColumn =
   | "gender"
   | "area"
+  | "similarExposureGroup"
   | "location"
   | "occupation"
   | "occupationLevel"
@@ -92,12 +93,13 @@ export type FindActAnalysisFactorWeightsResult =
 export type AnalysisReport = {
   userCount: number;
   overall: SegmentScores;
-  byArea: AnalysisSegmentGroup[];
+  bySimilarExposureGroup: AnalysisSegmentGroup[];
   byGender: AnalysisSegmentGroup[];
   byDisability: AnalysisSegmentGroup[];
   byOccupationLevel: AnalysisSegmentGroup[];
   byAgeRange: AnalysisSegmentGroup[];
   factorWeights: FactorWeightItem[];
+  aiDescription: string;
 };
 
 export type GenerateAnalysisReportResult = { available: false } | { available: true; report: AnalysisReport };
@@ -481,7 +483,10 @@ class ActService {
 
     const invalidIds = candidateMessageIds.filter((id) => !validMessageIds.has(id));
     if (invalidIds.length > 0) {
-      console.warn(`[ActService] ${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados:`, invalidIds);
+      console.warn(
+        `[ActService] ${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados:`,
+        invalidIds,
+      );
     }
 
     await prismaClient.actMessagesPsychosocialFactors.createMany({
@@ -593,7 +598,8 @@ class ActService {
     companyId: string,
     actChatbotId: string,
     column: UserGroupColumn,
-    ranges?: RangeBucket[],
+    ranges?: RangeBucket[] | null,
+    valueMap?: Record<string, string | null>,
   ): Promise<FindActAnalysisSegmentsResult> {
     const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
     if (!analysis) return { available: false };
@@ -639,13 +645,15 @@ class ActService {
 
     const groups: AnalysisSegmentGroup[] = [];
     for (const [key, wheights] of byGroup) {
+      if (valueMap && key in valueMap && valueMap[key] === null) continue;
+      const label = valueMap?.[key] ?? (key === "null" ? null : key);
       const positiveScore = wheights.filter((w) => w > 0).reduce((s, w) => s + w, 0);
       const negativeScore = wheights.filter((w) => w <= 0).reduce((s, w) => s + w, 0);
       const totalScore = positiveScore + negativeScore;
       const absoluteScore = positiveScore + Math.abs(negativeScore);
       const wellnessPercentage = absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0;
       groups.push({
-        value: key === "null" ? null : key,
+        value: label,
         positiveScore,
         negativeScore,
         totalScore,
@@ -827,16 +835,23 @@ class ActService {
   }
 
   async generateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
-    const [byArea, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] = await Promise.all([
-      this.findAnalysisSegments(companyId, actChatbotId, "area"),
-      this.findAnalysisSegments(companyId, actChatbotId, "gender"),
-      this.findAnalysisSegments(companyId, actChatbotId, "hasDisability"),
-      this.findAnalysisSegments(companyId, actChatbotId, "occupationLevel"),
-      this.findAnalysisSegments(companyId, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
-      this.findAnalysisFactorWeights(companyId, actChatbotId),
-    ]);
+    const latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
 
-    if (!byArea.available) return { available: false };
+    const [bySimilarExposureGroup, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] =
+      await Promise.all([
+        this.findAnalysisSegments(companyId, actChatbotId, "similarExposureGroup"),
+        this.findAnalysisSegments(companyId, actChatbotId, "gender", null, {
+          MALE: "Masculino",
+          FEMALE: "Feminino",
+          OTHER: "Outros Gêneros",
+        }),
+        this.findAnalysisSegments(companyId, actChatbotId, "hasDisability", null, { true: "PcD", false: null }),
+        this.findAnalysisSegments(companyId, actChatbotId, "occupationLevel"),
+        this.findAnalysisSegments(companyId, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
+        this.findAnalysisFactorWeights(companyId, actChatbotId),
+      ]);
+
+    if (!bySimilarExposureGroup.available) return { available: false };
 
     const factorWeights = weightsResult.available ? weightsResult.factors : [];
     const positiveScore = factorWeights.filter((f) => f.wheight > 0).reduce((s, f) => s + f.totalWeight, 0);
@@ -851,19 +866,215 @@ class ActService {
       wellnessPercentage: absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0,
     };
 
-    return {
-      available: true,
-      report: {
-        userCount: weightsResult.available ? weightsResult.userCount : 0,
-        overall,
-        byArea: byArea.groups,
-        byGender: byGender.available ? byGender.groups : [],
-        byDisability: byDisability.available ? byDisability.groups : [],
-        byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
-        byAgeRange: byAgeRange.available ? byAgeRange.groups : [],
-        factorWeights,
-      },
+    let aiDescription = latestAnalysis?.text ?? "";
+
+    const report: AnalysisReport = {
+      userCount: weightsResult.available ? weightsResult.userCount : 0,
+      overall,
+      bySimilarExposureGroup: bySimilarExposureGroup.groups,
+      byGender: byGender.available ? byGender.groups : [],
+      byDisability: byDisability.available ? byDisability.groups : [],
+      byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
+      byAgeRange: byAgeRange.available ? byAgeRange.groups : [],
+      factorWeights,
+      aiDescription,
     };
+
+    type AnalysisWithRagFields = typeof latestAnalysis & { vectorStoreId?: string | null };
+    const analysisWithRag = latestAnalysis as AnalysisWithRagFields;
+
+    if (analysisWithRag && !analysisWithRag.vectorStoreId) {
+      console.log(`[RAG/act] starting RAG setup for analysis ${analysisWithRag.id} (actChatbotId: ${actChatbotId})`);
+      try {
+        const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
+          where: { id: actChatbotId },
+        });
+
+        type ActChatbotWithRagFields = typeof actChatbot & {
+          openaiFileId: string | null;
+          openaiFileSyncedAt: Date | null;
+        };
+        const actChatbotWithRag = actChatbot as ActChatbotWithRagFields;
+
+        const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
+
+        console.log(`[RAG/act] generating RAG response from report`);
+        const { response: ragResponse, reportText } = await this.buildActRagResponse(actChatbot, report, openAiApi);
+        console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
+
+        const descriptorFileId = await this.syncActChatbotDescriptorFile(actChatbotWithRag, openAiApi);
+
+        const fullRagContent = `${reportText}\n\n${ragResponse.output_text}\n\n${actChatbot.description}`;
+
+        const { dbVectorStore } = await createAnalysisVectorStore({
+          openAiApi,
+          vectorStoreName: `analysis-act-${actChatbotId}`,
+          mainFileContent: fullRagContent,
+          mainFilename: "act-analysis.txt",
+          descriptorOpenaiFileId: descriptorFileId,
+        });
+
+        await prismaClient.companyActAnalysis.update({
+          where: { id: analysisWithRag.id },
+          data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id } as object,
+        });
+
+        report.aiDescription = ragResponse.output_text;
+
+        console.log(`[RAG/act] analysis ${analysisWithRag.id} updated with vectorStoreId=${dbVectorStore.id}`);
+      } catch (error) {
+        console.error(`[RAG/act] failed to create RAG for analysis ${analysisWithRag.id}:`, error);
+      }
+    } else if (analysisWithRag?.vectorStoreId) {
+      console.log(`[RAG/act] vector store already exists for analysis ${analysisWithRag.id}, skipping`);
+    }
+
+    return { available: true, report: { ...report } };
+  }
+
+  private async buildActRagResponse(
+    actChatbot: { name: string; reportInstructions: string | null },
+    report: AnalysisReport,
+    openAiApi: OpenAiApi,
+  ) {
+    const classify = (wellnessPercentage: number): string => {
+      const w = wellnessPercentage;
+      const r = 100 - w;
+      if (w >= 80 && r <= 20) return "🟢 Florescimento";
+      if (w >= 60 && r <= 40) return "🟢 Saudável";
+      if (r > 60 && w < 40) return "🔴 Risco Psicossocial";
+      if (r >= 80 && w <= 20) return "🔴 Zona Crítica";
+      return "🟡 Estagnação";
+    };
+
+    const score = Math.round(report.overall.wellnessPercentage);
+    const riskIndex = Math.round(100 - score);
+    const overallClassification = classify(report.overall.wellnessPercentage);
+
+    const riskFactors = report.factorWeights.filter((f) => f.wheight < 0).sort((a, b) => b.count - a.count);
+
+    const wellbeingFactors = report.factorWeights.filter((f) => f.wheight > 0).sort((a, b) => b.count - a.count);
+
+    const factorTable = (factors: FactorWeightItem[]) =>
+      factors.map((f, i) => `| ${i + 1} | ${f.name} | ${f.count} |`).join("\n");
+
+    const segmentTable = (groups: AnalysisSegmentGroup[]) =>
+      groups
+        .filter((g) => g.value !== null)
+        .sort((a, b) => b.wellnessPercentage - a.wellnessPercentage)
+        .map((g) => {
+          const bem = Math.round(g.positiveScore);
+          const risco = Math.round(Math.abs(g.negativeScore));
+          const idx = Math.round(g.wellnessPercentage);
+          return `| ${g.value} | ${bem} | ${risco} | ${idx} | ${classify(g.wellnessPercentage)} |`;
+        })
+        .join("\n");
+
+    const segmentSection = (title: string, groups: AnalysisSegmentGroup[]) => {
+      const rows = segmentTable(groups);
+      if (!rows) return null;
+      return [
+        `## ${title}`,
+        ``,
+        `| Nome | Bem-Estar | Risco | Índice | Classificação |`,
+        `|------|-----------|-------|--------|---------------|`,
+        rows,
+      ].join("\n");
+    };
+
+    const segments = [
+      segmentSection("COMPARAÇÃO POR GÊNERO", report.byGender),
+      segmentSection("COMPARAÇÃO POR GHE", report.bySimilarExposureGroup),
+      segmentSection("COMPARAÇÃO POR NÍVEL DE CARGO", report.byOccupationLevel),
+      segmentSection("COMPARAÇÃO POR FAIXA ETÁRIA", report.byAgeRange),
+      segmentSection("COMPARAÇÃO POR PcD", report.byDisability),
+    ]
+      .filter(Boolean)
+      .join("\n\n---\n\n");
+
+    const reportText = [
+      `# ATO`,
+      `**${actChatbot.name} — ${new Date().getFullYear()}**`,
+      ``,
+      `---`,
+      ``,
+      `## INFORMAÇÕES TÉCNICAS`,
+      ``,
+      `**PARTICIPANTES**`,
+      `${report.userCount}`,
+      ``,
+      `**TIPO DE AVALIAÇÃO**`,
+      `Ato`,
+      ``,
+      `---`,
+      ``,
+      `## RESUMO EXECUTIVO — ÍNDICE GERAL DA EMPRESA`,
+      ``,
+      `**ZUMIRA SCORE: ${score} / 100 — ${overallClassification.replace(/^[^ ]+ /, "")}**`,
+      ``,
+      `| | |`,
+      `|---|---|`,
+      `| **RISCOS PRIORITÁRIOS** | **FORÇAS ORGANIZACIONAIS** |`,
+      `| **${riskIndex}** — índice de risco psicossocial | **${score}%** — índice de bem-estar organizacional |`,
+      ``,
+      `---`,
+      ``,
+      `## RANKING DE RISCO PSICOSSOCIAL`,
+      ``,
+      `| Nº | Fator | Valor |`,
+      `|----|-------|-------|`,
+      factorTable(riskFactors),
+      ``,
+      `---`,
+      ``,
+      `## RANKING DE BEM-ESTAR NO TRABALHO`,
+      ``,
+      `| Nº | Fator | Valor |`,
+      `|----|-------|-------|`,
+      factorTable(wellbeingFactors),
+      ``,
+      `---`,
+      ``,
+      segments,
+    ].join("\n");
+
+    const response = await openAiApi.generateResponse({
+      messages: [{ role: "user", content: reportText }],
+      instructions: actChatbot.reportInstructions,
+    });
+
+    return { response, reportText };
+  }
+
+  private async syncActChatbotDescriptorFile(
+    actChatbot: { id: string; name: string; description: string; updatedAt: Date } & {
+      openaiFileId: string | null;
+      openaiFileSyncedAt: Date | null;
+    },
+    openAiApi: OpenAiApi,
+  ): Promise<string | null> {
+    return syncDescriptorFile({
+      openAiApi,
+      currentOpenaiFileId: actChatbot.openaiFileId,
+      openaiFileSyncedAt: actChatbot.openaiFileSyncedAt,
+      updatedAt: actChatbot.updatedAt,
+      fileContent: `Ato: ${actChatbot.name}\nDescrição: ${actChatbot.description}`,
+      filenamePrefix: `act-chatbot-${actChatbot.id}`,
+      checkInUse: () =>
+        prismaClient.companyActAnalysis.count({
+          where: {
+            actChatbotId: actChatbot.id,
+            vectorStore: { createdAt: { gte: actChatbot.openaiFileSyncedAt! } },
+          } as object,
+        }),
+      persistUpdate: (newFileId) =>
+        prismaClient.actChatbot
+          .update({
+            where: { id: actChatbot.id },
+            data: { openaiFileId: newFileId, openaiFileSyncedAt: new Date() } as object,
+          })
+          .then(() => undefined),
+    });
   }
 }
 

@@ -34,3 +34,16 @@ export type CreateActChapterRequest = z.infer<typeof CreateActChapterSchema> & {
 export type CompileActChapterRequest = z.infer<typeof CompileActChapterSchema> & { userId: string };
 
 export type UpdateActChapterRequest = z.infer<typeof UpdateActChapterSchema> & { userId: string };
+
+export const ActAnalysisMessageSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().min(1),
+      }),
+    )
+    .min(1),
+});
+
+export type ActAnalysisMessageRequest = z.infer<typeof ActAnalysisMessageSchema>;

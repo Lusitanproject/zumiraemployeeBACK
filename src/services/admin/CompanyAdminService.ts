@@ -1,4 +1,4 @@
-import { CompanyAssessmentFeedback } from "@prisma/client";
+import { CompanyAssessmentAnalysis } from "@prisma/client";
 
 import { CreateCompanyRequest, UpdateCompanyRequest } from "../../schemas/admin/company";
 import { SetCompanyAssessmentsRequest } from "../../schemas/company";
@@ -23,7 +23,7 @@ class CompanyAdminService {
 
     if (!user?.companyId) throw new PublicError("Usuário não está associado a uma empresa");
 
-    const allFeedbacks = await prismaClient.companyAssessmentFeedback.findMany({
+    const allFeedbacks = await prismaClient.companyAssessmentAnalysis.findMany({
       where: {
         companyId: user.companyId,
       },
@@ -32,7 +32,7 @@ class CompanyAdminService {
       },
     });
 
-    const aux: Record<string, CompanyAssessmentFeedback> = {};
+    const aux: Record<string, CompanyAssessmentAnalysis> = {};
     allFeedbacks.forEach((f) => {
       const id = f.assessmentId;
       if (!aux[id] || f.createdAt > aux[id].createdAt) aux[id] = f;

@@ -33,6 +33,30 @@ class ActAdminService {
     return { items: bots };
   }
 
+  async findById(id: string) {
+    const bot = await prismaClient.actChatbot.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        icon: true,
+        index: true,
+        trailId: true,
+        initialMessage: true,
+        messageInstructions: true,
+        compilationInstructions: true,
+        consultiveAiInstructions: true,
+        reportInstructions: true,
+        createdAt: true,
+      },
+    });
+
+    if (!bot) throw new PublicError("Act chatbot does not exist");
+
+    return bot;
+  }
+
   async findByTrail(trailId: string) {
     const bots = await prismaClient.actChatbot.findMany({
       select: this.actListSelect,
@@ -277,7 +301,7 @@ class ActAdminService {
       messages: [{ content: JSON.stringify(chapter.messages), role: "user" }],
     }));
 
-    const openai = new OpenAiApi();
+    const openai = new OpenAiApi({ model: "gpt-5.4" });
     const batchResult = await openai.createBatch({ instructions, batchItems });
 
     console.log(`Lote OpenAI criado com ${batchItems.length} itens`);
