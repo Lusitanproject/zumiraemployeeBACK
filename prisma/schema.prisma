@@ -135,7 +135,7 @@ model Company {
 
   trail                       Trail                        @relation(fields: [trailId], references: [id])
   users                       User[]
-  companyAssessmentFeedbacks  CompanyAssessmentFeedback[]
+  companyAssessmentAnalyses   CompanyAssessmentAnalysis[]
   companyAvailableAssessments CompanyAvailableAssessment[]
   companyActAnalyses          CompanyActAnalysis[]
 
@@ -174,7 +174,7 @@ model Assessment {
   nationality                 Nationality                  @relation(fields: [nationalityId], references: [id])
   assessmentQuestions         AssessmentQuestion[]
   assessmentResults           AssessmentResult[]
-  companyAssessmentFeedbacks  CompanyAssessmentFeedback[]
+  companyAssessmentAnalyses   CompanyAssessmentAnalysis[]
   assessmentResultRatings     AssessmentResultRating[]
   companyAvailableAssessments CompanyAvailableAssessment[]
 
@@ -306,7 +306,7 @@ model PsychologicalDimension {
   @@map("psychological_dimensions")
 }
 
-model CompanyAssessmentFeedback {
+model CompanyAssessmentAnalysis {
   id           String   @id @default(uuid())
   text         String
   companyId    String   @map("company_id")
@@ -318,7 +318,7 @@ model CompanyAssessmentFeedback {
   company    Company    @relation(fields: [companyId], references: [id])
   assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 
-  @@map("company_assessment_feedback")
+  @@map("company_assessment_analysis")
 }
 
 model Notification {

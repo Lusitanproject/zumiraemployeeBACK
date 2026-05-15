@@ -11,7 +11,7 @@ type CreateManyUsers = z.infer<typeof CreateManyUsersSchema>;
 
 class CompanyService {
   async findFeedback({ assessmentId, companyId }: FindCompanyFeedbackRequest) {
-    const feedback = await prismaClient.companyAssessmentFeedback.findFirst({
+    const feedback = await prismaClient.companyAssessmentAnalysis.findFirst({
       where: { companyId, assessmentId },
       select: { text: true, respondents: true, createdAt: true },
       orderBy: { createdAt: "desc" },

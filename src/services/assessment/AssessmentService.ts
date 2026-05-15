@@ -474,7 +474,7 @@ class AssessmentService {
 
     const response = await sendOpenAIMessage(assessment.companyFeedbackInstructions, message);
 
-    const assessmentFeedback = await prismaClient.companyAssessmentFeedback.create({
+    const assessmentFeedback = await prismaClient.companyAssessmentAnalysis.create({
       data: {
         text: response.output_text,
         companyId: company.id,
