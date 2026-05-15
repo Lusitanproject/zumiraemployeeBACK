@@ -59,6 +59,7 @@ interface SelfMonitoringBlockSummary {
 export type UserGroupColumn =
   | "gender"
   | "area"
+  | "similarExposureGroup"
   | "location"
   | "occupation"
   | "occupationLevel"
@@ -92,7 +93,7 @@ export type FindActAnalysisFactorWeightsResult =
 export type AnalysisReport = {
   userCount: number;
   overall: SegmentScores;
-  byArea: AnalysisSegmentGroup[];
+  bySimilarExposureGroup: AnalysisSegmentGroup[];
   byGender: AnalysisSegmentGroup[];
   byDisability: AnalysisSegmentGroup[];
   byOccupationLevel: AnalysisSegmentGroup[];
@@ -593,7 +594,8 @@ class ActService {
     companyId: string,
     actChatbotId: string,
     column: UserGroupColumn,
-    ranges?: RangeBucket[],
+    ranges?: RangeBucket[] | null,
+    valueMap?: Record<string, string | null>,
   ): Promise<FindActAnalysisSegmentsResult> {
     const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
     if (!analysis) return { available: false };
@@ -639,13 +641,15 @@ class ActService {
 
     const groups: AnalysisSegmentGroup[] = [];
     for (const [key, wheights] of byGroup) {
+      if (valueMap && key in valueMap && valueMap[key] === null) continue;
+      const label = valueMap?.[key] ?? (key === "null" ? null : key);
       const positiveScore = wheights.filter((w) => w > 0).reduce((s, w) => s + w, 0);
       const negativeScore = wheights.filter((w) => w <= 0).reduce((s, w) => s + w, 0);
       const totalScore = positiveScore + negativeScore;
       const absoluteScore = positiveScore + Math.abs(negativeScore);
       const wellnessPercentage = absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0;
       groups.push({
-        value: key === "null" ? null : key,
+        value: label,
         positiveScore,
         negativeScore,
         totalScore,
@@ -827,16 +831,16 @@ class ActService {
   }
 
   async generateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
-    const [byArea, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] = await Promise.all([
-      this.findAnalysisSegments(companyId, actChatbotId, "area"),
-      this.findAnalysisSegments(companyId, actChatbotId, "gender"),
-      this.findAnalysisSegments(companyId, actChatbotId, "hasDisability"),
+    const [bySimilarExposureGroup, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] = await Promise.all([
+      this.findAnalysisSegments(companyId, actChatbotId, "similarExposureGroup"),
+      this.findAnalysisSegments(companyId, actChatbotId, "gender", null, { MALE: "Masculino", FEMALE: "Feminino", OTHER: "Outros Gêneros" }),
+      this.findAnalysisSegments(companyId, actChatbotId, "hasDisability", null, { true: "PcD", false: null }),
       this.findAnalysisSegments(companyId, actChatbotId, "occupationLevel"),
       this.findAnalysisSegments(companyId, actChatbotId, "age", [{ label: "60+", min: 60, max: Infinity }]),
       this.findAnalysisFactorWeights(companyId, actChatbotId),
     ]);
 
-    if (!byArea.available) return { available: false };
+    if (!bySimilarExposureGroup.available) return { available: false };
 
     const factorWeights = weightsResult.available ? weightsResult.factors : [];
     const positiveScore = factorWeights.filter((f) => f.wheight > 0).reduce((s, f) => s + f.totalWeight, 0);
@@ -856,7 +860,7 @@ class ActService {
       report: {
         userCount: weightsResult.available ? weightsResult.userCount : 0,
         overall,
-        byArea: byArea.groups,
+        bySimilarExposureGroup: bySimilarExposureGroup.groups,
         byGender: byGender.available ? byGender.groups : [],
         byDisability: byDisability.available ? byDisability.groups : [],
         byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
