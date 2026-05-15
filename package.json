@@ -7,7 +7,7 @@
     "dev": "ts-node-dev src/server.ts",
     "build": "tsc --build",
     "start": "node dist/server.js",
-    "vercel-build": "tsc --build && prisma generate && prisma migrate deploy",
+    "vercel-build": "prisma generate && tsc --build && prisma migrate deploy",
     "prisma:generate": "prisma generate",
     "lint": "eslint .",
     "migrate": "prisma format && prisma generate && prisma migrate dev --create-only"
