@@ -7,6 +7,7 @@ import { GenerateAllUserFeedbackController } from "../../controllers/admin/compa
 import { SetCompanyAssessmentsController } from "../../controllers/admin/companies/SetCompanyAssessmentsController";
 import { UpdateCompanyController } from "../../controllers/admin/companies/UpdateCompanyController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminCompanyRouter = Router();
 
@@ -124,7 +125,7 @@ adminCompanyRouter.get("/feedback", isAuthenticated, new FindAllFeedbacksControl
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminCompanyRouter.post("/", isAuthenticated, new CreateCompanyController().handle);
+adminCompanyRouter.post("/", isAuthenticated, requirePermissions(["manage-company"]), new CreateCompanyController().handle);
 
 /**
  * @swagger

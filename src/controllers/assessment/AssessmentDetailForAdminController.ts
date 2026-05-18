@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { AssessmentAdminService } from "../../services/admin/AssessmentAdminService";
-import { assertPermissions } from "../../utils/assertPermissions";
 import { parseZodError } from "../../utils/parseZodError";
 
 const GetAssessmentDetailForAdminSchema = z.object({
@@ -11,9 +10,7 @@ const GetAssessmentDetailForAdminSchema = z.object({
 
 class AssessmentDetailForAdminController {
   async handle(req: Request, res: Response) {
-    assertPermissions(req.user, "read-assessment");
-
-    const { success, data, error } = GetAssessmentDetailForAdminSchema.safeParse(req.params);
+const { success, data, error } = GetAssessmentDetailForAdminSchema.safeParse(req.params);
 
     if (!success) {
       return res.status(400).json({

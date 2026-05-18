@@ -17,6 +17,7 @@ import { ListCompanyAssessmentsController } from "../controllers/assessment/List
 import { ListResultsController } from "../controllers/assessment/ListResultsController";
 import { UpdateQuestionsController } from "../controllers/assessment/UpdateQuestionsController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { requirePermissions } from "../middlewares/requirePermissions";
 
 const assessmentRouter = Router();
 
@@ -149,7 +150,7 @@ assessmentRouter.get("/results/:id", isAuthenticated, new DetailResultController
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.post("/results", isAuthenticated, new CreateResultController().handle);
+assessmentRouter.post("/results", isAuthenticated, requirePermissions(["answer-assessment"]), new CreateResultController().handle);
 
 /**
  * @swagger
@@ -213,8 +214,10 @@ assessmentRouter.post("/results", isAuthenticated, new CreateResultController().
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.post("/questions", isAuthenticated, new CreateQuestionController().handle);
+assessmentRouter.post("/questions", isAuthenticated, requirePermissions(["manage-question"]), new CreateQuestionController().handle);
 
 /**
  * @swagger
@@ -493,7 +496,7 @@ assessmentRouter.get("/:id/results/user-filters", isAuthenticated, new GetAssess
  */
 assessmentRouter.get("/:id/results", isAuthenticated, new SearchAssessmentResultsController().handle);
 
-assessmentRouter.get("/:id", isAuthenticated, new DetailAssessmentController().handle);
+assessmentRouter.get("/:id", isAuthenticated, requirePermissions(["read-assessment"]), new DetailAssessmentController().handle);
 
 /**
  * @swagger

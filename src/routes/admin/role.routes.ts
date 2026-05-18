@@ -7,6 +7,7 @@ import { FindRoleController } from "../../controllers/admin/roles/FindRoleContro
 import { SetRolePermissionsController } from "../../controllers/admin/roles/SetRolePermissionsController";
 import { UpdateRoleController } from "../../controllers/admin/roles/UpdateRoleController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminRoleRouter = Router();
 
@@ -129,7 +130,7 @@ adminRoleRouter.get("/:id", isAuthenticated, new FindRoleController().handle);
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminRoleRouter.post("/", isAuthenticated, new CreateRoleController().handle);
+adminRoleRouter.post("/", isAuthenticated, requirePermissions(["manage-roles"]), new CreateRoleController().handle);
 
 /**
  * @swagger

@@ -10,6 +10,7 @@ import { GenerateExcelReportController } from "../../controllers/admin/assessmen
 import { UpdateAssessmentController } from "../../controllers/admin/assessments/UpdateAssessmentController";
 import { UpdateResultRatingsController } from "../../controllers/admin/assessments/UpdateResultRatingsController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminAssessmentRouter = Router();
 
@@ -374,10 +375,12 @@ adminAssessmentRouter.post("/duplicate/:id", isAuthenticated, new DuplicateAsses
  *                             $ref: '#/components/schemas/AssessmentResultRating'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.get("/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
+adminAssessmentRouter.get("/:id", isAuthenticated, requirePermissions(["read-assessment"]), new AssessmentDetailForAdminController().handle);
 
 /**
  * @swagger

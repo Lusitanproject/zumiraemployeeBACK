@@ -5,7 +5,6 @@ import { UpdateUserSchema } from "../../schemas/admin/users";
 import { CompanyService } from "../../services/company/CompanyService";
 import { RoleAdminService } from "../../services/admin/RoleAdminService";
 import { UserService } from "../../services/user/UserService";
-import { assertPermissions } from "../../utils/assertPermissions";
 import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
@@ -14,9 +13,7 @@ const RequestParams = z.object({
 
 class UpdateUserController {
   async handle(req: Request, res: Response) {
-    assertPermissions(req.user, "manage-users");
-
-    const { id } = RequestParams.parse(req.params);
+const { id } = RequestParams.parse(req.params);
     const { success, data, error } = UpdateUserSchema.safeParse(req.body);
 
     if (!success) {
