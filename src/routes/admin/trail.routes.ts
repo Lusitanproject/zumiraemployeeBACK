@@ -5,6 +5,7 @@ import { FindAllTrailsController } from "../../controllers/admin/trails/FindAllT
 import { FindTrailController } from "../../controllers/admin/trails/FindTrailController";
 import { UpdateTrailController } from "../../controllers/admin/trails/UpdateTrailController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminTrailRouter = Router();
 
@@ -17,6 +18,7 @@ const adminTrailRouter = Router();
  *       Cria uma nova trilha/programa de intervenção.
  *       Trilhas agrupam ACTs em sequência e são vinculadas a empresas.
  *       Ao criar uma empresa (`POST /admin/companies`), ela é vinculada a uma trilha, determinando quais ACTs seus colaboradores terão acesso.
+ *       Requer permissão `manage-trails`.
  *     tags: [Admin - Trails]
  *     security:
  *       - bearerAuth: []
@@ -57,15 +59,17 @@ const adminTrailRouter = Router();
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminTrailRouter.post("/", isAuthenticated, new CreateTrailController().handle);
+adminTrailRouter.post("/", isAuthenticated, requirePermissions(["manage-trails"]), new CreateTrailController().handle);
 
 /**
  * @swagger
  * /admin/trails:
  *   get:
  *     summary: "[Admin] Listar trilhas"
- *     description: Retorna todas as trilhas/programas de intervenção cadastrados no sistema.
+ *     description: "Retorna todas as trilhas/programas de intervenção cadastrados no sistema. Requer permissão `manage-trails`."
  *     tags: [Admin - Trails]
  *     security:
  *       - bearerAuth: []
@@ -86,15 +90,17 @@ adminTrailRouter.post("/", isAuthenticated, new CreateTrailController().handle);
  *                     $ref: '#/components/schemas/Trail'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminTrailRouter.get("/", isAuthenticated, new FindAllTrailsController().handle);
+adminTrailRouter.get("/", isAuthenticated, requirePermissions(["manage-trails"]), new FindAllTrailsController().handle);
 
 /**
  * @swagger
  * /admin/trails/{id}:
  *   get:
  *     summary: "[Admin] Detalhar trilha"
- *     description: Retorna os dados de uma trilha específica, incluindo os ACTs vinculados.
+ *     description: "Retorna os dados de uma trilha específica, incluindo os ACTs vinculados. Requer permissão `manage-trails`."
  *     tags: [Admin - Trails]
  *     security:
  *       - bearerAuth: []
@@ -128,17 +134,19 @@ adminTrailRouter.get("/", isAuthenticated, new FindAllTrailsController().handle)
  *                             $ref: '#/components/schemas/ActChatbot'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminTrailRouter.get("/:id", isAuthenticated, new FindTrailController().handle);
+adminTrailRouter.get("/:id", isAuthenticated, requirePermissions(["manage-trails"]), new FindTrailController().handle);
 
 /**
  * @swagger
  * /admin/trails/{id}:
  *   put:
  *     summary: "[Admin] Atualizar trilha"
- *     description: Atualiza os dados de uma trilha. Todos os campos são opcionais.
+ *     description: "Atualiza os dados de uma trilha. Todos os campos são opcionais. Requer permissão `manage-trails`."
  *     tags: [Admin - Trails]
  *     security:
  *       - bearerAuth: []
@@ -178,9 +186,11 @@ adminTrailRouter.get("/:id", isAuthenticated, new FindTrailController().handle);
  *                   $ref: '#/components/schemas/Trail'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminTrailRouter.put("/:id", isAuthenticated, new UpdateTrailController().handle);
+adminTrailRouter.put("/:id", isAuthenticated, requirePermissions(["manage-trails"]), new UpdateTrailController().handle);
 
 export { adminTrailRouter };

@@ -10,6 +10,7 @@ import { UpdateManyActChatbotsController } from "../../controllers/admin/acts/Up
 import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
 import { OverrideFactorAssociationsController } from "../../controllers/admin/acts/OverrideFactorAssociationsController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminActRouter = Router();
 
@@ -18,7 +19,7 @@ const adminActRouter = Router();
  * /admin/acts:
  *   get:
  *     summary: "[Admin] Listar todos os ACTs"
- *     description: Retorna todos os chatbots narrativos (ACTs) cadastrados no sistema, independente de trilha ou empresa.
+ *     description: "Retorna todos os chatbots narrativos (ACTs) cadastrados no sistema, independente de trilha ou empresa. Requer permissão `manage-acts`."
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -39,15 +40,17 @@ const adminActRouter = Router();
  *                     $ref: '#/components/schemas/ActChatbot'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.get("/", isAuthenticated, new FindAllActChatbotsController().handle);
+adminActRouter.get("/", isAuthenticated, requirePermissions(["manage-acts"]), new FindAllActChatbotsController().handle);
 
 /**
  * @swagger
  * /admin/acts/by-trail:
  *   get:
  *     summary: "[Admin] Listar ACTs de uma trilha"
- *     description: Retorna os ACTs pertencentes a uma trilha específica, ordenados por `index`.
+ *     description: "Retorna os ACTs pertencentes a uma trilha específica, ordenados por `index`. Requer permissão `manage-acts`."
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -76,8 +79,10 @@ adminActRouter.get("/", isAuthenticated, new FindAllActChatbotsController().hand
  *                     $ref: '#/components/schemas/ActChatbot'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.get("/by-trail", isAuthenticated, new FindByTrailController().handle);
+adminActRouter.get("/by-trail", isAuthenticated, requirePermissions(["manage-acts"]), new FindByTrailController().handle);
 
 /**
  * @swagger
@@ -86,6 +91,7 @@ adminActRouter.get("/by-trail", isAuthenticated, new FindByTrailController().han
  *     summary: "[Admin] Atualizar múltiplos ACTs em lote"
  *     description: >
  *       Atualiza vários ACTs de uma vez. Útil para reordenar ACTs dentro de uma trilha (alterar o campo `index` de vários ao mesmo tempo).
+ *       Requer permissão `manage-acts`.
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -140,8 +146,10 @@ adminActRouter.get("/by-trail", isAuthenticated, new FindByTrailController().han
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.put("/update-many", isAuthenticated, new UpdateManyActChatbotsController().handle);
+adminActRouter.put("/update-many", isAuthenticated, requirePermissions(["manage-acts"]), new UpdateManyActChatbotsController().handle);
 
 /**
  * @swagger
@@ -151,6 +159,7 @@ adminActRouter.put("/update-many", isAuthenticated, new UpdateManyActChatbotsCon
  *     description: >
  *       Recebe uma lista de pares `(associationId, newFactorId)`. Para cada par, cria uma nova associação
  *       com `author = HUMAN` e o novo fator, e marca a associação original como `effective = false`.
+ *       Requer permissão `manage-acts`.
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -191,15 +200,17 @@ adminActRouter.put("/update-many", isAuthenticated, new UpdateManyActChatbotsCon
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.put("/analysis/factor-associations", isAuthenticated, new OverrideFactorAssociationsController().handle);
+adminActRouter.put("/analysis/factor-associations", isAuthenticated, requirePermissions(["manage-acts"]), new OverrideFactorAssociationsController().handle);
 
 /**
  * @swagger
  * /admin/acts/{id}:
  *   get:
  *     summary: "[Admin] Detalhar ACT"
- *     description: Retorna os dados completos de um ACT, incluindo todos os campos de instrução de IA.
+ *     description: "Retorna os dados completos de um ACT, incluindo todos os campos de instrução de IA. Requer permissão `manage-acts`."
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -226,10 +237,12 @@ adminActRouter.put("/analysis/factor-associations", isAuthenticated, new Overrid
  *                   $ref: '#/components/schemas/ActChatbot'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminActRouter.get("/:id", isAuthenticated, new FindActChatbotController().handle);
+adminActRouter.get("/:id", isAuthenticated, requirePermissions(["manage-acts"]), new FindActChatbotController().handle);
 
 /**
  * @swagger
@@ -239,6 +252,7 @@ adminActRouter.get("/:id", isAuthenticated, new FindActChatbotController().handl
  *     description: >
  *       Atualiza os dados de um ACT. Todos os campos são opcionais.
  *       `messageInstructions` e `compilationInstructions` são prompts de sistema para a IA — alterar esses campos impacta diretamente o comportamento do chatbot e a qualidade das narrativas geradas.
+ *       Requer permissão `manage-acts`.
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -296,10 +310,12 @@ adminActRouter.get("/:id", isAuthenticated, new FindActChatbotController().handl
  *                   $ref: '#/components/schemas/ActChatbot'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminActRouter.put("/:id", isAuthenticated, new UpdateActChatbotController().handle);
+adminActRouter.put("/:id", isAuthenticated, requirePermissions(["manage-acts"]), new UpdateActChatbotController().handle);
 
 /**
  * @swagger
@@ -311,6 +327,7 @@ adminActRouter.put("/:id", isAuthenticated, new UpdateActChatbotController().han
  *       `initialMessage` é a primeira mensagem exibida ao usuário ao iniciar o ACT.
  *       `messageInstructions` é o prompt de sistema que guia a IA durante a conversa.
  *       `compilationInstructions` é o prompt de sistema usado na compilação final do capítulo.
+ *       Requer permissão `manage-acts`.
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -363,8 +380,10 @@ adminActRouter.put("/:id", isAuthenticated, new UpdateActChatbotController().han
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.post("/", isAuthenticated, new CreateActChatbotController().handle);
+adminActRouter.post("/", isAuthenticated, requirePermissions(["manage-acts"]), new CreateActChatbotController().handle);
 
 /**
  * @swagger
@@ -376,6 +395,7 @@ adminActRouter.post("/", isAuthenticated, new CreateActChatbotController().handl
  *       O `chatbaseChatbotId` é o ID do chatbot na plataforma Chatbase.
  *       Os capítulos importados terão o campo `externalId` preenchido com o ID da conversa no Chatbase.
  *       Retorna os dados estruturados dos usuários e conversas importados.
+ *       Requer permissão `manage-acts`.
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -417,10 +437,12 @@ adminActRouter.post("/", isAuthenticated, new CreateActChatbotController().handl
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, new ImportChatbaseChaptersController().handle);
+adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, requirePermissions(["manage-acts"]), new ImportChatbaseChaptersController().handle);
 
 /**
  * @swagger
@@ -431,6 +453,7 @@ adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, new Import
  *       Dispara a análise em lote (batch) dos capítulos de um ACT para todos os colaboradores de uma empresa.
  *       A análise identifica os fatores psicossociais presentes nas mensagens dos capítulos usando a API de batch da OpenAI.
  *       O processamento é assíncrono — o status pode ser acompanhado pelos campos `BatchStatus`.
+ *       Requer permissão `manage-acts`.
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -460,7 +483,9 @@ adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, new Import
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.post("/:actChatbotId/analysis", isAuthenticated, new GenerateActAnalysisController().handle);
+adminActRouter.post("/:actChatbotId/analysis", isAuthenticated, requirePermissions(["manage-acts"]), new GenerateActAnalysisController().handle);
 
 export { adminActRouter };

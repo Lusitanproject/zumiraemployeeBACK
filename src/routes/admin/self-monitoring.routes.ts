@@ -6,6 +6,7 @@ import { EditSelfMonitoringBlocksController } from "../../controllers/admin/self
 import { ListAllSelfMonitoringBlocksController } from "../../controllers/admin/self-monitoring/FindAllSelfMonitoringBlocksController";
 import { FindSelfMonitoringBlocksController } from "../../controllers/admin/self-monitoring/FindSelfMonitoringBlockController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminSelfMonitoringRouter = Router();
 
@@ -14,7 +15,7 @@ const adminSelfMonitoringRouter = Router();
  * /admin/self-monitoring:
  *   get:
  *     summary: "[Admin] Listar blocos de automonitoramento"
- *     description: Retorna todos os blocos temáticos de automonitoramento cadastrados no sistema.
+ *     description: "Retorna todos os blocos temáticos de automonitoramento cadastrados no sistema. Requer permissão `manage-self-monitoring`."
  *     tags: [Admin - Self-Monitoring]
  *     security:
  *       - bearerAuth: []
@@ -35,8 +36,10 @@ const adminSelfMonitoringRouter = Router();
  *                     $ref: '#/components/schemas/SelfMonitoringBlock'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminSelfMonitoringRouter.get("/", isAuthenticated, new ListAllSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRouter.get("/", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new ListAllSelfMonitoringBlocksController().handle);
 
 /**
  * @swagger
@@ -47,6 +50,7 @@ adminSelfMonitoringRouter.get("/", isAuthenticated, new ListAllSelfMonitoringBlo
  *       Cria um novo bloco temático de automonitoramento.
  *       Blocos agrupam avaliações e dimensões psicológicas de uma mesma área (ex: 'Saúde Mental', 'Ambiente de Trabalho').
  *       O `icon` é um identificador de ícone para exibição na interface.
+ *       Requer permissão `manage-self-monitoring`.
  *     tags: [Admin - Self-Monitoring]
  *     security:
  *       - bearerAuth: []
@@ -86,15 +90,17 @@ adminSelfMonitoringRouter.get("/", isAuthenticated, new ListAllSelfMonitoringBlo
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminSelfMonitoringRouter.post("/", isAuthenticated, new CreateSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRouter.post("/", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new CreateSelfMonitoringBlocksController().handle);
 
 /**
  * @swagger
  * /admin/self-monitoring/{id}:
  *   put:
  *     summary: "[Admin] Atualizar bloco de automonitoramento"
- *     description: Atualiza os dados de um bloco de automonitoramento. Todos os campos são opcionais.
+ *     description: "Atualiza os dados de um bloco de automonitoramento. Todos os campos são opcionais. Requer permissão `manage-self-monitoring`."
  *     tags: [Admin - Self-Monitoring]
  *     security:
  *       - bearerAuth: []
@@ -134,17 +140,19 @@ adminSelfMonitoringRouter.post("/", isAuthenticated, new CreateSelfMonitoringBlo
  *                   $ref: '#/components/schemas/SelfMonitoringBlock'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminSelfMonitoringRouter.put("/:id", isAuthenticated, new EditSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRouter.put("/:id", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new EditSelfMonitoringBlocksController().handle);
 
 /**
  * @swagger
  * /admin/self-monitoring/dimensions/{selfMonitoringBlockId}:
  *   get:
  *     summary: "[Admin] Listar dimensões de um bloco de automonitoramento"
- *     description: Retorna todas as dimensões psicológicas vinculadas a um bloco específico.
+ *     description: "Retorna todas as dimensões psicológicas vinculadas a um bloco específico. Requer permissão `manage-self-monitoring`."
  *     tags: [Admin - Self-Monitoring]
  *     security:
  *       - bearerAuth: []
@@ -173,17 +181,19 @@ adminSelfMonitoringRouter.put("/:id", isAuthenticated, new EditSelfMonitoringBlo
  *                     $ref: '#/components/schemas/PsychologicalDimension'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminSelfMonitoringRouter.get("/dimensions/:selfMonitoringBlockId", isAuthenticated, new FindDimensionByBlockController().handle);
+adminSelfMonitoringRouter.get("/dimensions/:selfMonitoringBlockId", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new FindDimensionByBlockController().handle);
 
 /**
  * @swagger
  * /admin/self-monitoring/{id}:
  *   get:
  *     summary: "[Admin] Detalhar bloco de automonitoramento"
- *     description: Retorna os dados de um bloco de automonitoramento específico.
+ *     description: "Retorna os dados de um bloco de automonitoramento específico. Requer permissão `manage-self-monitoring`."
  *     tags: [Admin - Self-Monitoring]
  *     security:
  *       - bearerAuth: []
@@ -210,9 +220,11 @@ adminSelfMonitoringRouter.get("/dimensions/:selfMonitoringBlockId", isAuthentica
  *                   $ref: '#/components/schemas/SelfMonitoringBlock'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminSelfMonitoringRouter.get("/:id", isAuthenticated, new FindSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRouter.get("/:id", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new FindSelfMonitoringBlocksController().handle);
 
 export { adminSelfMonitoringRouter };

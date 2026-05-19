@@ -17,6 +17,7 @@ import { MessageActChatbotController } from "../controllers/act/MessageActChatbo
 import { MoveToNextActController } from "../controllers/act/MoveToNextActController";
 import { UpdateActChapterController } from "../controllers/act/UpdateActChapterController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { requirePermissions } from "../middlewares/requirePermissions";
 
 const actRouter = Router();
 
@@ -25,14 +26,19 @@ const actRouter = Router();
  * /acts/by-company:
  *   get:
  *     summary: Listar ACTs de uma empresa
+ *     description: "Requer permissão `answer-act`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: ACTs disponíveis para a empresa
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/by-company", isAuthenticated, new FindByCompanyController().handle);
+actRouter.get("/by-company", isAuthenticated, requirePermissions(["answer-act"]), new FindByCompanyController().handle);
 
 /**
  * @swagger
@@ -44,6 +50,7 @@ actRouter.get("/by-company", isAuthenticated, new FindByCompanyController().hand
  *       com base na trilha da empresa à qual ele pertence.
  *       Cada ACT representa uma narrativa reflexiva/terapêutica que o usuário realiza em capítulos.
  *       Inclui o progresso atual do usuário em cada ACT.
+ *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -64,8 +71,10 @@ actRouter.get("/by-company", isAuthenticated, new FindByCompanyController().hand
  *                     $ref: '#/components/schemas/ActChatbot'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/", isAuthenticated, new GetActsDataController().handle);
+actRouter.get("/", isAuthenticated, requirePermissions(["answer-act"]), new GetActsDataController().handle);
 
 /**
  * @swagger
@@ -76,6 +85,7 @@ actRouter.get("/", isAuthenticated, new GetActsDataController().handle);
  *       Retorna os dados de um capítulo específico, incluindo o histórico de mensagens da conversa.
  *       Um capítulo (`ActChapter`) é a sessão individual de um usuário com um ACT.
  *       O histórico de mensagens inclui tanto as mensagens do usuário quanto as respostas do chatbot.
+ *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -109,10 +119,12 @@ actRouter.get("/", isAuthenticated, new GetActsDataController().handle);
  *                             $ref: '#/components/schemas/ActChapterMessage'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-actRouter.get("/chapters", isAuthenticated, new GetActChapterController().handle);
+actRouter.get("/chapters", isAuthenticated, requirePermissions(["answer-act"]), new GetActChapterController().handle);
 
 /**
  * @swagger
@@ -123,6 +135,7 @@ actRouter.get("/chapters", isAuthenticated, new GetActChapterController().handle
  *       Retorna a narrativa completa do usuário — a compilação de todos os capítulos já concluídos.
  *       Cada capítulo tem um campo `compilation` com a narrativa compilada pela IA.
  *       Este endpoint agrega todos os capítulos compilados do usuário na trilha atual.
+ *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -146,8 +159,10 @@ actRouter.get("/chapters", isAuthenticated, new GetActChapterController().handle
  *                         $ref: '#/components/schemas/ActChapter'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/full-story", isAuthenticated, new GetFullStoryController().handle);
+actRouter.get("/full-story", isAuthenticated, requirePermissions(["answer-act"]), new GetFullStoryController().handle);
 
 /**
  * @swagger
@@ -158,6 +173,7 @@ actRouter.get("/full-story", isAuthenticated, new GetFullStoryController().handl
  *       Avança o progresso do usuário para o próximo ACT na trilha.
  *       Atualiza o campo `currentActChatbotId` do usuário para apontar para o próximo ACT disponível.
  *       Deve ser chamado após a conclusão do ACT atual.
+ *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -176,10 +192,12 @@ actRouter.get("/full-story", isAuthenticated, new GetFullStoryController().handl
  *                   $ref: '#/components/schemas/ActChatbot'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-actRouter.put("/next", isAuthenticated, new MoveToNextActController().handle);
+actRouter.put("/next", isAuthenticated, requirePermissions(["answer-act"]), new MoveToNextActController().handle);
 
 /**
  * @swagger
@@ -190,6 +208,7 @@ actRouter.put("/next", isAuthenticated, new MoveToNextActController().handle);
  *       Envia uma mensagem do usuário ao chatbot de um capítulo de ACT e retorna a resposta da IA.
  *       A mensagem é salva no histórico do capítulo com `role: "user"`, e a resposta com `role: "assistant"`.
  *       A IA utiliza as `messageInstructions` do ACT e o histórico anterior do capítulo como contexto.
+ *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -227,8 +246,10 @@ actRouter.put("/next", isAuthenticated, new MoveToNextActController().handle);
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post("/message", isAuthenticated, new MessageActChatbotController().handle);
+actRouter.post("/message", isAuthenticated, requirePermissions(["answer-act"]), new MessageActChatbotController().handle);
 
 /**
  * @swagger
@@ -239,6 +260,7 @@ actRouter.post("/message", isAuthenticated, new MessageActChatbotController().ha
  *       Inicia um novo capítulo para o usuário num ACT específico.
  *       `type: "REGULAR"` cria um capítulo normal de usuário.
  *       `type: "ADMIN_TEST"` cria um capítulo de teste para administradores validarem o chatbot sem afetar dados reais.
+ *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -277,8 +299,10 @@ actRouter.post("/message", isAuthenticated, new MessageActChatbotController().ha
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post("/new-chapter", isAuthenticated, new CreateActChapterController().handle);
+actRouter.post("/new-chapter", isAuthenticated, requirePermissions(["answer-act"]), new CreateActChapterController().handle);
 
 /**
  * @swagger
@@ -289,6 +313,7 @@ actRouter.post("/new-chapter", isAuthenticated, new CreateActChapterController()
  *       Dispara a compilação do capítulo via IA, gerando a narrativa final a partir do histórico de mensagens.
  *       A IA usa as `compilationInstructions` do ACT para transformar a conversa em texto narrativo.
  *       O resultado é salvo no campo `compilation` do capítulo (anteriormente `null`).
+ *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -322,15 +347,19 @@ actRouter.post("/new-chapter", isAuthenticated, new CreateActChapterController()
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post("/chapters/compile", isAuthenticated, new CompileActChapterController().handle);
+actRouter.post("/chapters/compile", isAuthenticated, requirePermissions(["answer-act"]), new CompileActChapterController().handle);
 
 /**
  * @swagger
  * /acts/chapters/{actChapterId}:
  *   put:
  *     summary: Atualizar capítulo de ACT
- *     description: Atualiza o título ou a compilação de um capítulo. Permite ao usuário ou admin editar manualmente a narrativa compilada.
+ *     description: >
+ *       Atualiza o título ou a compilação de um capítulo. Permite ao usuário ou admin editar manualmente a narrativa compilada.
+ *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -371,70 +400,110 @@ actRouter.post("/chapters/compile", isAuthenticated, new CompileActChapterContro
  *                   $ref: '#/components/schemas/ActChapter'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-actRouter.put("/chapters/:actChapterId", isAuthenticated, new UpdateActChapterController().handle);
+actRouter.put("/chapters/:actChapterId", isAuthenticated, requirePermissions(["answer-act"]), new UpdateActChapterController().handle);
 
 /**
  * @swagger
- * /acts/{id}/analysis/user-filters:
+ * /acts/{actChatbotId}/analysis/message:
+ *   post:
+ *     summary: "[Admin] Analisar mensagem de ACT"
+ *     description: "Requer permissão `manage-acts`."
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Análise gerada
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+actRouter.post("/:actChatbotId/analysis/message", isAuthenticated, requirePermissions(["manage-acts"]), new AnalysisMessageController().handle);
+
+/**
+ * @swagger
+ * /acts/{actChatbotId}/analysis/user-filters:
  *   get:
- *     summary: Filtros de usuário disponíveis na análise
+ *     summary: "[Admin] Filtros de usuário disponíveis na análise"
+ *     description: "Requer permissão `manage-acts`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Filtros disponíveis
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post("/:actChatbotId/analysis/message", isAuthenticated, new AnalysisMessageController().handle);
-
-actRouter.get("/:actChatbotId/analysis/user-filters", isAuthenticated, new GetAnalysisUserFiltersController().handle);
+actRouter.get("/:actChatbotId/analysis/user-filters", isAuthenticated, requirePermissions(["manage-acts"]), new GetAnalysisUserFiltersController().handle);
 
 /**
  * @swagger
- * /acts/{id}/analysis/summary:
+ * /acts/{actChatbotId}/analysis/summary:
  *   get:
- *     summary: Sumário de scores da análise de ACT
+ *     summary: "[Admin] Sumário de scores da análise de ACT"
+ *     description: "Requer permissão `manage-acts`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Scores consolidados
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:actChatbotId/analysis/summary", isAuthenticated, new FindActAnalysisSummaryController().handle);
+actRouter.get("/:actChatbotId/analysis/summary", isAuthenticated, requirePermissions(["manage-acts"]), new FindActAnalysisSummaryController().handle);
 
 /**
  * @swagger
  * /acts/{actChatbotId}/analysis/report:
  *   get:
- *     summary: Obter relatório de análise de ACT
+ *     summary: "[Admin] Obter relatório de análise de ACT"
+ *     description: "Requer permissão `manage-acts`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Relatório de análise
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:actChatbotId/analysis/report", isAuthenticated, new GenerateAnalysisReportController().handle);
+actRouter.get("/:actChatbotId/analysis/report", isAuthenticated, requirePermissions(["manage-acts"]), new GenerateAnalysisReportController().handle);
 
 /**
  * @swagger
  * /acts/{actChatbotId}/analysis/factors/{factorId}/messages:
  *   get:
- *     summary: Listar mensagens de um fator psicossocial na análise
+ *     summary: "[Admin] Listar mensagens de um fator psicossocial na análise"
+ *     description: "Requer permissão `manage-acts`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Mensagens associadas ao fator
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
 actRouter.get(
   "/:actChatbotId/analysis/factors/:factorId/messages",
   isAuthenticated,
+  requirePermissions(["manage-acts"]),
   new FindActAnalysisFactorMessagesController().handle,
 );
 
@@ -442,28 +511,38 @@ actRouter.get(
  * @swagger
  * /acts/{actChatbotId}/analysis:
  *   get:
- *     summary: Buscar análise de ACT da empresa
+ *     summary: "[Admin] Buscar análise de ACT da empresa"
+ *     description: "Requer permissão `manage-acts`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Itens paginados da análise
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:actChatbotId/analysis", isAuthenticated, new FindActAnalysisController().handle);
+actRouter.get("/:actChatbotId/analysis", isAuthenticated, requirePermissions(["manage-acts"]), new FindActAnalysisController().handle);
 
 /**
  * @swagger
  * /acts/{id}:
  *   get:
  *     summary: Detalhar ACT
+ *     description: "Requer permissão `answer-act`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Dados do ACT
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:id", isAuthenticated, new FindActChatbotController().handle);
+actRouter.get("/:id", isAuthenticated, requirePermissions(["answer-act"]), new FindActChatbotController().handle);
 
 export { actRouter };

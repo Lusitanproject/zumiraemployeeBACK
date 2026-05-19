@@ -6,6 +6,7 @@ import { FindAllPsychosocialFactorsController } from "../../controllers/admin/ps
 import { FindPsychosocialFactorController } from "../../controllers/admin/psychosocial-factors/FindPsychosocialFactorController";
 import { UpdatePsychosocialFactorController } from "../../controllers/admin/psychosocial-factors/UpdatePsychosocialFactorController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminPsychosocialFactorRouter = Router();
 
@@ -18,6 +19,7 @@ const adminPsychosocialFactorRouter = Router();
  *       Retorna todos os fatores de risco psicossocial cadastrados.
  *       Fatores psicossociais são temáticas identificadas nas análises de ACT (ex: 'Sobrecarga de trabalho', 'Falta de reconhecimento').
  *       Cada fator possui um `wheight` (peso) que indica sua relevância relativa na análise.
+ *       Requer permissão `manage-psychosocial-factors`.
  *     tags: [Admin - Psychosocial Factors]
  *     security:
  *       - bearerAuth: []
@@ -38,8 +40,10 @@ const adminPsychosocialFactorRouter = Router();
  *                     $ref: '#/components/schemas/PsychosocialFactor'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminPsychosocialFactorRouter.get("/", isAuthenticated, new FindAllPsychosocialFactorsController().handle);
+adminPsychosocialFactorRouter.get("/", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new FindAllPsychosocialFactorsController().handle);
 
 /**
  * @swagger
@@ -50,6 +54,7 @@ adminPsychosocialFactorRouter.get("/", isAuthenticated, new FindAllPsychosocialF
  *       Cria um novo fator de risco psicossocial.
  *       O campo `wheight` (peso, com typo no schema original) define a relevância do fator nas análises de ACT.
  *       Fatores com maior peso têm mais influência na interpretação dos resultados.
+ *       Requer permissão `manage-psychosocial-factors`.
  *     tags: [Admin - Psychosocial Factors]
  *     security:
  *       - bearerAuth: []
@@ -94,15 +99,17 @@ adminPsychosocialFactorRouter.get("/", isAuthenticated, new FindAllPsychosocialF
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminPsychosocialFactorRouter.post("/", isAuthenticated, new CreatePsychosocialFactorController().handle);
+adminPsychosocialFactorRouter.post("/", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new CreatePsychosocialFactorController().handle);
 
 /**
  * @swagger
  * /admin/psychosocial-factors/{id}:
  *   get:
  *     summary: "[Admin] Detalhar fator psicossocial"
- *     description: Retorna os dados de um fator psicossocial específico.
+ *     description: "Retorna os dados de um fator psicossocial específico. Requer permissão `manage-psychosocial-factors`."
  *     tags: [Admin - Psychosocial Factors]
  *     security:
  *       - bearerAuth: []
@@ -129,17 +136,19 @@ adminPsychosocialFactorRouter.post("/", isAuthenticated, new CreatePsychosocialF
  *                   $ref: '#/components/schemas/PsychosocialFactor'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminPsychosocialFactorRouter.get("/:id", isAuthenticated, new FindPsychosocialFactorController().handle);
+adminPsychosocialFactorRouter.get("/:id", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new FindPsychosocialFactorController().handle);
 
 /**
  * @swagger
  * /admin/psychosocial-factors/{id}:
  *   put:
  *     summary: "[Admin] Atualizar fator psicossocial"
- *     description: Atualiza os dados de um fator psicossocial existente.
+ *     description: "Atualiza os dados de um fator psicossocial existente. Requer permissão `manage-psychosocial-factors`."
  *     tags: [Admin - Psychosocial Factors]
  *     security:
  *       - bearerAuth: []
@@ -188,17 +197,19 @@ adminPsychosocialFactorRouter.get("/:id", isAuthenticated, new FindPsychosocialF
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminPsychosocialFactorRouter.put("/:id", isAuthenticated, new UpdatePsychosocialFactorController().handle);
+adminPsychosocialFactorRouter.put("/:id", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new UpdatePsychosocialFactorController().handle);
 
 /**
  * @swagger
  * /admin/psychosocial-factors/{id}:
  *   delete:
  *     summary: "[Admin] Excluir fator psicossocial"
- *     description: Remove permanentemente um fator psicossocial. Ação irreversível.
+ *     description: "Remove permanentemente um fator psicossocial. Ação irreversível. Requer permissão `manage-psychosocial-factors`."
  *     tags: [Admin - Psychosocial Factors]
  *     security:
  *       - bearerAuth: []
@@ -219,9 +230,11 @@ adminPsychosocialFactorRouter.put("/:id", isAuthenticated, new UpdatePsychosocia
  *               $ref: '#/components/schemas/SuccessResponse'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminPsychosocialFactorRouter.delete("/:id", isAuthenticated, new DeletePsychosocialFactorController().handle);
+adminPsychosocialFactorRouter.delete("/:id", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new DeletePsychosocialFactorController().handle);
 
 export { adminPsychosocialFactorRouter };

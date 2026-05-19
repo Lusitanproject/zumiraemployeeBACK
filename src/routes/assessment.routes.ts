@@ -96,6 +96,7 @@ assessmentRouter.get("/results/:id", isAuthenticated, new DetailResultController
  *       Registra as respostas do usuário a uma avaliação e calcula o score final.
  *       O score é calculado conforme o `operationType` da avaliação: SUM (soma) ou AVERAGE (média) dos valores das opções escolhidas.
  *       Após o registro, o resultado pode ser classificado numa faixa de risco e gerar alertas automáticos.
+ *       Requer permissão `answer-assessment`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -157,7 +158,9 @@ assessmentRouter.post("/results", isAuthenticated, requirePermissions(["answer-a
  * /assessments/questions:
  *   post:
  *     summary: Criar pergunta de avaliação
- *     description: Adiciona uma nova pergunta a uma avaliação existente, vinculada a uma dimensão psicológica.
+ *     description: >
+ *       Adiciona uma nova pergunta a uma avaliação existente, vinculada a uma dimensão psicológica.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -217,14 +220,16 @@ assessmentRouter.post("/results", isAuthenticated, requirePermissions(["answer-a
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.post("/questions", isAuthenticated, requirePermissions(["manage-question"]), new CreateQuestionController().handle);
+assessmentRouter.post("/questions", isAuthenticated, requirePermissions(["manage-assessments"]), new CreateQuestionController().handle);
 
 /**
  * @swagger
  * /assessments/questions/{id}:
  *   put:
  *     summary: Atualizar pergunta de avaliação
- *     description: Atualiza os dados de uma pergunta existente, incluindo texto, ordenação e opções de resposta.
+ *     description: >
+ *       Atualiza os dados de uma pergunta existente, incluindo texto, ordenação e opções de resposta.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -276,8 +281,10 @@ assessmentRouter.post("/questions", isAuthenticated, requirePermissions(["manage
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.put("/questions/:id", isAuthenticated, new UpdateQuestionsController().handle);
+assessmentRouter.put("/questions/:id", isAuthenticated, requirePermissions(["manage-assessments"]), new UpdateQuestionsController().handle);
 
 /**
  * @swagger
@@ -424,10 +431,69 @@ assessmentRouter.get("/company", isAuthenticated, new ListCompanyAssessmentsCont
 
 /**
  * @swagger
+ * /assessments/{assessmentId}/analysis/message:
+ *   post:
+ *     summary: Enviar mensagem à análise de avaliação
+ *     description: "Requer permissão `manage-assessments`."
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resposta da análise
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.post("/:assessmentId/analysis/message", isAuthenticated, requirePermissions(["manage-assessments"]), new AnalysisMessageController().handle);
+
+/**
+ * @swagger
+ * /assessments/{id}/results/user-filters:
+ *   get:
+ *     summary: Filtros de usuários com resultados da avaliação
+ *     description: "Requer permissão `manage-assessments`."
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Valores distintos por coluna
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.get("/:id/results/user-filters", isAuthenticated, requirePermissions(["manage-assessments"]), new GetAssessmentResultUserFiltersController().handle);
+
+/**
+ * @swagger
+ * /assessments/{id}/results:
+ *   get:
+ *     summary: Buscar resultados paginados de uma avaliação
+ *     description: "Requer permissão `manage-assessments`."
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resultados paginados
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.get("/:id/results", isAuthenticated, requirePermissions(["manage-assessments"]), new SearchAssessmentResultsController().handle);
+
+/**
+ * @swagger
  * /assessments/{id}:
  *   get:
  *     summary: Detalhar avaliação (com perguntas e opções)
- *     description: Retorna os dados completos de uma avaliação, incluindo todas as perguntas e suas opções de resposta, ordenadas por `index`.
+ *     description: >
+ *       Retorna os dados completos de uma avaliação, incluindo todas as perguntas e suas opções de resposta, ordenadas por `index`.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -466,37 +532,7 @@ assessmentRouter.get("/company", isAuthenticated, new ListCompanyAssessmentsCont
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-/**
- * @swagger
- * /assessments/{id}/results/user-filters:
- *   get:
- *     summary: Filtros de usuários com resultados da avaliação
- *     tags: [Assessments]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Valores distintos por coluna
- */
-assessmentRouter.post("/:assessmentId/analysis/message", isAuthenticated, new AnalysisMessageController().handle);
-
-assessmentRouter.get("/:id/results/user-filters", isAuthenticated, new GetAssessmentResultUserFiltersController().handle);
-
-/**
- * @swagger
- * /assessments/{id}/results:
- *   get:
- *     summary: Buscar resultados paginados de uma avaliação
- *     tags: [Assessments]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Resultados paginados
- */
-assessmentRouter.get("/:id/results", isAuthenticated, new SearchAssessmentResultsController().handle);
-
-assessmentRouter.get("/:id", isAuthenticated, requirePermissions(["read-assessment"]), new DetailAssessmentController().handle);
+assessmentRouter.get("/:id", isAuthenticated, requirePermissions(["manage-assessments"]), new DetailAssessmentController().handle);
 
 /**
  * @swagger
@@ -507,6 +543,7 @@ assessmentRouter.get("/:id", isAuthenticated, requirePermissions(["read-assessme
  *       Cria um novo template de avaliação psicossocial.
  *       `operationType` define a fórmula de score: `SUM` = soma dos valores das respostas; `AVERAGE` = média.
  *       `public: true` disponibiliza a avaliação para qualquer usuário do sistema; `false` restringe às empresas vinculadas manualmente.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -567,8 +604,10 @@ assessmentRouter.get("/:id", isAuthenticated, requirePermissions(["read-assessme
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.post("/", isAuthenticated, new CreateAssessmentController().handle);
+assessmentRouter.post("/", isAuthenticated, requirePermissions(["manage-assessments"]), new CreateAssessmentController().handle);
 
 /**
  * @swagger
@@ -579,6 +618,7 @@ assessmentRouter.post("/", isAuthenticated, new CreateAssessmentController().han
  *       Dispara a geração de feedback textual via IA para o resultado de avaliação indicado por `id`.
  *       O feedback é gerado com base nas `userFeedbackInstructions` da avaliação e nas respostas do usuário.
  *       O texto gerado é salvo no campo `feedback` do `AssessmentResult`.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -598,10 +638,12 @@ assessmentRouter.post("/", isAuthenticated, new CreateAssessmentController().han
  *               $ref: '#/components/schemas/SuccessResponse'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-assessmentRouter.post("/feedback/users/:id", isAuthenticated, new GenerateUserFeedbackController().handle);
+assessmentRouter.post("/feedback/users/:id", isAuthenticated, requirePermissions(["manage-assessments"]), new GenerateUserFeedbackController().handle);
 
 /**
  * @swagger
@@ -613,6 +655,7 @@ assessmentRouter.post("/feedback/users/:id", isAuthenticated, new GenerateUserFe
  *       O `id` refere-se ao ID da avaliação (`Assessment.id`).
  *       O feedback é gerado com base nas `companyFeedbackInstructions` e nos resultados agregados dos colaboradores.
  *       O texto gerado é salvo em `CompanyAssessmentFeedback`.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -639,9 +682,11 @@ assessmentRouter.post("/feedback/users/:id", isAuthenticated, new GenerateUserFe
  *                   $ref: '#/components/schemas/CompanyAssessmentFeedback'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-assessmentRouter.post("/feedback/companies/:id", isAuthenticated, new GenerateCompanyFeedbackController().handle);
+assessmentRouter.post("/feedback/companies/:id", isAuthenticated, requirePermissions(["manage-assessments"]), new GenerateCompanyFeedbackController().handle);
 
 export { assessmentRouter };

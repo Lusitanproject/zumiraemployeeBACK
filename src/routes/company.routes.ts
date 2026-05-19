@@ -7,6 +7,7 @@ import { FindCompanyFeedbackController } from "../controllers/company/FindCompan
 import { SyncUsersExecuteController } from "../controllers/company/SyncUsersExecuteController";
 import { SyncUsersPreviewController } from "../controllers/company/SyncUsersPreviewController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { requirePermissions } from "../middlewares/requirePermissions";
 
 const companyRouter = Router();
 
@@ -29,28 +30,34 @@ companyRouter.get("/:companyId", isAuthenticated, new FindCompanyController().ha
  * /companies/users:
  *   post:
  *     summary: Criar usuário na empresa do usuário autenticado
+ *     description: "Requer permissão `manage-company`."
  *     tags: [Companies]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Usuário criado
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/users", isAuthenticated, new CreateUserForCompanyController().handle);
+companyRouter.post("/users", isAuthenticated, requirePermissions(["manage-company"]), new CreateUserForCompanyController().handle);
 
 /**
  * @swagger
  * /companies/users/batch:
  *   post:
  *     summary: Criar múltiplos usuários na empresa do usuário autenticado
+ *     description: "Requer permissão `manage-company`."
  *     tags: [Companies]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Usuários criados
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/users/batch", isAuthenticated, new CreateManyUsersForCompanyController().handle);
+companyRouter.post("/users/batch", isAuthenticated, requirePermissions(["manage-company"]), new CreateManyUsersForCompanyController().handle);
 
 /**
  * @swagger
@@ -108,6 +115,7 @@ companyRouter.get("/:id/feedback", isAuthenticated, new FindCompanyFeedbackContr
  *       Calcula o que aconteceria ao sincronizar a lista de usuários informada, sem persistir nada.
  *       Identifica usuários a criar, atualizar, sem alterações, conflitos de identidade e erros de validação.
  *       O `customId` é a chave de reconciliação e tem escopo por empresa — empresas diferentes podem usar os mesmos valores.
+ *       Requer permissão `manage-company`.
  *     tags: [Companies]
  *     security:
  *       - bearerAuth: []
@@ -236,8 +244,10 @@ companyRouter.get("/:id/feedback", isAuthenticated, new FindCompanyFeedbackContr
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/:id/users/sync/preview", isAuthenticated, new SyncUsersPreviewController().handle);
+companyRouter.post("/:id/users/sync/preview", isAuthenticated, requirePermissions(["manage-company"]), new SyncUsersPreviewController().handle);
 
 /**
  * @swagger
@@ -248,6 +258,7 @@ companyRouter.post("/:id/users/sync/preview", isAuthenticated, new SyncUsersPrev
  *       Reprocessa o payload do zero usando o estado atual do banco e executa os creates/updates.
  *       Não depende de nenhum preview anterior — pode haver drift entre preview e execute.
  *       Itens com conflitos ou erros de validação são retornados em `failed` sem interromper os demais.
+ *       Requer permissão `manage-company`.
  *     tags: [Companies]
  *     security:
  *       - bearerAuth: []
@@ -373,7 +384,9 @@ companyRouter.post("/:id/users/sync/preview", isAuthenticated, new SyncUsersPrev
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/:id/users/sync/execute", isAuthenticated, new SyncUsersExecuteController().handle);
+companyRouter.post("/:id/users/sync/execute", isAuthenticated, requirePermissions(["manage-company"]), new SyncUsersExecuteController().handle);
 
 export { companyRouter };

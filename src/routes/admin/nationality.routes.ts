@@ -5,6 +5,7 @@ import { FindAllNationalitiesController } from "../../controllers/admin/national
 import { FindNationalityController } from "../../controllers/admin/nationalities/FindNationalityController";
 import { UpdateNationalityController } from "../../controllers/admin/nationalities/UpdateNationalityController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminNationalityRouter = Router();
 
@@ -17,6 +18,7 @@ const adminNationalityRouter = Router();
  *       Cria uma nova nacionalidade no sistema.
  *       O `acronym` é o código curto (2-5 caracteres) exibido em seletores e filtros (ex: 'BR', 'PT', 'USA').
  *       Ao criar uma nacionalidade, avaliações específicas podem ser criadas para ela via `POST /assessments`.
+ *       Requer permissão `manage-nationalities`.
  *     tags: [Admin - Nationalities]
  *     security:
  *       - bearerAuth: []
@@ -58,15 +60,17 @@ const adminNationalityRouter = Router();
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminNationalityRouter.post("/", isAuthenticated, new CreateNationalityController().handle);
+adminNationalityRouter.post("/", isAuthenticated, requirePermissions(["manage-nationalities"]), new CreateNationalityController().handle);
 
 /**
  * @swagger
  * /admin/nationalities:
  *   get:
  *     summary: "[Admin] Listar nacionalidades"
- *     description: Retorna todas as nacionalidades cadastradas. Versão autenticada de `GET /nationalities`.
+ *     description: "Retorna todas as nacionalidades cadastradas. Versão autenticada de `GET /nationalities`. Requer permissão `manage-nationalities`."
  *     tags: [Admin - Nationalities]
  *     security:
  *       - bearerAuth: []
@@ -87,15 +91,17 @@ adminNationalityRouter.post("/", isAuthenticated, new CreateNationalityControlle
  *                     $ref: '#/components/schemas/Nationality'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminNationalityRouter.get("/", isAuthenticated, new FindAllNationalitiesController().handle);
+adminNationalityRouter.get("/", isAuthenticated, requirePermissions(["manage-nationalities"]), new FindAllNationalitiesController().handle);
 
 /**
  * @swagger
  * /admin/nationalities/{id}:
  *   get:
  *     summary: "[Admin] Detalhar nacionalidade"
- *     description: Retorna os dados de uma nacionalidade específica.
+ *     description: "Retorna os dados de uma nacionalidade específica. Requer permissão `manage-nationalities`."
  *     tags: [Admin - Nationalities]
  *     security:
  *       - bearerAuth: []
@@ -122,17 +128,19 @@ adminNationalityRouter.get("/", isAuthenticated, new FindAllNationalitiesControl
  *                   $ref: '#/components/schemas/Nationality'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNationalityRouter.get("/:id", isAuthenticated, new FindNationalityController().handle);
+adminNationalityRouter.get("/:id", isAuthenticated, requirePermissions(["manage-nationalities"]), new FindNationalityController().handle);
 
 /**
  * @swagger
  * /admin/nationalities/{id}:
  *   put:
  *     summary: "[Admin] Atualizar nacionalidade"
- *     description: Atualiza o acrônimo ou nome de uma nacionalidade.
+ *     description: "Atualiza o acrônimo ou nome de uma nacionalidade. Requer permissão `manage-nationalities`."
  *     tags: [Admin - Nationalities]
  *     security:
  *       - bearerAuth: []
@@ -179,9 +187,11 @@ adminNationalityRouter.get("/:id", isAuthenticated, new FindNationalityControlle
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNationalityRouter.put("/:id", isAuthenticated, new UpdateNationalityController().handle);
+adminNationalityRouter.put("/:id", isAuthenticated, requirePermissions(["manage-nationalities"]), new UpdateNationalityController().handle);
 
 export { adminNationalityRouter };

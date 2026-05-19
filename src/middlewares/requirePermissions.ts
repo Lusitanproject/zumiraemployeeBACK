@@ -7,6 +7,7 @@ export function requirePermissions(permissions: string[]) {
     const missingPermissions = permissions.filter((p) => !req.user.permissions.includes(p));
 
     if (missingPermissions.length > 0) {
+      console.log(`Usuário ${req.user.name} não tem permissões: ${missingPermissions.join(", ")}`);
       return res.status(403).json({ status: "ERROR", message: "Forbidden" });
     }
 
