@@ -5,7 +5,6 @@ import { UpdateUserSchema } from "../../schemas/admin/users";
 import { CompanyService } from "../../services/company/CompanyService";
 import { RoleAdminService } from "../../services/admin/RoleAdminService";
 import { UserService } from "../../services/user/UserService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
   id: z.string().uuid(),
@@ -14,11 +13,7 @@ const RequestParams = z.object({
 class UpdateUserController {
   async handle(req: Request, res: Response) {
 const { id } = RequestParams.parse(req.params);
-    const { success, data, error } = UpdateUserSchema.safeParse(req.body);
-
-    if (!success) {
-      throw new Error(parseZodError(error));
-    }
+    const data = UpdateUserSchema.parse(req.body);
 
     const { roleId, companyId } = data;
 

@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { ActService } from "../../services/act/ActService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
   id: z.string().cuid(),
@@ -10,9 +9,7 @@ const RequestParams = z.object({
 
 class FindActChatbotController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = RequestParams.safeParse(req.params);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = RequestParams.parse(req.params);
 
     const service = new ActService();
     const result = await service.findById(data.id);

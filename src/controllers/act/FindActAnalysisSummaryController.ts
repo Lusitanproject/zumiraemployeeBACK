@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { FindActAnalysisSummaryQuerySchema } from "../../schemas/admin/act-analysis";
 import { ActService } from "../../services/act/ActService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({
   actChatbotId: z.string().cuid(),
@@ -11,16 +10,14 @@ const RequestParams = z.object({
 
 class FindActAnalysisSummaryController {
   async handle(req: Request, res: Response) {
-    const parsedParams = RequestParams.safeParse(req.params);
-    if (!parsedParams.success) throw new Error(parseZodError(parsedParams.error));
+    const parsedParams = RequestParams.parse(req.params);
 
-    const parsedQuery = FindActAnalysisSummaryQuerySchema.safeParse(req.query);
-    if (!parsedQuery.success) throw new Error(parseZodError(parsedQuery.error));
+    const parsedQuery = FindActAnalysisSummaryQuerySchema.parse(req.query);
 
-    const { companyId, ...filters } = parsedQuery.data;
+    const { companyId, ...filters } = parsedQuery;
 
     const service = new ActService();
-    const summary = await service.findAnalysisSummary(companyId, parsedParams.data.actChatbotId, filters);
+    const summary = await service.findAnalysisSummary(companyId, parsedParams.actChatbotId, filters);
 
     return res.json({ status: "SUCCESS", data: summary });
   }

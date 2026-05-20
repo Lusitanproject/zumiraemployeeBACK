@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { DimensionAdminService } from "../../../services/admin/DimensionAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParam = z.object({
   psychologicalDimensionId: z.string().uuid(),
@@ -10,9 +9,7 @@ const RequestParam = z.object({
 
 class FindDimensionController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = RequestParam.safeParse(req.params);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = RequestParam.parse(req.params);
 
     const service = new DimensionAdminService();
     const dimension = await service.find(data.psychologicalDimensionId);

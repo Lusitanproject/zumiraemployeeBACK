@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { AssessmentService } from "../../services/assessment/AssessmentService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const CreateIdSchema = z.object({
   id: z.string().cuid(),
@@ -10,9 +9,7 @@ const CreateIdSchema = z.object({
 
 class DetailAssessmentController {
   async handle(req: Request, res: Response) {
-const { success, data, error } = CreateIdSchema.safeParse(req.params);
-
-    if (!success) throw new Error(parseZodError(error));
+const data = CreateIdSchema.parse(req.params);
 
     const userId = req.user.id;
     const { id: assessmentId } = data;

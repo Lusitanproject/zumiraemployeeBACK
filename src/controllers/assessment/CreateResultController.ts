@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { AssessmentService } from "../../services/assessment/AssessmentService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const CreateResultSchema = z.object({
   assessmentId: z.string().cuid(),
@@ -16,9 +15,7 @@ const CreateResultSchema = z.object({
 
 class CreateResultController {
   async handle(req: Request, res: Response) {
-const { success, data, error } = CreateResultSchema.safeParse(req.body);
-
-    if (!success) throw new Error(parseZodError(error));
+const data = CreateResultSchema.parse(req.body);
 
     const userId = req.user.id;
     const { assessmentId, answers } = data;

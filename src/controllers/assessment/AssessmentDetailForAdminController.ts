@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { AssessmentAdminService } from "../../services/admin/AssessmentAdminService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const GetAssessmentDetailForAdminSchema = z.object({
   id: z.string().cuid(),
@@ -10,14 +9,7 @@ const GetAssessmentDetailForAdminSchema = z.object({
 
 class AssessmentDetailForAdminController {
   async handle(req: Request, res: Response) {
-const { success, data, error } = GetAssessmentDetailForAdminSchema.safeParse(req.params);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+const data = GetAssessmentDetailForAdminSchema.parse(req.params);
 
     const detailAssessment = new AssessmentAdminService();
     const assessment = await detailAssessment.find(data.id);

@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { SetCompanyAssessmentsSchema } from "../../../schemas/company";
 import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParam = z.object({
   id: z.string().cuid(),
@@ -12,9 +11,7 @@ const RequestParam = z.object({
 class SetCompanyAssessmentsController {
   async handle(req: Request, res: Response) {
     const { id } = RequestParam.parse(req.params);
-    const { success, data, error } = SetCompanyAssessmentsSchema.safeParse(req.body);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = SetCompanyAssessmentsSchema.parse(req.body);
 
     const companyAdminService = new CompanyAdminService();
     const result = await companyAdminService.setCompanyAssessments({ ...data, id });

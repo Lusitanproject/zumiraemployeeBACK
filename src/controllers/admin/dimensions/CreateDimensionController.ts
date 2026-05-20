@@ -3,18 +3,10 @@ import { Request, Response } from "express";
 import { CreateDimensionSchema } from "../../../schemas/admin/dimension";
 import { DimensionAdminService } from "../../../services/admin/DimensionAdminService";
 import { SelfMonitoringAdminService } from "../../../services/admin/SelfMonitoringService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 class CreateDimensionController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = CreateDimensionSchema.safeParse(req.body);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+    const data = CreateDimensionSchema.parse(req.body);
 
     const { acronym, name, selfMonitoringBlockId } = data;
 

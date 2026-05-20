@@ -2,21 +2,18 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { UpdateCompanyUserSchema } from "../../schemas/admin/users";
-import { parseZodError } from "../../utils/parseZodError";
 import { UserService } from "../../services/user/UserService";
 
 const RequestParams = z.object({ id: z.string().uuid() });
 
 class UpdateCompanyUserController {
   async handle(req: Request, res: Response) {
-    const params = RequestParams.safeParse(req.params);
-    if (!params.success) throw new Error(parseZodError(params.error));
+    const params = RequestParams.parse(req.params);
 
-    const body = UpdateCompanyUserSchema.safeParse(req.body);
-    if (!body.success) throw new Error(parseZodError(body.error));
+    const body = UpdateCompanyUserSchema.parse(req.body);
 
     const user = await new UserService().update(
-      { id: params.data.id, ...body.data },
+      { id: params.id, ...body },
       { companyId: req.params.companyId },
     );
 

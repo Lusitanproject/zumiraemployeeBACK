@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { CreateTrailController } from "../../controllers/admin/trails/CreateTrailController copy";
+import { CreateTrailController } from "../../controllers/admin/trails/CreateTrailController";
 import { FindAllTrailsController } from "../../controllers/admin/trails/FindAllTrailsController";
 import { FindTrailController } from "../../controllers/admin/trails/FindTrailController";
 import { UpdateTrailController } from "../../controllers/admin/trails/UpdateTrailController";

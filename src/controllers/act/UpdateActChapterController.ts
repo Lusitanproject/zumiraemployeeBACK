@@ -2,12 +2,10 @@ import { Request, Response } from "express";
 
 import { UpdateActChapterSchema } from "../../schemas/actChatbot";
 import { ActService } from "../../services/act/ActService";
-import { parseZodError } from "../../utils/parseZodError";
 
 class UpdateActChapterController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = UpdateActChapterSchema.safeParse(req.body);
-    if (!success) throw new Error(parseZodError(error));
+    const data = UpdateActChapterSchema.parse(req.body);
 
     const service = new ActService();
     const result = await service.updateChapter({ ...data, userId: req.user.id });

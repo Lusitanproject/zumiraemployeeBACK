@@ -2,18 +2,10 @@ import { Request, Response } from "express";
 
 import { CreateSelfMonitoringBlockSchema } from "../../../schemas/admin/self-monitoring";
 import { SelfMonitoringAdminService } from "../../../services/admin/SelfMonitoringService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 class CreateSelfMonitoringBlocksController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = CreateSelfMonitoringBlockSchema.safeParse(req.body);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+    const data = CreateSelfMonitoringBlockSchema.parse(req.body);
 
     const selfMonitoringService = new SelfMonitoringAdminService();
     const block = await selfMonitoringService.create(data);

@@ -2,13 +2,10 @@ import { Request, Response } from "express";
 
 import { CreateActChatbotSchema } from "../../../schemas/admin/act-chatbot";
 import { ActChatbotAdminService } from "../../../services/admin/ActAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 class CreateActChatbotController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = CreateActChatbotSchema.safeParse(req.body);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = CreateActChatbotSchema.parse(req.body);
 
     const service = new ActChatbotAdminService();
     const result = await service.create(data);

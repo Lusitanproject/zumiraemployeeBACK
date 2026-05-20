@@ -2,13 +2,10 @@ import { Request, Response } from "express";
 
 import { AssessmentByCompanySchema } from "../../../schemas/admin/assessment";
 import { AssessmentResultAdminService } from "../../../services/admin/AssessmentResultAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 class GenerateExcelReportController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = AssessmentByCompanySchema.safeParse(req.query);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = AssessmentByCompanySchema.parse(req.query);
 
     const service = new AssessmentResultAdminService();
     const workbook = await service.generateExcelReport(data);
