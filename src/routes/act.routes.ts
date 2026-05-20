@@ -18,6 +18,7 @@ import { MoveToNextActController } from "../controllers/act/MoveToNextActControl
 import { UpdateActChapterController } from "../controllers/act/UpdateActChapterController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { requirePermissions } from "../middlewares/requirePermissions";
+import { requireSameCompany } from "../middlewares/requireSameCompany";
 
 const actRouter = Router();
 
@@ -38,7 +39,7 @@ const actRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/by-company", isAuthenticated, requirePermissions(["answer-act"]), new FindByCompanyController().handle);
+actRouter.get("/by-company", isAuthenticated, requirePermissions("answer-act"), new FindByCompanyController().handle);
 
 /**
  * @swagger
@@ -74,7 +75,7 @@ actRouter.get("/by-company", isAuthenticated, requirePermissions(["answer-act"])
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/", isAuthenticated, requirePermissions(["answer-act"]), new GetActsDataController().handle);
+actRouter.get("/", isAuthenticated, requirePermissions("answer-act"), new GetActsDataController().handle);
 
 /**
  * @swagger
@@ -124,7 +125,7 @@ actRouter.get("/", isAuthenticated, requirePermissions(["answer-act"]), new GetA
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-actRouter.get("/chapters", isAuthenticated, requirePermissions(["answer-act"]), new GetActChapterController().handle);
+actRouter.get("/chapters", isAuthenticated, requirePermissions("answer-act"), new GetActChapterController().handle);
 
 /**
  * @swagger
@@ -162,7 +163,7 @@ actRouter.get("/chapters", isAuthenticated, requirePermissions(["answer-act"]), 
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/full-story", isAuthenticated, requirePermissions(["answer-act"]), new GetFullStoryController().handle);
+actRouter.get("/full-story", isAuthenticated, requirePermissions("answer-act"), new GetFullStoryController().handle);
 
 /**
  * @swagger
@@ -197,7 +198,7 @@ actRouter.get("/full-story", isAuthenticated, requirePermissions(["answer-act"])
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-actRouter.put("/next", isAuthenticated, requirePermissions(["answer-act"]), new MoveToNextActController().handle);
+actRouter.put("/next", isAuthenticated, requirePermissions("answer-act"), new MoveToNextActController().handle);
 
 /**
  * @swagger
@@ -249,7 +250,7 @@ actRouter.put("/next", isAuthenticated, requirePermissions(["answer-act"]), new 
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post("/message", isAuthenticated, requirePermissions(["answer-act"]), new MessageActChatbotController().handle);
+actRouter.post("/message", isAuthenticated, requirePermissions("answer-act"), new MessageActChatbotController().handle);
 
 /**
  * @swagger
@@ -302,7 +303,7 @@ actRouter.post("/message", isAuthenticated, requirePermissions(["answer-act"]), 
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post("/new-chapter", isAuthenticated, requirePermissions(["answer-act"]), new CreateActChapterController().handle);
+actRouter.post("/new-chapter", isAuthenticated, requirePermissions("answer-act"), new CreateActChapterController().handle);
 
 /**
  * @swagger
@@ -350,7 +351,7 @@ actRouter.post("/new-chapter", isAuthenticated, requirePermissions(["answer-act"
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post("/chapters/compile", isAuthenticated, requirePermissions(["answer-act"]), new CompileActChapterController().handle);
+actRouter.post("/chapters/compile", isAuthenticated, requirePermissions("answer-act"), new CompileActChapterController().handle);
 
 /**
  * @swagger
@@ -405,7 +406,7 @@ actRouter.post("/chapters/compile", isAuthenticated, requirePermissions(["answer
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-actRouter.put("/chapters/:actChapterId", isAuthenticated, requirePermissions(["answer-act"]), new UpdateActChapterController().handle);
+actRouter.put("/chapters/:actChapterId", isAuthenticated, requirePermissions("answer-act"), new UpdateActChapterController().handle);
 
 /**
  * @swagger
@@ -424,7 +425,7 @@ actRouter.put("/chapters/:actChapterId", isAuthenticated, requirePermissions(["a
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post("/:actChatbotId/analysis/message", isAuthenticated, requirePermissions(["manage-acts"]), new AnalysisMessageController().handle);
+actRouter.post("/:actChatbotId/analysis/message", isAuthenticated, requirePermissions("view-act-analysis"), requireSameCompany(), new AnalysisMessageController().handle);
 
 /**
  * @swagger
@@ -443,7 +444,7 @@ actRouter.post("/:actChatbotId/analysis/message", isAuthenticated, requirePermis
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:actChatbotId/analysis/user-filters", isAuthenticated, requirePermissions(["manage-acts"]), new GetAnalysisUserFiltersController().handle);
+actRouter.get("/:actChatbotId/analysis/user-filters", isAuthenticated, requirePermissions("view-act-analysis"), requireSameCompany(), new GetAnalysisUserFiltersController().handle);
 
 /**
  * @swagger
@@ -462,7 +463,7 @@ actRouter.get("/:actChatbotId/analysis/user-filters", isAuthenticated, requirePe
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:actChatbotId/analysis/summary", isAuthenticated, requirePermissions(["manage-acts"]), new FindActAnalysisSummaryController().handle);
+actRouter.get("/:actChatbotId/analysis/summary", isAuthenticated, requirePermissions("view-act-analysis"), requireSameCompany(), new FindActAnalysisSummaryController().handle);
 
 /**
  * @swagger
@@ -481,7 +482,7 @@ actRouter.get("/:actChatbotId/analysis/summary", isAuthenticated, requirePermiss
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:actChatbotId/analysis/report", isAuthenticated, requirePermissions(["manage-acts"]), new GenerateAnalysisReportController().handle);
+actRouter.get("/:actChatbotId/analysis/report", isAuthenticated, requirePermissions("view-act-analysis"), requireSameCompany(), new GenerateAnalysisReportController().handle);
 
 /**
  * @swagger
@@ -503,7 +504,7 @@ actRouter.get("/:actChatbotId/analysis/report", isAuthenticated, requirePermissi
 actRouter.get(
   "/:actChatbotId/analysis/factors/:factorId/messages",
   isAuthenticated,
-  requirePermissions(["manage-acts"]),
+  requirePermissions("view-act-analysis"), requireSameCompany(),
   new FindActAnalysisFactorMessagesController().handle,
 );
 
@@ -524,7 +525,7 @@ actRouter.get(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:actChatbotId/analysis", isAuthenticated, requirePermissions(["manage-acts"]), new FindActAnalysisController().handle);
+actRouter.get("/:actChatbotId/analysis", isAuthenticated, requirePermissions("view-act-analysis"), requireSameCompany(), new FindActAnalysisController().handle);
 
 /**
  * @swagger
@@ -543,6 +544,6 @@ actRouter.get("/:actChatbotId/analysis", isAuthenticated, requirePermissions(["m
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.get("/:id", isAuthenticated, requirePermissions(["answer-act"]), new FindActChatbotController().handle);
+actRouter.get("/:id", isAuthenticated, requirePermissions("answer-act"), new FindActChatbotController().handle);
 
 export { actRouter };

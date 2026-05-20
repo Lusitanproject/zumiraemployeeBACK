@@ -2,12 +2,18 @@ import { Router } from "express";
 
 import { CreateManyUsersForCompanyController } from "../controllers/company/CreateManyUsersForCompanyController";
 import { CreateUserForCompanyController } from "../controllers/company/CreateUserForCompanyController";
+import { DeleteCompanyUserController } from "../controllers/company/DeleteCompanyUserController";
 import { FindCompanyController } from "../controllers/company/FindCompanyController";
 import { FindCompanyFeedbackController } from "../controllers/company/FindCompanyFeedbackController";
+import { FindCompanyUserController } from "../controllers/company/FindCompanyUserController";
+import { ListCompanyUsersController } from "../controllers/company/ListCompanyUsersController";
+import { SearchCompanyUsersController } from "../controllers/company/SearchCompanyUsersController";
 import { SyncUsersExecuteController } from "../controllers/company/SyncUsersExecuteController";
 import { SyncUsersPreviewController } from "../controllers/company/SyncUsersPreviewController";
+import { UpdateCompanyUserController } from "../controllers/company/UpdateCompanyUserController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { requirePermissions } from "../middlewares/requirePermissions";
+import { requireSameCompany } from "../middlewares/requireSameCompany";
 
 const companyRouter = Router();
 
@@ -23,7 +29,7 @@ const companyRouter = Router();
  *       200:
  *         description: Dados da empresa
  */
-companyRouter.get("/:companyId", isAuthenticated, new FindCompanyController().handle);
+companyRouter.get("/:companyId", isAuthenticated, requirePermissions("view-company-users"), requireSameCompany("params"), new FindCompanyController().handle);
 
 /**
  * @swagger
@@ -40,7 +46,7 @@ companyRouter.get("/:companyId", isAuthenticated, new FindCompanyController().ha
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/users", isAuthenticated, requirePermissions(["manage-company"]), new CreateUserForCompanyController().handle);
+companyRouter.post("/users", isAuthenticated, requirePermissions("manage-company"), new CreateUserForCompanyController().handle);
 
 /**
  * @swagger
@@ -57,7 +63,7 @@ companyRouter.post("/users", isAuthenticated, requirePermissions(["manage-compan
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/users/batch", isAuthenticated, requirePermissions(["manage-company"]), new CreateManyUsersForCompanyController().handle);
+companyRouter.post("/users/batch", isAuthenticated, requirePermissions("manage-company"), new CreateManyUsersForCompanyController().handle);
 
 /**
  * @swagger
@@ -104,7 +110,7 @@ companyRouter.post("/users/batch", isAuthenticated, requirePermissions(["manage-
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-companyRouter.get("/:id/feedback", isAuthenticated, new FindCompanyFeedbackController().handle);
+companyRouter.get("/:id/feedback", isAuthenticated, requirePermissions("view-assessment-results"), requireSameCompany("params", "id"), new FindCompanyFeedbackController().handle);
 
 /**
  * @swagger
@@ -247,7 +253,7 @@ companyRouter.get("/:id/feedback", isAuthenticated, new FindCompanyFeedbackContr
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/:id/users/sync/preview", isAuthenticated, requirePermissions(["manage-company"]), new SyncUsersPreviewController().handle);
+companyRouter.post("/:id/users/sync/preview", isAuthenticated, requirePermissions("manage-company"), new SyncUsersPreviewController().handle);
 
 /**
  * @swagger
@@ -387,6 +393,170 @@ companyRouter.post("/:id/users/sync/preview", isAuthenticated, requirePermission
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/:id/users/sync/execute", isAuthenticated, requirePermissions(["manage-company"]), new SyncUsersExecuteController().handle);
+companyRouter.post("/:id/users/sync/execute", isAuthenticated, requirePermissions("manage-company"), new SyncUsersExecuteController().handle);
+
+/**
+ * @swagger
+ * /companies/{companyId}/users/search:
+ *   get:
+ *     summary: Busca paginada de usuários da empresa
+ *     description: "Requer permissão `manage-company`. O `companyId` é sempre forçado pelo path — não é possível buscar usuários de outra empresa."
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     responses:
+ *       200:
+ *         description: Resultados paginados
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+companyRouter.get("/:companyId/users/search", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new SearchCompanyUsersController().handle);
+
+/**
+ * @swagger
+ * /companies/{companyId}/users:
+ *   get:
+ *     summary: Listar usuários da empresa
+ *     description: "Requer permissão `manage-company`."
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     responses:
+ *       200:
+ *         description: Usuários da empresa
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+companyRouter.get("/:companyId/users", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new ListCompanyUsersController().handle);
+
+/**
+ * @swagger
+ * /companies/{companyId}/users/{id}:
+ *   get:
+ *     summary: Detalhar usuário da empresa
+ *     description: "Requer permissão `manage-company`."
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Dados do usuário
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+companyRouter.get("/:companyId/users/:id", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new FindCompanyUserController().handle);
+
+/**
+ * @swagger
+ * /companies/{companyId}/users/{id}:
+ *   put:
+ *     summary: Atualizar usuário da empresa
+ *     description: >
+ *       Atualiza dados de um colaborador. Não permite alterar role ou empresa do usuário.
+ *       Requer permissão `manage-company`.
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+companyRouter.put("/:companyId/users/:id", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new UpdateCompanyUserController().handle);
+
+/**
+ * @swagger
+ * /companies/{companyId}/users/{id}:
+ *   delete:
+ *     summary: Remover usuário da empresa
+ *     description: "Requer permissão `manage-company`."
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Usuário removido
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+companyRouter.delete("/:companyId/users/:id", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new DeleteCompanyUserController().handle);
 
 export { companyRouter };

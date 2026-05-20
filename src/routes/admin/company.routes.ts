@@ -43,7 +43,7 @@ const adminCompanyRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminCompanyRouter.get("/", isAuthenticated, requirePermissions(["manage-company"]), new FindAllCompaniesController().handle);
+adminCompanyRouter.get("/", isAuthenticated, requirePermissions("manage-company"), new FindAllCompaniesController().handle);
 
 /**
  * @swagger
@@ -74,7 +74,7 @@ adminCompanyRouter.get("/", isAuthenticated, requirePermissions(["manage-company
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminCompanyRouter.get("/feedback", isAuthenticated, requirePermissions(["manage-company"]), new FindAllFeedbacksController().handle);
+adminCompanyRouter.get("/feedback", isAuthenticated, requirePermissions("manage-company"), new FindAllFeedbacksController().handle);
 
 /**
  * @swagger
@@ -129,7 +129,7 @@ adminCompanyRouter.get("/feedback", isAuthenticated, requirePermissions(["manage
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminCompanyRouter.post("/", isAuthenticated, requirePermissions(["manage-company"]), new CreateCompanyController().handle);
+adminCompanyRouter.post("/", isAuthenticated, requirePermissions("manage-company"), new CreateCompanyController().handle);
 
 /**
  * @swagger
@@ -183,7 +183,7 @@ adminCompanyRouter.post("/", isAuthenticated, requirePermissions(["manage-compan
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminCompanyRouter.put("/:id", isAuthenticated, requirePermissions(["manage-company"]), new UpdateCompanyController().handle);
+adminCompanyRouter.put("/:id", isAuthenticated, requirePermissions("manage-company"), new UpdateCompanyController().handle);
 
 /**
  * @swagger
@@ -235,7 +235,7 @@ adminCompanyRouter.put("/:id", isAuthenticated, requirePermissions(["manage-comp
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminCompanyRouter.post("/:id/assessments", isAuthenticated, requirePermissions(["manage-company"]), new SetCompanyAssessmentsController().handle);
+adminCompanyRouter.post("/:id/assessments", isAuthenticated, requirePermissions("manage-company"), new SetCompanyAssessmentsController().handle);
 
 /**
  * @swagger
@@ -290,7 +290,7 @@ adminCompanyRouter.post("/:id/assessments", isAuthenticated, requirePermissions(
 adminCompanyRouter.post(
   "/:companyId/feedback/users",
   isAuthenticated,
-  requirePermissions(["manage-company"]),
+  requirePermissions("manage-company"),
   new GenerateAllUserFeedbackController().handle,
 );
 

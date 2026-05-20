@@ -43,7 +43,7 @@ const adminPsychosocialFactorRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminPsychosocialFactorRouter.get("/", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new FindAllPsychosocialFactorsController().handle);
+adminPsychosocialFactorRouter.get("/", isAuthenticated, requirePermissions("manage-psychosocial-factors"), new FindAllPsychosocialFactorsController().handle);
 
 /**
  * @swagger
@@ -102,7 +102,7 @@ adminPsychosocialFactorRouter.get("/", isAuthenticated, requirePermissions(["man
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminPsychosocialFactorRouter.post("/", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new CreatePsychosocialFactorController().handle);
+adminPsychosocialFactorRouter.post("/", isAuthenticated, requirePermissions("manage-psychosocial-factors"), new CreatePsychosocialFactorController().handle);
 
 /**
  * @swagger
@@ -141,7 +141,7 @@ adminPsychosocialFactorRouter.post("/", isAuthenticated, requirePermissions(["ma
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminPsychosocialFactorRouter.get("/:id", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new FindPsychosocialFactorController().handle);
+adminPsychosocialFactorRouter.get("/:id", isAuthenticated, requirePermissions("manage-psychosocial-factors"), new FindPsychosocialFactorController().handle);
 
 /**
  * @swagger
@@ -202,7 +202,7 @@ adminPsychosocialFactorRouter.get("/:id", isAuthenticated, requirePermissions(["
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminPsychosocialFactorRouter.put("/:id", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new UpdatePsychosocialFactorController().handle);
+adminPsychosocialFactorRouter.put("/:id", isAuthenticated, requirePermissions("manage-psychosocial-factors"), new UpdatePsychosocialFactorController().handle);
 
 /**
  * @swagger
@@ -235,6 +235,6 @@ adminPsychosocialFactorRouter.put("/:id", isAuthenticated, requirePermissions(["
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminPsychosocialFactorRouter.delete("/:id", isAuthenticated, requirePermissions(["manage-psychosocial-factors"]), new DeletePsychosocialFactorController().handle);
+adminPsychosocialFactorRouter.delete("/:id", isAuthenticated, requirePermissions("manage-psychosocial-factors"), new DeletePsychosocialFactorController().handle);
 
 export { adminPsychosocialFactorRouter };

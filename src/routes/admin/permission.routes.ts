@@ -40,6 +40,6 @@ const adminPermissionRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminPermissionRouter.get("/", isAuthenticated, requirePermissions(["manage-roles"]), new FindAllPermissionsController().handle);
+adminPermissionRouter.get("/", isAuthenticated, requirePermissions("manage-roles"), new FindAllPermissionsController().handle);
 
 export { adminPermissionRouter };

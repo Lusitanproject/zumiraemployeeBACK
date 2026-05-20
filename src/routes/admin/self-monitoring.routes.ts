@@ -39,7 +39,7 @@ const adminSelfMonitoringRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminSelfMonitoringRouter.get("/", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new ListAllSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRouter.get("/", isAuthenticated, requirePermissions("manage-self-monitoring"), new ListAllSelfMonitoringBlocksController().handle);
 
 /**
  * @swagger
@@ -93,7 +93,7 @@ adminSelfMonitoringRouter.get("/", isAuthenticated, requirePermissions(["manage-
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminSelfMonitoringRouter.post("/", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new CreateSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRouter.post("/", isAuthenticated, requirePermissions("manage-self-monitoring"), new CreateSelfMonitoringBlocksController().handle);
 
 /**
  * @swagger
@@ -145,7 +145,7 @@ adminSelfMonitoringRouter.post("/", isAuthenticated, requirePermissions(["manage
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminSelfMonitoringRouter.put("/:id", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new EditSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRouter.put("/:id", isAuthenticated, requirePermissions("manage-self-monitoring"), new EditSelfMonitoringBlocksController().handle);
 
 /**
  * @swagger
@@ -186,7 +186,7 @@ adminSelfMonitoringRouter.put("/:id", isAuthenticated, requirePermissions(["mana
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminSelfMonitoringRouter.get("/dimensions/:selfMonitoringBlockId", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new FindDimensionByBlockController().handle);
+adminSelfMonitoringRouter.get("/dimensions/:selfMonitoringBlockId", isAuthenticated, requirePermissions("manage-self-monitoring"), new FindDimensionByBlockController().handle);
 
 /**
  * @swagger
@@ -225,6 +225,6 @@ adminSelfMonitoringRouter.get("/dimensions/:selfMonitoringBlockId", isAuthentica
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminSelfMonitoringRouter.get("/:id", isAuthenticated, requirePermissions(["manage-self-monitoring"]), new FindSelfMonitoringBlocksController().handle);
+adminSelfMonitoringRouter.get("/:id", isAuthenticated, requirePermissions("manage-self-monitoring"), new FindSelfMonitoringBlocksController().handle);
 
 export { adminSelfMonitoringRouter };

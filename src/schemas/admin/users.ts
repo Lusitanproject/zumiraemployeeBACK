@@ -40,6 +40,8 @@ export const UpdateUserSchema = z.object({
   phoneNumber: PhoneNumberSchema.optional(),
 });
 
+export const UpdateCompanyUserSchema = UpdateUserSchema.omit({ roleId: true, companyId: true });
+
 export const CreateCompanySchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),

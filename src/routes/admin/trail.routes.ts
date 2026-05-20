@@ -62,7 +62,7 @@ const adminTrailRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminTrailRouter.post("/", isAuthenticated, requirePermissions(["manage-trails"]), new CreateTrailController().handle);
+adminTrailRouter.post("/", isAuthenticated, requirePermissions("manage-trails"), new CreateTrailController().handle);
 
 /**
  * @swagger
@@ -93,7 +93,7 @@ adminTrailRouter.post("/", isAuthenticated, requirePermissions(["manage-trails"]
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminTrailRouter.get("/", isAuthenticated, requirePermissions(["manage-trails"]), new FindAllTrailsController().handle);
+adminTrailRouter.get("/", isAuthenticated, requirePermissions("manage-trails"), new FindAllTrailsController().handle);
 
 /**
  * @swagger
@@ -139,7 +139,7 @@ adminTrailRouter.get("/", isAuthenticated, requirePermissions(["manage-trails"])
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminTrailRouter.get("/:id", isAuthenticated, requirePermissions(["manage-trails"]), new FindTrailController().handle);
+adminTrailRouter.get("/:id", isAuthenticated, requirePermissions("manage-trails"), new FindTrailController().handle);
 
 /**
  * @swagger
@@ -191,6 +191,6 @@ adminTrailRouter.get("/:id", isAuthenticated, requirePermissions(["manage-trails
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminTrailRouter.put("/:id", isAuthenticated, requirePermissions(["manage-trails"]), new UpdateTrailController().handle);
+adminTrailRouter.put("/:id", isAuthenticated, requirePermissions("manage-trails"), new UpdateTrailController().handle);
 
 export { adminTrailRouter };

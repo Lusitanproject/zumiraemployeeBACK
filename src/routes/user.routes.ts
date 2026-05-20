@@ -11,6 +11,7 @@ import { SearchUsersController } from "../controllers/user/SearchUsersController
 import { UpdateUserController } from "../controllers/user/UpdateUserController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { requirePermissions } from "../middlewares/requirePermissions";
+import { requireSameCompany } from "../middlewares/requireSameCompany";
 
 const userRouter = Router();
 
@@ -31,7 +32,7 @@ const userRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get("/search", isAuthenticated, requirePermissions(["manage-users"]), new SearchUsersController().handle);
+userRouter.get("/search", isAuthenticated, requirePermissions("manage-users"), new SearchUsersController().handle);
 
 /**
  * @swagger
@@ -53,7 +54,7 @@ userRouter.get("/search", isAuthenticated, requirePermissions(["manage-users"]),
 userRouter.get(
   "/filters",
   isAuthenticated,
-  requirePermissions(["manage-users"]),
+  requirePermissions("manage-users"),
   new GetUserFiltersController().handle,
 );
 
@@ -91,7 +92,8 @@ userRouter.get("/find-by", isAuthenticated, new FindUserByController().handle);
 userRouter.get(
   "/company/:companyId",
   isAuthenticated,
-  requirePermissions(["manage-users"]),
+  requirePermissions("view-company-users"),
+  requireSameCompany("params"),
   new ListUsersByCompanyController().handle,
 );
 
@@ -112,7 +114,7 @@ userRouter.get(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get("/", isAuthenticated, requirePermissions(["manage-users"]), new ListAllUsersController().handle);
+userRouter.get("/", isAuthenticated, requirePermissions("manage-users"), new ListAllUsersController().handle);
 
 /**
  * @swagger
@@ -145,7 +147,7 @@ userRouter.get("/:userId", isAuthenticated, new FindUserController().handle);
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.put("/:id", isAuthenticated, requirePermissions(["manage-users"]), new UpdateUserController().handle);
+userRouter.put("/:id", isAuthenticated, requirePermissions("manage-users"), new UpdateUserController().handle);
 
 /**
  * @swagger
@@ -164,7 +166,7 @@ userRouter.put("/:id", isAuthenticated, requirePermissions(["manage-users"]), ne
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.delete("/:id", isAuthenticated, requirePermissions(["manage-users"]), new DeleteUserController().handle);
+userRouter.delete("/:id", isAuthenticated, requirePermissions("manage-users"), new DeleteUserController().handle);
 
 /**
  * @swagger

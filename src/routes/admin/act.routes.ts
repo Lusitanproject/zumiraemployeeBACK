@@ -43,7 +43,7 @@ const adminActRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.get("/", isAuthenticated, requirePermissions(["manage-acts"]), new FindAllActChatbotsController().handle);
+adminActRouter.get("/", isAuthenticated, requirePermissions("manage-acts"), new FindAllActChatbotsController().handle);
 
 /**
  * @swagger
@@ -82,7 +82,7 @@ adminActRouter.get("/", isAuthenticated, requirePermissions(["manage-acts"]), ne
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.get("/by-trail", isAuthenticated, requirePermissions(["manage-acts"]), new FindByTrailController().handle);
+adminActRouter.get("/by-trail", isAuthenticated, requirePermissions("manage-acts"), new FindByTrailController().handle);
 
 /**
  * @swagger
@@ -149,7 +149,7 @@ adminActRouter.get("/by-trail", isAuthenticated, requirePermissions(["manage-act
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.put("/update-many", isAuthenticated, requirePermissions(["manage-acts"]), new UpdateManyActChatbotsController().handle);
+adminActRouter.put("/update-many", isAuthenticated, requirePermissions("manage-acts"), new UpdateManyActChatbotsController().handle);
 
 /**
  * @swagger
@@ -203,7 +203,7 @@ adminActRouter.put("/update-many", isAuthenticated, requirePermissions(["manage-
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.put("/analysis/factor-associations", isAuthenticated, requirePermissions(["manage-acts"]), new OverrideFactorAssociationsController().handle);
+adminActRouter.put("/analysis/factor-associations", isAuthenticated, requirePermissions("manage-acts"), new OverrideFactorAssociationsController().handle);
 
 /**
  * @swagger
@@ -242,7 +242,7 @@ adminActRouter.put("/analysis/factor-associations", isAuthenticated, requirePerm
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminActRouter.get("/:id", isAuthenticated, requirePermissions(["manage-acts"]), new FindActChatbotController().handle);
+adminActRouter.get("/:id", isAuthenticated, requirePermissions("manage-acts"), new FindActChatbotController().handle);
 
 /**
  * @swagger
@@ -315,7 +315,7 @@ adminActRouter.get("/:id", isAuthenticated, requirePermissions(["manage-acts"]),
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminActRouter.put("/:id", isAuthenticated, requirePermissions(["manage-acts"]), new UpdateActChatbotController().handle);
+adminActRouter.put("/:id", isAuthenticated, requirePermissions("manage-acts"), new UpdateActChatbotController().handle);
 
 /**
  * @swagger
@@ -383,7 +383,7 @@ adminActRouter.put("/:id", isAuthenticated, requirePermissions(["manage-acts"]),
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.post("/", isAuthenticated, requirePermissions(["manage-acts"]), new CreateActChatbotController().handle);
+adminActRouter.post("/", isAuthenticated, requirePermissions("manage-acts"), new CreateActChatbotController().handle);
 
 /**
  * @swagger
@@ -442,7 +442,7 @@ adminActRouter.post("/", isAuthenticated, requirePermissions(["manage-acts"]), n
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, requirePermissions(["manage-acts"]), new ImportChatbaseChaptersController().handle);
+adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, requirePermissions("manage-acts"), new ImportChatbaseChaptersController().handle);
 
 /**
  * @swagger
@@ -486,6 +486,6 @@ adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, requirePer
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.post("/:actChatbotId/analysis", isAuthenticated, requirePermissions(["manage-acts"]), new GenerateActAnalysisController().handle);
+adminActRouter.post("/:actChatbotId/analysis", isAuthenticated, requirePermissions("manage-acts"), new GenerateActAnalysisController().handle);
 
 export { adminActRouter };

@@ -18,6 +18,7 @@ import { ListResultsController } from "../controllers/assessment/ListResultsCont
 import { UpdateQuestionsController } from "../controllers/assessment/UpdateQuestionsController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { requirePermissions } from "../middlewares/requirePermissions";
+import { requireSameCompany } from "../middlewares/requireSameCompany";
 
 const assessmentRouter = Router();
 
@@ -151,7 +152,7 @@ assessmentRouter.get("/results/:id", isAuthenticated, new DetailResultController
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.post("/results", isAuthenticated, requirePermissions(["answer-assessment"]), new CreateResultController().handle);
+assessmentRouter.post("/results", isAuthenticated, requirePermissions("answer-assessment"), new CreateResultController().handle);
 
 /**
  * @swagger
@@ -220,7 +221,7 @@ assessmentRouter.post("/results", isAuthenticated, requirePermissions(["answer-a
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.post("/questions", isAuthenticated, requirePermissions(["manage-assessments"]), new CreateQuestionController().handle);
+assessmentRouter.post("/questions", isAuthenticated, requirePermissions("manage-assessments"), new CreateQuestionController().handle);
 
 /**
  * @swagger
@@ -284,7 +285,7 @@ assessmentRouter.post("/questions", isAuthenticated, requirePermissions(["manage
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.put("/questions/:id", isAuthenticated, requirePermissions(["manage-assessments"]), new UpdateQuestionsController().handle);
+assessmentRouter.put("/questions/:id", isAuthenticated, requirePermissions("manage-assessments"), new UpdateQuestionsController().handle);
 
 /**
  * @swagger
@@ -446,7 +447,7 @@ assessmentRouter.get("/company", isAuthenticated, new ListCompanyAssessmentsCont
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.post("/:assessmentId/analysis/message", isAuthenticated, requirePermissions(["manage-assessments"]), new AnalysisMessageController().handle);
+assessmentRouter.post("/:assessmentId/analysis/message", isAuthenticated, requirePermissions("view-assessment-results"), requireSameCompany(), new AnalysisMessageController().handle);
 
 /**
  * @swagger
@@ -465,7 +466,7 @@ assessmentRouter.post("/:assessmentId/analysis/message", isAuthenticated, requir
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.get("/:id/results/user-filters", isAuthenticated, requirePermissions(["manage-assessments"]), new GetAssessmentResultUserFiltersController().handle);
+assessmentRouter.get("/:id/results/user-filters", isAuthenticated, requirePermissions("view-assessment-results"), requireSameCompany(), new GetAssessmentResultUserFiltersController().handle);
 
 /**
  * @swagger
@@ -484,7 +485,7 @@ assessmentRouter.get("/:id/results/user-filters", isAuthenticated, requirePermis
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.get("/:id/results", isAuthenticated, requirePermissions(["manage-assessments"]), new SearchAssessmentResultsController().handle);
+assessmentRouter.get("/:id/results", isAuthenticated, requirePermissions("view-assessment-results"), requireSameCompany(), new SearchAssessmentResultsController().handle);
 
 /**
  * @swagger
@@ -532,7 +533,7 @@ assessmentRouter.get("/:id/results", isAuthenticated, requirePermissions(["manag
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-assessmentRouter.get("/:id", isAuthenticated, requirePermissions(["manage-assessments"]), new DetailAssessmentController().handle);
+assessmentRouter.get("/:id", isAuthenticated, requirePermissions("manage-assessments"), new DetailAssessmentController().handle);
 
 /**
  * @swagger
@@ -607,7 +608,7 @@ assessmentRouter.get("/:id", isAuthenticated, requirePermissions(["manage-assess
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-assessmentRouter.post("/", isAuthenticated, requirePermissions(["manage-assessments"]), new CreateAssessmentController().handle);
+assessmentRouter.post("/", isAuthenticated, requirePermissions("manage-assessments"), new CreateAssessmentController().handle);
 
 /**
  * @swagger
@@ -643,7 +644,7 @@ assessmentRouter.post("/", isAuthenticated, requirePermissions(["manage-assessme
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-assessmentRouter.post("/feedback/users/:id", isAuthenticated, requirePermissions(["manage-assessments"]), new GenerateUserFeedbackController().handle);
+assessmentRouter.post("/feedback/users/:id", isAuthenticated, requirePermissions("view-assessment-results"), requireSameCompany(), new GenerateUserFeedbackController().handle);
 
 /**
  * @swagger
@@ -687,6 +688,6 @@ assessmentRouter.post("/feedback/users/:id", isAuthenticated, requirePermissions
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-assessmentRouter.post("/feedback/companies/:id", isAuthenticated, requirePermissions(["manage-assessments"]), new GenerateCompanyFeedbackController().handle);
+assessmentRouter.post("/feedback/companies/:id", isAuthenticated, requirePermissions("view-assessment-results"), requireSameCompany(), new GenerateCompanyFeedbackController().handle);
 
 export { assessmentRouter };
