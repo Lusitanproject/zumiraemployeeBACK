@@ -11,18 +11,49 @@ export interface ReceiveMessage {
 
 export type OnMessageReceived = (message: ReceiveMessage, api: WhatsappApi) => Promise<void>;
 
+export enum WhatsappWebhookField {
+  ACCOUNT_ALERTS = "account_alerts",
+  ACCOUNT_REVIEW_UPDATE = "account_review_update",
+  ACCOUNT_UPDATE = "account_update",
+  AUTOMATIC_EVENTS = "automatic_events",
+  BUSINESS_CAPABILITY_UPDATE = "business_capability_update",
+  HISTORY = "history",
+  MESSAGE_TEMPLATE_COMPONENTS_UPDATE = "message_template_components_update",
+  MESSAGE_TEMPLATE_QUALITY_UPDATE = "message_template_quality_update",
+  MESSAGE_TEMPLATE_STATUS_UPDATE = "message_template_status_update",
+  MESSAGES = "messages",
+  PARTNER_SOLUTIONS = "partner_solutions",
+  PAYMENT_CONFIGURATION_UPDATE = "payment_configuration_update",
+  PHONE_NUMBER_NAME_UPDATE = "phone_number_name_update",
+  PHONE_NUMBER_QUALITY_UPDATE = "phone_number_quality_update",
+  SECURITY = "security",
+  SMB_APP_STATE_SYNC = "smb_app_state_sync",
+  SMB_MESSAGE_ECHOES = "smb_message_echoes",
+  TEMPLATE_CATEGORY_UPDATE = "template_category_update",
+  USER_PREFERENCES = "user_preferences",
+}
+
 interface WhatsappWebhookMessage {
   from: string;
   text?: { body?: string };
 }
 
+interface WhatsappMessagesValue {
+  messaging_product?: string;
+  metadata?: unknown;
+  contacts?: unknown[];
+  messages?: WhatsappWebhookMessage[];
+  statuses?: unknown[];
+}
+
+type WhatsappChange =
+  | { field: WhatsappWebhookField.MESSAGES; value: WhatsappMessagesValue }
+  | { field: string; value: unknown };
+
 interface WhatsappWebhookPayload {
   entry?: {
-    changes?: {
-      value?: {
-        messages?: WhatsappWebhookMessage[];
-      };
-    }[];
+    id?: string;
+    changes?: WhatsappChange[];
   }[];
 }
 
@@ -77,18 +108,38 @@ export class WhatsappApi {
     }
   }
 
+  getField(payload: unknown): string | null {
+    const p = payload as WhatsappWebhookPayload;
+    return p?.entry?.[0]?.changes?.[0]?.field ?? null;
+  }
+
   async receive(payload: unknown, onMessage: OnMessageReceived): Promise<void> {
     console.log("[WhatsApp] received webhook payload:", JSON.stringify(payload, null, 2));
 
     const p = payload as WhatsappWebhookPayload;
-    const message = p?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    const change = p?.entry?.[0]?.changes?.[0];
 
-    if (!message) {
-      console.log("[WhatsApp] no message found in payload, ignoring");
+    if (!change || change.field !== WhatsappWebhookField.MESSAGES) {
+      console.log("[WhatsApp] receive called with non-messages field, ignoring");
       return;
     }
 
-    console.log(`[WhatsApp] message from ${message.from}:`, message.text?.body);
+    // field verified as MESSAGES — cast is safe and intentional
+    const value = change.value as WhatsappMessagesValue;
+    const message = value?.messages?.[0];
+
+    if (!message) {
+      if (value?.statuses?.length) {
+        console.log("[WhatsApp] status event received, ignoring");
+      } else {
+        console.log("[WhatsApp] no message found in payload, ignoring");
+      }
+      return;
+    }
+
+
+
+    console.log(`[WhatsApp] incoming message from ${message.from}:`, message.text?.body);
 
     await onMessage(
       {

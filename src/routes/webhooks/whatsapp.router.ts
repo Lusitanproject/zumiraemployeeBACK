@@ -1,13 +1,13 @@
 import { Router } from "express";
 
-import { ReceiveWhatsappActMessageController } from "../../controllers/whatsapp/ReceiveWhatsappActMessageController";
-import { VerifyWhatsappWebhookController } from "../../controllers/whatsapp/VerifyWhatsappWebhookController";
+import { WhatsappWebhookController } from "../../controllers/webhooks/whatsapp/WhatsappWebhookController";
+import { VerifyWhatsappWebhookController } from "../../controllers/webhooks/whatsapp/VerifyWhatsappWebhookController";
 
 const whatsappWebhookRouter = Router();
 
 /**
  * @swagger
- * /webhooks/whatsapp/act/receive:
+ * /webhooks/whatsapp:
  *   get:
  *     summary: Verificação do webhook WhatsApp (Meta)
  *     description: Chamado pelo Meta ao registrar o webhook. Responde com hub.challenge se o token for válido.
@@ -31,16 +31,17 @@ const whatsappWebhookRouter = Router();
  *       403:
  *         description: Token inválido
  */
-whatsappWebhookRouter.get("/act/receive", new VerifyWhatsappWebhookController().handle);
+whatsappWebhookRouter.get("/", new VerifyWhatsappWebhookController().handle);
 
 /**
  * @swagger
- * /webhooks/whatsapp/act/receive:
+ * /webhooks/whatsapp:
  *   post:
- *     summary: Receber mensagem WhatsApp para ACT
+ *     summary: Receber evento do webhook WhatsApp
  *     description: >
- *       Chamado pelo Meta ao receber uma mensagem. Identifica o usuário pelo número de telefone,
- *       encontra ou cria o capítulo de ACT ativo e envia a resposta da IA de volta pelo WhatsApp.
+ *       Recebe eventos do Meta (mensagens, status, templates, etc.).
+ *       Roteia internamente pelo campo `changes[].field`.
+ *       Atualmente processa apenas eventos do tipo `messages`.
  *     tags: [Webhooks]
  *     requestBody:
  *       required: true
@@ -51,7 +52,7 @@ whatsappWebhookRouter.get("/act/receive", new VerifyWhatsappWebhookController().
  *             description: Payload do webhook WhatsApp (formato Meta Cloud API)
  *     responses:
  *       200:
- *         description: Mensagem processada com sucesso
+ *         description: Evento processado
  *         content:
  *           application/json:
  *             schema:
@@ -59,6 +60,6 @@ whatsappWebhookRouter.get("/act/receive", new VerifyWhatsappWebhookController().
  *       500:
  *         $ref: '#/components/responses/InternalError'
  */
-whatsappWebhookRouter.post("/act/receive", new ReceiveWhatsappActMessageController().handle);
+whatsappWebhookRouter.post("/", new WhatsappWebhookController().handle);
 
 export { whatsappWebhookRouter };
