@@ -11,6 +11,7 @@ import { psychosocialFactorRouter } from "./psychosocial-factor.routes";
 import { selfMonitoringRouter } from "./self-monitoring.routes";
 import { userRouter } from "./user.routes";
 import { adminRouter } from "./admin";
+import { webhooksRouter } from "./webhooks";
 
 const router = Router();
 
@@ -25,5 +26,6 @@ router.use("/psychosocial-factors", psychosocialFactorRouter);
 router.use("/companies", companyRouter);
 router.use("/leads", leadRouter);
 router.use("/admin", adminRouter);
+router.use("/webhooks", webhooksRouter);
 
 export { router };

@@ -6,9 +6,9 @@ const docsBaseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : `http://localhost:${process.env.PORT ?? "3000"}`;
 
-const srcRoutes = ["./src/routes/*.ts", "./src/routes/admin/*.ts"];
+const srcRoutes = ["./src/routes/*.ts", "./src/routes/admin/*.ts", "./src/routes/webhooks/*.ts"];
 
-const distRoutes = ["./dist/routes/*.js", "./dist/routes/admin/*.js"];
+const distRoutes = ["./dist/routes/*.js", "./dist/routes/admin/*.js", "./dist/routes/webhooks/*.js"];
 
 const apis = isDistRuntime ? distRoutes : srcRoutes;
 

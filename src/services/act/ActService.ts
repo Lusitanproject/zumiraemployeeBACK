@@ -1,4 +1,4 @@
-import { CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
+import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
 import {
   CompileActChapterRequest,
   CreateActChapterRequest,
@@ -10,6 +10,7 @@ import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { OpenAiApi, GenerateOpenAiResponseRequest } from "../../external/openai";
 import { UserService } from "../user/UserService";
+import { ReceiveMessage, WhatsappApi } from "../../external/whatsapp";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
 
@@ -1029,6 +1030,55 @@ class ActService {
 
     return { response, reportText };
   }
+
+  async handleWhatsappMessage(message: ReceiveMessage, api: WhatsappApi): Promise<void> {
+    const user = await prismaClient.user.findFirst({
+      where: { phoneNumber: message.from },
+    });
+
+    if (!user) {
+      await api.send({
+        to: message.from,
+        message:
+          "Olá! Você ainda não está cadastrado no programa Zumira. Para participar, entre em contato com o seu gestor.",
+      });
+      return;
+    }
+
+    if (!user.currentActChatbotId) {
+      await api.send({
+        to: message.from,
+        message:
+          "Olá! Você ainda não está atribuído a nenhuma atividade no programa Zumira. Entre em contato com o seu gestor.",
+      });
+      return;
+    }
+
+    const existingChapter = await prismaClient.actChapter.findFirst({
+      where: { userId: user.id, actChatbotId: user.currentActChatbotId },
+      orderBy: { updatedAt: "desc" },
+      select: { id: true },
+    });
+
+    const chapterId =
+      existingChapter?.id ??
+      (
+        await this.createChapter({
+          actChatbotId: user.currentActChatbotId,
+          type: ChapterType.REGULAR,
+          userId: user.id,
+        })
+      ).id;
+
+    const responseText = await this.message({
+      content: message.message,
+      actChapterId: chapterId,
+      userId: user.id,
+    });
+
+    await api.send({ to: message.from, message: responseText });
+  }
 }
 
 export { ActService };
+
