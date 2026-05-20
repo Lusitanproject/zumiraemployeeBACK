@@ -99,6 +99,8 @@ class AuthService {
   }
 
   async sendCode(email: string) {
+    const skipEmail = process.env.SKIP_EMAIL === "true";
+
     const user = await prismaClient.user.findUnique({ where: { email } });
 
     if (!user) throw new PublicError("Email não cadastrado");
@@ -107,7 +109,7 @@ class AuthService {
     const now = new Date().getTime();
     const expiresAt = new Date(now + 5 * 60 * 1000);
 
-    await sendEmail(user, code);
+    if (!skipEmail) await sendEmail(user, code);
 
     await prismaClient.authCode.create({
       data: { userId: user.id, code, expiresAt },

@@ -4,7 +4,6 @@ import { actRouter } from "./act.routes";
 import { assessmentRouter } from "./assessment.routes";
 import { authRouter } from "./auth.routes";
 import { companyRouter } from "./company.routes";
-import { integrationRouter } from "./integration.routes";
 import { leadRouter } from "./lead.routes";
 import { nationalityRouter } from "./nationality.routes";
 import { notificationRouter } from "./notification.routes";
@@ -24,7 +23,6 @@ router.use("/notifications", notificationRouter);
 router.use("/nationalities", nationalityRouter);
 router.use("/psychosocial-factors", psychosocialFactorRouter);
 router.use("/companies", companyRouter);
-router.use("/integrations", integrationRouter);
 router.use("/leads", leadRouter);
 router.use("/admin", adminRouter);
 

@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { AssessmentService } from "../../services/assessment/AssessmentService";
-import { assertPermissions } from "../../utils/assertPermissions";
 import { parseZodError } from "../../utils/parseZodError";
 
 const CreateResultSchema = z.object({
@@ -17,9 +16,7 @@ const CreateResultSchema = z.object({
 
 class CreateResultController {
   async handle(req: Request, res: Response) {
-    assertPermissions(req.user, "answer-assessment");
-
-    const { success, data, error } = CreateResultSchema.safeParse(req.body);
+const { success, data, error } = CreateResultSchema.safeParse(req.body);
 
     if (!success) throw new Error(parseZodError(error));
 

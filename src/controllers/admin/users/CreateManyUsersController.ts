@@ -2,14 +2,11 @@ import { Request, Response } from "express";
 
 import { CreateManyUsersSchema, CreateUserSchema } from "../../../schemas/admin/users";
 import { UserAdminService } from "../../../services/admin/UserAdminService";
-import { assertPermissions } from "../../../utils/assertPermissions";
 import { parseZodError } from "../../../utils/parseZodError";
 
 class CreateManyUsersController {
   async handle(req: Request, res: Response) {
-    assertPermissions(req.user, "manage-users");
-
-    const { success, data, error } = CreateManyUsersSchema.safeParse(req.body);
+const { success, data, error } = CreateManyUsersSchema.safeParse(req.body);
 
     if (!success) throw new Error(parseZodError(error));
 

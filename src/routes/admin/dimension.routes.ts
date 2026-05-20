@@ -5,6 +5,7 @@ import { EditDimensionController } from "../../controllers/admin/dimensions/Edit
 import { FindAllDimensionsController } from "../../controllers/admin/dimensions/FindAllDimensionController";
 import { FindDimensionController } from "../../controllers/admin/dimensions/FindDimensionController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminDimensionRouter = Router();
 
@@ -17,6 +18,7 @@ const adminDimensionRouter = Router();
  *       Cria uma nova dimensão psicológica vinculada a um bloco de automonitoramento.
  *       Dimensões são os traços ou competências medidos pelas perguntas de avaliação (ex: 'Estresse', 'Resiliência', 'Engajamento').
  *       O `acronym` é o código curto exibido em gráficos e relatórios.
+ *       Requer permissão `manage-dimension`.
  *     tags: [Admin - Dimensions]
  *     security:
  *       - bearerAuth: []
@@ -61,15 +63,17 @@ const adminDimensionRouter = Router();
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminDimensionRouter.post("/", isAuthenticated, new CreateDimensionController().handle);
+adminDimensionRouter.post("/", isAuthenticated, requirePermissions("manage-dimension"), new CreateDimensionController().handle);
 
 /**
  * @swagger
  * /admin/dimensions:
  *   get:
  *     summary: "[Admin] Listar dimensões psicológicas"
- *     description: Retorna todas as dimensões psicológicas cadastradas no sistema.
+ *     description: "Retorna todas as dimensões psicológicas cadastradas no sistema. Requer permissão `manage-dimension`."
  *     tags: [Admin - Dimensions]
  *     security:
  *       - bearerAuth: []
@@ -90,15 +94,17 @@ adminDimensionRouter.post("/", isAuthenticated, new CreateDimensionController().
  *                     $ref: '#/components/schemas/PsychologicalDimension'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminDimensionRouter.get("/", isAuthenticated, new FindAllDimensionsController().handle);
+adminDimensionRouter.get("/", isAuthenticated, requirePermissions("manage-dimension"), new FindAllDimensionsController().handle);
 
 /**
  * @swagger
  * /admin/dimensions/{psychologicalDimensionId}:
  *   get:
  *     summary: "[Admin] Detalhar dimensão psicológica"
- *     description: Retorna os dados de uma dimensão psicológica específica.
+ *     description: "Retorna os dados de uma dimensão psicológica específica. Requer permissão `manage-dimension`."
  *     tags: [Admin - Dimensions]
  *     security:
  *       - bearerAuth: []
@@ -125,17 +131,19 @@ adminDimensionRouter.get("/", isAuthenticated, new FindAllDimensionsController()
  *                   $ref: '#/components/schemas/PsychologicalDimension'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminDimensionRouter.get("/:psychologicalDimensionId", isAuthenticated, new FindDimensionController().handle);
+adminDimensionRouter.get("/:psychologicalDimensionId", isAuthenticated, requirePermissions("manage-dimension"), new FindDimensionController().handle);
 
 /**
  * @swagger
  * /admin/dimensions/{psychologicalDimensionId}:
  *   put:
  *     summary: "[Admin] Atualizar dimensão psicológica"
- *     description: Atualiza os dados de uma dimensão psicológica existente.
+ *     description: "Atualiza os dados de uma dimensão psicológica existente. Requer permissão `manage-dimension`."
  *     tags: [Admin - Dimensions]
  *     security:
  *       - bearerAuth: []
@@ -182,9 +190,11 @@ adminDimensionRouter.get("/:psychologicalDimensionId", isAuthenticated, new Find
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminDimensionRouter.put("/:psychologicalDimensionId", isAuthenticated, new EditDimensionController().handle);
+adminDimensionRouter.put("/:psychologicalDimensionId", isAuthenticated, requirePermissions("manage-dimension"), new EditDimensionController().handle);
 
 export { adminDimensionRouter };

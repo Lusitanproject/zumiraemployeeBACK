@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { AssessmentService } from "../../services/assessment/AssessmentService";
-import { assertPermissions } from "../../utils/assertPermissions";
 import { parseZodError } from "../../utils/parseZodError";
 
 const CreateIdSchema = z.object({
@@ -11,9 +10,7 @@ const CreateIdSchema = z.object({
 
 class DetailAssessmentController {
   async handle(req: Request, res: Response) {
-    assertPermissions(req.user, "read-assessment");
-
-    const { success, data, error } = CreateIdSchema.safeParse(req.params);
+const { success, data, error } = CreateIdSchema.safeParse(req.params);
 
     if (!success) throw new Error(parseZodError(error));
 
