@@ -10,6 +10,8 @@ import { ListUsersByCompanyController } from "../controllers/user/ListUsersByCom
 import { SearchUsersController } from "../controllers/user/SearchUsersController";
 import { UpdateUserController } from "../controllers/user/UpdateUserController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { requirePermissions } from "../middlewares/requirePermissions";
+import { requireSameCompany } from "../middlewares/requireSameCompany";
 
 const userRouter = Router();
 
@@ -18,28 +20,43 @@ const userRouter = Router();
  * /users/search:
  *   get:
  *     summary: Busca paginada e filtrada de usuários
+ *     description: "Requer permissão `manage-users`."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Resultados paginados
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get("/search", isAuthenticated, new SearchUsersController().handle);
+userRouter.get("/search", isAuthenticated, requirePermissions("manage-users"), new SearchUsersController().handle);
 
 /**
  * @swagger
  * /users/filters:
  *   get:
  *     summary: Obter valores disponíveis para filtros de usuário
+ *     description: "Requer permissão `manage-users`."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Valores únicos por campo
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get("/filters", isAuthenticated, new GetUserFiltersController().handle);
+userRouter.get(
+  "/filters",
+  isAuthenticated,
+  requirePermissions("manage-users"),
+  new GetUserFiltersController().handle,
+);
 
 /**
  * @swagger
@@ -60,28 +77,44 @@ userRouter.get("/find-by", isAuthenticated, new FindUserByController().handle);
  * /users/company/{companyId}:
  *   get:
  *     summary: Listar usuários de uma empresa
+ *     description: "Requer permissão `manage-users`."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Usuários da empresa
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get("/company/:companyId", isAuthenticated, new ListUsersByCompanyController().handle);
+userRouter.get(
+  "/company/:companyId",
+  isAuthenticated,
+  requirePermissions("view-company-users"),
+  requireSameCompany("params"),
+  new ListUsersByCompanyController().handle,
+);
 
 /**
  * @swagger
  * /users:
  *   get:
  *     summary: Listar todos os usuários
+ *     description: "Requer permissão `manage-users`."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista completa de usuários
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get("/", isAuthenticated, new ListAllUsersController().handle);
+userRouter.get("/", isAuthenticated, requirePermissions("manage-users"), new ListAllUsersController().handle);
 
 /**
  * @swagger
@@ -102,28 +135,38 @@ userRouter.get("/:userId", isAuthenticated, new FindUserController().handle);
  * /users/{id}:
  *   put:
  *     summary: Atualizar usuário
+ *     description: "Requer permissão `manage-users`."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Usuário atualizado
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.put("/:id", isAuthenticated, new UpdateUserController().handle);
+userRouter.put("/:id", isAuthenticated, requirePermissions("manage-users"), new UpdateUserController().handle);
 
 /**
  * @swagger
  * /users/{id}:
  *   delete:
  *     summary: Excluir usuário
+ *     description: "Requer permissão `manage-users`."
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Usuário excluído
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.delete("/:id", isAuthenticated, new DeleteUserController().handle);
+userRouter.delete("/:id", isAuthenticated, requirePermissions("manage-users"), new DeleteUserController().handle);
 
 /**
  * @swagger

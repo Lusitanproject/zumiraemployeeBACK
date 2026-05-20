@@ -9,6 +9,8 @@ import {
   UserFilterColumn,
 } from "../../schemas/admin/users";
 import { PublicError } from "../../error";
+import { Prisma } from "@prisma/client";
+
 import prismaClient from "../../prisma";
 
 type UpdateUser = z.infer<typeof UpdateUserSchema>;
@@ -39,9 +41,9 @@ class UserService {
     return { ...response };
   }
 
-  async find(id: string) {
-    const user = await prismaClient.user.findUnique({
-      where: { id },
+  async find(id: string, where?: Prisma.UserWhereInput) {
+    const user = await prismaClient.user.findFirst({
+      where: { id, ...where },
       include: {
         company: { select: { id: true, name: true } },
         role: { select: { id: true, slug: true } },
@@ -229,18 +231,24 @@ class UserService {
     };
   }
 
-  async update({ id, ...data }: UpdateUser & { id: string }) {
-    const user = await prismaClient.user.update({
-      where: { id },
-      data,
-    });
+  async update({ id, ...data }: UpdateUser & { id: string }, where?: Prisma.UserWhereInput) {
+    if (where) {
+      const { count } = await prismaClient.user.updateMany({ where: { id, ...where }, data });
+      if (count === 0) return null;
+    }
 
+    const user = await prismaClient.user.update({ where: { id }, data });
     const { password: _password, ...response } = user;
     return { ...response };
   }
 
-  async delete(id: string) {
+  async delete(id: string, where?: Prisma.UserWhereInput) {
+    if (where) {
+      const { count } = await prismaClient.user.deleteMany({ where: { id, ...where } });
+      return count > 0;
+    }
     await prismaClient.user.delete({ where: { id } });
+    return true;
   }
 
   // ─── Sync engine ───────────────────────────────────────────────────────────

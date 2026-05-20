@@ -9,6 +9,7 @@ import { FindNotificationTypeController } from "../../controllers/admin/notifica
 import { UpdateNotificationController } from "../../controllers/admin/notifications/UpdateNotificationController";
 import { UpdateNotificationTypeController } from "../../controllers/admin/notifications/UpdateNotificationTypeController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminNotificationRouter = Router();
 
@@ -17,7 +18,7 @@ const adminNotificationRouter = Router();
  * /admin/notifications:
  *   get:
  *     summary: "[Admin] Listar todas as notificações"
- *     description: Retorna todas as notificações cadastradas no sistema, incluindo destinatários e tipos.
+ *     description: "Retorna todas as notificações cadastradas no sistema, incluindo destinatários e tipos. Requer permissão `manage-notifications`."
  *     tags: [Admin - Notifications]
  *     security:
  *       - bearerAuth: []
@@ -38,8 +39,10 @@ const adminNotificationRouter = Router();
  *                     $ref: '#/components/schemas/Notification'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminNotificationRouter.get("/", isAuthenticated, new FindAllNotificationsController().handle);
+adminNotificationRouter.get("/", isAuthenticated, requirePermissions("manage-notifications"), new FindAllNotificationsController().handle);
 
 /**
  * @swagger
@@ -50,6 +53,7 @@ adminNotificationRouter.get("/", isAuthenticated, new FindAllNotificationsContro
  *       Retorna todos os tipos de notificação cadastrados.
  *       Tipos definem categorias com cor e prioridade (ex: 'Alerta Crítico', 'Informativo', 'Lembrete').
  *       Use `priority` para ordenar os tipos — maior valor = maior prioridade.
+ *       Requer permissão `manage-notifications`.
  *     tags: [Admin - Notifications]
  *     security:
  *       - bearerAuth: []
@@ -70,15 +74,17 @@ adminNotificationRouter.get("/", isAuthenticated, new FindAllNotificationsContro
  *                     $ref: '#/components/schemas/NotificationType'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminNotificationRouter.get("/types", isAuthenticated, new FindAllTypesController().handle);
+adminNotificationRouter.get("/types", isAuthenticated, requirePermissions("manage-notifications"), new FindAllTypesController().handle);
 
 /**
  * @swagger
  * /admin/notifications/types/{id}:
  *   get:
  *     summary: "[Admin] Detalhar tipo de notificação"
- *     description: Retorna os dados de um tipo de notificação específico.
+ *     description: "Retorna os dados de um tipo de notificação específico. Requer permissão `manage-notifications`."
  *     tags: [Admin - Notifications]
  *     security:
  *       - bearerAuth: []
@@ -105,10 +111,12 @@ adminNotificationRouter.get("/types", isAuthenticated, new FindAllTypesControlle
  *                   $ref: '#/components/schemas/NotificationType'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNotificationRouter.get("/types/:id", isAuthenticated, new FindNotificationTypeController().handle);
+adminNotificationRouter.get("/types/:id", isAuthenticated, requirePermissions("manage-notifications"), new FindNotificationTypeController().handle);
 
 /**
  * @swagger
@@ -120,6 +128,7 @@ adminNotificationRouter.get("/types/:id", isAuthenticated, new FindNotificationT
  *       `actionUrl` é um deep link opcional para redirecionar o usuário a uma ação específica (ex: ver resultado de avaliação).
  *       `content` é o corpo completo da notificação (pode ser HTML ou texto).
  *       `summary` é o texto curto exibido na listagem (sem formatação).
+ *       Requer permissão `manage-notifications`.
  *     tags: [Admin - Notifications]
  *     security:
  *       - bearerAuth: []
@@ -175,8 +184,10 @@ adminNotificationRouter.get("/types/:id", isAuthenticated, new FindNotificationT
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminNotificationRouter.post("/", isAuthenticated, new CreateNotificationController().handle);
+adminNotificationRouter.post("/", isAuthenticated, requirePermissions("manage-notifications"), new CreateNotificationController().handle);
 
 /**
  * @swagger
@@ -187,6 +198,7 @@ adminNotificationRouter.post("/", isAuthenticated, new CreateNotificationControl
  *       Cria um novo tipo/categoria de notificação.
  *       `color` define a cor de identificação visual (#RRGGBB ou #RGB).
  *       `priority` é um inteiro — quanto maior o valor, mais alta a prioridade.
+ *       Requer permissão `manage-notifications`.
  *     tags: [Admin - Notifications]
  *     security:
  *       - bearerAuth: []
@@ -229,15 +241,17 @@ adminNotificationRouter.post("/", isAuthenticated, new CreateNotificationControl
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminNotificationRouter.post("/types", isAuthenticated, new CreateNotificationTypeController().handle);
+adminNotificationRouter.post("/types", isAuthenticated, requirePermissions("manage-notifications"), new CreateNotificationTypeController().handle);
 
 /**
  * @swagger
  * /admin/notifications/{notificationId}:
  *   put:
  *     summary: "[Admin] Atualizar notificação"
- *     description: Atualiza os dados de uma notificação existente.
+ *     description: "Atualiza os dados de uma notificação existente. Requer permissão `manage-notifications`."
  *     tags: [Admin - Notifications]
  *     security:
  *       - bearerAuth: []
@@ -288,17 +302,19 @@ adminNotificationRouter.post("/types", isAuthenticated, new CreateNotificationTy
  *                   $ref: '#/components/schemas/Notification'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNotificationRouter.put("/:notificationId", isAuthenticated, new UpdateNotificationController().handle);
+adminNotificationRouter.put("/:notificationId", isAuthenticated, requirePermissions("manage-notifications"), new UpdateNotificationController().handle);
 
 /**
  * @swagger
  * /admin/notifications/types/{id}:
  *   put:
  *     summary: "[Admin] Atualizar tipo de notificação"
- *     description: Atualiza nome, cor ou prioridade de um tipo de notificação existente.
+ *     description: "Atualiza nome, cor ou prioridade de um tipo de notificação existente. Requer permissão `manage-notifications`."
  *     tags: [Admin - Notifications]
  *     security:
  *       - bearerAuth: []
@@ -343,17 +359,19 @@ adminNotificationRouter.put("/:notificationId", isAuthenticated, new UpdateNotif
  *                   $ref: '#/components/schemas/NotificationType'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNotificationRouter.put("/types/:id", isAuthenticated, new UpdateNotificationTypeController().handle);
+adminNotificationRouter.put("/types/:id", isAuthenticated, requirePermissions("manage-notifications"), new UpdateNotificationTypeController().handle);
 
 /**
  * @swagger
  * /admin/notifications/{notificationId}:
  *   delete:
  *     summary: "[Admin] Excluir notificação"
- *     description: Remove permanentemente uma notificação e seus registros de destinatários.
+ *     description: "Remove permanentemente uma notificação e seus registros de destinatários. Requer permissão `manage-notifications`."
  *     tags: [Admin - Notifications]
  *     security:
  *       - bearerAuth: []
@@ -374,9 +392,11 @@ adminNotificationRouter.put("/types/:id", isAuthenticated, new UpdateNotificatio
  *               $ref: '#/components/schemas/SuccessResponse'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNotificationRouter.delete("/:notificationId", isAuthenticated, new DeleteNotificationController().handle);
+adminNotificationRouter.delete("/:notificationId", isAuthenticated, requirePermissions("manage-notifications"), new DeleteNotificationController().handle);
 
 export { adminNotificationRouter };

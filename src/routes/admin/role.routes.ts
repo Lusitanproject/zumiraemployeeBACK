@@ -7,6 +7,7 @@ import { FindRoleController } from "../../controllers/admin/roles/FindRoleContro
 import { SetRolePermissionsController } from "../../controllers/admin/roles/SetRolePermissionsController";
 import { UpdateRoleController } from "../../controllers/admin/roles/UpdateRoleController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminRoleRouter = Router();
 
@@ -15,7 +16,7 @@ const adminRoleRouter = Router();
  * /admin/roles:
  *   get:
  *     summary: "[Admin] Listar papéis de acesso"
- *     description: Retorna todos os papéis (roles) cadastrados no sistema. Papéis definem o conjunto de permissões de um usuário.
+ *     description: "Retorna todos os papéis (roles) cadastrados no sistema. Papéis definem o conjunto de permissões de um usuário. Requer permissão `manage-roles`."
  *     tags: [Admin - Roles]
  *     security:
  *       - bearerAuth: []
@@ -36,15 +37,17 @@ const adminRoleRouter = Router();
  *                     $ref: '#/components/schemas/Role'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminRoleRouter.get("/", isAuthenticated, new FindAllRolesController().handle);
+adminRoleRouter.get("/", isAuthenticated, requirePermissions("manage-roles"), new FindAllRolesController().handle);
 
 /**
  * @swagger
  * /admin/roles/{id}:
  *   get:
  *     summary: "[Admin] Detalhar papel de acesso"
- *     description: Retorna os dados de um papel específico, incluindo as permissões atribuídas.
+ *     description: "Retorna os dados de um papel específico, incluindo as permissões atribuídas. Requer permissão `manage-roles`."
  *     tags: [Admin - Roles]
  *     security:
  *       - bearerAuth: []
@@ -79,10 +82,12 @@ adminRoleRouter.get("/", isAuthenticated, new FindAllRolesController().handle);
  *                           description: Lista de strings de permissão atribuídas ao papel
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminRoleRouter.get("/:id", isAuthenticated, new FindRoleController().handle);
+adminRoleRouter.get("/:id", isAuthenticated, requirePermissions("manage-roles"), new FindRoleController().handle);
 
 /**
  * @swagger
@@ -129,14 +134,14 @@ adminRoleRouter.get("/:id", isAuthenticated, new FindRoleController().handle);
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminRoleRouter.post("/", isAuthenticated, new CreateRoleController().handle);
+adminRoleRouter.post("/", isAuthenticated, requirePermissions("manage-roles"), new CreateRoleController().handle);
 
 /**
  * @swagger
  * /admin/roles/{id}:
  *   put:
  *     summary: "[Admin] Atualizar papel de acesso"
- *     description: Atualiza o slug de um papel existente.
+ *     description: "Atualiza o slug de um papel existente. Requer permissão `manage-roles`."
  *     tags: [Admin - Roles]
  *     security:
  *       - bearerAuth: []
@@ -172,17 +177,19 @@ adminRoleRouter.post("/", isAuthenticated, new CreateRoleController().handle);
  *                   $ref: '#/components/schemas/Role'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminRoleRouter.put("/:id", isAuthenticated, new UpdateRoleController().handle);
+adminRoleRouter.put("/:id", isAuthenticated, requirePermissions("manage-roles"), new UpdateRoleController().handle);
 
 /**
  * @swagger
  * /admin/roles/{id}:
  *   delete:
  *     summary: "[Admin] Excluir papel de acesso"
- *     description: Remove permanentemente um papel. Não é possível excluir papéis que estejam atribuídos a usuários ativos.
+ *     description: "Remove permanentemente um papel. Não é possível excluir papéis que estejam atribuídos a usuários ativos. Requer permissão `manage-roles`."
  *     tags: [Admin - Roles]
  *     security:
  *       - bearerAuth: []
@@ -202,10 +209,12 @@ adminRoleRouter.put("/:id", isAuthenticated, new UpdateRoleController().handle);
  *               $ref: '#/components/schemas/SuccessResponse'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminRoleRouter.delete("/:id", isAuthenticated, new DeleteRoleController().handle);
+adminRoleRouter.delete("/:id", isAuthenticated, requirePermissions("manage-roles"), new DeleteRoleController().handle);
 
 /**
  * @swagger
@@ -215,6 +224,7 @@ adminRoleRouter.delete("/:id", isAuthenticated, new DeleteRoleController().handl
  *     description: >
  *       Substitui integralmente as permissões de um papel (operação idempotente: sempre sobrescreve tudo).
  *       Use `GET /admin/permissions` para obter a lista de permissões disponíveis no sistema.
+ *       Requer permissão `manage-roles`.
  *     tags: [Admin - Roles]
  *     security:
  *       - bearerAuth: []
@@ -250,9 +260,11 @@ adminRoleRouter.delete("/:id", isAuthenticated, new DeleteRoleController().handl
  *               $ref: '#/components/schemas/SuccessResponse'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminRoleRouter.put("/:id/permissions", isAuthenticated, new SetRolePermissionsController().handle);
+adminRoleRouter.put("/:id/permissions", isAuthenticated, requirePermissions("manage-roles"), new SetRolePermissionsController().handle);
 
 export { adminRoleRouter };

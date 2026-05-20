@@ -319,6 +319,43 @@ export class OpenAiApi {
     return { vectorStore, dbVectorStore, file, dbFile };
   }
 
+  async createVectorStoreWithContent({
+    storeName,
+    content,
+    filename,
+  }: {
+    storeName: string;
+    content: string;
+    filename: string;
+  }): Promise<{ vectorStore: OpenAI.VectorStores.VectorStore; dbVectorStore: { id: string; openaiVectorStoreId: string; name: string | null } }> {
+    const { vectorStore, dbVectorStore } = await this.createVectorStore(storeName);
+
+    const tmpPath = `/tmp/${Date.now()}-${filename}`;
+    fs.writeFileSync(tmpPath, content);
+    try {
+      const { file, dbFile } = await this.uploadFile({
+        path: tmpPath,
+        vectorStoreId: dbVectorStore.id,
+        filename,
+        mimeType: "text/plain",
+      });
+      await this.attachFileToVectorStore({
+        openaiVectorStoreId: vectorStore.id,
+        openaiFileId: file.id,
+        dbFileId: dbFile.id,
+      });
+      await this.waitForFileIndexing({
+        openaiVectorStoreId: vectorStore.id,
+        openaiFileId: file.id,
+        dbFileId: dbFile.id,
+      });
+    } finally {
+      fs.unlinkSync(tmpPath);
+    }
+
+    return { vectorStore, dbVectorStore };
+  }
+
   async createBatch({ instructions, batchItems }: CreateOpenAiBatchRequest): Promise<CreateOpenAiBatchResponse> {
     try {
       const jsonl = batchItems

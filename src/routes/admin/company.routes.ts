@@ -7,6 +7,7 @@ import { GenerateAllUserFeedbackController } from "../../controllers/admin/compa
 import { SetCompanyAssessmentsController } from "../../controllers/admin/companies/SetCompanyAssessmentsController";
 import { UpdateCompanyController } from "../../controllers/admin/companies/UpdateCompanyController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminCompanyRouter = Router();
 
@@ -15,7 +16,7 @@ const adminCompanyRouter = Router();
  * /admin/companies:
  *   get:
  *     summary: "[Admin] Listar empresas"
- *     description: Retorna todas as empresas participantes cadastradas no sistema.
+ *     description: "Retorna todas as empresas participantes cadastradas no sistema. Requer permissão `manage-company`."
  *     tags: [Admin - Companies]
  *     security:
  *       - bearerAuth: []
@@ -39,15 +40,17 @@ const adminCompanyRouter = Router();
  *                         $ref: '#/components/schemas/Company'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminCompanyRouter.get("/", isAuthenticated, new FindAllCompaniesController().handle);
+adminCompanyRouter.get("/", isAuthenticated, requirePermissions("manage-company"), new FindAllCompaniesController().handle);
 
 /**
  * @swagger
  * /admin/companies/feedback:
  *   get:
  *     summary: "[Admin] Listar todos os feedbacks de empresas"
- *     description: Retorna todos os feedbacks consolidados gerados por IA para empresas em relação a avaliações.
+ *     description: "Retorna todos os feedbacks consolidados gerados por IA para empresas em relação a avaliações. Requer permissão `manage-company`."
  *     tags: [Admin - Companies]
  *     security:
  *       - bearerAuth: []
@@ -68,8 +71,10 @@ adminCompanyRouter.get("/", isAuthenticated, new FindAllCompaniesController().ha
  *                     $ref: '#/components/schemas/CompanyAssessmentFeedback'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminCompanyRouter.get("/feedback", isAuthenticated, new FindAllFeedbacksController().handle);
+adminCompanyRouter.get("/feedback", isAuthenticated, requirePermissions("manage-company"), new FindAllFeedbacksController().handle);
 
 /**
  * @swagger
@@ -124,14 +129,14 @@ adminCompanyRouter.get("/feedback", isAuthenticated, new FindAllFeedbacksControl
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminCompanyRouter.post("/", isAuthenticated, new CreateCompanyController().handle);
+adminCompanyRouter.post("/", isAuthenticated, requirePermissions("manage-company"), new CreateCompanyController().handle);
 
 /**
  * @swagger
  * /admin/companies/{id}:
  *   put:
  *     summary: "[Admin] Atualizar empresa"
- *     description: Atualiza os dados de uma empresa. Todos os campos são opcionais.
+ *     description: "Atualiza os dados de uma empresa. Todos os campos são opcionais. Requer permissão `manage-company`."
  *     tags: [Admin - Companies]
  *     security:
  *       - bearerAuth: []
@@ -173,10 +178,12 @@ adminCompanyRouter.post("/", isAuthenticated, new CreateCompanyController().hand
  *                   $ref: '#/components/schemas/Company'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminCompanyRouter.put("/:id", isAuthenticated, new UpdateCompanyController().handle);
+adminCompanyRouter.put("/:id", isAuthenticated, requirePermissions("manage-company"), new UpdateCompanyController().handle);
 
 /**
  * @swagger
@@ -187,6 +194,7 @@ adminCompanyRouter.put("/:id", isAuthenticated, new UpdateCompanyController().ha
  *       Define quais avaliações estão disponíveis para os usuários de uma empresa específica.
  *       Operação idempotente: substitui integralmente as avaliações vinculadas.
  *       Afeta apenas avaliações com `public: false` — avaliações públicas já são visíveis a todos.
+ *       Requer permissão `manage-company`.
  *     tags: [Admin - Companies]
  *     security:
  *       - bearerAuth: []
@@ -222,10 +230,12 @@ adminCompanyRouter.put("/:id", isAuthenticated, new UpdateCompanyController().ha
  *               $ref: '#/components/schemas/SuccessResponse'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminCompanyRouter.post("/:id/assessments", isAuthenticated, new SetCompanyAssessmentsController().handle);
+adminCompanyRouter.post("/:id/assessments", isAuthenticated, requirePermissions("manage-company"), new SetCompanyAssessmentsController().handle);
 
 /**
  * @swagger
@@ -236,6 +246,7 @@ adminCompanyRouter.post("/:id/assessments", isAuthenticated, new SetCompanyAsses
  *       Enfileira a geração de feedback individual via IA para todos os colaboradores de uma empresa que ainda não possuem feedback.
  *       O processamento é assíncrono — cada usuário recebe o feedback em `AssessmentResult.feedback` ao ser processado.
  *       Retorna `queuedCount` indicando quantos feedbacks foram enfileirados.
+ *       Requer permissão `manage-company`.
  *     tags: [Admin - Companies]
  *     security:
  *       - bearerAuth: []
@@ -271,12 +282,15 @@ adminCompanyRouter.post("/:id/assessments", isAuthenticated, new SetCompanyAsses
  *                       type: string
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
 adminCompanyRouter.post(
   "/:companyId/feedback/users",
   isAuthenticated,
+  requirePermissions("manage-company"),
   new GenerateAllUserFeedbackController().handle,
 );
 

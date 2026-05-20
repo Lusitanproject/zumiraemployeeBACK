@@ -10,6 +10,7 @@ import { GenerateExcelReportController } from "../../controllers/admin/assessmen
 import { UpdateAssessmentController } from "../../controllers/admin/assessments/UpdateAssessmentController";
 import { UpdateResultRatingsController } from "../../controllers/admin/assessments/UpdateResultRatingsController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
+import { requirePermissions } from "../../middlewares/requirePermissions";
 
 const adminAssessmentRouter = Router();
 
@@ -21,6 +22,7 @@ const adminAssessmentRouter = Router();
  *     description: >
  *       Retorna resultados de avaliações com filtros administrativos.
  *       Permite filtrar por empresa, avaliação, período e dados demográficos dos respondentes.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -66,8 +68,10 @@ const adminAssessmentRouter = Router();
  *                     $ref: '#/components/schemas/AssessmentResult'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminAssessmentRouter.get("/results", isAuthenticated, new FindResultsFilteredController().handle);
+adminAssessmentRouter.get("/results", isAuthenticated, requirePermissions("manage-assessments"), new FindResultsFilteredController().handle);
 
 /**
  * @swagger
@@ -78,6 +82,7 @@ adminAssessmentRouter.get("/results", isAuthenticated, new FindResultsFilteredCo
  *       Gera e retorna um arquivo Excel (.xlsx) com os resultados de avaliações.
  *       Aceita os mesmos filtros de `GET /admin/assessments/results`.
  *       A resposta é um arquivo binário com Content-Type `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -112,15 +117,17 @@ adminAssessmentRouter.get("/results", isAuthenticated, new FindResultsFilteredCo
  *               format: binary
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminAssessmentRouter.get("/results/download-report", isAuthenticated, new GenerateExcelReportController().handle);
+adminAssessmentRouter.get("/results/download-report", isAuthenticated, requirePermissions("manage-assessments"), new GenerateExcelReportController().handle);
 
 /**
  * @swagger
  * /admin/assessments/questions/{assessmentId}:
  *   get:
  *     summary: "[Admin] Listar perguntas de uma avaliação"
- *     description: Retorna todas as perguntas de uma avaliação específica, ordenadas por `index`, com suas opções de resposta.
+ *     description: "Retorna todas as perguntas de uma avaliação específica, ordenadas por `index`, com suas opções de resposta. Requer permissão `manage-assessments`."
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -149,10 +156,12 @@ adminAssessmentRouter.get("/results/download-report", isAuthenticated, new Gener
  *                     $ref: '#/components/schemas/AssessmentQuestion'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.get("/questions/:assessmentId", isAuthenticated, new FindQuestionByAssessmentController().handle);
+adminAssessmentRouter.get("/questions/:assessmentId", isAuthenticated, requirePermissions("manage-assessments"), new FindQuestionByAssessmentController().handle);
 
 /**
  * @swagger
@@ -163,6 +172,7 @@ adminAssessmentRouter.get("/questions/:assessmentId", isAuthenticated, new FindQ
  *       Retorna as faixas de risco (`AssessmentResultRating`) de uma avaliação específica.
  *       Cada faixa define um intervalo de score, um nível de risco textual, um perfil psicológico e uma cor hexadecimal para exibição.
  *       O `id` é o ID da avaliação.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -191,10 +201,12 @@ adminAssessmentRouter.get("/questions/:assessmentId", isAuthenticated, new FindQ
  *                     $ref: '#/components/schemas/AssessmentResultRating'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.get("/ratings/:id", isAuthenticated, new FindResultRatingsByAssessmentController().handle);
+adminAssessmentRouter.get("/ratings/:id", isAuthenticated, requirePermissions("manage-assessments"), new FindResultRatingsByAssessmentController().handle);
 
 /**
  * @swagger
@@ -205,6 +217,7 @@ adminAssessmentRouter.get("/ratings/:id", isAuthenticated, new FindResultRatings
  *       Substitui integralmente as faixas de risco de uma avaliação (operação idempotente: sobrescreve tudo).
  *       O `id` é o ID da avaliação.
  *       Omitir `id` em um item do array cria uma nova faixa; incluir o `id` de uma faixa existente a atualiza.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -260,15 +273,17 @@ adminAssessmentRouter.get("/ratings/:id", isAuthenticated, new FindResultRatings
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminAssessmentRouter.put("/ratings/:id", isAuthenticated, new UpdateResultRatingsController().handle);
+adminAssessmentRouter.put("/ratings/:id", isAuthenticated, requirePermissions("manage-assessments"), new UpdateResultRatingsController().handle);
 
 /**
  * @swagger
  * /admin/assessments:
  *   get:
  *     summary: "[Admin] Listar todas as avaliações"
- *     description: Retorna todas as avaliações cadastradas no sistema, independente do flag `public`.
+ *     description: "Retorna todas as avaliações cadastradas no sistema, independente do flag `public`. Requer permissão `manage-assessments`."
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -289,8 +304,10 @@ adminAssessmentRouter.put("/ratings/:id", isAuthenticated, new UpdateResultRatin
  *                     $ref: '#/components/schemas/Assessment'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  */
-adminAssessmentRouter.get("/", isAuthenticated, new FindAllAssessmentsController().handle);
+adminAssessmentRouter.get("/", isAuthenticated, requirePermissions("manage-assessments"), new FindAllAssessmentsController().handle);
 
 /**
  * @swagger
@@ -300,6 +317,7 @@ adminAssessmentRouter.get("/", isAuthenticated, new FindAllAssessmentsController
  *     description: >
  *       Cria uma cópia completa de uma avaliação existente, incluindo perguntas, opções de resposta e faixas de risco.
  *       Útil para criar variações de avaliações existentes sem recriar do zero.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -326,17 +344,19 @@ adminAssessmentRouter.get("/", isAuthenticated, new FindAllAssessmentsController
  *                   $ref: '#/components/schemas/Assessment'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.post("/duplicate/:id", isAuthenticated, new DuplicateAssessmentController().handle);
+adminAssessmentRouter.post("/duplicate/:id", isAuthenticated, requirePermissions("manage-assessments"), new DuplicateAssessmentController().handle);
 
 /**
  * @swagger
  * /admin/assessments/{id}:
  *   get:
  *     summary: "[Admin] Detalhar avaliação (visão admin)"
- *     description: Retorna dados completos de uma avaliação na visão administrativa, incluindo perguntas, opções, faixas de risco e instruções de feedback para IA.
+ *     description: "Retorna dados completos de uma avaliação na visão administrativa, incluindo perguntas, opções, faixas de risco e instruções de feedback para IA. Requer permissão `manage-assessments`."
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -374,10 +394,12 @@ adminAssessmentRouter.post("/duplicate/:id", isAuthenticated, new DuplicateAsses
  *                             $ref: '#/components/schemas/AssessmentResultRating'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.get("/:id", isAuthenticated, new AssessmentDetailForAdminController().handle);
+adminAssessmentRouter.get("/:id", isAuthenticated, requirePermissions("manage-assessments"), new AssessmentDetailForAdminController().handle);
 
 /**
  * @swagger
@@ -388,6 +410,7 @@ adminAssessmentRouter.get("/:id", isAuthenticated, new AssessmentDetailForAdminC
  *       Atualiza os dados de uma avaliação existente.
  *       `operationType`: SUM = soma dos valores das respostas; AVERAGE = média.
  *       `public: true` disponibiliza a avaliação para qualquer usuário; `false` restringe às empresas vinculadas.
+ *       Requer permissão `manage-assessments`.
  *     tags: [Admin - Assessments]
  *     security:
  *       - bearerAuth: []
@@ -449,9 +472,11 @@ adminAssessmentRouter.get("/:id", isAuthenticated, new AssessmentDetailForAdminC
  *         $ref: '#/components/responses/BadRequest'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.put("/:id", isAuthenticated, new UpdateAssessmentController().handle);
+adminAssessmentRouter.put("/:id", isAuthenticated, requirePermissions("manage-assessments"), new UpdateAssessmentController().handle);
 
 export { adminAssessmentRouter };

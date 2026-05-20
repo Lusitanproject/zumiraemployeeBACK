@@ -1,4 +1,4 @@
-import { CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
+import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
 import {
   CompileActChapterRequest,
   CreateActChapterRequest,
@@ -9,8 +9,8 @@ import {
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { OpenAiApi, GenerateOpenAiResponseRequest } from "../../external/openai";
-import { syncDescriptorFile, createAnalysisVectorStore } from "../../utils/ragHelper";
 import { UserService } from "../user/UserService";
+import { ReceiveMessage, WhatsappApi } from "../../external/whatsapp";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
 
@@ -880,21 +880,12 @@ class ActService {
       aiDescription,
     };
 
-    type AnalysisWithRagFields = typeof latestAnalysis & { vectorStoreId?: string | null };
-    const analysisWithRag = latestAnalysis as AnalysisWithRagFields;
-
-    if (analysisWithRag && !analysisWithRag.vectorStoreId) {
-      console.log(`[RAG/act] starting RAG setup for analysis ${analysisWithRag.id} (actChatbotId: ${actChatbotId})`);
+    if (latestAnalysis && !latestAnalysis.vectorStoreId) {
+      console.log(`[RAG/act] starting RAG setup for analysis ${latestAnalysis.id} (actChatbotId: ${actChatbotId})`);
       try {
         const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
           where: { id: actChatbotId },
         });
-
-        type ActChatbotWithRagFields = typeof actChatbot & {
-          openaiFileId: string | null;
-          openaiFileSyncedAt: Date | null;
-        };
-        const actChatbotWithRag = actChatbot as ActChatbotWithRagFields;
 
         const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
 
@@ -902,31 +893,25 @@ class ActService {
         const { response: ragResponse, reportText } = await this.buildActRagResponse(actChatbot, report, openAiApi);
         console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
 
-        const descriptorFileId = await this.syncActChatbotDescriptorFile(actChatbotWithRag, openAiApi);
-
         const fullRagContent = `${reportText}\n\n${ragResponse.output_text}\n\n${actChatbot.description}`;
 
-        const { dbVectorStore } = await createAnalysisVectorStore({
-          openAiApi,
-          vectorStoreName: `analysis-act-${actChatbotId}`,
-          mainFileContent: fullRagContent,
-          mainFilename: "act-analysis.txt",
-          descriptorOpenaiFileId: descriptorFileId,
+        const { dbVectorStore } = await openAiApi.createVectorStoreWithContent({
+          storeName: `analysis-act-${actChatbotId}`,
+          content: fullRagContent,
+          filename: "act-analysis.md",
         });
 
         await prismaClient.companyActAnalysis.update({
-          where: { id: analysisWithRag.id },
+          where: { id: latestAnalysis.id },
           data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id } as object,
         });
 
         report.aiDescription = ragResponse.output_text;
 
-        console.log(`[RAG/act] analysis ${analysisWithRag.id} updated with vectorStoreId=${dbVectorStore.id}`);
+        console.log(`[RAG/act] analysis ${latestAnalysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
       } catch (error) {
-        console.error(`[RAG/act] failed to create RAG for analysis ${analysisWithRag.id}:`, error);
+        throw new Error(`[RAG/act] failed to create RAG for analysis ${latestAnalysis.id}: ${error}`);
       }
-    } else if (analysisWithRag?.vectorStoreId) {
-      console.log(`[RAG/act] vector store already exists for analysis ${analysisWithRag.id}, skipping`);
     }
 
     return { available: true, report: { ...report } };
@@ -1046,36 +1031,54 @@ class ActService {
     return { response, reportText };
   }
 
-  private async syncActChatbotDescriptorFile(
-    actChatbot: { id: string; name: string; description: string; updatedAt: Date } & {
-      openaiFileId: string | null;
-      openaiFileSyncedAt: Date | null;
-    },
-    openAiApi: OpenAiApi,
-  ): Promise<string | null> {
-    return syncDescriptorFile({
-      openAiApi,
-      currentOpenaiFileId: actChatbot.openaiFileId,
-      openaiFileSyncedAt: actChatbot.openaiFileSyncedAt,
-      updatedAt: actChatbot.updatedAt,
-      fileContent: `Ato: ${actChatbot.name}\nDescrição: ${actChatbot.description}`,
-      filenamePrefix: `act-chatbot-${actChatbot.id}`,
-      checkInUse: () =>
-        prismaClient.companyActAnalysis.count({
-          where: {
-            actChatbotId: actChatbot.id,
-            vectorStore: { createdAt: { gte: actChatbot.openaiFileSyncedAt! } },
-          } as object,
-        }),
-      persistUpdate: (newFileId) =>
-        prismaClient.actChatbot
-          .update({
-            where: { id: actChatbot.id },
-            data: { openaiFileId: newFileId, openaiFileSyncedAt: new Date() } as object,
-          })
-          .then(() => undefined),
+  async handleWhatsappMessage(message: ReceiveMessage, api: WhatsappApi): Promise<void> {
+    const user = await prismaClient.user.findFirst({
+      where: { phoneNumber: message.from },
     });
+
+    if (!user) {
+      await api.send({
+        to: message.from,
+        message:
+          "Olá! Você ainda não está cadastrado no programa Zumira. Para participar, entre em contato com o seu gestor.",
+      });
+      return;
+    }
+
+    if (!user.currentActChatbotId) {
+      await api.send({
+        to: message.from,
+        message:
+          "Olá! Você ainda não está atribuído a nenhuma atividade no programa Zumira. Entre em contato com o seu gestor.",
+      });
+      return;
+    }
+
+    const existingChapter = await prismaClient.actChapter.findFirst({
+      where: { userId: user.id, actChatbotId: user.currentActChatbotId },
+      orderBy: { updatedAt: "desc" },
+      select: { id: true },
+    });
+
+    const chapterId =
+      existingChapter?.id ??
+      (
+        await this.createChapter({
+          actChatbotId: user.currentActChatbotId,
+          type: ChapterType.REGULAR,
+          userId: user.id,
+        })
+      ).id;
+
+    const responseText = await this.message({
+      content: message.message,
+      actChapterId: chapterId,
+      userId: user.id,
+    });
+
+    await api.send({ to: message.from, message: responseText });
   }
 }
 
 export { ActService };
+
