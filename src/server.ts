@@ -19,6 +19,7 @@ app.use(cors());
 
 app.use(requestLogger);
 
+app.get("/", (_req, res) => res.redirect("/docs"));
 app.use("/docs", ...swaggerServeHandlers, swaggerSetupHandler);
 app.get("/docs-json", (_req, res) => res.json(swaggerSpec));
 
