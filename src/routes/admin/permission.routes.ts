@@ -12,8 +12,7 @@ const adminPermissionRouter = Router();
  *   get:
  *     summary: "[Admin] Listar permissões disponíveis"
  *     description: >
- *       Retorna todas as permissões cadastradas no sistema.
- *       Permissões são strings que controlam o acesso a funcionalidades específicas (ex: "manage-users", "read-assessment").
+ *       Retorna todas as permissões do sistema agrupadas por domínio, com nome legível para exibição.
  *       Use este endpoint para popular seletores ao configurar permissões de papéis via `PUT /admin/roles/:id/permissions`.
  *       Requer permissão `manage-roles`.
  *     tags: [Admin - Roles]
@@ -21,7 +20,7 @@ const adminPermissionRouter = Router();
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de permissões disponíveis
+ *         description: Permissões agrupadas por domínio
  *         content:
  *           application/json:
  *             schema:
@@ -31,10 +30,30 @@ const adminPermissionRouter = Router();
  *                   type: string
  *                   example: SUCCESS
  *                 data:
- *                   type: array
- *                   items:
- *                     type: string
- *                   example: ["manage-users", "manage-roles", "read-assessment", "answer-assessment", "manage-company"]
+ *                   type: object
+ *                   properties:
+ *                     permissions:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           domain:
+ *                             type: string
+ *                             example: assessments
+ *                           label:
+ *                             type: string
+ *                             example: Testes
+ *                           permissions:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 key:
+ *                                   type: string
+ *                                   example: manage-assessments
+ *                                 label:
+ *                                   type: string
+ *                                   example: Gerenciar Testes
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
