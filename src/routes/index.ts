@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { actRouter } from "./act.routes";
+import { adminRouter } from "./admin";
 import { assessmentRouter } from "./assessment.routes";
 import { authRouter } from "./auth.routes";
 import { companyRouter } from "./company.routes";
@@ -10,7 +11,6 @@ import { notificationRouter } from "./notification.routes";
 import { psychosocialFactorRouter } from "./psychosocial-factor.routes";
 import { selfMonitoringRouter } from "./self-monitoring.routes";
 import { userRouter } from "./user.routes";
-import { adminRouter } from "./admin";
 import { webhooksRouter } from "./webhooks";
 
 const router = Router();

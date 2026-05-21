@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 
-import { CreateManyUsersSchema, CreateUserSchema } from "../../../schemas/admin/users";
+import { CreateManyUsersSchema } from "../../../schemas/admin/users";
 import { UserAdminService } from "../../../services/admin/UserAdminService";
 
 class CreateManyUsersController {
   async handle(req: Request, res: Response) {
-const data = CreateManyUsersSchema.parse(req.body);
+    const data = CreateManyUsersSchema.parse(req.body);
 
     const userService = new UserAdminService();
     const result = await userService.createMany(data);

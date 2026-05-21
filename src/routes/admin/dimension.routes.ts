@@ -66,7 +66,12 @@ const adminDimensionRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminDimensionRouter.post("/", isAuthenticated, requirePermissions("manage-dimension"), new CreateDimensionController().handle);
+adminDimensionRouter.post(
+  "/",
+  isAuthenticated,
+  requirePermissions("manage-dimension"),
+  new CreateDimensionController().handle,
+);
 
 /**
  * @swagger
@@ -97,7 +102,12 @@ adminDimensionRouter.post("/", isAuthenticated, requirePermissions("manage-dimen
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminDimensionRouter.get("/", isAuthenticated, requirePermissions("manage-dimension"), new FindAllDimensionsController().handle);
+adminDimensionRouter.get(
+  "/",
+  isAuthenticated,
+  requirePermissions("manage-dimension"),
+  new FindAllDimensionsController().handle,
+);
 
 /**
  * @swagger
@@ -136,7 +146,12 @@ adminDimensionRouter.get("/", isAuthenticated, requirePermissions("manage-dimens
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminDimensionRouter.get("/:psychologicalDimensionId", isAuthenticated, requirePermissions("manage-dimension"), new FindDimensionController().handle);
+adminDimensionRouter.get(
+  "/:psychologicalDimensionId",
+  isAuthenticated,
+  requirePermissions("manage-dimension"),
+  new FindDimensionController().handle,
+);
 
 /**
  * @swagger
@@ -195,6 +210,11 @@ adminDimensionRouter.get("/:psychologicalDimensionId", isAuthenticated, requireP
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminDimensionRouter.put("/:psychologicalDimensionId", isAuthenticated, requirePermissions("manage-dimension"), new EditDimensionController().handle);
+adminDimensionRouter.put(
+  "/:psychologicalDimensionId",
+  isAuthenticated,
+  requirePermissions("manage-dimension"),
+  new EditDimensionController().handle,
+);
 
 export { adminDimensionRouter };

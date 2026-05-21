@@ -37,7 +37,7 @@ export const UpdateRatingsSchema = z.object({
       color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
         message: "Color value must be in hexadecimal (#RRGGBB)",
       }),
-    })
+    }),
   ),
 });
 

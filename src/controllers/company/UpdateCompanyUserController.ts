@@ -12,10 +12,7 @@ class UpdateCompanyUserController {
 
     const body = UpdateCompanyUserSchema.parse(req.body);
 
-    const user = await new UserService().update(
-      { id: params.id, ...body },
-      { companyId: req.params.companyId },
-    );
+    const user = await new UserService().update({ id: params.id, ...body }, { companyId: req.params.companyId });
 
     if (!user) return res.status(404).json({ status: "ERROR", message: "Usuário não encontrado" });
 

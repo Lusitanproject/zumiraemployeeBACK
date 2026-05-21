@@ -5,7 +5,7 @@ import { CompanyAdminService } from "../../../services/admin/CompanyAdminService
 
 class CreateCompanyController {
   async handle(req: Request, res: Response) {
-const data = CreateCompanySchema.parse(req.body);
+    const data = CreateCompanySchema.parse(req.body);
 
     const { name, email, trailId } = data;
 

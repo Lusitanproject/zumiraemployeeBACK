@@ -11,7 +11,7 @@ const CreateDimensionSchema = z.object({
 
 class CreatePsychologicalDimensionController {
   async handle(req: Request, res: Response) {
-const data = CreateDimensionSchema.parse(req.body);
+    const data = CreateDimensionSchema.parse(req.body);
 
     const { acronym, name, selfMonitoringBlockId } = data;
 

@@ -1,18 +1,18 @@
 import { AssessmentResultRating, Prisma } from "@prisma/client";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
-import { OpenAiApi } from "../../external/openai";
 
+import { PublicError } from "../../error";
+import { OpenAiApi } from "../../external/openai";
+import prismaClient from "../../prisma";
 import {
-  CreateAssessment,
   AssessmentResultFilterColumn,
+  CreateAssessment,
   SearchAssessmentResultsQuery,
 } from "../../schemas/admin/assessment";
 import { DetailResultRequest, ListAssessmentsRequest } from "../../schemas/assessment";
-import { PublicError } from "../../error";
-import prismaClient from "../../prisma";
-import { devLog } from "../../utils/devLog";
 import { calculateResultScores } from "../../utils/calculateResultScores";
+import { devLog } from "../../utils/devLog";
 import { UserService } from "../user/UserService";
 
 interface QuestionRequest {
@@ -832,7 +832,6 @@ class AssessmentService {
     const filters = await new UserService().getFilters(columns, userIds);
     return { filters };
   }
-
 }
 
 export { AssessmentService };

@@ -57,7 +57,7 @@ export const RequestParamsIdCUID = z.object({
   id: z.string().cuid(),
 });
 
-export let PhoneNumberSchema = z
+export const PhoneNumberSchema = z
   .string()
   .min(1, "Phone number is required")
   .transform((val) => ({

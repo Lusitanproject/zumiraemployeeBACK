@@ -9,7 +9,7 @@ const GetAssessmentDetailForAdminSchema = z.object({
 
 class AssessmentDetailForAdminController {
   async handle(req: Request, res: Response) {
-const data = GetAssessmentDetailForAdminSchema.parse(req.params);
+    const data = GetAssessmentDetailForAdminSchema.parse(req.params);
 
     const detailAssessment = new AssessmentAdminService();
     const assessment = await detailAssessment.find(data.id);

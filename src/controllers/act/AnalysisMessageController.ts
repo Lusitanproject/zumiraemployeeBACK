@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { ActAnalysisMessageSchema } from "../../schemas/actChatbot";
-import { OpenAiApi } from "../../external/openai";
 import { PublicError } from "../../error";
+import { OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
+import { ActAnalysisMessageSchema } from "../../schemas/actChatbot";
 
 const ParamsSchema = z.object({
   actChatbotId: z.string().cuid(),

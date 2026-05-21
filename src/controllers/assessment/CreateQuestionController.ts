@@ -19,7 +19,7 @@ const CreateQuestionSchema = z.object({
 
 class CreateQuestionController {
   async handle(req: Request, res: Response) {
-const data = CreateQuestionSchema.parse(req.body);
+    const data = CreateQuestionSchema.parse(req.body);
 
     const { description, index, assessmentId, psychologicalDimensionId, choices } = data;
 

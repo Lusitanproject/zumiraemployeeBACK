@@ -1,14 +1,14 @@
 import { Router } from "express";
 
+import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
 import { CreateActChatbotController } from "../../controllers/admin/acts/CreateActChatbotController";
+import { FindActChatbotController } from "../../controllers/admin/acts/FindActChatbotController";
 import { FindAllActChatbotsController } from "../../controllers/admin/acts/FindAllActChatbotsController";
 import { FindByTrailController } from "../../controllers/admin/acts/FindByTrailController";
 import { ImportChatbaseChaptersController } from "../../controllers/admin/acts/ImportChatbaseChaptersController";
-import { FindActChatbotController } from "../../controllers/admin/acts/FindActChatbotController";
+import { OverrideFactorAssociationsController } from "../../controllers/admin/acts/OverrideFactorAssociationsController";
 import { UpdateActChatbotController } from "../../controllers/admin/acts/UpdateActChatbotController";
 import { UpdateManyActChatbotsController } from "../../controllers/admin/acts/UpdateManyActChatbotsController";
-import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
-import { OverrideFactorAssociationsController } from "../../controllers/admin/acts/OverrideFactorAssociationsController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
 import { requirePermissions } from "../../middlewares/requirePermissions";
 
@@ -149,7 +149,12 @@ adminActRouter.get("/by-trail", isAuthenticated, requirePermissions("manage-acts
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.put("/update-many", isAuthenticated, requirePermissions("manage-acts"), new UpdateManyActChatbotsController().handle);
+adminActRouter.put(
+  "/update-many",
+  isAuthenticated,
+  requirePermissions("manage-acts"),
+  new UpdateManyActChatbotsController().handle,
+);
 
 /**
  * @swagger
@@ -203,7 +208,12 @@ adminActRouter.put("/update-many", isAuthenticated, requirePermissions("manage-a
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.put("/analysis/factor-associations", isAuthenticated, requirePermissions("manage-acts"), new OverrideFactorAssociationsController().handle);
+adminActRouter.put(
+  "/analysis/factor-associations",
+  isAuthenticated,
+  requirePermissions("manage-acts"),
+  new OverrideFactorAssociationsController().handle,
+);
 
 /**
  * @swagger
@@ -442,7 +452,12 @@ adminActRouter.post("/", isAuthenticated, requirePermissions("manage-acts"), new
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, requirePermissions("manage-acts"), new ImportChatbaseChaptersController().handle);
+adminActRouter.post(
+  "/:id/import-chatbase-chapters",
+  isAuthenticated,
+  requirePermissions("manage-acts"),
+  new ImportChatbaseChaptersController().handle,
+);
 
 /**
  * @swagger
@@ -486,6 +501,11 @@ adminActRouter.post("/:id/import-chatbase-chapters", isAuthenticated, requirePer
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminActRouter.post("/:actChatbotId/analysis", isAuthenticated, requirePermissions("manage-acts"), new GenerateActAnalysisController().handle);
+adminActRouter.post(
+  "/:actChatbotId/analysis",
+  isAuthenticated,
+  requirePermissions("manage-acts"),
+  new GenerateActAnalysisController().handle,
+);
 
 export { adminActRouter };

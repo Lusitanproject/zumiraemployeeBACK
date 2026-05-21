@@ -7,7 +7,5 @@ export const NationalityPermissions = {
 export const NationalityDomain: PermissionDomainDefinition = {
   domain: "nationalities",
   label: "Nacionalidades",
-  permissions: [
-    { key: NationalityPermissions.MANAGE_NATIONALITIES, label: "Gerenciar Nacionalidades" },
-  ],
+  permissions: [{ key: NationalityPermissions.MANAGE_NATIONALITIES, label: "Gerenciar Nacionalidades" }],
 };

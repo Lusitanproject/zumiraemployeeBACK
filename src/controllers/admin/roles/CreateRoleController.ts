@@ -9,7 +9,7 @@ export const CreateRoleSchema = z.object({
 
 class CreateRoleController {
   async handle(req: Request, res: Response) {
-const data = CreateRoleSchema.parse(req.body);
+    const data = CreateRoleSchema.parse(req.body);
 
     const { slug } = data;
 

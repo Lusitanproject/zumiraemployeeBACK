@@ -22,11 +22,12 @@ Lista todos os usuários da empresa.
 
 **Path params**
 
-| Param | Tipo | Descrição |
-|---|---|---|
+| Param       | Tipo   | Descrição     |
+| ----------- | ------ | ------------- |
 | `companyId` | `cuid` | ID da empresa |
 
 **Response `200`**
+
 ```json
 {
   "status": "SUCCESS",
@@ -60,10 +61,10 @@ Lista todos os usuários da empresa.
 
 **Erros**
 
-| Status | Motivo |
-|---|---|
-| `401` | Token ausente ou inválido |
-| `403` | Sem permissão ou `companyId` de outra empresa |
+| Status | Motivo                                        |
+| ------ | --------------------------------------------- |
+| `401`  | Token ausente ou inválido                     |
+| `403`  | Sem permissão ou `companyId` de outra empresa |
 
 ---
 
@@ -75,34 +76,37 @@ Busca paginada de usuários da empresa com filtros opcionais. O `companyId` é s
 
 **Path params**
 
-| Param | Tipo | Descrição |
-|---|---|---|
+| Param       | Tipo   | Descrição     |
+| ----------- | ------ | ------------- |
 | `companyId` | `cuid` | ID da empresa |
 
 **Query params** (todos opcionais salvo `page`/`pageSize`)
 
-| Param | Tipo | Default | Descrição |
-|---|---|---|---|
-| `page` | `number` | `1` | Página |
-| `pageSize` | `number` | `10` | Itens por página (max 100) |
-| `search` | `string` | — | Busca por nome ou e-mail (case-insensitive) |
-| `roleId` | `uuid` | — | Filtro por cargo |
-| `gender` | `MALE \| FEMALE \| OTHER` | — | Filtro por gênero |
-| `occupation` | `string` | — | Filtro por ocupação (contains) |
-| `occupationLevel` | `string` | — | Filtro por nível de ocupação (contains) |
-| `area` | `string` | — | Filtro por área (contains) |
-| `similarExposureGroup` | `string` | — | Filtro por grupo de exposição (contains) |
-| `location` | `string` | — | Filtro por localidade (contains) |
-| `skinColor` | `string` | — | Filtro por cor de pele (contains) |
-| `hasDisability` | `"true" \| "false"` | — | Filtro por PCD |
-| `nationalityId` | `cuid` | — | Filtro por nacionalidade |
+| Param                  | Tipo                      | Default | Descrição                                   |
+| ---------------------- | ------------------------- | ------- | ------------------------------------------- |
+| `page`                 | `number`                  | `1`     | Página                                      |
+| `pageSize`             | `number`                  | `10`    | Itens por página (max 100)                  |
+| `search`               | `string`                  | —       | Busca por nome ou e-mail (case-insensitive) |
+| `roleId`               | `uuid`                    | —       | Filtro por cargo                            |
+| `gender`               | `MALE \| FEMALE \| OTHER` | —       | Filtro por gênero                           |
+| `occupation`           | `string`                  | —       | Filtro por ocupação (contains)              |
+| `occupationLevel`      | `string`                  | —       | Filtro por nível de ocupação (contains)     |
+| `area`                 | `string`                  | —       | Filtro por área (contains)                  |
+| `similarExposureGroup` | `string`                  | —       | Filtro por grupo de exposição (contains)    |
+| `location`             | `string`                  | —       | Filtro por localidade (contains)            |
+| `skinColor`            | `string`                  | —       | Filtro por cor de pele (contains)           |
+| `hasDisability`        | `"true" \| "false"`       | —       | Filtro por PCD                              |
+| `nationalityId`        | `cuid`                    | —       | Filtro por nacionalidade                    |
 
 **Response `200`**
+
 ```json
 {
   "status": "SUCCESS",
   "data": {
-    "users": [ /* mesmo schema do GET /users */ ],
+    "users": [
+      /* mesmo schema do GET /users */
+    ],
     "total": 42,
     "page": 1,
     "pageSize": 10,
@@ -113,11 +117,11 @@ Busca paginada de usuários da empresa com filtros opcionais. O `companyId` é s
 
 **Erros**
 
-| Status | Motivo |
-|---|---|
-| `400` | Query params inválidos |
-| `401` | Token ausente ou inválido |
-| `403` | Sem permissão ou `companyId` de outra empresa |
+| Status | Motivo                                        |
+| ------ | --------------------------------------------- |
+| `400`  | Query params inválidos                        |
+| `401`  | Token ausente ou inválido                     |
+| `403`  | Sem permissão ou `companyId` de outra empresa |
 
 ---
 
@@ -129,27 +133,30 @@ Retorna os dados de um usuário específico da empresa.
 
 **Path params**
 
-| Param | Tipo | Descrição |
-|---|---|---|
+| Param       | Tipo   | Descrição     |
+| ----------- | ------ | ------------- |
 | `companyId` | `cuid` | ID da empresa |
-| `id` | `uuid` | ID do usuário |
+| `id`        | `uuid` | ID do usuário |
 
 **Response `200`**
+
 ```json
 {
   "status": "SUCCESS",
-  "data": { /* mesmo schema do item acima */ }
+  "data": {
+    /* mesmo schema do item acima */
+  }
 }
 ```
 
 **Erros**
 
-| Status | Motivo |
-|---|---|
-| `400` | `id` com formato inválido |
-| `401` | Token ausente ou inválido |
-| `403` | Sem permissão ou `companyId` de outra empresa |
-| `404` | Usuário não encontrado ou não pertence à empresa |
+| Status | Motivo                                           |
+| ------ | ------------------------------------------------ |
+| `400`  | `id` com formato inválido                        |
+| `401`  | Token ausente ou inválido                        |
+| `403`  | Sem permissão ou `companyId` de outra empresa    |
+| `404`  | Usuário não encontrado ou não pertence à empresa |
 
 ---
 
@@ -161,10 +168,10 @@ Atualiza dados de um colaborador da empresa. Não permite alterar `role` ou `com
 
 **Path params**
 
-| Param | Tipo | Descrição |
-|---|---|---|
+| Param       | Tipo   | Descrição     |
+| ----------- | ------ | ------------- |
 | `companyId` | `cuid` | ID da empresa |
-| `id` | `uuid` | ID do usuário |
+| `id`        | `uuid` | ID do usuário |
 
 **Request body** (todos os campos são opcionais)
 
@@ -185,21 +192,24 @@ Atualiza dados de um colaborador da empresa. Não permite alterar `role` ou `com
 ```
 
 **Response `200`**
+
 ```json
 {
   "status": "SUCCESS",
-  "data": { /* dados atualizados do usuário, mesmo schema do GET */ }
+  "data": {
+    /* dados atualizados do usuário, mesmo schema do GET */
+  }
 }
 ```
 
 **Erros**
 
-| Status | Motivo |
-|---|---|
-| `400` | Body inválido ou `id` com formato inválido |
-| `401` | Token ausente ou inválido |
-| `403` | Sem permissão ou `companyId` de outra empresa |
-| `404` | Usuário não encontrado ou não pertence à empresa |
+| Status | Motivo                                           |
+| ------ | ------------------------------------------------ |
+| `400`  | Body inválido ou `id` com formato inválido       |
+| `401`  | Token ausente ou inválido                        |
+| `403`  | Sem permissão ou `companyId` de outra empresa    |
+| `404`  | Usuário não encontrado ou não pertence à empresa |
 
 ---
 
@@ -211,35 +221,36 @@ Remove um colaborador da empresa.
 
 **Path params**
 
-| Param | Tipo | Descrição |
-|---|---|---|
+| Param       | Tipo   | Descrição     |
+| ----------- | ------ | ------------- |
 | `companyId` | `cuid` | ID da empresa |
-| `id` | `uuid` | ID do usuário |
+| `id`        | `uuid` | ID do usuário |
 
 **Response `200`**
+
 ```json
 { "status": "SUCCESS" }
 ```
 
 **Erros**
 
-| Status | Motivo |
-|---|---|
-| `400` | `id` com formato inválido |
-| `401` | Token ausente ou inválido |
-| `403` | Sem permissão ou `companyId` de outra empresa |
-| `404` | Usuário não encontrado ou não pertence à empresa |
+| Status | Motivo                                           |
+| ------ | ------------------------------------------------ |
+| `400`  | `id` com formato inválido                        |
+| `401`  | Token ausente ou inválido                        |
+| `403`  | Sem permissão ou `companyId` de outra empresa    |
+| `404`  | Usuário não encontrado ou não pertence à empresa |
 
 ---
 
 ## Endpoints relacionados (já existentes)
 
-| Método | Path | Permissão | Descrição |
-|---|---|---|---|
-| `POST` | `/companies/users` | `manage-company` | Criar usuário na empresa do requester |
-| `POST` | `/companies/users/batch` | `manage-company` | Criar múltiplos usuários |
-| `POST` | `/companies/:id/users/sync/preview` | `manage-company` | Preview de sincronização em batch |
-| `POST` | `/companies/:id/users/sync/execute` | `manage-company` | Executar sincronização em batch |
+| Método | Path                                | Permissão        | Descrição                             |
+| ------ | ----------------------------------- | ---------------- | ------------------------------------- |
+| `POST` | `/companies/users`                  | `manage-company` | Criar usuário na empresa do requester |
+| `POST` | `/companies/users/batch`            | `manage-company` | Criar múltiplos usuários              |
+| `POST` | `/companies/:id/users/sync/preview` | `manage-company` | Preview de sincronização em batch     |
+| `POST` | `/companies/:id/users/sync/execute` | `manage-company` | Executar sincronização em batch       |
 
 > Para criação e sync, o `companyId` é sempre inferido da empresa do requester — não é passado no body.
 

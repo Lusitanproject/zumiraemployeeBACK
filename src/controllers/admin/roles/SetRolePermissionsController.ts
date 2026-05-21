@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
+import { PublicError } from "../../../error";
 import { ALL_PERMISSIONS } from "../../../permissions";
 import { RoleAdminService } from "../../../services/admin/RoleAdminService";
-import { PublicError } from "../../../error";
 
 const SetRolePermissionsSchema = z.object({
   permissions: z.array(z.string()),

@@ -10,6 +10,7 @@ export * from "./self-monitoring";
 export * from "./trails";
 export * from "./users";
 
+import { PermissionDomainDefinition } from "../types/permissions";
 import { ActDomain } from "./acts";
 import { AssessmentDomain } from "./assessments";
 import { CompanyDomain } from "./companies";
@@ -21,7 +22,6 @@ import { RoleDomain } from "./roles";
 import { SelfMonitoringDomain } from "./self-monitoring";
 import { TrailDomain } from "./trails";
 import { UserDomain } from "./users";
-import { PermissionDomainDefinition } from "../types/permissions";
 
 export const PERMISSION_DOMAINS: PermissionDomainDefinition[] = [
   ActDomain,

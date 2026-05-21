@@ -1,17 +1,11 @@
+import { Prisma } from "@prisma/client";
 import { hash } from "argon2";
 import { z } from "zod";
 
-import { CreateUserRequest, SyncUserItem } from "../../schemas/user";
-import {
-  FindUserByRequest,
-  SearchUsersRequest,
-  UpdateUserSchema,
-  UserFilterColumn,
-} from "../../schemas/admin/users";
 import { PublicError } from "../../error";
-import { Prisma } from "@prisma/client";
-
 import prismaClient from "../../prisma";
+import { FindUserByRequest, SearchUsersRequest, UpdateUserSchema, UserFilterColumn } from "../../schemas/admin/users";
+import { CreateUserRequest, SyncUserItem } from "../../schemas/user";
 
 type UpdateUser = z.infer<typeof UpdateUserSchema>;
 
@@ -191,7 +185,9 @@ class UserService {
       ...(occupation && { occupation: { contains: occupation, mode: "insensitive" as const } }),
       ...(occupationLevel && { occupationLevel: { contains: occupationLevel, mode: "insensitive" as const } }),
       ...(area && { area: { contains: area, mode: "insensitive" as const } }),
-      ...(similarExposureGroup && { similarExposureGroup: { contains: similarExposureGroup, mode: "insensitive" as const } }),
+      ...(similarExposureGroup && {
+        similarExposureGroup: { contains: similarExposureGroup, mode: "insensitive" as const },
+      }),
       ...(location && { location: { contains: location, mode: "insensitive" as const } }),
       ...(skinColor && { skinColor: { contains: skinColor, mode: "insensitive" as const } }),
       ...(hasDisability !== undefined && { hasDisability }),
@@ -257,11 +253,11 @@ class UserService {
     type ConflictType = "CUSTOM_ID_DUPLICATED_IN_DB" | "EMAIL_ALREADY_USED";
 
     type SyncPlan = {
-      creates:   Array<{ customId: string; data: Omit<SyncUserItem, "customId"> }>;
-      updates:   Array<{ customId: string; userId: string; changes: Record<string, { from: unknown; to: unknown }> }>;
+      creates: Array<{ customId: string; data: Omit<SyncUserItem, "customId"> }>;
+      updates: Array<{ customId: string; userId: string; changes: Record<string, { from: unknown; to: unknown }> }>;
       unchanged: Array<{ customId: string; userId: string }>;
       conflicts: Array<{ type: ConflictType; customId: string; email?: string; conflictingUserId?: string }>;
-      errors:    Array<{ customId?: string; field: string; message: string }>;
+      errors: Array<{ customId?: string; field: string; message: string }>;
     };
 
     const errors: SyncPlan["errors"] = [];
@@ -290,20 +286,34 @@ class UserService {
 
     // Step 2: batch DB lookups
     const validCustomIds = validItems.map((i) => i.customId);
-    const validEmails    = validItems.map((i) => i.email);
+    const validEmails = validItems.map((i) => i.email);
 
     const selectFields = {
-      id: true, customId: true, companyId: true,
-      email: true, name: true, phoneNumber: true,
-      occupation: true, occupationLevel: true, area: true,
-      similarExposureGroup: true, location: true, skinColor: true,
-      hasDisability: true, birthdate: true, admissionDate: true,
-      gender: true, nationalityId: true,
+      id: true,
+      customId: true,
+      companyId: true,
+      email: true,
+      name: true,
+      phoneNumber: true,
+      occupation: true,
+      occupationLevel: true,
+      area: true,
+      similarExposureGroup: true,
+      location: true,
+      skinColor: true,
+      hasDisability: true,
+      birthdate: true,
+      admissionDate: true,
+      gender: true,
+      nationalityId: true,
     } as const;
 
     const [byCustomId, byEmail] = await Promise.all([
       prismaClient.user.findMany({ where: { customId: { in: validCustomIds }, companyId }, select: selectFields }),
-      prismaClient.user.findMany({ where: { email: { in: validEmails } }, select: { id: true, email: true, customId: true, companyId: true } }),
+      prismaClient.user.findMany({
+        where: { email: { in: validEmails } },
+        select: { id: true, email: true, customId: true, companyId: true },
+      }),
     ]);
 
     const customIdMap = new Map<string, typeof byCustomId>();
@@ -314,22 +324,32 @@ class UserService {
       customIdMap.set(u.customId, arr);
     }
 
-    const emailMap = new Map<string, typeof byEmail[0]>();
+    const emailMap = new Map<string, (typeof byEmail)[0]>();
     for (const u of byEmail) emailMap.set(u.email, u);
 
     // Step 3: classify
-    const creates:   SyncPlan["creates"]   = [];
-    const updates:   SyncPlan["updates"]   = [];
+    const creates: SyncPlan["creates"] = [];
+    const updates: SyncPlan["updates"] = [];
     const unchanged: SyncPlan["unchanged"] = [];
 
     const DIFFABLE_FIELDS = [
-      "email", "name", "phoneNumber", "occupation", "occupationLevel",
-      "area", "similarExposureGroup", "location", "skinColor", "hasDisability",
-      "birthdate", "admissionDate", "gender", "nationalityId",
+      "email",
+      "name",
+      "phoneNumber",
+      "occupation",
+      "occupationLevel",
+      "area",
+      "similarExposureGroup",
+      "location",
+      "skinColor",
+      "hasDisability",
+      "birthdate",
+      "admissionDate",
+      "gender",
+      "nationalityId",
     ] as const;
 
-    const normalizeDate = (v: unknown) =>
-      v instanceof Date ? v.toISOString() : v;
+    const normalizeDate = (v: unknown) => (v instanceof Date ? v.toISOString() : v);
 
     for (const item of validItems) {
       const candidates = customIdMap.get(item.customId) ?? [];
@@ -343,12 +363,22 @@ class UserService {
       const candidate = candidates[0] ?? null;
 
       if (emailMatch && candidate && emailMatch.id !== candidate.id) {
-        conflicts.push({ type: "EMAIL_ALREADY_USED", customId: item.customId, email: item.email, conflictingUserId: emailMatch.id });
+        conflicts.push({
+          type: "EMAIL_ALREADY_USED",
+          customId: item.customId,
+          email: item.email,
+          conflictingUserId: emailMatch.id,
+        });
         continue;
       }
 
       if (emailMatch && !candidate) {
-        conflicts.push({ type: "EMAIL_ALREADY_USED", customId: item.customId, email: item.email, conflictingUserId: emailMatch.id });
+        conflicts.push({
+          type: "EMAIL_ALREADY_USED",
+          customId: item.customId,
+          email: item.email,
+          conflictingUserId: emailMatch.id,
+        });
         continue;
       }
 
@@ -359,7 +389,7 @@ class UserService {
           if (toRaw === undefined) continue;
           const fromRaw = candidate[field as keyof typeof candidate];
           const from = normalizeDate(fromRaw);
-          const to   = normalizeDate(toRaw);
+          const to = normalizeDate(toRaw);
           if (from !== to) changes[field] = { from, to };
         }
 
@@ -381,12 +411,12 @@ class UserService {
     const plan = await this.planSync(companyId, items);
     return {
       summary: {
-        received:  items.length,
-        toCreate:  plan.creates.length,
-        toUpdate:  plan.updates.length,
+        received: items.length,
+        toCreate: plan.creates.length,
+        toUpdate: plan.updates.length,
         unchanged: plan.unchanged.length,
         conflicts: plan.conflicts.length,
-        errors:    plan.errors.length,
+        errors: plan.errors.length,
       },
       ...plan,
     };

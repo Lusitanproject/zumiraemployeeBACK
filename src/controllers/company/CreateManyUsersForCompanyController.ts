@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
+import { PublicError } from "../../error";
 import { CreateUserSchema } from "../../schemas/admin/users";
 import { UserAdminService } from "../../services/admin/UserAdminService";
-import { PublicError } from "../../error";
 
 const BodySchema = z.array(CreateUserSchema.omit({ companyId: true })).min(1);
 

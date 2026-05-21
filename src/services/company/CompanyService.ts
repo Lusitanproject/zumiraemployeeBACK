@@ -1,5 +1,5 @@
-import { FindCompanyFeedbackRequest } from "../../schemas/company";
 import prismaClient from "../../prisma";
+import { FindCompanyFeedbackRequest } from "../../schemas/company";
 
 class CompanyService {
   async findFeedback({ assessmentId, companyId }: FindCompanyFeedbackRequest) {
@@ -24,8 +24,6 @@ class CompanyService {
 
     return company;
   }
-
-
 }
 
 export { CompanyService };

@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-import { WhatsappWebhookController } from "../../controllers/webhooks/whatsapp/WhatsappWebhookController";
 import { VerifyWhatsappWebhookController } from "../../controllers/webhooks/whatsapp/VerifyWhatsappWebhookController";
+import { WhatsappWebhookController } from "../../controllers/webhooks/whatsapp/WhatsappWebhookController";
 
 const whatsappWebhookRouter = Router();
 

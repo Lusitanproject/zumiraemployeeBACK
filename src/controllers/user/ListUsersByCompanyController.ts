@@ -9,7 +9,7 @@ const FindByCompanySchema = z.object({
 
 class ListUsersByCompanyController {
   async handle(req: Request, res: Response) {
-const data = FindByCompanySchema.parse(req.params);
+    const data = FindByCompanySchema.parse(req.params);
 
     const userService = new UserService();
     const users = await userService.findByCompany(data.companyId);

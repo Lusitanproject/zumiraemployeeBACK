@@ -15,7 +15,7 @@ const CreateResultSchema = z.object({
 
 class CreateResultController {
   async handle(req: Request, res: Response) {
-const data = CreateResultSchema.parse(req.body);
+    const data = CreateResultSchema.parse(req.body);
 
     const userId = req.user.id;
     const { assessmentId, answers } = data;

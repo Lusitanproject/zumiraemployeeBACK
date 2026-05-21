@@ -51,12 +51,7 @@ userRouter.get("/search", isAuthenticated, requirePermissions("manage-users"), n
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get(
-  "/filters",
-  isAuthenticated,
-  requirePermissions("manage-users"),
-  new GetUserFiltersController().handle,
-);
+userRouter.get("/filters", isAuthenticated, requirePermissions("manage-users"), new GetUserFiltersController().handle);
 
 /**
  * @swagger

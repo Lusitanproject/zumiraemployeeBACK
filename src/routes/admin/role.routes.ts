@@ -265,6 +265,11 @@ adminRoleRouter.delete("/:id", isAuthenticated, requirePermissions("manage-roles
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminRoleRouter.put("/:id/permissions", isAuthenticated, requirePermissions("manage-roles"), new SetRolePermissionsController().handle);
+adminRoleRouter.put(
+  "/:id/permissions",
+  isAuthenticated,
+  requirePermissions("manage-roles"),
+  new SetRolePermissionsController().handle,
+);
 
 export { adminRoleRouter };

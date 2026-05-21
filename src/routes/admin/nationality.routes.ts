@@ -63,7 +63,12 @@ const adminNationalityRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminNationalityRouter.post("/", isAuthenticated, requirePermissions("manage-nationalities"), new CreateNationalityController().handle);
+adminNationalityRouter.post(
+  "/",
+  isAuthenticated,
+  requirePermissions("manage-nationalities"),
+  new CreateNationalityController().handle,
+);
 
 /**
  * @swagger
@@ -94,7 +99,12 @@ adminNationalityRouter.post("/", isAuthenticated, requirePermissions("manage-nat
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminNationalityRouter.get("/", isAuthenticated, requirePermissions("manage-nationalities"), new FindAllNationalitiesController().handle);
+adminNationalityRouter.get(
+  "/",
+  isAuthenticated,
+  requirePermissions("manage-nationalities"),
+  new FindAllNationalitiesController().handle,
+);
 
 /**
  * @swagger
@@ -133,7 +143,12 @@ adminNationalityRouter.get("/", isAuthenticated, requirePermissions("manage-nati
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNationalityRouter.get("/:id", isAuthenticated, requirePermissions("manage-nationalities"), new FindNationalityController().handle);
+adminNationalityRouter.get(
+  "/:id",
+  isAuthenticated,
+  requirePermissions("manage-nationalities"),
+  new FindNationalityController().handle,
+);
 
 /**
  * @swagger
@@ -192,6 +207,11 @@ adminNationalityRouter.get("/:id", isAuthenticated, requirePermissions("manage-n
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNationalityRouter.put("/:id", isAuthenticated, requirePermissions("manage-nationalities"), new UpdateNationalityController().handle);
+adminNationalityRouter.put(
+  "/:id",
+  isAuthenticated,
+  requirePermissions("manage-nationalities"),
+  new UpdateNationalityController().handle,
+);
 
 export { adminNationalityRouter };

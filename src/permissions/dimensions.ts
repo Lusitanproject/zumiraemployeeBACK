@@ -7,7 +7,5 @@ export const DimensionPermissions = {
 export const DimensionDomain: PermissionDomainDefinition = {
   domain: "dimensions",
   label: "Dimensões",
-  permissions: [
-    { key: DimensionPermissions.MANAGE_DIMENSION, label: "Gerenciar Dimensões" },
-  ],
+  permissions: [{ key: DimensionPermissions.MANAGE_DIMENSION, label: "Gerenciar Dimensões" }],
 };

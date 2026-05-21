@@ -7,7 +7,5 @@ export const SelfMonitoringPermissions = {
 export const SelfMonitoringDomain: PermissionDomainDefinition = {
   domain: "self-monitoring",
   label: "Automonitoramento",
-  permissions: [
-    { key: SelfMonitoringPermissions.MANAGE_SELF_MONITORING, label: "Gerenciar Automonitoramento" },
-  ],
+  permissions: [{ key: SelfMonitoringPermissions.MANAGE_SELF_MONITORING, label: "Gerenciar Automonitoramento" }],
 };

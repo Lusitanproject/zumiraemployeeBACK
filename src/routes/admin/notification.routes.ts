@@ -42,7 +42,12 @@ const adminNotificationRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminNotificationRouter.get("/", isAuthenticated, requirePermissions("manage-notifications"), new FindAllNotificationsController().handle);
+adminNotificationRouter.get(
+  "/",
+  isAuthenticated,
+  requirePermissions("manage-notifications"),
+  new FindAllNotificationsController().handle,
+);
 
 /**
  * @swagger
@@ -77,7 +82,12 @@ adminNotificationRouter.get("/", isAuthenticated, requirePermissions("manage-not
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminNotificationRouter.get("/types", isAuthenticated, requirePermissions("manage-notifications"), new FindAllTypesController().handle);
+adminNotificationRouter.get(
+  "/types",
+  isAuthenticated,
+  requirePermissions("manage-notifications"),
+  new FindAllTypesController().handle,
+);
 
 /**
  * @swagger
@@ -116,7 +126,12 @@ adminNotificationRouter.get("/types", isAuthenticated, requirePermissions("manag
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNotificationRouter.get("/types/:id", isAuthenticated, requirePermissions("manage-notifications"), new FindNotificationTypeController().handle);
+adminNotificationRouter.get(
+  "/types/:id",
+  isAuthenticated,
+  requirePermissions("manage-notifications"),
+  new FindNotificationTypeController().handle,
+);
 
 /**
  * @swagger
@@ -187,7 +202,12 @@ adminNotificationRouter.get("/types/:id", isAuthenticated, requirePermissions("m
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminNotificationRouter.post("/", isAuthenticated, requirePermissions("manage-notifications"), new CreateNotificationController().handle);
+adminNotificationRouter.post(
+  "/",
+  isAuthenticated,
+  requirePermissions("manage-notifications"),
+  new CreateNotificationController().handle,
+);
 
 /**
  * @swagger
@@ -244,7 +264,12 @@ adminNotificationRouter.post("/", isAuthenticated, requirePermissions("manage-no
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminNotificationRouter.post("/types", isAuthenticated, requirePermissions("manage-notifications"), new CreateNotificationTypeController().handle);
+adminNotificationRouter.post(
+  "/types",
+  isAuthenticated,
+  requirePermissions("manage-notifications"),
+  new CreateNotificationTypeController().handle,
+);
 
 /**
  * @swagger
@@ -307,7 +332,12 @@ adminNotificationRouter.post("/types", isAuthenticated, requirePermissions("mana
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNotificationRouter.put("/:notificationId", isAuthenticated, requirePermissions("manage-notifications"), new UpdateNotificationController().handle);
+adminNotificationRouter.put(
+  "/:notificationId",
+  isAuthenticated,
+  requirePermissions("manage-notifications"),
+  new UpdateNotificationController().handle,
+);
 
 /**
  * @swagger
@@ -364,7 +394,12 @@ adminNotificationRouter.put("/:notificationId", isAuthenticated, requirePermissi
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNotificationRouter.put("/types/:id", isAuthenticated, requirePermissions("manage-notifications"), new UpdateNotificationTypeController().handle);
+adminNotificationRouter.put(
+  "/types/:id",
+  isAuthenticated,
+  requirePermissions("manage-notifications"),
+  new UpdateNotificationTypeController().handle,
+);
 
 /**
  * @swagger
@@ -397,6 +432,11 @@ adminNotificationRouter.put("/types/:id", isAuthenticated, requirePermissions("m
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminNotificationRouter.delete("/:notificationId", isAuthenticated, requirePermissions("manage-notifications"), new DeleteNotificationController().handle);
+adminNotificationRouter.delete(
+  "/:notificationId",
+  isAuthenticated,
+  requirePermissions("manage-notifications"),
+  new DeleteNotificationController().handle,
+);
 
 export { adminNotificationRouter };

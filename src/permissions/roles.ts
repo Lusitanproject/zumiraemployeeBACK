@@ -7,7 +7,5 @@ export const RolePermissions = {
 export const RoleDomain: PermissionDomainDefinition = {
   domain: "roles",
   label: "Perfis",
-  permissions: [
-    { key: RolePermissions.MANAGE_ROLES, label: "Gerenciar Perfis" },
-  ],
+  permissions: [{ key: RolePermissions.MANAGE_ROLES, label: "Gerenciar Perfis" }],
 };

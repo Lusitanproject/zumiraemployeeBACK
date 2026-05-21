@@ -1,6 +1,6 @@
 interface SendMessageInput {
-  to: string;
   message: string;
+  to: string;
 }
 
 export interface ReceiveMessage {
@@ -39,10 +39,10 @@ interface WhatsappWebhookMessage {
 }
 
 interface WhatsappMessagesValue {
-  messaging_product?: string;
-  metadata?: unknown;
   contacts?: unknown[];
   messages?: WhatsappWebhookMessage[];
+  messaging_product?: string;
+  metadata?: unknown;
   statuses?: unknown[];
 }
 
@@ -136,8 +136,6 @@ export class WhatsappApi {
       }
       return;
     }
-
-
 
     console.log(`[WhatsApp] incoming message from ${message.from}:`, message.text?.body);
 

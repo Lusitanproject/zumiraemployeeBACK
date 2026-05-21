@@ -8,4 +8,3 @@ export interface PermissionDomainDefinition {
   label: string;
   permissions: PermissionItem[];
 }
-

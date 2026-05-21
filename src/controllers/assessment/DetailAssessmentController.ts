@@ -9,7 +9,7 @@ const CreateIdSchema = z.object({
 
 class DetailAssessmentController {
   async handle(req: Request, res: Response) {
-const data = CreateIdSchema.parse(req.params);
+    const data = CreateIdSchema.parse(req.params);
 
     const userId = req.user.id;
     const { id: assessmentId } = data;

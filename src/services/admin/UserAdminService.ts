@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-import { CreateManyUsersSchema, CreateUserSchema } from "../../schemas/admin/users";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
+import { CreateManyUsersSchema, CreateUserSchema } from "../../schemas/admin/users";
 
 type CreateUser = z.infer<typeof CreateUserSchema>;
 type CreateManyUsers = z.infer<typeof CreateManyUsersSchema>;

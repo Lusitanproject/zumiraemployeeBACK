@@ -1,6 +1,7 @@
-import OpenAI from "openai";
-import fs from "fs";
 import { Prisma } from "@prisma/client";
+import fs from "fs";
+import OpenAI from "openai";
+
 import prisma from "../prisma";
 
 export interface GenerateOpenAiResponseRequest {
@@ -21,7 +22,6 @@ export interface GenerateOpenAiResponseWithRagRequest {
 }
 
 export interface CreateOpenAiBatchRequest {
-  instructions?: string | null;
   batchItems: {
     customId: string;
     messages: {
@@ -29,13 +29,14 @@ export interface CreateOpenAiBatchRequest {
       content: string;
     }[];
   }[];
+  instructions?: string | null;
 }
 
 export interface CreateOpenAiBatchResponse {
-  fileId: string;
   batchId: string;
-  status: string;
+  fileId: string;
   raw: OpenAI.Batches.Batch;
+  status: string;
 }
 
 export interface RetrieveOpenAiBatchResultItem<T = unknown> {
@@ -46,9 +47,9 @@ export interface RetrieveOpenAiBatchResultItem<T = unknown> {
 
 export interface RetrieveOpenAiBatchResultResponse<T = unknown> {
   batchId: string;
-  status: "completed" | "validating" | "failed" | "in_progress" | "finalizing" | "expired" | "cancelling" | "cancelled";
-  results: RetrieveOpenAiBatchResultItem<T>[] | null;
   raw: OpenAI.Batches.Batch;
+  results: RetrieveOpenAiBatchResultItem<T>[] | null;
+  status: "completed" | "validating" | "failed" | "in_progress" | "finalizing" | "expired" | "cancelling" | "cancelled";
 }
 
 export class OpenAiApi {
@@ -327,7 +328,10 @@ export class OpenAiApi {
     storeName: string;
     content: string;
     filename: string;
-  }): Promise<{ vectorStore: OpenAI.VectorStores.VectorStore; dbVectorStore: { id: string; openaiVectorStoreId: string; name: string | null } }> {
+  }): Promise<{
+    vectorStore: OpenAI.VectorStores.VectorStore;
+    dbVectorStore: { id: string; openaiVectorStoreId: string; name: string | null };
+  }> {
     const { vectorStore, dbVectorStore } = await this.createVectorStore(storeName);
 
     const tmpPath = `/tmp/${Date.now()}-${filename}`;

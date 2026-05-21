@@ -468,12 +468,10 @@ services/
    ```
 
 2. **Sempre revisar migrations antes de aplicar**:
-
    - Verifique se não há comandos destrutivos
    - Confirme que dados existentes permanecerão intactos
 
 3. **Para alterações que requerem migração manual**:
-
    - Use `--create-only` para gerar o arquivo
    - Edite manualmente para preservar dados
    - Aplique com cuidado

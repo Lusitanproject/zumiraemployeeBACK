@@ -7,7 +7,5 @@ export const NotificationPermissions = {
 export const NotificationDomain: PermissionDomainDefinition = {
   domain: "notifications",
   label: "Notificações",
-  permissions: [
-    { key: NotificationPermissions.MANAGE_NOTIFICATIONS, label: "Gerenciar Notificações" },
-  ],
+  permissions: [{ key: NotificationPermissions.MANAGE_NOTIFICATIONS, label: "Gerenciar Notificações" }],
 };

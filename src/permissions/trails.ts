@@ -7,7 +7,5 @@ export const TrailPermissions = {
 export const TrailDomain: PermissionDomainDefinition = {
   domain: "trails",
   label: "Trilhas",
-  permissions: [
-    { key: TrailPermissions.MANAGE_TRAILS, label: "Gerenciar Trilhas" },
-  ],
+  permissions: [{ key: TrailPermissions.MANAGE_TRAILS, label: "Gerenciar Trilhas" }],
 };

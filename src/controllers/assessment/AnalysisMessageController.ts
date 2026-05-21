@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { AssessmentAnalysisMessageSchema } from "../../schemas/assessment";
-import { OpenAiApi } from "../../external/openai";
 import { PublicError } from "../../error";
+import { OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
+import { AssessmentAnalysisMessageSchema } from "../../schemas/assessment";
 
 const ParamsSchema = z.object({
   assessmentId: z.string().cuid(),

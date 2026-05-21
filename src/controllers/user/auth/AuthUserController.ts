@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import { z } from "zod";
 
-import { AuthService } from "../../../services/user/AuthService";
 import { AuthUserSchema } from "../../../schemas/user";
+import { AuthService } from "../../../services/user/AuthService";
 class AuthUserController {
   async handle(req: Request, res: Response) {
     const data = AuthUserSchema.parse(req.body);

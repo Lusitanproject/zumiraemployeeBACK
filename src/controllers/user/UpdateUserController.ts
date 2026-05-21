@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { UpdateUserSchema } from "../../schemas/admin/users";
-import { CompanyService } from "../../services/company/CompanyService";
 import { RoleAdminService } from "../../services/admin/RoleAdminService";
+import { CompanyService } from "../../services/company/CompanyService";
 import { UserService } from "../../services/user/UserService";
 
 const RequestParams = z.object({
@@ -12,7 +12,7 @@ const RequestParams = z.object({
 
 class UpdateUserController {
   async handle(req: Request, res: Response) {
-const { id } = RequestParams.parse(req.params);
+    const { id } = RequestParams.parse(req.params);
     const data = UpdateUserSchema.parse(req.body);
 
     const { roleId, companyId } = data;
