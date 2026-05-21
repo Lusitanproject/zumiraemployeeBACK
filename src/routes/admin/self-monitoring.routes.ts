@@ -42,7 +42,7 @@ const adminSelfMonitoringRouter = Router();
 adminSelfMonitoringRouter.get(
   "/",
   isAuthenticated,
-  requirePermissions("manage-self-monitoring"),
+  requirePermissions("admin-self-monitoring-manage"),
   new ListAllSelfMonitoringBlocksController().handle,
 );
 
@@ -101,7 +101,7 @@ adminSelfMonitoringRouter.get(
 adminSelfMonitoringRouter.post(
   "/",
   isAuthenticated,
-  requirePermissions("manage-self-monitoring"),
+  requirePermissions("admin-self-monitoring-manage"),
   new CreateSelfMonitoringBlocksController().handle,
 );
 
@@ -158,7 +158,7 @@ adminSelfMonitoringRouter.post(
 adminSelfMonitoringRouter.put(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-self-monitoring"),
+  requirePermissions("admin-self-monitoring-manage"),
   new EditSelfMonitoringBlocksController().handle,
 );
 
@@ -204,7 +204,7 @@ adminSelfMonitoringRouter.put(
 adminSelfMonitoringRouter.get(
   "/dimensions/:selfMonitoringBlockId",
   isAuthenticated,
-  requirePermissions("manage-self-monitoring"),
+  requirePermissions("admin-self-monitoring-manage"),
   new FindDimensionByBlockController().handle,
 );
 
@@ -248,7 +248,7 @@ adminSelfMonitoringRouter.get(
 adminSelfMonitoringRouter.get(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-self-monitoring"),
+  requirePermissions("admin-self-monitoring-manage"),
   new FindSelfMonitoringBlocksController().handle,
 );
 

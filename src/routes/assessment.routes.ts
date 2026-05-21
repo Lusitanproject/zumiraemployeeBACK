@@ -155,7 +155,7 @@ assessmentRouter.get("/results/:id", isAuthenticated, new DetailResultController
 assessmentRouter.post(
   "/results",
   isAuthenticated,
-  requirePermissions("answer-assessment"),
+  requirePermissions("assessments-engage"),
   new CreateResultController().handle,
 );
 
@@ -226,10 +226,11 @@ assessmentRouter.post(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
+// TODO: migrar para /admin/assessments/questions (permissão: admin-assessments-manage)
 assessmentRouter.post(
   "/questions",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new CreateQuestionController().handle,
 );
 
@@ -295,10 +296,11 @@ assessmentRouter.post(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
+// TODO: migrar para /admin/assessments/questions/:id (permissão: admin-assessments-manage)
 assessmentRouter.put(
   "/questions/:id",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new UpdateQuestionsController().handle,
 );
 
@@ -465,7 +467,7 @@ assessmentRouter.get("/company", isAuthenticated, new ListCompanyAssessmentsCont
 assessmentRouter.post(
   "/:assessmentId/analysis/message",
   isAuthenticated,
-  requirePermissions("view-assessment-results"),
+  requirePermissions("assessments-read-analysis"),
   requireSameCompany(),
   new AnalysisMessageController().handle,
 );
@@ -490,7 +492,7 @@ assessmentRouter.post(
 assessmentRouter.get(
   "/:id/results/user-filters",
   isAuthenticated,
-  requirePermissions("view-assessment-results"),
+  requirePermissions("assessments-read-analysis"),
   requireSameCompany(),
   new GetAssessmentResultUserFiltersController().handle,
 );
@@ -515,7 +517,7 @@ assessmentRouter.get(
 assessmentRouter.get(
   "/:id/results",
   isAuthenticated,
-  requirePermissions("view-assessment-results"),
+  requirePermissions("assessments-read-analysis"),
   requireSameCompany(),
   new SearchAssessmentResultsController().handle,
 );
@@ -569,7 +571,7 @@ assessmentRouter.get(
 assessmentRouter.get(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new DetailAssessmentController().handle,
 );
 
@@ -646,10 +648,11 @@ assessmentRouter.get(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
+// TODO: migrar para /admin/assessments (permissão: admin-assessments-manage)
 assessmentRouter.post(
   "/",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new CreateAssessmentController().handle,
 );
 
@@ -690,7 +693,7 @@ assessmentRouter.post(
 assessmentRouter.post(
   "/feedback/users/:id",
   isAuthenticated,
-  requirePermissions("view-assessment-results"),
+  requirePermissions("assessments-read-analysis"),
   requireSameCompany(),
   new GenerateUserFeedbackController().handle,
 );
@@ -740,7 +743,7 @@ assessmentRouter.post(
 assessmentRouter.post(
   "/feedback/companies/:id",
   isAuthenticated,
-  requirePermissions("view-assessment-results"),
+  requirePermissions("assessments-read-analysis"),
   requireSameCompany(),
   new GenerateCompanyFeedbackController().handle,
 );

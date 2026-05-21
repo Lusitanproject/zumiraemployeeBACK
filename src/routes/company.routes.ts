@@ -32,7 +32,7 @@ const companyRouter = Router();
 companyRouter.get(
   "/:companyId",
   isAuthenticated,
-  requirePermissions("view-company-users"),
+  requirePermissions("companies-read"),
   requireSameCompany("params"),
   new FindCompanyController().handle,
 );
@@ -55,7 +55,7 @@ companyRouter.get(
 companyRouter.post(
   "/users",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("company-users-write"),
   new CreateUserForCompanyController().handle,
 );
 
@@ -77,7 +77,7 @@ companyRouter.post(
 companyRouter.post(
   "/users/batch",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("company-users-write"),
   new CreateManyUsersForCompanyController().handle,
 );
 
@@ -129,7 +129,7 @@ companyRouter.post(
 companyRouter.get(
   "/:id/feedback",
   isAuthenticated,
-  requirePermissions("view-assessment-results"),
+  requirePermissions("assessments-read-analysis"),
   requireSameCompany("params", "id"),
   new FindCompanyFeedbackController().handle,
 );
@@ -278,7 +278,7 @@ companyRouter.get(
 companyRouter.post(
   "/:id/users/sync/preview",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions(["company-users-write", "company-users-update"]),
   new SyncUsersPreviewController().handle,
 );
 
@@ -423,7 +423,7 @@ companyRouter.post(
 companyRouter.post(
   "/:id/users/sync/execute",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions(["company-users-write", "company-users-update"]),
   new SyncUsersExecuteController().handle,
 );
 
@@ -455,7 +455,7 @@ companyRouter.post(
 companyRouter.get(
   "/:companyId/users/search",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("company-users-read"),
   requireSameCompany("params"),
   new SearchCompanyUsersController().handle,
 );
@@ -488,7 +488,7 @@ companyRouter.get(
 companyRouter.get(
   "/:companyId/users",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("company-users-read"),
   requireSameCompany("params"),
   new ListCompanyUsersController().handle,
 );
@@ -530,7 +530,7 @@ companyRouter.get(
 companyRouter.get(
   "/:companyId/users/:id",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("company-users-read"),
   requireSameCompany("params"),
   new FindCompanyUserController().handle,
 );
@@ -574,7 +574,7 @@ companyRouter.get(
 companyRouter.put(
   "/:companyId/users/:id",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("company-users-update"),
   requireSameCompany("params"),
   new UpdateCompanyUserController().handle,
 );
@@ -616,7 +616,7 @@ companyRouter.put(
 companyRouter.delete(
   "/:companyId/users/:id",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("company-users-delete"),
   requireSameCompany("params"),
   new DeleteCompanyUserController().handle,
 );

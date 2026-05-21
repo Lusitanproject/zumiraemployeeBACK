@@ -69,7 +69,7 @@ const adminDimensionRouter = Router();
 adminDimensionRouter.post(
   "/",
   isAuthenticated,
-  requirePermissions("manage-dimension"),
+  requirePermissions("admin-dimensions-manage"),
   new CreateDimensionController().handle,
 );
 
@@ -105,7 +105,7 @@ adminDimensionRouter.post(
 adminDimensionRouter.get(
   "/",
   isAuthenticated,
-  requirePermissions("manage-dimension"),
+  requirePermissions("admin-dimensions-manage"),
   new FindAllDimensionsController().handle,
 );
 
@@ -149,7 +149,7 @@ adminDimensionRouter.get(
 adminDimensionRouter.get(
   "/:psychologicalDimensionId",
   isAuthenticated,
-  requirePermissions("manage-dimension"),
+  requirePermissions("admin-dimensions-manage"),
   new FindDimensionController().handle,
 );
 
@@ -213,7 +213,7 @@ adminDimensionRouter.get(
 adminDimensionRouter.put(
   "/:psychologicalDimensionId",
   isAuthenticated,
-  requirePermissions("manage-dimension"),
+  requirePermissions("admin-dimensions-manage"),
   new EditDimensionController().handle,
 );
 

@@ -66,7 +66,7 @@ const adminNationalityRouter = Router();
 adminNationalityRouter.post(
   "/",
   isAuthenticated,
-  requirePermissions("manage-nationalities"),
+  requirePermissions("admin-nationalities-manage"),
   new CreateNationalityController().handle,
 );
 
@@ -102,7 +102,7 @@ adminNationalityRouter.post(
 adminNationalityRouter.get(
   "/",
   isAuthenticated,
-  requirePermissions("manage-nationalities"),
+  requirePermissions("admin-nationalities-manage"),
   new FindAllNationalitiesController().handle,
 );
 
@@ -146,7 +146,7 @@ adminNationalityRouter.get(
 adminNationalityRouter.get(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-nationalities"),
+  requirePermissions("admin-nationalities-manage"),
   new FindNationalityController().handle,
 );
 
@@ -210,7 +210,7 @@ adminNationalityRouter.get(
 adminNationalityRouter.put(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-nationalities"),
+  requirePermissions("admin-nationalities-manage"),
   new UpdateNationalityController().handle,
 );
 

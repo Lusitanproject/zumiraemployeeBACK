@@ -46,7 +46,7 @@ const adminCompanyRouter = Router();
 adminCompanyRouter.get(
   "/",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("admin-companies-manage"),
   new FindAllCompaniesController().handle,
 );
 
@@ -82,7 +82,7 @@ adminCompanyRouter.get(
 adminCompanyRouter.get(
   "/feedback",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("admin-companies-manage"),
   new FindAllFeedbacksController().handle,
 );
 
@@ -142,7 +142,7 @@ adminCompanyRouter.get(
 adminCompanyRouter.post(
   "/",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("admin-companies-manage"),
   new CreateCompanyController().handle,
 );
 
@@ -201,7 +201,7 @@ adminCompanyRouter.post(
 adminCompanyRouter.put(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("admin-companies-manage"),
   new UpdateCompanyController().handle,
 );
 
@@ -258,7 +258,7 @@ adminCompanyRouter.put(
 adminCompanyRouter.post(
   "/:id/assessments",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("admin-companies-manage"),
   new SetCompanyAssessmentsController().handle,
 );
 
@@ -315,7 +315,7 @@ adminCompanyRouter.post(
 adminCompanyRouter.post(
   "/:companyId/feedback/users",
   isAuthenticated,
-  requirePermissions("manage-company"),
+  requirePermissions("admin-companies-manage"),
   new GenerateAllUserFeedbackController().handle,
 );
 

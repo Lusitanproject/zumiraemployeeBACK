@@ -1,11 +1,11 @@
 import { PermissionDomainDefinition } from "../types/permissions";
 
 export const SelfMonitoringPermissions = {
-  MANAGE_SELF_MONITORING: "manage-self-monitoring",
+  ADMIN_MANAGE: "admin-self-monitoring-manage",
 } as const;
 
 export const SelfMonitoringDomain: PermissionDomainDefinition = {
   domain: "self-monitoring",
   label: "Automonitoramento",
-  permissions: [{ key: SelfMonitoringPermissions.MANAGE_SELF_MONITORING, label: "Gerenciar Automonitoramento" }],
+  permissions: [{ key: SelfMonitoringPermissions.ADMIN_MANAGE, label: "Gerenciar Automonitoramento (Admin)" }],
 };

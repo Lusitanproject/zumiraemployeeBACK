@@ -46,7 +46,7 @@ const adminPsychosocialFactorRouter = Router();
 adminPsychosocialFactorRouter.get(
   "/",
   isAuthenticated,
-  requirePermissions("manage-psychosocial-factors"),
+  requirePermissions("admin-psychosocial-factors-manage"),
   new FindAllPsychosocialFactorsController().handle,
 );
 
@@ -110,7 +110,7 @@ adminPsychosocialFactorRouter.get(
 adminPsychosocialFactorRouter.post(
   "/",
   isAuthenticated,
-  requirePermissions("manage-psychosocial-factors"),
+  requirePermissions("admin-psychosocial-factors-manage"),
   new CreatePsychosocialFactorController().handle,
 );
 
@@ -154,7 +154,7 @@ adminPsychosocialFactorRouter.post(
 adminPsychosocialFactorRouter.get(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-psychosocial-factors"),
+  requirePermissions("admin-psychosocial-factors-manage"),
   new FindPsychosocialFactorController().handle,
 );
 
@@ -220,7 +220,7 @@ adminPsychosocialFactorRouter.get(
 adminPsychosocialFactorRouter.put(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-psychosocial-factors"),
+  requirePermissions("admin-psychosocial-factors-manage"),
   new UpdatePsychosocialFactorController().handle,
 );
 
@@ -258,7 +258,7 @@ adminPsychosocialFactorRouter.put(
 adminPsychosocialFactorRouter.delete(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-psychosocial-factors"),
+  requirePermissions("admin-psychosocial-factors-manage"),
   new DeletePsychosocialFactorController().handle,
 );
 

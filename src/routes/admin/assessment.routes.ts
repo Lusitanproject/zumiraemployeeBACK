@@ -74,7 +74,7 @@ const adminAssessmentRouter = Router();
 adminAssessmentRouter.get(
   "/results",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new FindResultsFilteredController().handle,
 );
 
@@ -128,7 +128,7 @@ adminAssessmentRouter.get(
 adminAssessmentRouter.get(
   "/results/download-report",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new GenerateExcelReportController().handle,
 );
 
@@ -174,7 +174,7 @@ adminAssessmentRouter.get(
 adminAssessmentRouter.get(
   "/questions/:assessmentId",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new FindQuestionByAssessmentController().handle,
 );
 
@@ -224,7 +224,7 @@ adminAssessmentRouter.get(
 adminAssessmentRouter.get(
   "/ratings/:id",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new FindResultRatingsByAssessmentController().handle,
 );
 
@@ -299,7 +299,7 @@ adminAssessmentRouter.get(
 adminAssessmentRouter.put(
   "/ratings/:id",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new UpdateResultRatingsController().handle,
 );
 
@@ -335,7 +335,7 @@ adminAssessmentRouter.put(
 adminAssessmentRouter.get(
   "/",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new FindAllAssessmentsController().handle,
 );
 
@@ -382,7 +382,7 @@ adminAssessmentRouter.get(
 adminAssessmentRouter.post(
   "/duplicate/:id",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new DuplicateAssessmentController().handle,
 );
 
@@ -437,7 +437,7 @@ adminAssessmentRouter.post(
 adminAssessmentRouter.get(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new AssessmentDetailForAdminController().handle,
 );
 
@@ -520,7 +520,7 @@ adminAssessmentRouter.get(
 adminAssessmentRouter.put(
   "/:id",
   isAuthenticated,
-  requirePermissions("manage-assessments"),
+  requirePermissions("admin-assessments-manage"),
   new UpdateAssessmentController().handle,
 );
 

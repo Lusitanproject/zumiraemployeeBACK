@@ -40,7 +40,12 @@ const adminRoleRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminRoleRouter.get("/", isAuthenticated, requirePermissions("manage-roles"), new FindAllRolesController().handle);
+adminRoleRouter.get(
+  "/",
+  isAuthenticated,
+  requirePermissions("admin-roles-manage"),
+  new FindAllRolesController().handle,
+);
 
 /**
  * @swagger
@@ -87,7 +92,7 @@ adminRoleRouter.get("/", isAuthenticated, requirePermissions("manage-roles"), ne
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminRoleRouter.get("/:id", isAuthenticated, requirePermissions("manage-roles"), new FindRoleController().handle);
+adminRoleRouter.get("/:id", isAuthenticated, requirePermissions("admin-roles-manage"), new FindRoleController().handle);
 
 /**
  * @swagger
@@ -134,7 +139,7 @@ adminRoleRouter.get("/:id", isAuthenticated, requirePermissions("manage-roles"),
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminRoleRouter.post("/", isAuthenticated, requirePermissions("manage-roles"), new CreateRoleController().handle);
+adminRoleRouter.post("/", isAuthenticated, requirePermissions("admin-roles-manage"), new CreateRoleController().handle);
 
 /**
  * @swagger
@@ -182,7 +187,12 @@ adminRoleRouter.post("/", isAuthenticated, requirePermissions("manage-roles"), n
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminRoleRouter.put("/:id", isAuthenticated, requirePermissions("manage-roles"), new UpdateRoleController().handle);
+adminRoleRouter.put(
+  "/:id",
+  isAuthenticated,
+  requirePermissions("admin-roles-manage"),
+  new UpdateRoleController().handle,
+);
 
 /**
  * @swagger
@@ -214,7 +224,12 @@ adminRoleRouter.put("/:id", isAuthenticated, requirePermissions("manage-roles"),
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminRoleRouter.delete("/:id", isAuthenticated, requirePermissions("manage-roles"), new DeleteRoleController().handle);
+adminRoleRouter.delete(
+  "/:id",
+  isAuthenticated,
+  requirePermissions("admin-roles-manage"),
+  new DeleteRoleController().handle,
+);
 
 /**
  * @swagger
@@ -268,7 +283,7 @@ adminRoleRouter.delete("/:id", isAuthenticated, requirePermissions("manage-roles
 adminRoleRouter.put(
   "/:id/permissions",
   isAuthenticated,
-  requirePermissions("manage-roles"),
+  requirePermissions("admin-roles-manage"),
   new SetRolePermissionsController().handle,
 );
 

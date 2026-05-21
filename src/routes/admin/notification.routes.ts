@@ -45,7 +45,7 @@ const adminNotificationRouter = Router();
 adminNotificationRouter.get(
   "/",
   isAuthenticated,
-  requirePermissions("manage-notifications"),
+  requirePermissions("admin-notifications-manage"),
   new FindAllNotificationsController().handle,
 );
 
@@ -85,7 +85,7 @@ adminNotificationRouter.get(
 adminNotificationRouter.get(
   "/types",
   isAuthenticated,
-  requirePermissions("manage-notifications"),
+  requirePermissions("admin-notifications-manage"),
   new FindAllTypesController().handle,
 );
 
@@ -129,7 +129,7 @@ adminNotificationRouter.get(
 adminNotificationRouter.get(
   "/types/:id",
   isAuthenticated,
-  requirePermissions("manage-notifications"),
+  requirePermissions("admin-notifications-manage"),
   new FindNotificationTypeController().handle,
 );
 
@@ -205,7 +205,7 @@ adminNotificationRouter.get(
 adminNotificationRouter.post(
   "/",
   isAuthenticated,
-  requirePermissions("manage-notifications"),
+  requirePermissions("admin-notifications-manage"),
   new CreateNotificationController().handle,
 );
 
@@ -267,7 +267,7 @@ adminNotificationRouter.post(
 adminNotificationRouter.post(
   "/types",
   isAuthenticated,
-  requirePermissions("manage-notifications"),
+  requirePermissions("admin-notifications-manage"),
   new CreateNotificationTypeController().handle,
 );
 
@@ -335,7 +335,7 @@ adminNotificationRouter.post(
 adminNotificationRouter.put(
   "/:notificationId",
   isAuthenticated,
-  requirePermissions("manage-notifications"),
+  requirePermissions("admin-notifications-manage"),
   new UpdateNotificationController().handle,
 );
 
@@ -397,7 +397,7 @@ adminNotificationRouter.put(
 adminNotificationRouter.put(
   "/types/:id",
   isAuthenticated,
-  requirePermissions("manage-notifications"),
+  requirePermissions("admin-notifications-manage"),
   new UpdateNotificationTypeController().handle,
 );
 
@@ -435,7 +435,7 @@ adminNotificationRouter.put(
 adminNotificationRouter.delete(
   "/:notificationId",
   isAuthenticated,
-  requirePermissions("manage-notifications"),
+  requirePermissions("admin-notifications-manage"),
   new DeleteNotificationController().handle,
 );
 

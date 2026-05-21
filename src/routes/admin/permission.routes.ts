@@ -62,7 +62,7 @@ const adminPermissionRouter = Router();
 adminPermissionRouter.get(
   "/",
   isAuthenticated,
-  requirePermissions("manage-roles"),
+  requirePermissions("admin-roles-manage"),
   new FindAllPermissionsController().handle,
 );
 
