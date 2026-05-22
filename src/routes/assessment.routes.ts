@@ -571,7 +571,7 @@ assessmentRouter.get(
 assessmentRouter.get(
   "/:id",
   isAuthenticated,
-  requirePermissions("admin-assessments-manage"),
+  requirePermissions("assessments-engage"),
   new DetailAssessmentController().handle,
 );
 
