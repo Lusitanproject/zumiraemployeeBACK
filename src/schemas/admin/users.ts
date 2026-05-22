@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { DateStringSchema, PhoneNumberSchema } from "../common";
 
 export const CreateUserSchema = z.object({
@@ -84,20 +85,23 @@ export const GetUserFiltersSchema = z.object({
 });
 
 export const SearchUsersSchema = z.object({
-  page:            z.coerce.number().int().min(1).default(1),
-  pageSize:        z.coerce.number().int().min(1).max(100).default(10),
-  search:          z.string().optional(),
-  companyId:       z.string().cuid().optional(),
-  roleId:          z.string().uuid().optional(),
-  gender:          z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
-  occupation:      z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(10),
+  search: z.string().optional(),
+  companyId: z.string().cuid().optional(),
+  roleId: z.string().uuid().optional(),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
+  occupation: z.string().optional(),
   occupationLevel: z.string().optional(),
-  area:                 z.string().optional(),
+  area: z.string().optional(),
   similarExposureGroup: z.string().optional(),
-  location:             z.string().optional(),
-  skinColor:       z.string().optional(),
-  hasDisability:   z.string().optional().transform((v) => (v === undefined ? undefined : v === "true")),
-  nationalityId:   z.string().cuid().optional(),
+  location: z.string().optional(),
+  skinColor: z.string().optional(),
+  hasDisability: z
+    .string()
+    .optional()
+    .transform((v) => (v === undefined ? undefined : v === "true")),
+  nationalityId: z.string().cuid().optional(),
 });
 
 export type SearchUsersRequest = z.infer<typeof SearchUsersSchema>;

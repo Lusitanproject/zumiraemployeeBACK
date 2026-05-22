@@ -6,19 +6,19 @@
 
 **Breaking change:** O contrato de resposta foi alterado para suportar paginação.
 
-| Campo | Antes | Depois |
-|---|---|---|
-| `available` | ✅ mantido | ✅ mantido |
-| `items` | array completo | array paginado (slice da página atual) |
-| `totalScore` | presente | **removido** → movido para `/summary` |
-| `positiveScore` | presente | **removido** → movido para `/summary` |
-| `negativeScore` | presente | **removido** → movido para `/summary` |
-| `absoluteScore` | presente | **removido** → movido para `/summary` |
-| `selfMonitoringBlocks` | presente | **removido** → movido para `/summary` |
-| `total` | ausente | **adicionado** (total de itens filtrados) |
-| `page` | ausente | **adicionado** |
-| `pageSize` | ausente | **adicionado** |
-| `totalPages` | ausente | **adicionado** |
+| Campo                  | Antes          | Depois                                    |
+| ---------------------- | -------------- | ----------------------------------------- |
+| `available`            | ✅ mantido     | ✅ mantido                                |
+| `items`                | array completo | array paginado (slice da página atual)    |
+| `totalScore`           | presente       | **removido** → movido para `/summary`     |
+| `positiveScore`        | presente       | **removido** → movido para `/summary`     |
+| `negativeScore`        | presente       | **removido** → movido para `/summary`     |
+| `absoluteScore`        | presente       | **removido** → movido para `/summary`     |
+| `selfMonitoringBlocks` | presente       | **removido** → movido para `/summary`     |
+| `total`                | ausente        | **adicionado** (total de itens filtrados) |
+| `page`                 | ausente        | **adicionado**                            |
+| `pageSize`             | ausente        | **adicionado**                            |
+| `totalPages`           | ausente        | **adicionado**                            |
 
 **Novos query params:** `page` (default: 1), `pageSize` (default: 10, max: 100) e `search` (busca textual no nome do fator psicossocial).
 

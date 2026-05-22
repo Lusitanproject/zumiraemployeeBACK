@@ -1,10 +1,10 @@
+import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
 import {
   CreateNotificationRequest,
   DeleteNotificationRequest,
   UpdateNotificationRequest,
 } from "../../schemas/notification";
-import { PublicError } from "../../error";
-import prismaClient from "../../prisma";
 
 class NotificationAdminService {
   async findAll() {

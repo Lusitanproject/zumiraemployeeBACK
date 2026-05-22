@@ -1,7 +1,7 @@
 import { Workbook } from "exceljs";
 
-import { AssessmentByCompanyRequest } from "../../schemas/admin/assessment";
 import prismaClient from "../../prisma";
+import { AssessmentByCompanyRequest } from "../../schemas/admin/assessment";
 import { calculateResultScores } from "../../utils/calculateResultScores";
 
 const RESULT_SELECT = {

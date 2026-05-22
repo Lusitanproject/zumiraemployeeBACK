@@ -10,32 +10,30 @@ Envia uma mensagem ao RAG da análise de assessment mais recente da empresa do u
 
 ### Path params
 
-| Campo        | Tipo   | Obrigatório | Descrição               |
-|--------------|--------|-------------|-------------------------|
-| assessmentId | string (cuid) | sim | ID do assessment        |
+| Campo        | Tipo          | Obrigatório | Descrição        |
+| ------------ | ------------- | ----------- | ---------------- |
+| assessmentId | string (cuid) | sim         | ID do assessment |
 
 ### Headers
 
-| Header        | Valor                    |
-|---------------|--------------------------|
-| Authorization | Bearer `<token>`         |
-| Content-Type  | application/json         |
+| Header        | Valor            |
+| ------------- | ---------------- |
+| Authorization | Bearer `<token>` |
+| Content-Type  | application/json |
 
 ### Request body
 
 ```json
 {
-  "messages": [
-    { "role": "user", "content": "Quais fatores mais impactaram o resultado?" }
-  ]
+  "messages": [{ "role": "user", "content": "Quais fatores mais impactaram o resultado?" }]
 }
 ```
 
-| Campo              | Tipo   | Obrigatório | Descrição                                                                 |
-|--------------------|--------|-------------|---------------------------------------------------------------------------|
-| messages           | array  | sim         | Histórico da conversa (mínimo 1 item)                                     |
-| messages[].role    | string | sim         | `"user"` ou `"assistant"`                                                 |
-| messages[].content | string | sim         | Texto da mensagem (mínimo 1 caractere)                                    |
+| Campo              | Tipo   | Obrigatório | Descrição                              |
+| ------------------ | ------ | ----------- | -------------------------------------- |
+| messages           | array  | sim         | Histórico da conversa (mínimo 1 item)  |
+| messages[].role    | string | sim         | `"user"` ou `"assistant"`              |
+| messages[].content | string | sim         | Texto da mensagem (mínimo 1 caractere) |
 
 ### Response — 200 OK
 
@@ -50,12 +48,12 @@ Envia uma mensagem ao RAG da análise de assessment mais recente da empresa do u
 
 ### Erros
 
-| Status | Mensagem                                                          | Causa                                                            |
-|--------|-------------------------------------------------------------------|------------------------------------------------------------------|
-| 400    | Validation error nos params/body                                  | `assessmentId` inválido ou `messages` mal formatado              |
-| 401    | Unauthorized                                                      | Token ausente ou inválido                                        |
-| 400    | Usuário não está associado a uma empresa.                         | Usuário sem `companyId`                                          |
-| 400    | Análise com RAG não disponível para este assessment.              | Análise não gerada ou sem vector store (chamar generate feedback primeiro) |
+| Status | Mensagem                                             | Causa                                                                      |
+| ------ | ---------------------------------------------------- | -------------------------------------------------------------------------- |
+| 400    | Validation error nos params/body                     | `assessmentId` inválido ou `messages` mal formatado                        |
+| 401    | Unauthorized                                         | Token ausente ou inválido                                                  |
+| 400    | Usuário não está associado a uma empresa.            | Usuário sem `companyId`                                                    |
+| 400    | Análise com RAG não disponível para este assessment. | Análise não gerada ou sem vector store (chamar generate feedback primeiro) |
 
 ---
 
@@ -65,16 +63,16 @@ Envia uma mensagem ao RAG da análise de ACT mais recente da empresa do usuário
 
 ### Path params
 
-| Campo        | Tipo          | Obrigatório | Descrição           |
-|--------------|---------------|-------------|---------------------|
-| actChatbotId | string (cuid) | sim         | ID do ACT           |
+| Campo        | Tipo          | Obrigatório | Descrição |
+| ------------ | ------------- | ----------- | --------- |
+| actChatbotId | string (cuid) | sim         | ID do ACT |
 
 ### Headers
 
-| Header        | Valor                    |
-|---------------|--------------------------|
-| Authorization | Bearer `<token>`         |
-| Content-Type  | application/json         |
+| Header        | Valor            |
+| ------------- | ---------------- |
+| Authorization | Bearer `<token>` |
+| Content-Type  | application/json |
 
 ### Request body
 
@@ -88,11 +86,11 @@ Envia uma mensagem ao RAG da análise de ACT mais recente da empresa do usuário
 }
 ```
 
-| Campo              | Tipo   | Obrigatório | Descrição                                                                 |
-|--------------------|--------|-------------|---------------------------------------------------------------------------|
-| messages           | array  | sim         | Histórico da conversa (mínimo 1 item)                                     |
-| messages[].role    | string | sim         | `"user"` ou `"assistant"`                                                 |
-| messages[].content | string | sim         | Texto da mensagem (mínimo 1 caractere)                                    |
+| Campo              | Tipo   | Obrigatório | Descrição                              |
+| ------------------ | ------ | ----------- | -------------------------------------- |
+| messages           | array  | sim         | Histórico da conversa (mínimo 1 item)  |
+| messages[].role    | string | sim         | `"user"` ou `"assistant"`              |
+| messages[].content | string | sim         | Texto da mensagem (mínimo 1 caractere) |
 
 ### Response — 200 OK
 
@@ -107,12 +105,12 @@ Envia uma mensagem ao RAG da análise de ACT mais recente da empresa do usuário
 
 ### Erros
 
-| Status | Mensagem                                                    | Causa                                                          |
-|--------|-------------------------------------------------------------|----------------------------------------------------------------|
-| 400    | Validation error nos params/body                            | `actChatbotId` inválido ou `messages` mal formatado            |
-| 401    | Unauthorized                                                | Token ausente ou inválido                                      |
-| 400    | Usuário não está associado a uma empresa.                   | Usuário sem `companyId`                                        |
-| 400    | Análise com RAG não disponível para este ato.               | Análise não gerada ou sem vector store (chamar generate report primeiro) |
+| Status | Mensagem                                      | Causa                                                                    |
+| ------ | --------------------------------------------- | ------------------------------------------------------------------------ |
+| 400    | Validation error nos params/body              | `actChatbotId` inválido ou `messages` mal formatado                      |
+| 401    | Unauthorized                                  | Token ausente ou inválido                                                |
+| 400    | Usuário não está associado a uma empresa.     | Usuário sem `companyId`                                                  |
+| 400    | Análise com RAG não disponível para este ato. | Análise não gerada ou sem vector store (chamar generate report primeiro) |
 
 ---
 

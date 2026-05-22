@@ -2,21 +2,14 @@ import { Request, Response } from "express";
 
 import { SyncCompanyParamsSchema, SyncUsersPayloadSchema } from "../../schemas/user";
 import { UserService } from "../../services/user/UserService";
-import { parseZodError } from "../../utils/parseZodError";
 
 class SyncUsersPreviewController {
   async handle(req: Request, res: Response) {
-    const parsedParams = SyncCompanyParamsSchema.safeParse(req.params);
-    if (!parsedParams.success) {
-      return res.status(400).json({ status: "ERROR", message: parseZodError(parsedParams.error) });
-    }
+    const parsedParams = SyncCompanyParamsSchema.parse(req.params);
 
-    const parsedBody = SyncUsersPayloadSchema.safeParse(req.body);
-    if (!parsedBody.success) {
-      return res.status(400).json({ status: "ERROR", message: parseZodError(parsedBody.error) });
-    }
+    const parsedBody = SyncUsersPayloadSchema.parse(req.body);
 
-    const result = await new UserService().previewSync(parsedParams.data.id, parsedBody.data.users);
+    const result = await new UserService().previewSync(parsedParams.id, parsedBody.users);
     return res.json({ status: "SUCCESS", data: result });
   }
 }

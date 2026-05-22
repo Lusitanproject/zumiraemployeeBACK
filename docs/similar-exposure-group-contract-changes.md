@@ -35,9 +35,9 @@ Novo campo opcional no body.
 
 Novo query param de filtro.
 
-| Parâmetro            | Tipo     | Comportamento                     |
-|----------------------|----------|-----------------------------------|
-| `similarExposureGroup` | `string` | Filtro parcial, case-insensitive  |
+| Parâmetro              | Tipo     | Comportamento                    |
+| ---------------------- | -------- | -------------------------------- |
+| `similarExposureGroup` | `string` | Filtro parcial, case-insensitive |
 
 **Exemplo:** `GET /users/search?similarExposureGroup=GES-A`
 
@@ -50,6 +50,7 @@ Novo query param de filtro.
 **Exemplo:** `GET /users/filters?columns=similarExposureGroup`
 
 **Response:**
+
 ```json
 {
   "similarExposureGroup": ["GES-A", "GES-B", "GES-C"]

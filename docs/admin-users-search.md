@@ -9,13 +9,13 @@
 ### Query Parameters
 
 | Parâmetro         | Tipo    | Obrigatório | Default | Descrição                                |
-|-------------------|---------|-------------|---------|------------------------------------------|
+| ----------------- | ------- | ----------- | ------- | ---------------------------------------- |
 | `page`            | number  | não         | `1`     | Página atual (1-indexed)                 |
 | `pageSize`        | number  | não         | `10`    | Itens por página (máx. 100)              |
 | `search`          | string  | não         | —       | Busca parcial em `name` ou `email` (OR)  |
 | `companyId`       | string  | não         | —       | CUID — filtra pela empresa               |
 | `roleId`          | string  | não         | —       | UUID — filtra pelo role                  |
-| `gender`          | string  | não         | —       | `MALE` \| `FEMALE` \| `OTHER`           |
+| `gender`          | string  | não         | —       | `MALE` \| `FEMALE` \| `OTHER`            |
 | `occupation`      | string  | não         | —       | Contém (case-insensitive)                |
 | `occupationLevel` | string  | não         | —       | Contém (case-insensitive)                |
 | `area`            | string  | não         | —       | Contém (case-insensitive)                |
@@ -83,24 +83,24 @@ Colunas de referência retornam `{ id, nome_legível }` em vez do ID bruto.
 
 ### Query Parameters
 
-| Parâmetro  | Tipo     | Obrigatório | Descrição                                              |
-|------------|----------|-------------|--------------------------------------------------------|
-| `columns`  | string[] | sim (≥ 1)  | Lista de colunas. Repetir o param ou enviar como array |
+| Parâmetro | Tipo     | Obrigatório | Descrição                                              |
+| --------- | -------- | ----------- | ------------------------------------------------------ |
+| `columns` | string[] | sim (≥ 1)   | Lista de colunas. Repetir o param ou enviar como array |
 
 **Valores válidos para `columns`:**
 
-| Valor             | Tipo       | Retorno                          |
-|-------------------|------------|----------------------------------|
+| Valor             | Tipo       | Retorno                         |
+| ----------------- | ---------- | ------------------------------- |
 | `gender`          | escalar    | `"MALE" \| "FEMALE" \| "OTHER"` |
-| `occupation`      | escalar    | `string[]`                       |
-| `occupationLevel` | escalar    | `string[]`                       |
-| `area`            | escalar    | `string[]`                       |
-| `location`        | escalar    | `string[]`                       |
-| `skinColor`       | escalar    | `string[]`                       |
-| `hasDisability`   | escalar    | `boolean[]`                      |
-| `roleId`          | referência | `{ id, slug }[]`                 |
-| `companyId`       | referência | `{ id, name }[]`                 |
-| `nationalityId`   | referência | `{ id, name }[]`                 |
+| `occupation`      | escalar    | `string[]`                      |
+| `occupationLevel` | escalar    | `string[]`                      |
+| `area`            | escalar    | `string[]`                      |
+| `location`        | escalar    | `string[]`                      |
+| `skinColor`       | escalar    | `string[]`                      |
+| `hasDisability`   | escalar    | `boolean[]`                     |
+| `roleId`          | referência | `{ id, slug }[]`                |
+| `companyId`       | referência | `{ id, name }[]`                |
+| `nationalityId`   | referência | `{ id, name }[]`                |
 
 ### Resposta `200`
 
@@ -119,9 +119,7 @@ Colunas de referência retornam `{ id, nome_legível }` em vez do ID bruto.
       { "id": "cuid-1", "name": "Empresa A" },
       { "id": "cuid-2", "name": "Empresa B" }
     ],
-    "nationalityId": [
-      { "id": "cuid-3", "name": "Brasileiro" }
-    ]
+    "nationalityId": [{ "id": "cuid-3", "name": "Brasileiro" }]
   }
 }
 ```

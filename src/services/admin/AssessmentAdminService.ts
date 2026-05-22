@@ -1,6 +1,6 @@
-import { UpdateAssessment } from "../../schemas/admin/assessment";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
+import { UpdateAssessment } from "../../schemas/admin/assessment";
 
 class AssessmentAdminService {
   async find(assessmentId: string) {

@@ -1,6 +1,5 @@
 import { Router } from "express";
 
-import { AssessmentDetailForAdminController } from "../../controllers/assessment/AssessmentDetailForAdminController";
 import { DuplicateAssessmentController } from "../../controllers/admin/assessments/DuplicateAssessmentController";
 import { FindAllAssessmentsController } from "../../controllers/admin/assessments/FindAllAssessmentsController";
 import { FindQuestionByAssessmentController } from "../../controllers/admin/assessments/FindQuestionByAssessmentController";
@@ -9,6 +8,7 @@ import { FindResultsFilteredController } from "../../controllers/admin/assessmen
 import { GenerateExcelReportController } from "../../controllers/admin/assessments/GenerateExcelReportController";
 import { UpdateAssessmentController } from "../../controllers/admin/assessments/UpdateAssessmentController";
 import { UpdateResultRatingsController } from "../../controllers/admin/assessments/UpdateResultRatingsController";
+import { AssessmentDetailForAdminController } from "../../controllers/assessment/AssessmentDetailForAdminController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
 import { requirePermissions } from "../../middlewares/requirePermissions";
 
@@ -71,7 +71,12 @@ const adminAssessmentRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminAssessmentRouter.get("/results", isAuthenticated, requirePermissions("manage-assessments"), new FindResultsFilteredController().handle);
+adminAssessmentRouter.get(
+  "/results",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new FindResultsFilteredController().handle,
+);
 
 /**
  * @swagger
@@ -120,7 +125,12 @@ adminAssessmentRouter.get("/results", isAuthenticated, requirePermissions("manag
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminAssessmentRouter.get("/results/download-report", isAuthenticated, requirePermissions("manage-assessments"), new GenerateExcelReportController().handle);
+adminAssessmentRouter.get(
+  "/results/download-report",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new GenerateExcelReportController().handle,
+);
 
 /**
  * @swagger
@@ -161,7 +171,12 @@ adminAssessmentRouter.get("/results/download-report", isAuthenticated, requirePe
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.get("/questions/:assessmentId", isAuthenticated, requirePermissions("manage-assessments"), new FindQuestionByAssessmentController().handle);
+adminAssessmentRouter.get(
+  "/questions/:assessmentId",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new FindQuestionByAssessmentController().handle,
+);
 
 /**
  * @swagger
@@ -206,7 +221,12 @@ adminAssessmentRouter.get("/questions/:assessmentId", isAuthenticated, requirePe
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.get("/ratings/:id", isAuthenticated, requirePermissions("manage-assessments"), new FindResultRatingsByAssessmentController().handle);
+adminAssessmentRouter.get(
+  "/ratings/:id",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new FindResultRatingsByAssessmentController().handle,
+);
 
 /**
  * @swagger
@@ -276,7 +296,12 @@ adminAssessmentRouter.get("/ratings/:id", isAuthenticated, requirePermissions("m
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminAssessmentRouter.put("/ratings/:id", isAuthenticated, requirePermissions("manage-assessments"), new UpdateResultRatingsController().handle);
+adminAssessmentRouter.put(
+  "/ratings/:id",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new UpdateResultRatingsController().handle,
+);
 
 /**
  * @swagger
@@ -307,7 +332,12 @@ adminAssessmentRouter.put("/ratings/:id", isAuthenticated, requirePermissions("m
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-adminAssessmentRouter.get("/", isAuthenticated, requirePermissions("manage-assessments"), new FindAllAssessmentsController().handle);
+adminAssessmentRouter.get(
+  "/",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new FindAllAssessmentsController().handle,
+);
 
 /**
  * @swagger
@@ -349,7 +379,12 @@ adminAssessmentRouter.get("/", isAuthenticated, requirePermissions("manage-asses
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.post("/duplicate/:id", isAuthenticated, requirePermissions("manage-assessments"), new DuplicateAssessmentController().handle);
+adminAssessmentRouter.post(
+  "/duplicate/:id",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new DuplicateAssessmentController().handle,
+);
 
 /**
  * @swagger
@@ -399,7 +434,12 @@ adminAssessmentRouter.post("/duplicate/:id", isAuthenticated, requirePermissions
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.get("/:id", isAuthenticated, requirePermissions("manage-assessments"), new AssessmentDetailForAdminController().handle);
+adminAssessmentRouter.get(
+  "/:id",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new AssessmentDetailForAdminController().handle,
+);
 
 /**
  * @swagger
@@ -477,6 +517,11 @@ adminAssessmentRouter.get("/:id", isAuthenticated, requirePermissions("manage-as
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-adminAssessmentRouter.put("/:id", isAuthenticated, requirePermissions("manage-assessments"), new UpdateAssessmentController().handle);
+adminAssessmentRouter.put(
+  "/:id",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new UpdateAssessmentController().handle,
+);
 
 export { adminAssessmentRouter };

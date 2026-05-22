@@ -1,8 +1,8 @@
+import prismaClient from "../../prisma";
 import {
   CreatePsychosocialFactorRequest,
   UpdatePsychosocialFactorRequest,
 } from "../../schemas/admin/psychosocial-factor";
-import prismaClient from "../../prisma";
 
 class PsychosocialFactorAdminService {
   async find(id: string) {

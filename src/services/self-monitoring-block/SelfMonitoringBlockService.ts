@@ -1,5 +1,5 @@
-import { ListSelfMonitoringBlockResultsRequest } from "../../schemas/selfMonitoringBlock";
 import prismaClient from "../../prisma";
+import { ListSelfMonitoringBlockResultsRequest } from "../../schemas/selfMonitoringBlock";
 
 class SelfMonitoringBlockService {
   async list() {

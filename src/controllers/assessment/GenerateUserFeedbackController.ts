@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { AssessmentService } from "../../services/assessment/AssessmentService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const GenerateFeedbackSchema = z.object({
   id: z.string().cuid(),
@@ -10,9 +9,7 @@ const GenerateFeedbackSchema = z.object({
 
 class GenerateUserFeedbackController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = GenerateFeedbackSchema.safeParse(req.params);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = GenerateFeedbackSchema.parse(req.params);
 
     const { id: assessmentId } = data;
     const userId = req.user.id;

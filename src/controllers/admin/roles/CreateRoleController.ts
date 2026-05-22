@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { RoleAdminService } from "../../../services/admin/RoleAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 export const CreateRoleSchema = z.object({
   slug: z.string(),
@@ -10,14 +9,7 @@ export const CreateRoleSchema = z.object({
 
 class CreateRoleController {
   async handle(req: Request, res: Response) {
-const { success, data, error } = CreateRoleSchema.safeParse(req.body);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+    const data = CreateRoleSchema.parse(req.body);
 
     const { slug } = data;
 

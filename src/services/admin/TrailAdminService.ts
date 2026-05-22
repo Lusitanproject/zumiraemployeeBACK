@@ -1,5 +1,5 @@
-import { CreateTrailRequest, UpdateTrailRequest } from "../../schemas/admin/trail";
 import prismaClient from "../../prisma";
+import { CreateTrailRequest, UpdateTrailRequest } from "../../schemas/admin/trail";
 
 class TrailAdminService {
   async find(id: string) {

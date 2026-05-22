@@ -2,15 +2,12 @@ import { Request, Response } from "express";
 
 import { PsychosocialFactorIdSchema, UpdatePsychosocialFactorSchema } from "../../../schemas/admin/psychosocial-factor";
 import { PsychosocialFactorAdminService } from "../../../services/admin/PsychosocialFactorAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 class UpdatePsychosocialFactorController {
   async handle(req: Request, res: Response) {
-    const { success: idSuccess, data: idData, error: idError } = PsychosocialFactorIdSchema.safeParse(req.params);
-    if (!idSuccess) throw new Error(parseZodError(idError));
+    const idData = PsychosocialFactorIdSchema.parse(req.params);
 
-    const { success, data, error } = UpdatePsychosocialFactorSchema.safeParse(req.body);
-    if (!success) throw new Error(parseZodError(error));
+    const data = UpdatePsychosocialFactorSchema.parse(req.body);
 
     const service = new PsychosocialFactorAdminService();
     const factor = await service.update({ id: idData.id, ...data });

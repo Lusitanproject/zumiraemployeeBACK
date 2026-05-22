@@ -1,4 +1,9 @@
 import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
+
+import { PublicError } from "../../error";
+import { GenerateOpenAiResponseRequest, OpenAiApi } from "../../external/openai";
+import { ReceiveMessage, WhatsappApi } from "../../external/whatsapp";
+import prismaClient from "../../prisma";
 import {
   CompileActChapterRequest,
   CreateActChapterRequest,
@@ -6,11 +11,7 @@ import {
   MessageActChatbotRequest,
   UpdateActChapterRequest,
 } from "../../schemas/actChatbot";
-import { PublicError } from "../../error";
-import prismaClient from "../../prisma";
-import { OpenAiApi, GenerateOpenAiResponseRequest } from "../../external/openai";
 import { UserService } from "../user/UserService";
-import { ReceiveMessage, WhatsappApi } from "../../external/whatsapp";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
 
@@ -29,15 +30,15 @@ export const ANALYSIS_FILTER_COLUMNS = [
 export type AnalysisFilterColumn = (typeof ANALYSIS_FILTER_COLUMNS)[number];
 
 export interface ActAnalysisFilters {
-  search?: string;
-  gender?: string;
   area?: string;
+  gender?: string;
+  hasDisability?: boolean;
   location?: string;
+  nationalityId?: string;
   occupation?: string;
   occupationLevel?: string;
+  search?: string;
   skinColor?: string;
-  hasDisability?: boolean;
-  nationalityId?: string;
 }
 
 interface ActAnalysisBatchResult {
@@ -45,9 +46,9 @@ interface ActAnalysisBatchResult {
 }
 
 interface ActAnalysisItem {
+  count: number;
   factor: { id: string; name: string; wheight: number; weightedScore: number };
   selfMonitoringBlock: { id: string; name: string };
-  count: number;
 }
 
 interface SelfMonitoringBlockSummary {
@@ -866,7 +867,7 @@ class ActService {
       wellnessPercentage: absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0,
     };
 
-    let aiDescription = latestAnalysis?.text ?? "";
+    const aiDescription = latestAnalysis?.text ?? "";
 
     const report: AnalysisReport = {
       userCount: weightsResult.available ? weightsResult.userCount : 0,
@@ -1081,4 +1082,3 @@ class ActService {
 }
 
 export { ActService };
-

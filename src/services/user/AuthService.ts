@@ -92,7 +92,7 @@ class AuthService {
       token,
       expiresAt,
       user: (() => {
-        const { password, ...response } = user;
+        const { password: _password, ...response } = user;
         return { ...response };
       })(),
     };

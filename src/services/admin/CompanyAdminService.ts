@@ -1,9 +1,9 @@
 import { CompanyAssessmentAnalysis } from "@prisma/client";
 
-import { CreateCompanyRequest, UpdateCompanyRequest } from "../../schemas/admin/company";
-import { SetCompanyAssessmentsRequest } from "../../schemas/company";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
+import { CreateCompanyRequest, UpdateCompanyRequest } from "../../schemas/admin/company";
+import { SetCompanyAssessmentsRequest } from "../../schemas/company";
 
 class CompanyAdminService {
   async findAll() {
@@ -164,12 +164,14 @@ class CompanyAdminService {
 
     const tasks = uniquePairs.map(async (pair) => {
       const generateService = new AssessmentService();
-      return generateService.generateUserFeedback({ userId: pair.userId, assessmentId: pair.assessmentId }).catch((error) => {
-        console.error(
-          `Erro ao gerar feedback para usuário ${pair.userId} em avaliação ${pair.assessmentId}: `,
-          error instanceof Error ? error.message : String(error),
-        );
-      });
+      return generateService
+        .generateUserFeedback({ userId: pair.userId, assessmentId: pair.assessmentId })
+        .catch((error) => {
+          console.error(
+            `Erro ao gerar feedback para usuário ${pair.userId} em avaliação ${pair.assessmentId}: `,
+            error instanceof Error ? error.message : String(error),
+          );
+        });
     });
 
     if (sync) {

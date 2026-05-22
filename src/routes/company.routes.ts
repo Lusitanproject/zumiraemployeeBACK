@@ -29,7 +29,13 @@ const companyRouter = Router();
  *       200:
  *         description: Dados da empresa
  */
-companyRouter.get("/:companyId", isAuthenticated, requirePermissions("view-company-users"), requireSameCompany("params"), new FindCompanyController().handle);
+companyRouter.get(
+  "/:companyId",
+  isAuthenticated,
+  requirePermissions("companies-read"),
+  requireSameCompany("params"),
+  new FindCompanyController().handle,
+);
 
 /**
  * @swagger
@@ -46,7 +52,12 @@ companyRouter.get("/:companyId", isAuthenticated, requirePermissions("view-compa
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/users", isAuthenticated, requirePermissions("manage-company"), new CreateUserForCompanyController().handle);
+companyRouter.post(
+  "/users",
+  isAuthenticated,
+  requirePermissions("company-users-write"),
+  new CreateUserForCompanyController().handle,
+);
 
 /**
  * @swagger
@@ -63,7 +74,12 @@ companyRouter.post("/users", isAuthenticated, requirePermissions("manage-company
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/users/batch", isAuthenticated, requirePermissions("manage-company"), new CreateManyUsersForCompanyController().handle);
+companyRouter.post(
+  "/users/batch",
+  isAuthenticated,
+  requirePermissions("company-users-write"),
+  new CreateManyUsersForCompanyController().handle,
+);
 
 /**
  * @swagger
@@ -110,7 +126,13 @@ companyRouter.post("/users/batch", isAuthenticated, requirePermissions("manage-c
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-companyRouter.get("/:id/feedback", isAuthenticated, requirePermissions("view-assessment-results"), requireSameCompany("params", "id"), new FindCompanyFeedbackController().handle);
+companyRouter.get(
+  "/:id/feedback",
+  isAuthenticated,
+  requirePermissions("assessments-read-analysis"),
+  requireSameCompany("params", "id"),
+  new FindCompanyFeedbackController().handle,
+);
 
 /**
  * @swagger
@@ -253,7 +275,12 @@ companyRouter.get("/:id/feedback", isAuthenticated, requirePermissions("view-ass
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/:id/users/sync/preview", isAuthenticated, requirePermissions("manage-company"), new SyncUsersPreviewController().handle);
+companyRouter.post(
+  "/:id/users/sync/preview",
+  isAuthenticated,
+  requirePermissions(["company-users-write", "company-users-update"]),
+  new SyncUsersPreviewController().handle,
+);
 
 /**
  * @swagger
@@ -393,7 +420,12 @@ companyRouter.post("/:id/users/sync/preview", isAuthenticated, requirePermission
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.post("/:id/users/sync/execute", isAuthenticated, requirePermissions("manage-company"), new SyncUsersExecuteController().handle);
+companyRouter.post(
+  "/:id/users/sync/execute",
+  isAuthenticated,
+  requirePermissions(["company-users-write", "company-users-update"]),
+  new SyncUsersExecuteController().handle,
+);
 
 /**
  * @swagger
@@ -420,7 +452,13 @@ companyRouter.post("/:id/users/sync/execute", isAuthenticated, requirePermission
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.get("/:companyId/users/search", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new SearchCompanyUsersController().handle);
+companyRouter.get(
+  "/:companyId/users/search",
+  isAuthenticated,
+  requirePermissions("company-users-read"),
+  requireSameCompany("params"),
+  new SearchCompanyUsersController().handle,
+);
 
 /**
  * @swagger
@@ -447,7 +485,13 @@ companyRouter.get("/:companyId/users/search", isAuthenticated, requirePermission
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-companyRouter.get("/:companyId/users", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new ListCompanyUsersController().handle);
+companyRouter.get(
+  "/:companyId/users",
+  isAuthenticated,
+  requirePermissions("company-users-read"),
+  requireSameCompany("params"),
+  new ListCompanyUsersController().handle,
+);
 
 /**
  * @swagger
@@ -483,7 +527,13 @@ companyRouter.get("/:companyId/users", isAuthenticated, requirePermissions("mana
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-companyRouter.get("/:companyId/users/:id", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new FindCompanyUserController().handle);
+companyRouter.get(
+  "/:companyId/users/:id",
+  isAuthenticated,
+  requirePermissions("company-users-read"),
+  requireSameCompany("params"),
+  new FindCompanyUserController().handle,
+);
 
 /**
  * @swagger
@@ -521,7 +571,13 @@ companyRouter.get("/:companyId/users/:id", isAuthenticated, requirePermissions("
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-companyRouter.put("/:companyId/users/:id", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new UpdateCompanyUserController().handle);
+companyRouter.put(
+  "/:companyId/users/:id",
+  isAuthenticated,
+  requirePermissions("company-users-update"),
+  requireSameCompany("params"),
+  new UpdateCompanyUserController().handle,
+);
 
 /**
  * @swagger
@@ -557,6 +613,12 @@ companyRouter.put("/:companyId/users/:id", isAuthenticated, requirePermissions("
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
-companyRouter.delete("/:companyId/users/:id", isAuthenticated, requirePermissions("manage-company"), requireSameCompany("params"), new DeleteCompanyUserController().handle);
+companyRouter.delete(
+  "/:companyId/users/:id",
+  isAuthenticated,
+  requirePermissions("company-users-delete"),
+  requireSameCompany("params"),
+  new DeleteCompanyUserController().handle,
+);
 
 export { companyRouter };

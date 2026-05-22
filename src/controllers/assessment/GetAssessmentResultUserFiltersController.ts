@@ -3,22 +3,19 @@ import { z } from "zod";
 
 import { GetAssessmentResultUserFiltersSchema } from "../../schemas/admin/assessment";
 import { AssessmentService } from "../../services/assessment/AssessmentService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const RequestParams = z.object({ id: z.string().cuid() });
 
 class GetAssessmentResultUserFiltersController {
   async handle(req: Request, res: Response) {
-    const parsedParams = RequestParams.safeParse(req.params);
-    if (!parsedParams.success) throw new Error(parseZodError(parsedParams.error));
+    const parsedParams = RequestParams.parse(req.params);
 
-    const parsedQuery = GetAssessmentResultUserFiltersSchema.safeParse(req.query);
-    if (!parsedQuery.success) throw new Error(parseZodError(parsedQuery.error));
+    const parsedQuery = GetAssessmentResultUserFiltersSchema.parse(req.query);
 
-    const { companyId, columns } = parsedQuery.data;
+    const { companyId, columns } = parsedQuery;
 
     const service = new AssessmentService();
-    const result = await service.getResultUserFilters(parsedParams.data.id, companyId, columns);
+    const result = await service.getResultUserFilters(parsedParams.id, companyId, columns);
 
     return res.json({ status: "SUCCESS", data: result });
   }

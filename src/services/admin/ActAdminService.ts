@@ -1,14 +1,15 @@
 import { ChapterType, Prisma, PsychosocialFactor } from "@prisma/client";
+
+import { PublicError } from "../../error";
+import { ChatbaseApi } from "../../external/chatbase";
+import { CreateOpenAiBatchRequest, OpenAiApi } from "../../external/openai";
+import prismaClient from "../../prisma";
 import {
   CreateActChatbotRequest,
   ImportChatbaseChaptersRequest,
   UpdateActChatbotRequest,
   UpdateManyActChatbotsRequest,
 } from "../../schemas/admin/act-chatbot";
-import { PublicError } from "../../error";
-import { ChatbaseApi } from "../../external/chatbase";
-import { CreateOpenAiBatchRequest, OpenAiApi } from "../../external/openai";
-import prismaClient from "../../prisma";
 
 class ActAdminService {
   private readonly actListSelect = {

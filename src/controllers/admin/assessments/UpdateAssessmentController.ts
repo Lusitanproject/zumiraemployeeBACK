@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { UpdateAssessmentSchema } from "../../../schemas/admin/assessment";
 import { AssessmentAdminService } from "../../../services/admin/AssessmentAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParamSchema = z.object({
   id: z.string().cuid(),
@@ -12,14 +11,7 @@ const RequestParamSchema = z.object({
 class UpdateAssessmentController {
   async handle(req: Request, res: Response) {
     const { id } = RequestParamSchema.parse(req.params);
-    const { success, data, error } = UpdateAssessmentSchema.safeParse(req.body);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+    const data = UpdateAssessmentSchema.parse(req.body);
     const assessmentAdminService = new AssessmentAdminService();
     const assessment = await assessmentAdminService.update({ ...data, id });
 

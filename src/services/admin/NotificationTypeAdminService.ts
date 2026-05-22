@@ -1,5 +1,5 @@
-import { CreateNotificationTypeRequest, UpdateNotificationTypeRequest } from "../../schemas/admin/notification";
 import prismaClient from "../../prisma";
+import { CreateNotificationTypeRequest, UpdateNotificationTypeRequest } from "../../schemas/admin/notification";
 
 class NotificationTypeAdminService {
   async find(notificationTypeId: string) {

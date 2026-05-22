@@ -32,7 +32,13 @@ const userRouter = Router();
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get("/search", isAuthenticated, requirePermissions("manage-users"), new SearchUsersController().handle);
+// TODO: migrar para /admin/users/search (permissão: admin-users-manage)
+userRouter.get(
+  "/search",
+  isAuthenticated,
+  requirePermissions("admin-users-manage"),
+  new SearchUsersController().handle,
+);
 
 /**
  * @swagger
@@ -51,10 +57,11 @@ userRouter.get("/search", isAuthenticated, requirePermissions("manage-users"), n
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
+// TODO: migrar para /admin/users/filters (permissão: admin-users-manage)
 userRouter.get(
   "/filters",
   isAuthenticated,
-  requirePermissions("manage-users"),
+  requirePermissions("admin-users-manage"),
   new GetUserFiltersController().handle,
 );
 
@@ -70,7 +77,13 @@ userRouter.get(
  *       200:
  *         description: Usuário encontrado
  */
-userRouter.get("/find-by", isAuthenticated, new FindUserByController().handle);
+// TODO: migrar para /admin/users/find-by (permissão: admin-users-manage)
+userRouter.get(
+  "/find-by",
+  isAuthenticated,
+  requirePermissions("admin-users-manage"),
+  new FindUserByController().handle,
+);
 
 /**
  * @swagger
@@ -92,7 +105,7 @@ userRouter.get("/find-by", isAuthenticated, new FindUserByController().handle);
 userRouter.get(
   "/company/:companyId",
   isAuthenticated,
-  requirePermissions("view-company-users"),
+  requirePermissions("company-users-read"),
   requireSameCompany("params"),
   new ListUsersByCompanyController().handle,
 );
@@ -114,7 +127,8 @@ userRouter.get(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.get("/", isAuthenticated, requirePermissions("manage-users"), new ListAllUsersController().handle);
+// TODO: migrar para /admin/users (permissão: admin-users-manage)
+userRouter.get("/", isAuthenticated, requirePermissions("admin-users-manage"), new ListAllUsersController().handle);
 
 /**
  * @swagger
@@ -128,7 +142,8 @@ userRouter.get("/", isAuthenticated, requirePermissions("manage-users"), new Lis
  *       200:
  *         description: Dados do usuário
  */
-userRouter.get("/:userId", isAuthenticated, new FindUserController().handle);
+// TODO: migrar para /admin/users/:userId (permissão: admin-users-manage)
+userRouter.get("/:userId", isAuthenticated, requirePermissions("admin-users-manage"), new FindUserController().handle);
 
 /**
  * @swagger
@@ -147,7 +162,8 @@ userRouter.get("/:userId", isAuthenticated, new FindUserController().handle);
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.put("/:id", isAuthenticated, requirePermissions("manage-users"), new UpdateUserController().handle);
+// TODO: migrar para /admin/users/:id (permissão: admin-users-manage)
+userRouter.put("/:id", isAuthenticated, requirePermissions("admin-users-manage"), new UpdateUserController().handle);
 
 /**
  * @swagger
@@ -166,7 +182,8 @@ userRouter.put("/:id", isAuthenticated, requirePermissions("manage-users"), new 
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-userRouter.delete("/:id", isAuthenticated, requirePermissions("manage-users"), new DeleteUserController().handle);
+// TODO: migrar para /admin/users/:id (permissão: admin-users-manage)
+userRouter.delete("/:id", isAuthenticated, requirePermissions("admin-users-manage"), new DeleteUserController().handle);
 
 /**
  * @swagger

@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { AuthService } from "../../../services/user/AuthService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 const CreateCodeSchema = z.object({
   email: z.string().email(),
@@ -10,8 +9,7 @@ const CreateCodeSchema = z.object({
 
 class SendCodeController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = CreateCodeSchema.safeParse(req.body);
-    if (!success) throw new Error(parseZodError(error));
+    const data = CreateCodeSchema.parse(req.body);
 
     const { email } = data;
     const sendCode = new AuthService();

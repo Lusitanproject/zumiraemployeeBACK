@@ -1,6 +1,6 @@
-import { ListAlertsRequest, ReadAlertRequest } from "../../schemas/alert";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
+import { ListAlertsRequest, ReadAlertRequest } from "../../schemas/alert";
 
 class AlertService {
   async list({ userId, filter, max }: ListAlertsRequest) {

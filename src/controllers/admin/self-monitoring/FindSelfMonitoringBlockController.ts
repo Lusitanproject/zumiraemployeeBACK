@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { SelfMonitoringAdminService } from "../../../services/admin/SelfMonitoringService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParam = z.object({
   id: z.string().cuid(),
@@ -10,14 +9,7 @@ const RequestParam = z.object({
 
 class FindSelfMonitoringBlocksController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = RequestParam.safeParse(req.params);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+    const data = RequestParam.parse(req.params);
 
     const selfMonitoringService = new SelfMonitoringAdminService();
     const block = await selfMonitoringService.find(data.id);

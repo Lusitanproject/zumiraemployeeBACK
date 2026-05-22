@@ -1,6 +1,10 @@
-import { DetailNotificationRequest, ListNotificationsRequest, ReadNotificationRequest } from "../../schemas/notification";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
+import {
+  DetailNotificationRequest,
+  ListNotificationsRequest,
+  ReadNotificationRequest,
+} from "../../schemas/notification";
 
 class NotificationService {
   async detail({ notificationId }: DetailNotificationRequest) {

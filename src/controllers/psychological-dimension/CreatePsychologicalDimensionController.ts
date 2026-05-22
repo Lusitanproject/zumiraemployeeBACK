@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { PsychologicalDimensionService } from "../../services/psychological-dimension/PsychologicalDimensionService";
-import { parseZodError } from "../../utils/parseZodError";
 
 const CreateDimensionSchema = z.object({
   acronym: z.string(),
@@ -12,9 +11,7 @@ const CreateDimensionSchema = z.object({
 
 class CreatePsychologicalDimensionController {
   async handle(req: Request, res: Response) {
-const { success, data, error } = CreateDimensionSchema.safeParse(req.body);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = CreateDimensionSchema.parse(req.body);
 
     const { acronym, name, selfMonitoringBlockId } = data;
 

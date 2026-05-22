@@ -11,9 +11,9 @@ POST /companies/:id/users/sync/execute
 
 **Path param**
 
-| Campo | Tipo   | Obrigatório | Descrição     |
-|-------|--------|-------------|---------------|
-| `id`  | cuid   | sim         | ID da empresa |
+| Campo | Tipo | Obrigatório | Descrição     |
+| ----- | ---- | ----------- | ------------- |
+| `id`  | cuid | sim         | ID da empresa |
 
 **Body**
 
@@ -43,23 +43,23 @@ POST /companies/:id/users/sync/execute
 
 **Campos do item**
 
-| Campo                | Tipo      | Obrigatório | Descrição                                      |
-|----------------------|-----------|-------------|------------------------------------------------|
-| `customId`           | string    | **sim**     | Chave de reconciliação. Escopo por empresa.    |
-| `email`              | string    | **sim**     | E-mail único globalmente                        |
-| `name`               | string    | **sim**     | Nome completo                                   |
-| `phoneNumber`        | string    | não         |                                                 |
-| `occupation`         | string    | não         |                                                 |
-| `occupationLevel`    | string    | não         |                                                 |
-| `area`               | string    | não         |                                                 |
-| `similarExposureGroup` | string  | não         |                                                 |
-| `location`           | string    | não         |                                                 |
-| `skinColor`          | string    | não         |                                                 |
-| `hasDisability`      | boolean   | não         |                                                 |
-| `birthdate`          | date      | não         | Formato `YYYY-MM-DD`                            |
-| `admissionDate`      | date      | não         | Formato `YYYY-MM-DD`                            |
-| `gender`             | enum      | não         | `MALE` \| `FEMALE` \| `OTHER`                  |
-| `nationalityId`      | cuid      | não         | FK para Nationality                             |
+| Campo                  | Tipo    | Obrigatório | Descrição                                   |
+| ---------------------- | ------- | ----------- | ------------------------------------------- |
+| `customId`             | string  | **sim**     | Chave de reconciliação. Escopo por empresa. |
+| `email`                | string  | **sim**     | E-mail único globalmente                    |
+| `name`                 | string  | **sim**     | Nome completo                               |
+| `phoneNumber`          | string  | não         |                                             |
+| `occupation`           | string  | não         |                                             |
+| `occupationLevel`      | string  | não         |                                             |
+| `area`                 | string  | não         |                                             |
+| `similarExposureGroup` | string  | não         |                                             |
+| `location`             | string  | não         |                                             |
+| `skinColor`            | string  | não         |                                             |
+| `hasDisability`        | boolean | não         |                                             |
+| `birthdate`            | date    | não         | Formato `YYYY-MM-DD`                        |
+| `admissionDate`        | date    | não         | Formato `YYYY-MM-DD`                        |
+| `gender`               | enum    | não         | `MALE` \| `FEMALE` \| `OTHER`               |
+| `nationalityId`        | cuid    | não         | FK para Nationality                         |
 
 ---
 
@@ -117,14 +117,14 @@ Calcula o que aconteceria. **Não persiste nada.**
 
 **Campos de `summary`**
 
-| Campo       | Descrição                                         |
-|-------------|---------------------------------------------------|
-| `received`  | Total de itens recebidos no payload               |
-| `toCreate`  | Itens que seriam criados                          |
-| `toUpdate`  | Itens que seriam atualizados                      |
-| `unchanged` | Itens sem alteração                               |
-| `conflicts` | Itens com conflito de identidade no domínio       |
-| `errors`    | Itens com erro de validação/payload               |
+| Campo       | Descrição                                   |
+| ----------- | ------------------------------------------- |
+| `received`  | Total de itens recebidos no payload         |
+| `toCreate`  | Itens que seriam criados                    |
+| `toUpdate`  | Itens que seriam atualizados                |
+| `unchanged` | Itens sem alteração                         |
+| `conflicts` | Itens com conflito de identidade no domínio |
+| `errors`    | Itens com erro de validação/payload         |
 
 ---
 
@@ -170,7 +170,7 @@ Reprocessa o payload do zero com o estado atual do banco e executa as operaçõe
 **Campos de `summary`**
 
 | Campo       | Descrição                                                         |
-|-------------|-------------------------------------------------------------------|
+| ----------- | ----------------------------------------------------------------- |
 | `created`   | Usuários criados com sucesso                                      |
 | `updated`   | Usuários atualizados com sucesso                                  |
 | `unchanged` | Usuários sem alteração (sem operação no banco)                    |
@@ -182,18 +182,18 @@ Reprocessa o payload do zero com o estado atual do banco e executa as operaçõe
 
 Problemas de reconciliação de identidade. O sistema não executa automaticamente — item vai para `conflicts` (preview) ou `failed` (execute).
 
-| `type`                       | Quando ocorre                                                          |
-|------------------------------|------------------------------------------------------------------------|
-| `CUSTOM_ID_DUPLICATED_IN_DB` | Dois ou mais usuários na empresa possuem o mesmo `customId`            |
+| `type`                       | Quando ocorre                                                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------- |
+| `CUSTOM_ID_DUPLICATED_IN_DB` | Dois ou mais usuários na empresa possuem o mesmo `customId`                           |
 | `EMAIL_ALREADY_USED`         | O e-mail encontrado no banco pertence a um usuário diferente do match pelo `customId` |
 
 ## Erros de validação
 
 Problemas no próprio payload. Item vai para `errors` (preview) ou `failed` (execute).
 
-| Situação                              | `field`    | `message`                        |
-|---------------------------------------|------------|----------------------------------|
-| `customId` repetido no mesmo payload  | `customId` | `customId duplicado no payload`  |
+| Situação                             | `field`    | `message`                       |
+| ------------------------------------ | ---------- | ------------------------------- |
+| `customId` repetido no mesmo payload | `customId` | `customId duplicado no payload` |
 
 ---
 
