@@ -1062,7 +1062,7 @@ class ActService {
     console.log(`Identified user: ${user.email} (${user.id})`);
 
     const existingChapter = await prismaClient.actChapter.findFirst({
-      where: { userId: user.id, actChatbotId: user.currentActChatbotId },
+      where: { userId: user.id, actChatbotId: user.currentActChatbotId, type: ChapterType.REGULAR },
       orderBy: { updatedAt: "desc" },
       select: { id: true },
     });
