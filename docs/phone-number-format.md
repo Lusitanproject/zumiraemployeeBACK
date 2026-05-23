@@ -4,17 +4,18 @@ Os endpoints que aceitam `phoneNumber` usam `PhoneNumberSchema` (`src/schemas/co
 
 ## Formatos aceitos como input
 
-| Exemplo de input | País inferido | Armazenado como |
-|---|---|---|
-| `"11987654321"` | Brasil (default) | `"+5511987654321"` |
+| Exemplo de input    | País inferido    | Armazenado como    |
+| ------------------- | ---------------- | ------------------ |
+| `"11987654321"`     | Brasil (default) | `"+5511987654321"` |
 | `"(11) 98765-4321"` | Brasil (default) | `"+5511987654321"` |
-| `"11 9 8765-4321"` | Brasil (default) | `"+5511987654321"` |
-| `"5511987654321"` | Brasil (via +55) | `"+5511987654321"` |
-| `"+5511987654321"` | Brasil (E.164) | `"+5511987654321"` |
-| `"+14155552671"` | EUA | `"+14155552671"` |
-| `"14155552671"` | EUA (via +1) | `"+14155552671"` |
+| `"11 9 8765-4321"`  | Brasil (default) | `"+5511987654321"` |
+| `"5511987654321"`   | Brasil (via +55) | `"+5511987654321"` |
+| `"+5511987654321"`  | Brasil (E.164)   | `"+5511987654321"` |
+| `"+14155552671"`    | EUA              | `"+14155552671"`   |
+| `"14155552671"`     | EUA (via +1)     | `"+14155552671"`   |
 
 **Regra de parsing:**
+
 1. Tenta interpretar o input como está, com Brasil como país padrão quando não há código de país.
 2. Se falhar, extrai só os dígitos, adiciona `+` na frente e tenta novamente — cobre casos como `"5511987654321"` (código do país sem `+`).
 
