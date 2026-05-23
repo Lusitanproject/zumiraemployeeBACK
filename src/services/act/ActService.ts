@@ -11,6 +11,7 @@ import {
   MessageActChatbotRequest,
   UpdateActChapterRequest,
 } from "../../schemas/actChatbot";
+import { tryParsePhone } from "../../utils/phone";
 import { UserService } from "../user/UserService";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
@@ -1033,8 +1034,11 @@ class ActService {
   }
 
   async handleWhatsappMessage(message: ReceiveMessage, api: WhatsappApi): Promise<void> {
+    const from = message.from.startsWith("+") ? message.from : `+${message.from}`;
+    const phoneE164 = tryParsePhone(from)?.format("E.164") ?? message.from;
+
     const user = await prismaClient.user.findFirst({
-      where: { phoneNumber: message.from },
+      where: { phoneNumber: phoneE164 },
     });
 
     if (!user) {

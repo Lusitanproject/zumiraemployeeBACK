@@ -10,6 +10,7 @@ import {
   UpdateActChatbotRequest,
   UpdateManyActChatbotsRequest,
 } from "../../schemas/admin/act-chatbot";
+import { tryParsePhone } from "../../utils/phone";
 
 class ActAdminService {
   private readonly actListSelect = {
@@ -187,8 +188,10 @@ class ActAdminService {
       });
     }
 
-    // Normalize WhatsApp numbers so they match DB values.
-    const normalizePhone = (p?: string | null) => (p ? p.replace(/\D/g, "").replace(/^55/, "") : "");
+    function normalizePhone(p?: string | null): string {
+      if (!p) return "";
+      return (tryParsePhone(p) ?? tryParsePhone(`+${p.replace(/\D/g, "")}`))?.format("E.164") ?? "";
+    }
 
     const conversationUsersPhoneNumbers = conversations
       .map((c) => normalizePhone(c.form_submission?.phone))

@@ -457,7 +457,7 @@ model PsychosocialFactor {
   description           String
   selfMonitoringBlockId String   @map("self_monitoring_block_id")
   createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @default(now()) @updatedAt @map("updated_at") // TODO: remover default na proxima migration
+  updatedAt             DateTime @updatedAt @map("updated_at")
 
   selfMonitoringBlock            SelfMonitoringBlock              @relation(fields: [selfMonitoringBlockId], references: [id])
   actMessagesPsychosocialFactors ActMessagesPsychosocialFactors[]
