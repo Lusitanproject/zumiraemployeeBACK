@@ -2,11 +2,12 @@ import { ChapterType, Prisma, PsychosocialFactor } from "@prisma/client";
 
 import { PublicError } from "../../error";
 import { ChatbaseApi } from "../../external/chatbase";
-import { CreateOpenAiBatchRequest, OpenAiApi } from "../../external/openai";
+import { CreateOpenAiBatchRequest, GenerateOpenAiResponseRequest, OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
 import {
   CreateActChatbotRequest,
   ImportChatbaseChaptersRequest,
+  TestMessageActChatbotRequest,
   UpdateActChatbotRequest,
   UpdateManyActChatbotsRequest,
 } from "../../schemas/admin/act-chatbot";
@@ -275,6 +276,27 @@ class ActAdminService {
       usersFound: usersFoundStructured,
       conversationsWithoutUser,
     };
+  }
+
+  async testMessage(actChatbotId: string, messages: TestMessageActChatbotRequest["messages"]) {
+    const bot = await prismaClient.actChatbot.findUnique({
+      where: { id: actChatbotId },
+      select: { messageInstructions: true, initialMessage: true },
+    });
+
+    if (!bot) throw new PublicError("Act chatbot does not exist");
+
+    const history = [...messages] as GenerateOpenAiResponseRequest["messages"];
+
+    if (bot.initialMessage) history.unshift({ role: "assistant", content: bot.initialMessage });
+
+    const openai = new OpenAiApi();
+    const response = await openai.generateResponse({
+      instructions: bot.messageInstructions,
+      messages: history,
+    });
+
+    return response.output_text;
   }
 
   async generateAnalysis(companyId: string, actChatbotId: string) {

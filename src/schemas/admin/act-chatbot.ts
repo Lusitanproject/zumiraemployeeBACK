@@ -42,7 +42,12 @@ export const ImportChatbaseChaptersSchema = z.object({
   chatbaseChatbotId: z.string().nonempty(),
 });
 
+export const TestMessageActChatbotSchema = z.object({
+  messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().nonempty() })).min(1),
+});
+
 export type CreateActChatbotRequest = z.infer<typeof CreateActChatbotSchema>;
 export type UpdateActChatbotRequest = z.infer<typeof UpdateActChatbotSchema>;
 export type UpdateManyActChatbotsRequest = z.infer<typeof UpdateManyActChatbotsSchema>;
 export type ImportChatbaseChaptersRequest = z.infer<typeof ImportChatbaseChaptersSchema>;
+export type TestMessageActChatbotRequest = z.infer<typeof TestMessageActChatbotSchema>;

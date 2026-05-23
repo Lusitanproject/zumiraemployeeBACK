@@ -333,7 +333,7 @@ class ActService {
         `O nome do usuário é: ${conv.user.name.split(" ")[0]}`,
         instructionsComplement,
       ]
-        .map(Boolean)
+        .filter(Boolean)
         .join("\n"),
       messages: historyAndInput,
     });
