@@ -1083,9 +1083,8 @@ class ActService {
 
     const responseText = await this.message(
       { content: message.message, actChapterId: chapterId, userId: user.id },
-      "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp: mensagens curtas e diretas, sem markdown complexo (sem tabelas, sem cabeçalhos), use emojis com moderação se necessário.",
+      "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp, sem markdown complexo (sem tabelas, sem cabeçalhos).",
     );
-
     await api.send({ to: message.from, message: responseText });
   }
 }
