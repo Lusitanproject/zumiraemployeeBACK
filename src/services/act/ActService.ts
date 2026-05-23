@@ -300,7 +300,7 @@ class ActService {
     return { chapters };
   }
 
-  async message({ content, actChapterId, userId }: MessageActChatbotRequest) {
+  async message({ content, actChapterId, userId }: MessageActChatbotRequest, instructionsComplement?: string) {
     const conv = await prismaClient.actChapter.findFirst({
       where: { id: actChapterId, userId },
       include: { actChatbot: true, user: true },
@@ -328,7 +328,13 @@ class ActService {
 
     const openai = new OpenAiApi();
     const response = await openai.generateResponse({
-      instructions: bot.messageInstructions + `\nO nome do usuário é: ${conv.user.name.split(" ")[0]}`,
+      instructions: [
+        bot.messageInstructions,
+        `O nome do usuário é: ${conv.user.name.split(" ")[0]}`,
+        instructionsComplement,
+      ]
+        .map(Boolean)
+        .join("\n"),
       messages: historyAndInput,
     });
 
@@ -1079,11 +1085,10 @@ class ActService {
 
     console.log(`Resolved chapter: ${chapterId}`);
 
-    const responseText = await this.message({
-      content: message.message,
-      actChapterId: chapterId,
-      userId: user.id,
-    });
+    const responseText = await this.message(
+      { content: message.message, actChapterId: chapterId, userId: user.id },
+      "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp: mensagens curtas e diretas, sem markdown complexo (sem tabelas, sem cabeçalhos), use emojis com moderação se necessário.",
+    );
 
     await api.send({ to: message.from, message: responseText });
   }
