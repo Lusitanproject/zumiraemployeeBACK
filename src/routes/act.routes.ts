@@ -264,8 +264,7 @@ actRouter.post(
  *     summary: Criar novo capítulo de ACT
  *     description: >
  *       Inicia um novo capítulo para o usuário num ACT específico.
- *       `type: "REGULAR"` cria um capítulo normal de usuário.
- *       `type: "ADMIN_TEST"` cria um capítulo de teste para administradores validarem o chatbot sem afetar dados reais.
+ *       Sempre cria um capítulo do tipo `REGULAR`.
  *       Requer permissão `answer-act`.
  *     tags: [ACTs]
  *     security:
@@ -278,16 +277,11 @@ actRouter.post(
  *             type: object
  *             required:
  *               - actChatbotId
- *               - type
  *             properties:
  *               actChatbotId:
  *                 type: string
  *                 format: cuid
  *                 description: ID do ACT para o qual criar o capítulo
- *               type:
- *                 type: string
- *                 enum: [REGULAR, ADMIN_TEST]
- *                 description: "REGULAR = capítulo real de usuário; ADMIN_TEST = capítulo de teste administrativo"
  *     responses:
  *       200:
  *         description: Capítulo criado com sucesso

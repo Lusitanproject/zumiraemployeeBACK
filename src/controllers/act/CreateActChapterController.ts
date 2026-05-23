@@ -8,7 +8,7 @@ class CreateActChapterController {
     const data = CreateActChapterSchema.parse(req.body);
 
     const service = new ActService();
-    const result = await service.createChapter({ userId: req.user.id, ...data });
+    const result = await service.createChapter({ userId: req.user.id, type: "REGULAR", ...data });
 
     return res.json({ status: "SUCCESS", data: result });
   }

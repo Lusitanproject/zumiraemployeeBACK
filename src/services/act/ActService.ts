@@ -410,10 +410,6 @@ class ActService {
         compilationInstructions: true,
         index: true,
         trailId: true,
-        actChapters: {
-          where: { type: "ADMIN_TEST" },
-          select: { id: true, title: true },
-        },
       },
     });
     return bot;
@@ -1068,7 +1064,7 @@ class ActService {
     console.log(`Identified user: ${user.email} (${user.id})`);
 
     const existingChapter = await prismaClient.actChapter.findFirst({
-      where: { userId: user.id, actChatbotId: user.currentActChatbotId, type: ChapterType.REGULAR },
+      where: { userId: user.id, actChatbotId: user.currentActChatbotId, type: ChapterType.WHATSAPP },
       orderBy: { updatedAt: "desc" },
       select: { id: true },
     });
@@ -1078,7 +1074,7 @@ class ActService {
       (
         await this.createChapter({
           actChatbotId: user.currentActChatbotId,
-          type: ChapterType.REGULAR,
+          type: ChapterType.WHATSAPP,
           userId: user.id,
         })
       ).id;

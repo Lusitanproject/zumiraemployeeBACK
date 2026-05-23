@@ -432,9 +432,8 @@ const options: swaggerJSDoc.Options = {
             },
             type: {
               type: "string",
-              enum: ["REGULAR", "ADMIN_TEST"],
-              description:
-                "REGULAR = capítulo real de um usuário; ADMIN_TEST = capítulo criado para teste administrativo",
+              enum: ["REGULAR", "WHATSAPP"],
+              description: "REGULAR = capítulo real de um usuário; WHATSAPP = capítulo originado via WhatsApp",
             },
             actChatbotId: { type: "string", format: "cuid" },
             userId: { type: "string", format: "uuid" },

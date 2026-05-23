@@ -222,7 +222,7 @@ class ActAdminService {
           return {
             actChatbotId: id,
             userId,
-            type: "REGULAR" as ChapterType,
+            type: ChapterType.WHATSAPP,
             externalId: conv.id,
             createdAt: conv.created_at,
           };
@@ -308,7 +308,6 @@ class ActAdminService {
 
     const chapters = await prismaClient.actChapter.findMany({
       where: {
-        type: "REGULAR",
         actChatbot: { id: actChatbotId },
         user: { companyId },
       },
