@@ -1059,7 +1059,7 @@ class ActService {
       return;
     }
 
-    console.log(`Usuário identificado: ${user.email} (${user.id})`);
+    console.log(`Identified user: ${user.email} (${user.id})`);
 
     const existingChapter = await prismaClient.actChapter.findFirst({
       where: { userId: user.id, actChatbotId: user.currentActChatbotId },
