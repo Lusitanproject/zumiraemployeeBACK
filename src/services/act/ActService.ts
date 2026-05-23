@@ -1077,6 +1077,8 @@ class ActService {
         })
       ).id;
 
+    console.log(`Resolved chapter: ${chapterId}`);
+
     const responseText = await this.message({
       content: message.message,
       actChapterId: chapterId,
