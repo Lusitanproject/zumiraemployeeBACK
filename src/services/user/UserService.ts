@@ -6,6 +6,7 @@ import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { FindUserByRequest, SearchUsersRequest, UpdateUserSchema, UserFilterColumn } from "../../schemas/admin/users";
 import { CreateUserRequest, SyncUserItem } from "../../schemas/user";
+import { tryParsePhone } from "../../utils/phone";
 
 type UpdateUser = z.infer<typeof UpdateUserSchema>;
 
@@ -284,9 +285,25 @@ class UserService {
       return { creates: [], updates: [], unchanged: [], conflicts, errors } satisfies SyncPlan;
     }
 
+    // Step 1.5: normalize and validate phone numbers per item
+    const normalizedItems = validItems.map((item) => {
+      if (!item.phoneNumber) return item;
+      const parsed = tryParsePhone(item.phoneNumber);
+      if (!parsed) {
+        errors.push({
+          customId: item.customId,
+          field: "phoneNumber",
+          message: `Número de telefone inválido: "${item.phoneNumber}". Use o código do país + DDD + número (ex: +5511987654321)`,
+        });
+        return { ...item, phoneNumber: undefined };
+      }
+      console.log(item.phoneNumber, parsed.format("E.164"));
+      return { ...item, phoneNumber: parsed.format("E.164") };
+    });
+
     // Step 2: batch DB lookups
-    const validCustomIds = validItems.map((i) => i.customId);
-    const validEmails = validItems.map((i) => i.email);
+    const validCustomIds = normalizedItems.map((i) => i.customId);
+    const validEmails = normalizedItems.map((i) => i.email);
 
     const selectFields = {
       id: true,
@@ -351,7 +368,7 @@ class UserService {
 
     const normalizeDate = (v: unknown) => (v instanceof Date ? v.toISOString() : v);
 
-    for (const item of validItems) {
+    for (const item of normalizedItems) {
       const candidates = customIdMap.get(item.customId) ?? [];
       const emailMatch = emailMap.get(item.email);
 
