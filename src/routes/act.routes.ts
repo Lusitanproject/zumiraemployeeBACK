@@ -8,9 +8,9 @@ import { FindActAnalysisFactorMessagesController } from "../controllers/act/Find
 import { FindActAnalysisSummaryController } from "../controllers/act/FindActAnalysisSummaryController";
 import { FindActChatbotController } from "../controllers/act/FindActChatbotController";
 import { FindByCompanyController } from "../controllers/act/FindByCompanyController";
-import { GenerateAnalysisReportController } from "../controllers/act/GenerateAnalysisReportController";
 import { GetActChapterController } from "../controllers/act/GetActChapterController";
 import { GetActsDataController } from "../controllers/act/GetActsDataController";
+import { GetAnalysisReportController } from "../controllers/act/GetAnalysisReportController";
 import { GetAnalysisUserFiltersController } from "../controllers/act/GetAnalysisUserFiltersController";
 import { GetFullStoryController } from "../controllers/act/GetFullStoryController";
 import { MessageActChatbotController } from "../controllers/act/MessageActChatbotController";
@@ -519,7 +519,7 @@ actRouter.get(
   isAuthenticated,
   requirePermissions("acts-read-analysis"),
   requireSameCompany(),
-  new GenerateAnalysisReportController().handle,
+  new GetAnalysisReportController().handle,
 );
 
 /**

@@ -316,10 +316,6 @@ class ActAdminService {
       },
     });
 
-    const newAnalysis = await prismaClient.companyActAnalysis.create({
-      data: { actChatbotId, companyId },
-    });
-
     const instructions = await this.buildPsychosocialPrompt(factors);
     const batchItems: CreateOpenAiBatchRequest["batchItems"] = chapters.map((chapter) => ({
       customId: chapter.id,
@@ -330,6 +326,10 @@ class ActAdminService {
     const batchResult = await openai.createBatch({ instructions, batchItems });
 
     console.log(`Lote OpenAI criado com ${batchItems.length} itens`);
+
+    const newAnalysis = await prismaClient.companyActAnalysis.create({
+      data: { actChatbotId, companyId },
+    });
 
     await prismaClient.companyActAnalysisBatch.create({
       data: { batchId: batchResult.batchId, companyActAnalysisId: newAnalysis.id },

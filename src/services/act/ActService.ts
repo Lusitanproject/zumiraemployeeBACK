@@ -511,7 +511,7 @@ class ActService {
   }
 
   private async resolveLatestAnalysis(companyId: string, actChatbotId: string) {
-    const analysis = await prismaClient.companyActAnalysis.findFirst({
+    let analysis = await prismaClient.companyActAnalysis.findFirst({
       orderBy: { createdAt: "desc" },
       where: { companyId, actChatbotId },
       include: { companyActAnalysisBatches: true },
@@ -524,6 +524,14 @@ class ActService {
     if (!alreadySaved) {
       const allDone = await this.retrieveAndSaveAnalysisResults(analysis.companyActAnalysisBatches);
       if (!allDone) return null;
+
+      await this.generateAnalysisReportRag(companyId, actChatbotId, analysis);
+
+      analysis = await prismaClient.companyActAnalysis.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: { companyId, actChatbotId },
+        include: { companyActAnalysisBatches: true },
+      });
     }
 
     return analysis;
@@ -838,9 +846,10 @@ class ActService {
     });
   }
 
-  async generateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
-    const latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
-
+  private async buildAnalysisReportData(
+    companyId: string,
+    actChatbotId: string,
+  ): Promise<Omit<AnalysisReport, "aiDescription"> | null> {
     const [bySimilarExposureGroup, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] =
       await Promise.all([
         this.findAnalysisSegments(companyId, actChatbotId, "similarExposureGroup"),
@@ -855,7 +864,8 @@ class ActService {
         this.findAnalysisFactorWeights(companyId, actChatbotId),
       ]);
 
-    if (!bySimilarExposureGroup.available) return { available: false };
+    // os segmentos chamam resolveLatestAnalysis internamente — se um retorna available: false (batches pendentes), todos retornariam; usamos esse como proxy
+    if (!bySimilarExposureGroup.available) return null;
 
     const factorWeights = weightsResult.available ? weightsResult.factors : [];
     const positiveScore = factorWeights.filter((f) => f.wheight > 0).reduce((s, f) => s + f.totalWeight, 0);
@@ -870,9 +880,7 @@ class ActService {
       wellnessPercentage: absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0,
     };
 
-    const aiDescription = latestAnalysis?.text ?? "";
-
-    const report: AnalysisReport = {
+    return {
       userCount: weightsResult.available ? weightsResult.userCount : 0,
       overall,
       bySimilarExposureGroup: bySimilarExposureGroup.groups,
@@ -881,49 +889,66 @@ class ActService {
       byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
       byAgeRange: byAgeRange.available ? byAgeRange.groups : [],
       factorWeights,
-      aiDescription,
     };
+  }
 
-    if (latestAnalysis && !latestAnalysis.vectorStoreId) {
-      console.log(`[RAG/act] starting RAG setup for analysis ${latestAnalysis.id} (actChatbotId: ${actChatbotId})`);
-      try {
-        const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
-          where: { id: actChatbotId },
-        });
+  async getAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
+    const latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
 
-        const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
+    const report = await this.buildAnalysisReportData(companyId, actChatbotId);
+    if (!report) return { available: false };
 
-        console.log(`[RAG/act] generating RAG response from report`);
-        const { response: ragResponse, reportText } = await this.buildActRagResponse(actChatbot, report, openAiApi);
-        console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
+    return {
+      available: true,
+      report: {
+        ...report,
+        aiDescription: latestAnalysis?.text ?? "O laudo qualitativo para esse ato ainda não foi gerado.",
+      },
+    };
+  }
 
-        const fullRagContent = `${reportText}\n\n${ragResponse.output_text}\n\n${actChatbot.description}`;
+  private async generateAnalysisReportRag(
+    companyId: string,
+    actChatbotId: string,
+    analysis: { id: string },
+  ): Promise<void> {
+    const report = await this.buildAnalysisReportData(companyId, actChatbotId);
+    if (!report) return;
 
-        const { dbVectorStore } = await openAiApi.createVectorStoreWithContent({
-          storeName: `analysis-act-${actChatbotId}`,
-          content: fullRagContent,
-          filename: "act-analysis.md",
-        });
+    console.log(`[RAG/act] starting RAG setup for analysis ${analysis.id} (actChatbotId: ${actChatbotId})`);
+    try {
+      const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
+        where: { id: actChatbotId },
+      });
 
-        await prismaClient.companyActAnalysis.update({
-          where: { id: latestAnalysis.id },
-          data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id } as object,
-        });
+      const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
 
-        report.aiDescription = ragResponse.output_text;
+      console.log(`[RAG/act] generating RAG response from report`);
+      const { response: ragResponse, reportText } = await this.buildActRagResponse(actChatbot, report, openAiApi);
+      console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
 
-        console.log(`[RAG/act] analysis ${latestAnalysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
-      } catch (error) {
-        throw new Error(`[RAG/act] failed to create RAG for analysis ${latestAnalysis.id}: ${error}`);
-      }
+      const fullRagContent = `${reportText}\n\n${ragResponse.output_text}\n\n${actChatbot.description}`;
+
+      const { dbVectorStore } = await openAiApi.createVectorStoreWithContent({
+        storeName: `analysis-act-${actChatbotId}`,
+        content: fullRagContent,
+        filename: "act-analysis.md",
+      });
+
+      await prismaClient.companyActAnalysis.update({
+        where: { id: analysis.id },
+        data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id } as object,
+      });
+
+      console.log(`[RAG/act] analysis ${analysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
+    } catch (error) {
+      throw new Error(`[RAG/act] failed to create RAG for analysis ${analysis.id}: ${error}`);
     }
-
-    return { available: true, report: { ...report } };
   }
 
   private async buildActRagResponse(
     actChatbot: { name: string; reportInstructions: string | null },
-    report: AnalysisReport,
+    report: Omit<AnalysisReport, "aiDescription">,
     openAiApi: OpenAiApi,
   ) {
     const classify = (wellnessPercentage: number): string => {
