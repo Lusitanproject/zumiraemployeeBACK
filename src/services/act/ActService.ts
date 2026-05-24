@@ -1035,6 +1035,36 @@ class ActService {
     return { response, reportText };
   }
 
+  private async assignFirstActToUser(userId: string, companyId: string | null): Promise<string | null> {
+    let trailId: string | undefined;
+
+    if (companyId) {
+      const company = await prismaClient.company.findUnique({
+        where: { id: companyId },
+        select: { trailId: true },
+      });
+      trailId = company?.trailId;
+    }
+
+    const firstAct = await prismaClient.actChatbot.findFirst({
+      where: { trailId },
+      orderBy: { index: "asc" },
+      select: { id: true },
+    });
+
+    if (!firstAct) return null;
+
+    console.log(
+      `[ActService] auto-assigning actChatbot ${firstAct.id} to user ${userId} (companyId: ${companyId ?? "none"})`,
+    );
+    await prismaClient.user.update({
+      where: { id: userId },
+      data: { currentActChatbotId: firstAct.id },
+    });
+
+    return firstAct.id;
+  }
+
   async handleWhatsappMessage(message: ReceiveMessage, api: WhatsappApi): Promise<void> {
     const from = message.from.startsWith("+") ? message.from : `+${message.from}`;
     const phoneE164 = tryParsePhone(from)?.format("E.164") ?? message.from;
@@ -1044,6 +1074,7 @@ class ActService {
     });
 
     if (!user) {
+      console.log(`[WhatsApp] no user found for phone ${phoneE164}, sending registration message`);
       await api.send({
         to: message.from,
         message:
@@ -1053,18 +1084,24 @@ class ActService {
     }
 
     if (!user.currentActChatbotId) {
-      await api.send({
-        to: message.from,
-        message:
-          "Olá! Você ainda não está atribuído a nenhuma atividade no programa Zumira. Entre em contato com o seu gestor.",
-      });
-      return;
+      const assignedActId = await this.assignFirstActToUser(user.id, user.companyId);
+      if (!assignedActId) {
+        console.log(`[WhatsApp] no act available to assign to user ${user.email} (${user.id})`);
+        await api.send({
+          to: message.from,
+          message: "Olá! Ainda não há atos disponíveis no programa Zumira. Entre em contato com o seu gestor.",
+        });
+        return;
+      }
+      user.currentActChatbotId = assignedActId;
     }
+
+    const actChatbotId = user.currentActChatbotId!;
 
     console.log(`Identified user: ${user.email} (${user.id})`);
 
     const existingChapter = await prismaClient.actChapter.findFirst({
-      where: { userId: user.id, actChatbotId: user.currentActChatbotId, type: ChapterType.WHATSAPP },
+      where: { userId: user.id, actChatbotId, type: ChapterType.WHATSAPP },
       orderBy: { updatedAt: "desc" },
       select: { id: true },
     });
@@ -1073,7 +1110,7 @@ class ActService {
       existingChapter?.id ??
       (
         await this.createChapter({
-          actChatbotId: user.currentActChatbotId,
+          actChatbotId,
           type: ChapterType.WHATSAPP,
           userId: user.id,
         })
