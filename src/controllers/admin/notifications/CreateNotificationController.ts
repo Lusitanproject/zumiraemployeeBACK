@@ -2,13 +2,10 @@ import { Request, Response } from "express";
 
 import { CreateNotificationSchema } from "../../../schemas/notification";
 import { NotificationAdminService } from "../../../services/admin/NotificationAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 class CreateNotificationController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = CreateNotificationSchema.safeParse(req.body);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = CreateNotificationSchema.parse(req.body);
 
     const notify = new NotificationAdminService();
     const notification = await notify.create(data);

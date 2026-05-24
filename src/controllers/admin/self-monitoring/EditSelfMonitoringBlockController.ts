@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { EditSelfMonitoringBlockSchema } from "../../../schemas/admin/self-monitoring";
 import { SelfMonitoringAdminService } from "../../../services/admin/SelfMonitoringService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParamSchema = z.object({
   id: z.string().cuid(),
@@ -12,14 +11,7 @@ const RequestParamSchema = z.object({
 class EditSelfMonitoringBlocksController {
   async handle(req: Request, res: Response) {
     const { id } = RequestParamSchema.parse(req.params);
-    const { success, data, error } = EditSelfMonitoringBlockSchema.safeParse(req.body);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+    const data = EditSelfMonitoringBlockSchema.parse(req.body);
 
     const selfMonitoringService = new SelfMonitoringAdminService();
     const block = await selfMonitoringService.update({ ...data, id });

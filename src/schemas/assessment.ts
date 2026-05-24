@@ -22,3 +22,16 @@ export type GenerateAllUserFeedbackResponse = {
     message: string;
   };
 };
+
+export const AssessmentAnalysisMessageSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().min(1),
+      }),
+    )
+    .min(1),
+});
+
+export type AssessmentAnalysisMessageRequest = z.infer<typeof AssessmentAnalysisMessageSchema>;

@@ -1,19 +1,16 @@
 import { Request, Response } from "express";
 
 import { ListAssessmentsSchema } from "../../schemas/assessment";
-import { ListAssessmentsService } from "../../services/assessment/ListAssessmentsService";
-import { parseZodError } from "../../utils/parseZodError";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
 
 class ListAssessmentsController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = ListAssessmentsSchema.safeParse(req.query);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = ListAssessmentsSchema.parse(req.query);
 
     const userId = req.user.id;
 
-    const listAssessments = new ListAssessmentsService();
-    const assessments = await listAssessments.execute({ userId, ...data });
+    const listAssessments = new AssessmentService();
+    const assessments = await listAssessments.list({ userId, ...data });
 
     return res.json({ status: "SUCCESS", data: assessments });
   }

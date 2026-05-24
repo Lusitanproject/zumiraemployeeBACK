@@ -62,7 +62,7 @@ export async function calculateResultScores(resultIds: string[]) {
   const dimensions = dimensionIds
     .map(
       (id) =>
-        sample.assessment.assessmentQuestions.find((q) => q.psychologicalDimensionId === id)?.psychologicalDimension
+        sample.assessment.assessmentQuestions.find((q) => q.psychologicalDimensionId === id)?.psychologicalDimension,
     )
     .filter((o) => !!o);
 

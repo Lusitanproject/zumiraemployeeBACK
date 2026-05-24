@@ -12,7 +12,6 @@ export const MessageActChatbotSchema = z.object({
 
 export const CreateActChapterSchema = z.object({
   actChatbotId: z.string().cuid(),
-  type: z.nativeEnum(ChapterType),
 });
 
 export const CompileActChapterSchema = z.object({
@@ -29,8 +28,21 @@ export type GetActChapterRequest = z.infer<typeof GetActChapterSchema> & { userI
 
 export type MessageActChatbotRequest = z.infer<typeof MessageActChatbotSchema> & { userId: string };
 
-export type CreateActChapterRequest = z.infer<typeof CreateActChapterSchema> & { userId: string };
+export type CreateActChapterRequest = z.infer<typeof CreateActChapterSchema> & { userId: string; type: ChapterType };
 
 export type CompileActChapterRequest = z.infer<typeof CompileActChapterSchema> & { userId: string };
 
 export type UpdateActChapterRequest = z.infer<typeof UpdateActChapterSchema> & { userId: string };
+
+export const ActAnalysisMessageSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().min(1),
+      }),
+    )
+    .min(1),
+});
+
+export type ActAnalysisMessageRequest = z.infer<typeof ActAnalysisMessageSchema>;

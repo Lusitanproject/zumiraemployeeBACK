@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { CompanyAdminService } from "../../../services/admin/CompanyAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParams = z.object({
   companyId: z.string().cuid(),
@@ -18,14 +17,7 @@ const RequestQuery = z.object({
 
 class GenerateAllUserFeedbackController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = RequestParams.safeParse(req.params);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+    const data = RequestParams.parse(req.params);
 
     const { data: query } = RequestQuery.safeParse(req.query);
     const sync = query?.sync ?? true;

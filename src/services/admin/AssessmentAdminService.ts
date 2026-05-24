@@ -1,6 +1,6 @@
-import { UpdateAssessment } from "../../schemas/admin/assessment";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
+import { UpdateAssessment } from "../../schemas/admin/assessment";
 
 class AssessmentAdminService {
   async find(assessmentId: string) {
@@ -14,6 +14,7 @@ class AssessmentAdminService {
         selfMonitoringBlockId: true,
         userFeedbackInstructions: true,
         companyFeedbackInstructions: true,
+        consultiveAiInstructions: true,
         public: true,
         operationType: true,
         nationalityId: true,
@@ -103,6 +104,7 @@ class AssessmentAdminService {
         summary: assessment.summary,
         companyFeedbackInstructions: assessment.companyFeedbackInstructions,
         userFeedbackInstructions: assessment.userFeedbackInstructions,
+        consultiveAiInstructions: assessment.consultiveAiInstructions,
         description: assessment.description,
         nationalityId: assessment.nationalityId,
         operationType: assessment.operationType,

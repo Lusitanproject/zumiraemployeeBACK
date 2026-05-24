@@ -1,17 +1,14 @@
 import { Request, Response } from "express";
 
 import { ReadAlertSchema } from "../../schemas/alert";
-import { ReadAlertService } from "../../services/alert/ReadAlertService";
-import { parseZodError } from "../../utils/parseZodError";
+import { AlertService } from "../../services/alert/AlertService";
 
 class ReadAlertController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = ReadAlertSchema.safeParse(req.params);
+    const data = ReadAlertSchema.parse(req.params);
 
-    if (!success) throw new Error(parseZodError(error));
-
-    const service = new ReadAlertService();
-    const result = await service.execute(data);
+    const service = new AlertService();
+    const result = await service.read(data);
 
     return res.json({ status: "SUCCESS", data: result });
   }

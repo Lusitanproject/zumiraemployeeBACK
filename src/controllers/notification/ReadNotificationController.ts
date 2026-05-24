@@ -1,19 +1,16 @@
 import { Request, Response } from "express";
 
 import { NotificationIdSchema } from "../../schemas/notification";
-import { ReadNotificationService } from "../../services/notification/ReadNotificationService";
-import { parseZodError } from "../../utils/parseZodError";
+import { NotificationService } from "../../services/notification/NotificationService";
 
 class ReadNotificationController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = NotificationIdSchema.safeParse(req.params);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = NotificationIdSchema.parse(req.params);
 
     const userId = req.user.id;
 
-    const service = new ReadNotificationService();
-    await service.execute({ userId, ...data });
+    const service = new NotificationService();
+    await service.read({ userId, ...data });
 
     return res.json({ status: "SUCCESS", data: {} });
   }

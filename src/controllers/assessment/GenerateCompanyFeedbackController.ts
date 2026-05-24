@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { GenerateCompanyFeedbackService } from "../../services/assessment/GenerateCompanyFeedbackService";
-import { parseZodError } from "../../utils/parseZodError";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
 
 const GenerateFeedbackSchema = z.object({
   id: z.string().cuid(),
@@ -10,15 +9,13 @@ const GenerateFeedbackSchema = z.object({
 
 class GenerateCompanyFeedbackController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = GenerateFeedbackSchema.safeParse(req.params);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = GenerateFeedbackSchema.parse(req.params);
 
     const { id: assessmentId } = data;
     const userId = req.user.id;
 
-    const generateFeedback = new GenerateCompanyFeedbackService();
-    const feedback = await generateFeedback.execute({ userId, assessmentId });
+    const generateFeedback = new AssessmentService();
+    const feedback = await generateFeedback.generateCompanyFeedback({ userId, assessmentId });
 
     return res.json({ status: "SUCCESS", data: feedback });
   }

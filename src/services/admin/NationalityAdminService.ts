@@ -1,5 +1,5 @@
-import { CreateNationalityRequest, UpdateNationalityRequest } from "../../schemas/admin/nationality";
 import prismaClient from "../../prisma";
+import { CreateNationalityRequest, UpdateNationalityRequest } from "../../schemas/admin/nationality";
 
 class NationalityAdminService {
   async find(id: string) {

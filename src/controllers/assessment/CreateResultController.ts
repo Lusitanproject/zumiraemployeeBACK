@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { CreateResultService } from "../../services/assessment/CreateResultService";
-import { assertPermissions } from "../../utils/assertPermissions";
-import { parseZodError } from "../../utils/parseZodError";
+import { AssessmentService } from "../../services/assessment/AssessmentService";
 
 const CreateResultSchema = z.object({
   assessmentId: z.string().cuid(),
@@ -17,17 +15,13 @@ const CreateResultSchema = z.object({
 
 class CreateResultController {
   async handle(req: Request, res: Response) {
-    assertPermissions(req.user, "answer-assessment");
-
-    const { success, data, error } = CreateResultSchema.safeParse(req.body);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = CreateResultSchema.parse(req.body);
 
     const userId = req.user.id;
     const { assessmentId, answers } = data;
 
-    const createResult = new CreateResultService();
-    const result = await createResult.execute({ userId, assessmentId, answers });
+    const createResult = new AssessmentService();
+    const result = await createResult.createResult({ userId, assessmentId, answers });
 
     return res.json({ status: "SUCCESS", data: result });
   }

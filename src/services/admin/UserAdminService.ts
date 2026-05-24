@@ -1,144 +1,25 @@
 import { z } from "zod";
 
-import {
-  CreateManyUsersSchema,
-  CreateUserSchema,
-  FindUserByRequest,
-  UpdateUserSchema,
-} from "../../schemas/admin/users";
-import prismaClient from "../../prisma";
 import { PublicError } from "../../error";
+import prismaClient from "../../prisma";
+import { CreateManyUsersSchema, CreateUserSchema } from "../../schemas/admin/users";
 
 type CreateUser = z.infer<typeof CreateUserSchema>;
 type CreateManyUsers = z.infer<typeof CreateManyUsersSchema>;
-type UpdateUser = z.infer<typeof UpdateUserSchema>;
 
 class UserAdminService {
-  async find(id: string) {
-    const user = await prismaClient.user.findUnique({
-      where: { id },
-      include: {
-        company: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        role: {
-          select: {
-            id: true,
-            slug: true,
-          },
-        },
-      },
-    });
-
-    if (!user) return null;
-
-    const { password: _password, ...response } = user;
-
-    return { ...response };
-  }
-
-  async findBy({ id, email, customId, phoneNumber }: FindUserByRequest) {
-    const user = await prismaClient.user.findFirst({
-      where: {
-        id,
-        email,
-        customId,
-        phoneNumber,
-      },
-    });
-
-    if (!user) throw new PublicError("Usuário não encontrado");
-
-    const { password: _password, ...response } = user;
-
-    return { ...response };
-  }
-
-  async findAll() {
-    const users = await prismaClient.user.findMany({
-      include: {
-        company: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        role: {
-          select: {
-            id: true,
-            slug: true,
-          },
-        },
-      },
-    });
-
-    return users.map((user) => {
-      const { password: _password, ...response } = user;
-      return { ...response };
-    });
-  }
-
-  // Busca um usuário que possua o email informado
-  async findByEmail(email: string) {
-    const user = await prismaClient.user.findFirst({
-      where: { email },
-      include: {
-        company: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        role: {
-          select: {
-            id: true,
-            slug: true,
-          },
-        },
-      },
-    });
-
-    if (!user) return null;
-
-    const { password: _password, ...response } = user;
-
-    return { ...response };
-  }
-
-  // Lista todos os usuários que pertencem a empresa informada
-  async findByCompany(companyId: string) {
-    const users = await prismaClient.user.findMany({
-      where: { companyId },
-      include: {
-        company: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        role: {
-          select: {
-            id: true,
-            slug: true,
-          },
-        },
-      },
-    });
-
-    return users.map((user) => {
-      const { password: _password, ...response } = user;
-      return { ...response };
-    });
-  }
-
   async create(data: CreateUser) {
+    const [emailExists, phoneExists] = await Promise.all([
+      prismaClient.user.findFirst({ where: { email: data.email } }),
+      data.phoneNumber
+        ? prismaClient.user.findFirst({ where: { phoneNumber: data.phoneNumber } })
+        : Promise.resolve(null),
+    ]);
+    if (emailExists) throw new PublicError("E-mail já está em uso");
+    if (phoneExists) throw new PublicError("Número de telefone já está em uso");
+
     const firstAct = await prismaClient.actChatbot.findFirst({
-      orderBy: {
-        index: "asc",
-      },
+      orderBy: { index: "asc" },
     });
 
     const user = await prismaClient.user.create({
@@ -149,7 +30,6 @@ class UserAdminService {
     });
 
     const { password: _password, ...response } = user;
-
     return { ...response };
   }
 
@@ -158,6 +38,24 @@ class UserAdminService {
     const allSameCompany = data.every((u) => u.companyId === companyId);
 
     if (!allSameCompany) throw new PublicError("Todos os usuários cadastrados em lote devem ser da mesma empresa");
+
+    const emails = data.map((d) => d.email);
+    const phones = data.flatMap((d) => (d.phoneNumber ? [d.phoneNumber] : []));
+
+    const uniqueEmails = new Set(emails);
+    if (uniqueEmails.size < emails.length) throw new PublicError("E-mails duplicados no batch");
+
+    const uniquePhones = new Set(phones);
+    if (uniquePhones.size < phones.length) throw new PublicError("Números de telefone duplicados no batch");
+
+    const [existingEmail, existingPhone] = await Promise.all([
+      prismaClient.user.findFirst({ where: { email: { in: emails } } }),
+      phones.length > 0
+        ? prismaClient.user.findFirst({ where: { phoneNumber: { in: phones } } })
+        : Promise.resolve(null),
+    ]);
+    if (existingEmail) throw new PublicError(`E-mail já está em uso: ${existingEmail.email}`);
+    if (existingPhone) throw new PublicError(`Número de telefone já está em uso: ${existingPhone.phoneNumber}`);
 
     const company = companyId
       ? await prismaClient.company.findFirst({
@@ -170,9 +68,7 @@ class UserAdminService {
 
     const firstAct = await prismaClient.actChatbot.findFirst({
       where: company ? { trailId: company.trail.id } : undefined,
-      orderBy: {
-        index: "asc",
-      },
+      orderBy: { index: "asc" },
     });
 
     const result = await prismaClient.user.createMany({
@@ -180,21 +76,6 @@ class UserAdminService {
     });
 
     return result;
-  }
-
-  async update({ id, ...data }: UpdateUser & { id: string }) {
-    const user = await prismaClient.user.update({
-      where: { id },
-      data,
-    });
-
-    const { password: _password, ...response } = user;
-
-    return { ...response };
-  }
-
-  async delete(id: string) {
-    await prismaClient.user.delete({ where: { id } });
   }
 }
 

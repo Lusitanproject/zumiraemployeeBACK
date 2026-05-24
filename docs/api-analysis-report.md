@@ -4,9 +4,9 @@ Retorna o laudo completo de uma análise ACT para uma empresa, com scores segmen
 
 ## Params
 
-| Campo | Tipo | Descrição |
-|---|---|---|
-| `companyId` | `cuid` | ID da empresa |
+| Campo          | Tipo   | Descrição         |
+| -------------- | ------ | ----------------- |
+| `companyId`    | `cuid` | ID da empresa     |
 | `actChatbotId` | `cuid` | ID do chatbot ACT |
 
 ## Response `200`
@@ -55,12 +55,12 @@ Estrutura compartilhada por `byArea`, `byGender`, `byDisability`, `byOccupationL
 
 ```jsonc
 {
-  "value": "TI",    // valor da coluna do usuário; null = sem valor cadastrado
+  "value": "TI", // valor da coluna do usuário; null = sem valor cadastrado
   "positiveScore": 200,
   "negativeScore": -80,
   "totalScore": 120,
   "absoluteScore": 280,
-  "wellnessPercentage": 71.43
+  "wellnessPercentage": 71.43,
 }
 ```
 

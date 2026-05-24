@@ -1,14 +1,11 @@
 import { Request, Response } from "express";
 
 import { FindByTrailSchema } from "../../../schemas/admin/act-chatbot";
-import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
+import { ActChatbotAdminService } from "../../../services/admin/ActAdminService";
 
 class FindByTrailController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = FindByTrailSchema.safeParse(req.query);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = FindByTrailSchema.parse(req.query);
 
     const service = new ActChatbotAdminService();
     const result = await service.findByTrail(data.trailId);

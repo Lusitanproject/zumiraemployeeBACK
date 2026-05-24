@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { tryParsePhone } from "../utils/phone";
+
 const DDMMYYYY_REGEX = /^(\d{2})\/(\d{2})\/(\d{4})$/;
 
 const parseDdMmYyyyDate = (value: string): Date | null => {
@@ -57,20 +59,20 @@ export const RequestParamsIdCUID = z.object({
   id: z.string().cuid(),
 });
 
-export let PhoneNumberSchema = z
+// Aceita qualquer formato legível (com/sem +, com/sem código de país, com formatação).
+// País padrão: Brasil. Output sempre em E.164 (ex: +5511987654321).
+// Ver docs/phone-number-format.md para exemplos completos.
+export const PhoneNumberSchema = z
   .string()
   .min(1, "Phone number is required")
-  .transform((val) => ({
-    original: val,
-    digits: val.replace(/\D/g, ""),
-  }))
-  .refine(
-    ({ digits }) => /^(?:\d{2}(?:9\d{8}|\d{8})|\d{2}\d{10})$/.test(digits),
-    ({ original }) => ({
-      message: `Invalid phone number: "${original}". Must be a Brazilian phone number in one of these formats: 1143547228, 11987654321, or prefixed format like 16-1140722298`,
-    }),
-  )
-  .transform(({ digits }) => digits);
+  .transform((val, ctx) => {
+    const phone = tryParsePhone(val) ?? tryParsePhone(`+${val.replace(/\D/g, "")}`);
+    if (!phone) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Invalid phone number: "${val}"` });
+      return z.NEVER;
+    }
+    return phone.format("E.164");
+  });
 
 export const UserIdSchema = z.object({
   userId: z.string().uuid(),

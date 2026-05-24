@@ -1,18 +1,42 @@
-export * from "./assessment";
-export * from "./users";
+export * from "./acts";
+export * from "./assessments";
+export * from "./companies";
+export * from "./dimensions";
+export * from "./nationalities";
+export * from "./notifications";
+export * from "./psychosocial-factors";
 export * from "./roles";
-export * from "./company";
+export * from "./self-monitoring";
+export * from "./trails";
+export * from "./users";
 
-import { AssessmentPermissions } from "./assessment";
-import { UserPermissions } from "./users";
-import { RolePermissions } from "./roles";
-import { CompanyPermissions } from "./company";
+import { PermissionDomainDefinition } from "../types/permissions";
+import { ActDomain } from "./acts";
+import { AssessmentDomain } from "./assessments";
+import { CompanyDomain } from "./companies";
+import { DimensionDomain } from "./dimensions";
+import { NationalityDomain } from "./nationalities";
+import { NotificationDomain } from "./notifications";
+import { PsychosocialFactorDomain } from "./psychosocial-factors";
+import { RoleDomain } from "./roles";
+import { SelfMonitoringDomain } from "./self-monitoring";
+import { TrailDomain } from "./trails";
+import { UserDomain } from "./users";
 
-export const ALL_PERMISSIONS = Object.values({
-  ...AssessmentPermissions,
-  ...UserPermissions,
-  ...RolePermissions,
-  ...CompanyPermissions,
-});
+export const PERMISSION_DOMAINS: PermissionDomainDefinition[] = [
+  ActDomain,
+  AssessmentDomain,
+  CompanyDomain,
+  DimensionDomain,
+  NationalityDomain,
+  NotificationDomain,
+  PsychosocialFactorDomain,
+  RoleDomain,
+  SelfMonitoringDomain,
+  TrailDomain,
+  UserDomain,
+];
 
-export type Permission = typeof ALL_PERMISSIONS[number];
+export const ALL_PERMISSIONS = PERMISSION_DOMAINS.flatMap((d) => d.permissions.map((p) => p.key));
+
+export type Permission = (typeof ALL_PERMISSIONS)[number];

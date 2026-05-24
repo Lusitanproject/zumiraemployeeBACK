@@ -1,17 +1,14 @@
 import { Request, Response } from "express";
 
 import { GetActChapterSchema } from "../../schemas/actChatbot";
-import { GetActChapterService } from "../../services/act/GetActChapterService";
-import { parseZodError } from "../../utils/parseZodError";
+import { ActService } from "../../services/act/ActService";
 
 class GetActChapterController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = GetActChapterSchema.safeParse(req.query);
+    const data = GetActChapterSchema.parse(req.query);
 
-    if (!success) throw Error(parseZodError(error));
-
-    const service = new GetActChapterService();
-    const result = await service.execute({ userId: req.user.id, ...data });
+    const service = new ActService();
+    const result = await service.getChapter({ userId: req.user.id, ...data });
 
     return res.json({ status: "SUCCESS", data: result });
   }

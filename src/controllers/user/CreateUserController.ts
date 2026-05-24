@@ -1,17 +1,14 @@
 import { Request, Response } from "express";
 
 import { CreateUserSchema } from "../../schemas/user";
-import { CreateUserService } from "../../services/user/CreateUserService";
-import { parseZodError } from "../../utils/parseZodError";
+import { UserService } from "../../services/user/UserService";
 
 class CreateUserController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = CreateUserSchema.safeParse(req.body);
+    const data = CreateUserSchema.parse(req.body);
 
-    if (!success) throw new Error(parseZodError(error));
-
-    const createUser = new CreateUserService();
-    const user = await createUser.execute(data);
+    const createUser = new UserService();
+    const user = await createUser.create(data);
 
     return res.json({ status: "SUCCESS", data: user });
   }

@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
+import { PublicError } from "../../../error";
 import { ALL_PERMISSIONS } from "../../../permissions";
 import { RoleAdminService } from "../../../services/admin/RoleAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
-import { PublicError } from "../../../error";
 
 const SetRolePermissionsSchema = z.object({
   permissions: z.array(z.string()),
@@ -12,10 +11,7 @@ const SetRolePermissionsSchema = z.object({
 
 class SetRolePermissionsController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = SetRolePermissionsSchema.safeParse(req.body);
-    if (!success) {
-      return res.status(400).json({ status: "ERROR", message: parseZodError(error) });
-    }
+    const data = SetRolePermissionsSchema.parse(req.body);
 
     const invalid = data.permissions.filter((p) => !ALL_PERMISSIONS.includes(p as never));
     if (invalid.length > 0) {

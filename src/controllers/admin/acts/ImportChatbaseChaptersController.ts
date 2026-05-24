@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { ImportChatbaseChaptersSchema } from "../../../schemas/admin/act-chatbot";
-import { ActChatbotAdminService } from "../../../services/admin/ActChatbotAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
+import { ActChatbotAdminService } from "../../../services/admin/ActAdminService";
 
 const RequestParams = z.object({
   id: z.string().cuid(),
@@ -11,14 +10,12 @@ const RequestParams = z.object({
 
 class ImportChatbaseChaptersController {
   async handle(req: Request, res: Response) {
-    const parsedParams = RequestParams.safeParse(req.params);
-    if (!parsedParams.success) throw new Error(parseZodError(parsedParams.error));
+    const parsedParams = RequestParams.parse(req.params);
 
-    const parsedBody = ImportChatbaseChaptersSchema.safeParse(req.body);
-    if (!parsedBody.success) throw new Error(parseZodError(parsedBody.error));
+    const parsedBody = ImportChatbaseChaptersSchema.parse(req.body);
 
     const service = new ActChatbotAdminService();
-    const result = await service.importChatbaseChapters({ id: parsedParams.data.id, ...parsedBody.data });
+    const result = await service.importChatbaseChapters({ id: parsedParams.id, ...parsedBody });
 
     return res.json({ status: "SUCCESS", data: result });
   }

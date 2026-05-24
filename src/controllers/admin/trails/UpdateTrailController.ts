@@ -3,14 +3,11 @@ import { Request, Response } from "express";
 import { UpdateTrailSchema } from "../../../schemas/admin/trail";
 import { RequestParamsIdCUID } from "../../../schemas/common";
 import { TrailAdminService } from "../../../services/admin/TrailAdminService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 class UpdateTrailController {
   async handle(req: Request, res: Response) {
     const { id } = RequestParamsIdCUID.parse(req.params);
-    const { data, error, success } = UpdateTrailSchema.safeParse(req.body);
-
-    if (!success) throw new Error(parseZodError(error));
+    const data = UpdateTrailSchema.parse(req.body);
 
     const service = new TrailAdminService();
     const result = await service.update({ id, ...data });

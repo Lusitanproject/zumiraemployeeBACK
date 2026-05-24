@@ -1,23 +1,23 @@
 // Types based on Chatbase API v1 OpenAPI schema
 interface ChatMessage {
+  content: string;
+  created_at: string;
   id: string;
   role: "user" | "assistant";
-  content: string;
   type?: "text";
-  created_at: string;
 }
 
 interface Conversation {
-  id: string;
   chatbot_id: string;
   created_at: string;
+  id: string;
+  messages: ChatMessage[];
+  source: "api" | "website" | "whatsapp" | "slack" | "messenger" | "instagram";
   updated_at: string;
   form_submission?: {
     name: string;
     phone: string;
   };
-  source: "api" | "website" | "whatsapp" | "slack" | "messenger" | "instagram";
-  messages: ChatMessage[];
 }
 
 interface GetConversationsResponse {
@@ -26,11 +26,11 @@ interface GetConversationsResponse {
 
 interface GetConversationsParams {
   chatbotId: string;
-  filteredSources?: string;
-  startDate?: string;
   endDate?: string;
+  filteredSources?: string;
   page?: string | number;
   size?: string | number;
+  startDate?: string;
 }
 
 export class ChatbaseApi {

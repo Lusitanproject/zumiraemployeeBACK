@@ -26,8 +26,11 @@ async function getUserData(userId: string): Promise<Request["user"]> {
   return {
     id: user.id,
     role: user.role.slug,
+    name: user.name,
+    email: user.email,
     permissions: user.role.rolePermissions.map((p) => p.permission),
     currentChatbotId: user.currentActChatbotId,
+    companyId: user.companyId,
   };
 }
 

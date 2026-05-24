@@ -1,17 +1,14 @@
 import { Request, Response } from "express";
 
 import { ListAlertsSchema } from "../../schemas/alert";
-import { ListAlertsService } from "../../services/alert/ListAlertsService";
-import { parseZodError } from "../../utils/parseZodError";
+import { AlertService } from "../../services/alert/AlertService";
 
 class ListAlertsController {
   async handle(req: Request, res: Response) {
-    const { error, data, success } = ListAlertsSchema.safeParse(req.query);
+    const data = ListAlertsSchema.parse(req.query);
 
-    if (!success) throw new Error(parseZodError(error));
-
-    const service = new ListAlertsService();
-    const result = await service.execute({ userId: req.user.id, ...data });
+    const service = new AlertService();
+    const result = await service.list({ userId: req.user.id, ...data });
 
     return res.json({ status: "SUCCESS", data: result });
   }

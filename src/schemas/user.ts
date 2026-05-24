@@ -1,5 +1,6 @@
 import { UserGender } from "@prisma/client";
 import { z } from "zod";
+
 import { DateStringSchema, PhoneNumberSchema } from "./common";
 
 export const CreateUserSchema = z.object({
@@ -15,6 +16,7 @@ export const CreateUserSchema = z.object({
   occupation: z.string().nonempty().optional(),
   occupationLevel: z.string().nonempty().optional(),
   area: z.string().nonempty().optional(),
+  similarExposureGroup: z.string().nonempty().optional(),
   location: z.string().nonempty().optional(),
   skinColor: z.string().nonempty().optional(),
   hasDisability: z.boolean().optional(),
@@ -28,3 +30,31 @@ export const AuthUserSchema = z.object({
 
 export type CreateUserRequest = z.infer<typeof CreateUserSchema>;
 export type AuthUserRequest = z.infer<typeof AuthUserSchema>;
+
+export const SyncUserItemSchema = z.object({
+  customId: z.string().min(1),
+  email: z.string().email(),
+  name: z.string().min(1),
+  phoneNumber: z.string().optional(),
+  occupation: z.string().optional(),
+  occupationLevel: z.string().optional(),
+  area: z.string().optional(),
+  similarExposureGroup: z.string().optional(),
+  location: z.string().optional(),
+  skinColor: z.string().optional(),
+  hasDisability: z.boolean().optional(),
+  birthdate: DateStringSchema.optional(),
+  admissionDate: DateStringSchema.optional(),
+  gender: z.nativeEnum(UserGender).optional(),
+  nationalityId: z.string().cuid().optional(),
+});
+
+export const SyncUsersPayloadSchema = z.object({
+  users: z.array(SyncUserItemSchema).min(1),
+});
+
+export const SyncCompanyParamsSchema = z.object({
+  id: z.string().cuid(),
+});
+
+export type SyncUserItem = z.infer<typeof SyncUserItemSchema>;

@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { DimensionAdminService } from "../../../services/admin/DimensionAdminService";
 import { SelfMonitoringAdminService } from "../../../services/admin/SelfMonitoringService";
-import { parseZodError } from "../../../utils/parseZodError";
 
 const RequestParam = z.object({
   selfMonitoringBlockId: z.string().cuid(),
@@ -11,14 +10,7 @@ const RequestParam = z.object({
 
 class FindDimensionByBlockController {
   async handle(req: Request, res: Response) {
-    const { success, data, error } = RequestParam.safeParse(req.params);
-
-    if (!success) {
-      return res.status(400).json({
-        status: "ERROR",
-        message: parseZodError(error),
-      });
-    }
+    const data = RequestParam.parse(req.params);
 
     const selfMonitoringAdminService = new SelfMonitoringAdminService();
     const monitoringBlockExists = await selfMonitoringAdminService.find(data.selfMonitoringBlockId);
