@@ -15,6 +15,11 @@ class UserService {
     const userExists = await prismaClient.user.findFirst({ where: { email: data.email } });
     if (userExists) throw new PublicError("Usuário já existe");
 
+    if (data.phoneNumber) {
+      const phoneExists = await prismaClient.user.findFirst({ where: { phoneNumber: data.phoneNumber } });
+      if (phoneExists) throw new PublicError("Número de telefone já está em uso");
+    }
+
     const role = await prismaClient.role.findFirst({ where: { slug: "user" } });
     if (!role) throw new Error("Cargo usuario não encontrado");
 
@@ -229,6 +234,11 @@ class UserService {
   }
 
   async update({ id, ...data }: UpdateUser & { id: string }, where?: Prisma.UserWhereInput) {
+    if (data.phoneNumber) {
+      const phoneExists = await prismaClient.user.findFirst({ where: { phoneNumber: data.phoneNumber, NOT: { id } } });
+      if (phoneExists) throw new PublicError("Número de telefone já está em uso");
+    }
+
     if (where) {
       const { count } = await prismaClient.user.updateMany({ where: { id, ...where }, data });
       if (count === 0) return null;
@@ -251,13 +261,19 @@ class UserService {
   // ─── Sync engine ───────────────────────────────────────────────────────────
 
   private async planSync(companyId: string, items: SyncUserItem[]) {
-    type ConflictType = "CUSTOM_ID_DUPLICATED_IN_DB" | "EMAIL_ALREADY_USED";
+    type ConflictType = "CUSTOM_ID_DUPLICATED_IN_DB" | "EMAIL_ALREADY_USED" | "PHONE_ALREADY_USED";
 
     type SyncPlan = {
       creates: Array<{ customId: string; data: Omit<SyncUserItem, "customId"> }>;
       updates: Array<{ customId: string; userId: string; changes: Record<string, { from: unknown; to: unknown }> }>;
       unchanged: Array<{ customId: string; userId: string }>;
-      conflicts: Array<{ type: ConflictType; customId: string; email?: string; conflictingUserId?: string }>;
+      conflicts: Array<{
+        type: ConflictType;
+        customId: string;
+        email?: string;
+        conflictingUserId?: string;
+        message: string;
+      }>;
       errors: Array<{ customId?: string; field: string; message: string }>;
     };
 
@@ -297,13 +313,13 @@ class UserService {
         });
         return { ...item, phoneNumber: undefined };
       }
-      console.log(item.phoneNumber, parsed.format("E.164"));
       return { ...item, phoneNumber: parsed.format("E.164") };
     });
 
     // Step 2: batch DB lookups
     const validCustomIds = normalizedItems.map((i) => i.customId);
     const validEmails = normalizedItems.map((i) => i.email);
+    const validPhones = normalizedItems.flatMap((i) => (i.phoneNumber ? [i.phoneNumber] : []));
 
     const selectFields = {
       id: true,
@@ -325,11 +341,15 @@ class UserService {
       nationalityId: true,
     } as const;
 
-    const [byCustomId, byEmail] = await Promise.all([
+    const [byCustomId, byEmail, byPhone] = await Promise.all([
       prismaClient.user.findMany({ where: { customId: { in: validCustomIds }, companyId }, select: selectFields }),
       prismaClient.user.findMany({
         where: { email: { in: validEmails } },
-        select: { id: true, email: true, customId: true, companyId: true },
+        select: { id: true, email: true, customId: true, companyId: true, name: true },
+      }),
+      prismaClient.user.findMany({
+        where: { phoneNumber: { in: validPhones } },
+        select: { id: true, phoneNumber: true, customId: true, companyId: true, name: true },
       }),
     ]);
 
@@ -343,6 +363,9 @@ class UserService {
 
     const emailMap = new Map<string, (typeof byEmail)[0]>();
     for (const u of byEmail) emailMap.set(u.email, u);
+
+    const phoneMap = new Map<string, (typeof byPhone)[0]>();
+    for (const u of byPhone) if (u.phoneNumber) phoneMap.set(u.phoneNumber, u);
 
     // Step 3: classify
     const creates: SyncPlan["creates"] = [];
@@ -373,28 +396,37 @@ class UserService {
       const emailMatch = emailMap.get(item.email);
 
       if (candidates.length > 1) {
-        conflicts.push({ type: "CUSTOM_ID_DUPLICATED_IN_DB", customId: item.customId, email: item.email });
+        conflicts.push({
+          type: "CUSTOM_ID_DUPLICATED_IN_DB",
+          customId: item.customId,
+          email: item.email,
+          message: `ID externo "${item.customId}" está duplicado no banco (${candidates.length} registros encontrados)`,
+        });
         continue;
       }
 
       const candidate = candidates[0] ?? null;
 
-      if (emailMatch && candidate && emailMatch.id !== candidate.id) {
+      if (emailMatch && (!candidate || emailMatch.id !== candidate.id)) {
         conflicts.push({
           type: "EMAIL_ALREADY_USED",
           customId: item.customId,
           email: item.email,
           conflictingUserId: emailMatch.id,
+          message: `E-mail "${item.email}" já está em uso por ${emailMatch.name}`,
         });
         continue;
       }
 
-      if (emailMatch && !candidate) {
+      const phoneMatch = item.phoneNumber ? phoneMap.get(item.phoneNumber) : undefined;
+
+      if (phoneMatch && (!candidate || phoneMatch.id !== candidate.id)) {
         conflicts.push({
-          type: "EMAIL_ALREADY_USED",
+          type: "PHONE_ALREADY_USED",
           customId: item.customId,
           email: item.email,
-          conflictingUserId: emailMatch.id,
+          conflictingUserId: phoneMatch.id,
+          message: `Número "${item.phoneNumber}" já está em uso por ${phoneMatch.name}`,
         });
         continue;
       }

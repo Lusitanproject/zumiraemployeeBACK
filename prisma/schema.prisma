@@ -53,7 +53,7 @@ enum MessageFactorAuthor {
 model User {
   id                   String      @id @default(uuid())
   email                String      @unique
-  phoneNumber          String?     @map("phone_number")
+  phoneNumber          String?     @unique @map("phone_number")
   password             String?
   name                 String
   customId             String?     @map("custom_id")
