@@ -74,6 +74,7 @@ export class OpenAiApi {
         (item) => !!item.content,
       ) as OpenAI.Responses.ResponseInput;
 
+      const start = Date.now();
       const response = await this.client.responses.create({
         model: this.model,
         input,
@@ -86,6 +87,7 @@ export class OpenAiApi {
           ],
         }),
       });
+      console.log(`OpenAI response generated in ${Date.now() - start}ms (model: ${this.model})`);
 
       return response;
     } catch (error) {
