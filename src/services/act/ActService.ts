@@ -1103,7 +1103,7 @@ class ActService {
       await api.send({
         to: message.from,
         message:
-          "Olá! Você ainda não está cadastrado no programa Zumira. Para participar, entre em contato com o seu gestor.",
+          "Olá! Não identifiquei seu cadastro. Pode ser que seu número ainda não esteja em nossos registros ou esteja desatualizado. Para continuar, entre em contato com a sua empresa. Obrigada",
       });
       return;
     }
@@ -1114,7 +1114,8 @@ class ActService {
         console.log(`[WhatsApp] no act available to assign to user ${user.email} (${user.id})`);
         await api.send({
           to: message.from,
-          message: "Olá! Ainda não há atos disponíveis no programa Zumira. Entre em contato com o seu gestor.",
+          message:
+            "Olá! Não identifiquei nenhum Ato ou Pesquisa atribuída ao seu cadastro. Pode ser que a pesquisa já tenha sido finalizada ou ainda não foi iniciada. Entre em contato com a sua empresa para mais informações. Obrigada",
         });
         return;
       }
