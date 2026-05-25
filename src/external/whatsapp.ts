@@ -4,6 +4,7 @@ interface SendMessageInput {
 }
 
 export interface ReceiveMessage {
+  externalId: string;
   from: string;
   message: string;
   messageType: string;
@@ -36,6 +37,7 @@ export enum WhatsappWebhookField {
 
 interface WhatsappWebhookMessage {
   from: string;
+  id: string;
   text?: { body?: string };
   type?: string;
 }
@@ -168,6 +170,7 @@ export class WhatsappApi {
     await onMessage(
       {
         from: message.from,
+        externalId: message.id,
         message: message.text?.body || "",
         messageType: message.type ?? "text",
         raw: message,
