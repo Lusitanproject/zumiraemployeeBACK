@@ -1170,18 +1170,19 @@ class ActService {
       { content: message.message, actChapterId: chapterId, userId: user.id },
       {
         externalId: message.externalId,
-        instructionsComplement:
-          "Você está respondendo via WhatsApp. Use apenas formatação compatível com WhatsApp. " +
-          "Não use markdown complexo, tabelas, headings (#), HTML ou blocos incompatíveis. " +
-          "Formatações permitidas: " +
-          "*negrito* com um asterisco, " +
-          "_itálico_ com underscores, " +
-          "~tachado~ com tils, " +
-          "`código inline` com um backtick, " +
-          "```monospace``` com três backticks. " +
-          "Para listas, use '- item', '* item' ou '1. item'. " +
-          "Para citações, use '> texto'. " +
+        instructionsComplement: [
+          "Você está respondendo via WhatsApp. Use apenas formatação compatível com WhatsApp.",
+          "Não use markdown complexo, tabelas, headings (#), HTML ou blocos incompatíveis.",
+          "Formatações permitidas:",
+          "*negrito* com um asterisco,",
+          "_itálico_ com underscores,",
+          "~tachado~ com tils,",
+          "`código inline` com um backtick,",
+          "```monospace``` com três backticks.",
+          "Para listas, use '- item', '* item' ou '1. item'.",
+          "Para citações, use '> texto'.",
           "Nunca use **negrito duplo**.",
+        ].join("\n"),
       },
     );
     await api.send({ to: message.from, message: responseText });
