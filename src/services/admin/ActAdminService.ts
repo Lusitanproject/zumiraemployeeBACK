@@ -222,7 +222,7 @@ class ActAdminService {
           return {
             actChatbotId: id,
             userId,
-            type: ChapterType.WHATSAPP,
+            type: ChapterType.CHATBASE,
             externalId: conv.id,
             createdAt: conv.created_at,
           };

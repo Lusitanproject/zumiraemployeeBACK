@@ -32,6 +32,7 @@ enum UserGender {
 enum ChapterType {
   REGULAR
   WHATSAPP
+  CHATBASE
 }
 
 enum BatchStatus {
