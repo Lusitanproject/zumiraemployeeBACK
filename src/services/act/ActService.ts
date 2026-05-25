@@ -12,6 +12,7 @@ import {
   UpdateActChapterRequest,
 } from "../../schemas/actChatbot";
 import { tryParsePhone } from "../../utils/phone";
+import { capitalize } from "../../utils/string";
 import { UserService } from "../user/UserService";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
@@ -333,7 +334,7 @@ class ActService {
     const response = await openai.generateResponse({
       instructions: [
         bot.messageInstructions,
-        `O nome do usuário é: ${conv.user.name.split(" ")[0]}`,
+        `O nome do usuário é: ${capitalize(conv.user.name.split(" ")[0])}`,
         opts?.instructionsComplement,
       ]
         .filter(Boolean)
@@ -1170,7 +1171,11 @@ class ActService {
       {
         externalId: message.externalId,
         instructionsComplement:
-          "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp, sem markdown complexo (sem tabelas, sem cabeçalhos).",
+          "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp, sem markdown complexo (sem tabelas, sem cabeçalhos). " +
+          "Formatação suportada: _itálico_ (underscores), *negrito* (asteriscos), ~tachado~ (tils), ```monospace``` (três backticks), `código inline` (backtick simples). " +
+          "Listas: use '- item' ou '* item' para listas com marcadores, '1. item' para listas numeradas. " +
+          "Citação: use '> texto'. " +
+          "Não use markdown não suportado como # cabeçalhos, ** negrito duplo, ou tabelas.",
       },
     );
     await api.send({ to: message.from, message: responseText });
