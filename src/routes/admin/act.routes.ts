@@ -7,6 +7,7 @@ import { FindAllActChatbotsController } from "../../controllers/admin/acts/FindA
 import { FindByTrailController } from "../../controllers/admin/acts/FindByTrailController";
 import { ImportChatbaseChaptersController } from "../../controllers/admin/acts/ImportChatbaseChaptersController";
 import { OverrideFactorAssociationsController } from "../../controllers/admin/acts/OverrideFactorAssociationsController";
+import { TestMessageActChatbotController } from "../../controllers/admin/acts/TestMessageActChatbotController";
 import { UpdateActChatbotController } from "../../controllers/admin/acts/UpdateActChatbotController";
 import { UpdateManyActChatbotsController } from "../../controllers/admin/acts/UpdateManyActChatbotsController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
@@ -531,6 +532,76 @@ adminActRouter.post(
   isAuthenticated,
   requirePermissions("admin-acts-manage"),
   new GenerateActAnalysisController().handle,
+);
+
+/**
+ * @swagger
+ * /admin/acts/{actChatbotId}/test-message:
+ *   post:
+ *     summary: "[Admin] Testar mensagem com Act Chatbot sem criar chapter"
+ *     description: >
+ *       Envia um histórico de mensagens para o chatbot do ACT e retorna a próxima resposta da IA,
+ *       sem persistir nenhuma informação no banco. Útil para testar as instruções configuradas no ACT.
+ *       Requer permissão `admin-acts-manage`.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT a testar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [messages]
+ *             properties:
+ *               messages:
+ *                 type: array
+ *                 minItems: 1
+ *                 items:
+ *                   type: object
+ *                   required: [role, content]
+ *                   properties:
+ *                     role:
+ *                       type: string
+ *                       enum: [user, assistant]
+ *                     content:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Resposta gerada pelo chatbot
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: string
+ *                   example: "Olá! Como posso te ajudar?"
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+adminActRouter.post(
+  "/:actChatbotId/test-message",
+  isAuthenticated,
+  requirePermissions("admin-acts-manage"),
+  new TestMessageActChatbotController().handle,
 );
 
 export { adminActRouter };

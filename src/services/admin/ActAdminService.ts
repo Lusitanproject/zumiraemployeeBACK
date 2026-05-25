@@ -2,14 +2,16 @@ import { ChapterType, Prisma, PsychosocialFactor } from "@prisma/client";
 
 import { PublicError } from "../../error";
 import { ChatbaseApi } from "../../external/chatbase";
-import { CreateOpenAiBatchRequest, OpenAiApi } from "../../external/openai";
+import { CreateOpenAiBatchRequest, GenerateOpenAiResponseRequest, OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
 import {
   CreateActChatbotRequest,
   ImportChatbaseChaptersRequest,
+  TestMessageActChatbotRequest,
   UpdateActChatbotRequest,
   UpdateManyActChatbotsRequest,
 } from "../../schemas/admin/act-chatbot";
+import { tryParsePhone } from "../../utils/phone";
 
 class ActAdminService {
   private readonly actListSelect = {
@@ -155,6 +157,11 @@ class ActAdminService {
       filteredSources: "WhatsApp",
     });
 
+    console.log(`${conversations.length} conversas encontradas no chatbase`);
+    for (const conv of conversations) {
+      console.log(`${conv.form_submission?.name} (${conv.form_submission?.phone}) - ${conv.messages.length} mensagens`);
+    }
+
     // Remove previously imported chapters/messages for these conversations and import again.
     const existingChapters = await prismaClient.actChapter.findMany({
       where: {
@@ -187,8 +194,10 @@ class ActAdminService {
       });
     }
 
-    // Normalize WhatsApp numbers so they match DB values.
-    const normalizePhone = (p?: string | null) => (p ? p.replace(/\D/g, "").replace(/^55/, "") : "");
+    function normalizePhone(p?: string | null): string {
+      if (!p) return "";
+      return (tryParsePhone(p) ?? tryParsePhone(`+${p.replace(/\D/g, "")}`))?.format("E.164") ?? "";
+    }
 
     const conversationUsersPhoneNumbers = conversations
       .map((c) => normalizePhone(c.form_submission?.phone))
@@ -218,7 +227,7 @@ class ActAdminService {
           return {
             actChatbotId: id,
             userId,
-            type: "REGULAR" as ChapterType,
+            type: ChapterType.CHATBASE,
             externalId: conv.id,
             createdAt: conv.created_at,
           };
@@ -274,6 +283,27 @@ class ActAdminService {
     };
   }
 
+  async testMessage(actChatbotId: string, messages: TestMessageActChatbotRequest["messages"]) {
+    const bot = await prismaClient.actChatbot.findUnique({
+      where: { id: actChatbotId },
+      select: { messageInstructions: true, initialMessage: true },
+    });
+
+    if (!bot) throw new PublicError("Act chatbot does not exist");
+
+    const history = [...messages] as GenerateOpenAiResponseRequest["messages"];
+
+    if (bot.initialMessage) history.unshift({ role: "assistant", content: bot.initialMessage });
+
+    const openai = new OpenAiApi();
+    const response = await openai.generateResponse({
+      instructions: bot.messageInstructions,
+      messages: history,
+    });
+
+    return response.output_text;
+  }
+
   async generateAnalysis(companyId: string, actChatbotId: string) {
     console.log(`Gerando análise para a empresa ${companyId} e o chatbot ${actChatbotId}`);
 
@@ -283,17 +313,12 @@ class ActAdminService {
 
     const chapters = await prismaClient.actChapter.findMany({
       where: {
-        type: "REGULAR",
         actChatbot: { id: actChatbotId },
         user: { companyId },
       },
       include: {
         messages: { select: { id: true, role: true, content: true } },
       },
-    });
-
-    const newAnalysis = await prismaClient.companyActAnalysis.create({
-      data: { actChatbotId, companyId },
     });
 
     const instructions = await this.buildPsychosocialPrompt(factors);
@@ -306,6 +331,10 @@ class ActAdminService {
     const batchResult = await openai.createBatch({ instructions, batchItems });
 
     console.log(`Lote OpenAI criado com ${batchItems.length} itens`);
+
+    const newAnalysis = await prismaClient.companyActAnalysis.create({
+      data: { actChatbotId, companyId },
+    });
 
     await prismaClient.companyActAnalysisBatch.create({
       data: { batchId: batchResult.batchId, companyActAnalysisId: newAnalysis.id },

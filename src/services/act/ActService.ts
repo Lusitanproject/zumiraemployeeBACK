@@ -11,6 +11,7 @@ import {
   MessageActChatbotRequest,
   UpdateActChapterRequest,
 } from "../../schemas/actChatbot";
+import { tryParsePhone } from "../../utils/phone";
 import { UserService } from "../user/UserService";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
@@ -299,7 +300,7 @@ class ActService {
     return { chapters };
   }
 
-  async message({ content, actChapterId, userId }: MessageActChatbotRequest) {
+  async message({ content, actChapterId, userId }: MessageActChatbotRequest, instructionsComplement?: string) {
     const conv = await prismaClient.actChapter.findFirst({
       where: { id: actChapterId, userId },
       include: { actChatbot: true, user: true },
@@ -327,7 +328,13 @@ class ActService {
 
     const openai = new OpenAiApi();
     const response = await openai.generateResponse({
-      instructions: bot.messageInstructions + `\nO nome do usuário é: ${conv.user.name.split(" ")[0]}`,
+      instructions: [
+        bot.messageInstructions,
+        `O nome do usuário é: ${conv.user.name.split(" ")[0]}`,
+        instructionsComplement,
+      ]
+        .filter(Boolean)
+        .join("\n"),
       messages: historyAndInput,
     });
 
@@ -403,10 +410,6 @@ class ActService {
         compilationInstructions: true,
         index: true,
         trailId: true,
-        actChapters: {
-          where: { type: "ADMIN_TEST" },
-          select: { id: true, title: true },
-        },
       },
     });
     return bot;
@@ -508,7 +511,7 @@ class ActService {
   }
 
   private async resolveLatestAnalysis(companyId: string, actChatbotId: string) {
-    const analysis = await prismaClient.companyActAnalysis.findFirst({
+    let analysis = await prismaClient.companyActAnalysis.findFirst({
       orderBy: { createdAt: "desc" },
       where: { companyId, actChatbotId },
       include: { companyActAnalysisBatches: true },
@@ -521,6 +524,14 @@ class ActService {
     if (!alreadySaved) {
       const allDone = await this.retrieveAndSaveAnalysisResults(analysis.companyActAnalysisBatches);
       if (!allDone) return null;
+
+      await this.generateAnalysisReportRag(companyId, actChatbotId, analysis);
+
+      analysis = await prismaClient.companyActAnalysis.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: { companyId, actChatbotId },
+        include: { companyActAnalysisBatches: true },
+      });
     }
 
     return analysis;
@@ -835,9 +846,10 @@ class ActService {
     });
   }
 
-  async generateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
-    const latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
-
+  private async buildAnalysisReportData(
+    companyId: string,
+    actChatbotId: string,
+  ): Promise<Omit<AnalysisReport, "aiDescription"> | null> {
     const [bySimilarExposureGroup, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] =
       await Promise.all([
         this.findAnalysisSegments(companyId, actChatbotId, "similarExposureGroup"),
@@ -852,7 +864,8 @@ class ActService {
         this.findAnalysisFactorWeights(companyId, actChatbotId),
       ]);
 
-    if (!bySimilarExposureGroup.available) return { available: false };
+    // os segmentos chamam resolveLatestAnalysis internamente — se um retorna available: false (batches pendentes), todos retornariam; usamos esse como proxy
+    if (!bySimilarExposureGroup.available) return null;
 
     const factorWeights = weightsResult.available ? weightsResult.factors : [];
     const positiveScore = factorWeights.filter((f) => f.wheight > 0).reduce((s, f) => s + f.totalWeight, 0);
@@ -867,9 +880,7 @@ class ActService {
       wellnessPercentage: absoluteScore > 0 ? (positiveScore / absoluteScore) * 100 : 0,
     };
 
-    const aiDescription = latestAnalysis?.text ?? "";
-
-    const report: AnalysisReport = {
+    return {
       userCount: weightsResult.available ? weightsResult.userCount : 0,
       overall,
       bySimilarExposureGroup: bySimilarExposureGroup.groups,
@@ -878,49 +889,66 @@ class ActService {
       byOccupationLevel: byOccupationLevel.available ? byOccupationLevel.groups : [],
       byAgeRange: byAgeRange.available ? byAgeRange.groups : [],
       factorWeights,
-      aiDescription,
     };
+  }
 
-    if (latestAnalysis && !latestAnalysis.vectorStoreId) {
-      console.log(`[RAG/act] starting RAG setup for analysis ${latestAnalysis.id} (actChatbotId: ${actChatbotId})`);
-      try {
-        const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
-          where: { id: actChatbotId },
-        });
+  async getAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
+    const latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
 
-        const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
+    const report = await this.buildAnalysisReportData(companyId, actChatbotId);
+    if (!report) return { available: false };
 
-        console.log(`[RAG/act] generating RAG response from report`);
-        const { response: ragResponse, reportText } = await this.buildActRagResponse(actChatbot, report, openAiApi);
-        console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
+    return {
+      available: true,
+      report: {
+        ...report,
+        aiDescription: latestAnalysis?.text ?? "O laudo qualitativo para esse ato ainda não foi gerado.",
+      },
+    };
+  }
 
-        const fullRagContent = `${reportText}\n\n${ragResponse.output_text}\n\n${actChatbot.description}`;
+  private async generateAnalysisReportRag(
+    companyId: string,
+    actChatbotId: string,
+    analysis: { id: string },
+  ): Promise<void> {
+    const report = await this.buildAnalysisReportData(companyId, actChatbotId);
+    if (!report) return;
 
-        const { dbVectorStore } = await openAiApi.createVectorStoreWithContent({
-          storeName: `analysis-act-${actChatbotId}`,
-          content: fullRagContent,
-          filename: "act-analysis.md",
-        });
+    console.log(`[RAG/act] starting RAG setup for analysis ${analysis.id} (actChatbotId: ${actChatbotId})`);
+    try {
+      const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
+        where: { id: actChatbotId },
+      });
 
-        await prismaClient.companyActAnalysis.update({
-          where: { id: latestAnalysis.id },
-          data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id } as object,
-        });
+      const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
 
-        report.aiDescription = ragResponse.output_text;
+      console.log(`[RAG/act] generating RAG response from report`);
+      const { response: ragResponse, reportText } = await this.buildActRagResponse(actChatbot, report, openAiApi);
+      console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
 
-        console.log(`[RAG/act] analysis ${latestAnalysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
-      } catch (error) {
-        throw new Error(`[RAG/act] failed to create RAG for analysis ${latestAnalysis.id}: ${error}`);
-      }
+      const fullRagContent = `${reportText}\n\n${ragResponse.output_text}\n\n${actChatbot.description}`;
+
+      const { dbVectorStore } = await openAiApi.createVectorStoreWithContent({
+        storeName: `analysis-act-${actChatbotId}`,
+        content: fullRagContent,
+        filename: "act-analysis.md",
+      });
+
+      await prismaClient.companyActAnalysis.update({
+        where: { id: analysis.id },
+        data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id } as object,
+      });
+
+      console.log(`[RAG/act] analysis ${analysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
+    } catch (error) {
+      throw new Error(`[RAG/act] failed to create RAG for analysis ${analysis.id}: ${error}`);
     }
-
-    return { available: true, report: { ...report } };
   }
 
   private async buildActRagResponse(
     actChatbot: { name: string; reportInstructions: string | null },
-    report: AnalysisReport,
+    report: Omit<AnalysisReport, "aiDescription">,
     openAiApi: OpenAiApi,
   ) {
     const classify = (wellnessPercentage: number): string => {
@@ -1032,12 +1060,46 @@ class ActService {
     return { response, reportText };
   }
 
+  private async assignFirstActToUser(userId: string, companyId: string | null): Promise<string | null> {
+    let trailId: string | undefined;
+
+    if (companyId) {
+      const company = await prismaClient.company.findUnique({
+        where: { id: companyId },
+        select: { trailId: true },
+      });
+      trailId = company?.trailId;
+    }
+
+    const firstAct = await prismaClient.actChatbot.findFirst({
+      where: { trailId },
+      orderBy: { index: "asc" },
+      select: { id: true },
+    });
+
+    if (!firstAct) return null;
+
+    console.log(
+      `[ActService] auto-assigning actChatbot ${firstAct.id} to user ${userId} (companyId: ${companyId ?? "none"})`,
+    );
+    await prismaClient.user.update({
+      where: { id: userId },
+      data: { currentActChatbotId: firstAct.id },
+    });
+
+    return firstAct.id;
+  }
+
   async handleWhatsappMessage(message: ReceiveMessage, api: WhatsappApi): Promise<void> {
+    const from = message.from.startsWith("+") ? message.from : `+${message.from}`;
+    const phoneE164 = tryParsePhone(from)?.format("E.164") ?? message.from;
+
     const user = await prismaClient.user.findFirst({
-      where: { phoneNumber: message.from },
+      where: { phoneNumber: phoneE164 },
     });
 
     if (!user) {
+      console.log(`[WhatsApp] no user found for phone ${phoneE164}, sending registration message`);
       await api.send({
         to: message.from,
         message:
@@ -1047,16 +1109,24 @@ class ActService {
     }
 
     if (!user.currentActChatbotId) {
-      await api.send({
-        to: message.from,
-        message:
-          "Olá! Você ainda não está atribuído a nenhuma atividade no programa Zumira. Entre em contato com o seu gestor.",
-      });
-      return;
+      const assignedActId = await this.assignFirstActToUser(user.id, user.companyId);
+      if (!assignedActId) {
+        console.log(`[WhatsApp] no act available to assign to user ${user.email} (${user.id})`);
+        await api.send({
+          to: message.from,
+          message: "Olá! Ainda não há atos disponíveis no programa Zumira. Entre em contato com o seu gestor.",
+        });
+        return;
+      }
+      user.currentActChatbotId = assignedActId;
     }
 
+    const actChatbotId = user.currentActChatbotId!;
+
+    console.log(`Identified user: ${user.email} (${user.id})`);
+
     const existingChapter = await prismaClient.actChapter.findFirst({
-      where: { userId: user.id, actChatbotId: user.currentActChatbotId },
+      where: { userId: user.id, actChatbotId, type: ChapterType.WHATSAPP },
       orderBy: { updatedAt: "desc" },
       select: { id: true },
     });
@@ -1065,18 +1135,18 @@ class ActService {
       existingChapter?.id ??
       (
         await this.createChapter({
-          actChatbotId: user.currentActChatbotId,
-          type: ChapterType.REGULAR,
+          actChatbotId,
+          type: ChapterType.WHATSAPP,
           userId: user.id,
         })
       ).id;
 
-    const responseText = await this.message({
-      content: message.message,
-      actChapterId: chapterId,
-      userId: user.id,
-    });
+    console.log(`Resolved chapter: ${chapterId}`);
 
+    const responseText = await this.message(
+      { content: message.message, actChapterId: chapterId, userId: user.id },
+      "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp, sem markdown complexo (sem tabelas, sem cabeçalhos).",
+    );
     await api.send({ to: message.from, message: responseText });
   }
 }

@@ -38,11 +38,16 @@ interface WhatsappWebhookMessage {
   text?: { body?: string };
 }
 
+interface WhatsappMetadata {
+  display_phone_number?: string;
+  phone_number_id?: string;
+}
+
 interface WhatsappMessagesValue {
   contacts?: unknown[];
   messages?: WhatsappWebhookMessage[];
   messaging_product?: string;
-  metadata?: unknown;
+  metadata?: WhatsappMetadata;
   statuses?: unknown[];
 }
 
@@ -106,6 +111,25 @@ export class WhatsappApi {
       console.error("[WhatsApp] failed to send message:", error);
       throw error;
     }
+  }
+
+  matchesPhoneNumberId(payload: unknown, phoneNumberId: string): boolean {
+    const p = payload as WhatsappWebhookPayload;
+    const change = p?.entry?.[0]?.changes?.[0];
+    if (!change || change.field !== WhatsappWebhookField.MESSAGES) {
+      console.log("[WhatsApp] matchesPhoneNumberId: field is not messages, skipping check");
+      return true;
+    }
+    const metadata = (change.value as WhatsappMessagesValue)?.metadata;
+    if (!metadata?.phone_number_id) {
+      console.log("[WhatsApp] matchesPhoneNumberId: no phone_number_id in metadata, skipping check");
+      return true;
+    }
+    const matches = metadata.phone_number_id === phoneNumberId;
+    console.log(
+      `[WhatsApp] matchesPhoneNumberId: payload="${metadata.phone_number_id}" expected="${phoneNumberId}" matches=${matches}`,
+    );
+    return matches;
   }
 
   getField(payload: unknown): string | null {

@@ -31,7 +31,8 @@ enum UserGender {
 
 enum ChapterType {
   REGULAR
-  ADMIN_TEST
+  WHATSAPP
+  CHATBASE
 }
 
 enum BatchStatus {
@@ -53,7 +54,7 @@ enum MessageFactorAuthor {
 model User {
   id                   String      @id @default(uuid())
   email                String      @unique
-  phoneNumber          String?     @map("phone_number")
+  phoneNumber          String?     @unique @map("phone_number")
   password             String?
   name                 String
   customId             String?     @map("custom_id")
@@ -457,7 +458,7 @@ model PsychosocialFactor {
   description           String
   selfMonitoringBlockId String   @map("self_monitoring_block_id")
   createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @default(now()) @updatedAt @map("updated_at") // TODO: remover default na proxima migration
+  updatedAt             DateTime @updatedAt @map("updated_at")
 
   selfMonitoringBlock            SelfMonitoringBlock              @relation(fields: [selfMonitoringBlockId], references: [id])
   actMessagesPsychosocialFactors ActMessagesPsychosocialFactors[]

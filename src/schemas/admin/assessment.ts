@@ -56,6 +56,7 @@ export const ASSESSMENT_RESULT_FILTER_COLUMNS = [
   "occupation",
   "occupationLevel",
   "area",
+  "similarExposureGroup",
   "location",
   "skinColor",
   "hasDisability",

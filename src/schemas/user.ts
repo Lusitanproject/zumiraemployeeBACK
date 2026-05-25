@@ -35,7 +35,7 @@ export const SyncUserItemSchema = z.object({
   customId: z.string().min(1),
   email: z.string().email(),
   name: z.string().min(1),
-  phoneNumber: PhoneNumberSchema.optional(),
+  phoneNumber: z.string().optional(),
   occupation: z.string().optional(),
   occupationLevel: z.string().optional(),
   area: z.string().optional(),

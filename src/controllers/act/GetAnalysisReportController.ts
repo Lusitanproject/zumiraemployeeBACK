@@ -8,17 +8,17 @@ const RequestParams = z.object({
   actChatbotId: z.string().cuid(),
 });
 
-class GenerateAnalysisReportController {
+class GetAnalysisReportController {
   async handle(req: Request, res: Response) {
     const parsedParams = RequestParams.parse(req.params);
 
     const parsedQuery = ActAnalysisCompanyQuerySchema.parse(req.query);
 
     const service = new ActService();
-    const result = await service.generateAnalysisReport(parsedQuery.companyId, parsedParams.actChatbotId);
+    const result = await service.getAnalysisReport(parsedQuery.companyId, parsedParams.actChatbotId);
 
     return res.json({ status: "SUCCESS", data: result });
   }
 }
 
-export { GenerateAnalysisReportController };
+export { GetAnalysisReportController };

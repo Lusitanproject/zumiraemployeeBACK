@@ -18,8 +18,8 @@
 
 **Atual:** `manage-acts` → **Proposta:** `admin-acts-manage`
 
-| Permissão proposta  | Rotas cobertas                                                                                                                                                                                                                                                                                             |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Permissão proposta  | Rotas cobertas                                                                                                                                                                                                                                                                           |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `admin-acts-manage` | `GET /admin/acts` · `GET /admin/acts/by-trail` · `GET /admin/acts/:id` · `POST /admin/acts` · `POST /admin/acts/:id/import-chatbase-chapters` · `POST /admin/acts/:id/analysis` · `PUT /admin/acts/:id` · `PUT /admin/acts/update-many` · `PUT /admin/acts/analysis/factor-associations` |
 
 ---
@@ -28,9 +28,9 @@
 
 **Atual:** `manage-assessments` → **Proposta:** `admin-assessments-manage`
 
-| Permissão proposta          | Rotas cobertas                                                                                                                                                                                                                                                                    |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `admin-assessments-manage`  | `GET /admin/assessments` · `GET /admin/assessments/:id` · `GET /admin/assessments/results` · `GET /admin/assessments/results/download-report` · `GET /admin/assessments/questions/:assessmentId` · `GET /admin/assessments/ratings/:id` · `POST /admin/assessments/duplicate/:id` · `PUT /admin/assessments/:id` · `PUT /admin/assessments/ratings/:id` |
+| Permissão proposta         | Rotas cobertas                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin-assessments-manage` | `GET /admin/assessments` · `GET /admin/assessments/:id` · `GET /admin/assessments/results` · `GET /admin/assessments/results/download-report` · `GET /admin/assessments/questions/:assessmentId` · `GET /admin/assessments/ratings/:id` · `POST /admin/assessments/duplicate/:id` · `PUT /admin/assessments/:id` · `PUT /admin/assessments/ratings/:id` |
 
 ---
 
@@ -38,9 +38,9 @@
 
 **Atual:** `manage-company` → **Proposta:** `admin-companies-manage`
 
-| Permissão proposta        | Rotas cobertas                                                                                                                                                    |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `admin-companies-manage`  | `GET /admin/companies` · `GET /admin/companies/feedback` · `POST /admin/companies` · `POST /admin/companies/:id/assessments` · `POST /admin/companies/:companyId/feedback/users` · `PUT /admin/companies/:id` |
+| Permissão proposta       | Rotas cobertas                                                                                                                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin-companies-manage` | `GET /admin/companies` · `GET /admin/companies/feedback` · `POST /admin/companies` · `POST /admin/companies/:id/assessments` · `POST /admin/companies/:companyId/feedback/users` · `PUT /admin/companies/:id` |
 
 ---
 
@@ -48,9 +48,9 @@
 
 **Atual:** `manage-dimension` → **Proposta:** `admin-dimensions-manage`
 
-| Permissão proposta         | Rotas cobertas                                                                             |
-| -------------------------- | ------------------------------------------------------------------------------------------ |
-| `admin-dimensions-manage`  | `GET /admin/dimensions` · `GET /admin/dimensions/:id` · `POST /admin/dimensions` · `PUT /admin/dimensions/:id` |
+| Permissão proposta        | Rotas cobertas                                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `admin-dimensions-manage` | `GET /admin/dimensions` · `GET /admin/dimensions/:id` · `POST /admin/dimensions` · `PUT /admin/dimensions/:id` |
 
 ---
 
@@ -58,9 +58,9 @@
 
 **Atual:** `manage-nationalities` → **Proposta:** `admin-nationalities-manage`
 
-| Permissão proposta            | Rotas cobertas                                                                                         |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `admin-nationalities-manage`  | `GET /admin/nationalities` · `GET /admin/nationalities/:id` · `POST /admin/nationalities` · `PUT /admin/nationalities/:id` |
+| Permissão proposta           | Rotas cobertas                                                                                                             |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `admin-nationalities-manage` | `GET /admin/nationalities` · `GET /admin/nationalities/:id` · `POST /admin/nationalities` · `PUT /admin/nationalities/:id` |
 
 ---
 
@@ -68,9 +68,9 @@
 
 **Atual:** `manage-notifications` → **Proposta:** `admin-notifications-manage`
 
-| Permissão proposta             | Rotas cobertas                                                                                                                                                                                          |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `admin-notifications-manage`   | `GET /admin/notifications` · `GET /admin/notifications/types` · `GET /admin/notifications/types/:id` · `POST /admin/notifications` · `POST /admin/notifications/types` · `PUT /admin/notifications/:notificationId` · `PUT /admin/notifications/types/:id` · `DELETE /admin/notifications/:notificationId` |
+| Permissão proposta           | Rotas cobertas                                                                                                                                                                                                                                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin-notifications-manage` | `GET /admin/notifications` · `GET /admin/notifications/types` · `GET /admin/notifications/types/:id` · `POST /admin/notifications` · `POST /admin/notifications/types` · `PUT /admin/notifications/:notificationId` · `PUT /admin/notifications/types/:id` · `DELETE /admin/notifications/:notificationId` |
 
 ---
 
@@ -80,9 +80,9 @@
 
 > `GET /admin/permissions` (listar permissões disponíveis) continua coberto pela mesma permissão de roles, pois é operação auxiliar para configurar papéis.
 
-| Permissão proposta    | Rotas cobertas                                                                                                                                                  |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `admin-roles-manage`  | `GET /admin/roles` · `GET /admin/roles/:id` · `GET /admin/permissions` · `POST /admin/roles` · `PUT /admin/roles/:id` · `PUT /admin/roles/:id/permissions` · `DELETE /admin/roles/:id` |
+| Permissão proposta   | Rotas cobertas                                                                                                                                                                         |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin-roles-manage` | `GET /admin/roles` · `GET /admin/roles/:id` · `GET /admin/permissions` · `POST /admin/roles` · `PUT /admin/roles/:id` · `PUT /admin/roles/:id/permissions` · `DELETE /admin/roles/:id` |
 
 ---
 
@@ -90,9 +90,9 @@
 
 **Atual:** `manage-psychosocial-factors` → **Proposta:** `admin-psychosocial-factors-manage`
 
-| Permissão proposta                    | Rotas cobertas                                                                                                                                                |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `admin-psychosocial-factors-manage`   | `GET /admin/psychosocial-factors` · `GET /admin/psychosocial-factors/:id` · `POST /admin/psychosocial-factors` · `PUT /admin/psychosocial-factors/:id` · `DELETE /admin/psychosocial-factors/:id` |
+| Permissão proposta                  | Rotas cobertas                                                                                                                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin-psychosocial-factors-manage` | `GET /admin/psychosocial-factors` · `GET /admin/psychosocial-factors/:id` · `POST /admin/psychosocial-factors` · `PUT /admin/psychosocial-factors/:id` · `DELETE /admin/psychosocial-factors/:id` |
 
 ---
 
@@ -100,9 +100,9 @@
 
 **Atual:** `manage-self-monitoring` → **Proposta:** `admin-self-monitoring-manage`
 
-| Permissão proposta               | Rotas cobertas                                                                                                                                                                           |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `admin-self-monitoring-manage`   | `GET /admin/self-monitoring` · `GET /admin/self-monitoring/:id` · `GET /admin/self-monitoring/dimensions/:selfMonitoringBlockId` · `POST /admin/self-monitoring` · `PUT /admin/self-monitoring/:id` |
+| Permissão proposta             | Rotas cobertas                                                                                                                                                                                      |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `admin-self-monitoring-manage` | `GET /admin/self-monitoring` · `GET /admin/self-monitoring/:id` · `GET /admin/self-monitoring/dimensions/:selfMonitoringBlockId` · `POST /admin/self-monitoring` · `PUT /admin/self-monitoring/:id` |
 
 ---
 
@@ -110,9 +110,9 @@
 
 **Atual:** `manage-trails` → **Proposta:** `admin-trails-manage`
 
-| Permissão proposta     | Rotas cobertas                                                                                               |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `admin-trails-manage`  | `GET /admin/trails` · `GET /admin/trails/:id` · `POST /admin/trails` · `PUT /admin/trails/:id` |
+| Permissão proposta    | Rotas cobertas                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------- |
+| `admin-trails-manage` | `GET /admin/trails` · `GET /admin/trails/:id` · `POST /admin/trails` · `PUT /admin/trails/:id` |
 
 ---
 
@@ -135,11 +135,11 @@
 
 > **TODO (migração futura):** `POST /assessments`, `POST /assessments/questions`, `PUT /assessments/questions/:id` são operações de gestão em rota não-admin. Devem migrar para `/admin/assessments`. Por enquanto usam `admin-assessments-manage`.
 
-| Permissão proposta          | Rotas cobertas                                                                                                                                                                                                                                                                   | Atual                                   |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Permissão proposta          | Rotas cobertas                                                                                                                                                                                                                                                                 | Atual                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
 | `assessments-engage`        | `GET /assessments` · `GET /assessments/company` · `GET /assessments/alerts` · `GET /assessments/results` · `GET /assessments/results/:id` · `GET /assessments/:id` · `PUT /assessments/alerts/:id/read` · `POST /assessments/results` · `POST /assessments/feedback/users/:id` | _(sem permissão / `answer-assessment`)_ |
-| `assessments-read-analysis` | `GET /assessments/:id/results` · `GET /assessments/:id/results/user-filters` · `POST /assessments/:id/analysis/message` · `POST /assessments/feedback/companies/:id`                                                                                                             | `view-assessment-results`               |
-| `admin-assessments-manage`  | `POST /assessments` · `POST /assessments/questions` · `PUT /assessments/questions/:id` _(rotas não-admin, migração futura)_                                                                                                                                                      | `manage-assessments`                    |
+| `assessments-read-analysis` | `GET /assessments/:id/results` · `GET /assessments/:id/results/user-filters` · `POST /assessments/:id/analysis/message` · `POST /assessments/feedback/companies/:id`                                                                                                           | `view-assessment-results`               |
+| `admin-assessments-manage`  | `POST /assessments` · `POST /assessments/questions` · `PUT /assessments/questions/:id` _(rotas não-admin, migração futura)_                                                                                                                                                    | `manage-assessments`                    |
 
 ---
 
@@ -202,24 +202,24 @@
 
 ## Resumo das permissões existentes × propostas
 
-| Permissão atual               | Substitui por                                                                                                     |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `manage-acts`                 | `admin-acts-manage`                                                                                               |
-| `manage-assessments`          | `admin-assessments-manage`                                                                                        |
-| `manage-company`              | `admin-companies-manage` · `company-users-write` · `company-users-update` · `company-users-delete`               |
-| `manage-dimension`            | `admin-dimensions-manage`                                                                                         |
-| `manage-nationalities`        | `admin-nationalities-manage`                                                                                      |
-| `manage-notifications`        | `admin-notifications-manage`                                                                                      |
-| `manage-psychosocial-factors` | `admin-psychosocial-factors-manage`                                                                               |
-| `manage-roles`                | `admin-roles-manage`                                                                                              |
-| `manage-self-monitoring`      | `admin-self-monitoring-manage`                                                                                    |
-| `manage-trails`               | `admin-trails-manage`                                                                                             |
-| `manage-users`                | `admin-users-manage`                                                                                              |
-| `answer-act`                  | `acts-engage`                                                                                                     |
-| `view-act-analysis`           | `acts-read-analysis`                                                                                              |
-| `answer-assessment`           | `assessments-engage`                                                                                              |
-| `view-assessment-results`     | `assessments-read-analysis`                                                                                       |
-| `view-company-users`          | `companies-read` · `company-users-read`                                                                           |
+| Permissão atual               | Substitui por                                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| `manage-acts`                 | `admin-acts-manage`                                                                                |
+| `manage-assessments`          | `admin-assessments-manage`                                                                         |
+| `manage-company`              | `admin-companies-manage` · `company-users-write` · `company-users-update` · `company-users-delete` |
+| `manage-dimension`            | `admin-dimensions-manage`                                                                          |
+| `manage-nationalities`        | `admin-nationalities-manage`                                                                       |
+| `manage-notifications`        | `admin-notifications-manage`                                                                       |
+| `manage-psychosocial-factors` | `admin-psychosocial-factors-manage`                                                                |
+| `manage-roles`                | `admin-roles-manage`                                                                               |
+| `manage-self-monitoring`      | `admin-self-monitoring-manage`                                                                     |
+| `manage-trails`               | `admin-trails-manage`                                                                              |
+| `manage-users`                | `admin-users-manage`                                                                               |
+| `answer-act`                  | `acts-engage`                                                                                      |
+| `view-act-analysis`           | `acts-read-analysis`                                                                               |
+| `answer-assessment`           | `assessments-engage`                                                                               |
+| `view-assessment-results`     | `assessments-read-analysis`                                                                        |
+| `view-company-users`          | `companies-read` · `company-users-read`                                                            |
 
 ---
 
