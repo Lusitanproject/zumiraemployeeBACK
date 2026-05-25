@@ -1121,6 +1121,14 @@ class ActService {
       user.currentActChatbotId = assignedActId;
     }
 
+    if (message.messageType !== "text") {
+      await api.send({
+        to: message.from,
+        message: "Não é possível enviar mensagens de voz. Por favor, envie uma mensagem de texto.",
+      });
+      return;
+    }
+
     const actChatbotId = user.currentActChatbotId!;
 
     console.log(`Identified user: ${user.email} (${user.id})`);
