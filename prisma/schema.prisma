@@ -433,6 +433,7 @@ model ActChapter {
   user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages   ActChapterMessage[]
 
+  @@index([userId, actChatbotId, type, updatedAt(sort: Desc)])
   @@map("act_chapters")
 }
 
@@ -449,6 +450,8 @@ model ActChapterMessage {
   actChapter                     ActChapter                       @relation(fields: [actChapterId], references: [id], onDelete: Cascade)
   actMessagesPsychosocialFactors ActMessagesPsychosocialFactors[]
 
+  @@index([actChapterId, createdAt(sort: Asc)])
+  @@index([actChapterId, externalId])
   @@map("act_chapter_messages")
 }
 
