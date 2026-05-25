@@ -157,6 +157,11 @@ class ActAdminService {
       filteredSources: "WhatsApp",
     });
 
+    console.log(`${conversations.length} conversas encontradas no chatbase`);
+    for (const conv of conversations) {
+      console.log(`${conv.form_submission?.name} (${conv.form_submission?.phone}) - ${conv.messages.length} mensagens`);
+    }
+
     // Remove previously imported chapters/messages for these conversations and import again.
     const existingChapters = await prismaClient.actChapter.findMany({
       where: {
