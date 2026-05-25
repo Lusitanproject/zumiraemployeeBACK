@@ -300,7 +300,10 @@ class ActService {
     return { chapters };
   }
 
-  async message({ content, actChapterId, userId }: MessageActChatbotRequest, instructionsComplement?: string) {
+  async message(
+    { content, actChapterId, userId }: MessageActChatbotRequest,
+    opts?: { externalId?: string; instructionsComplement?: string },
+  ) {
     const conv = await prismaClient.actChapter.findFirst({
       where: { id: actChapterId, userId },
       include: { actChatbot: true, user: true },
@@ -309,7 +312,7 @@ class ActService {
     if (!conv) throw new PublicError("Conversa não existe");
 
     await prismaClient.actChapterMessage.create({
-      data: { actChapterId, role: "user", content },
+      data: { actChapterId, role: "user", content, externalId: opts?.externalId },
     });
 
     const { actChatbot: bot } = conv;
@@ -331,7 +334,7 @@ class ActService {
       instructions: [
         bot.messageInstructions,
         `O nome do usuário é: ${conv.user.name.split(" ")[0]}`,
-        instructionsComplement,
+        opts?.instructionsComplement,
       ]
         .filter(Boolean)
         .join("\n"),
@@ -1152,9 +1155,23 @@ class ActService {
 
     console.log(`Resolved chapter: ${chapterId}`);
 
+    const alreadyProcessed = await prismaClient.actChapterMessage.findFirst({
+      where: { actChapterId: chapterId, externalId: message.externalId },
+      select: { id: true },
+    });
+
+    if (alreadyProcessed) {
+      console.log(`[WhatsApp] message ${message.externalId} already processed, skipping`);
+      return;
+    }
+
     const responseText = await this.message(
       { content: message.message, actChapterId: chapterId, userId: user.id },
-      "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp, sem markdown complexo (sem tabelas, sem cabeçalhos).",
+      {
+        externalId: message.externalId,
+        instructionsComplement:
+          "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp, sem markdown complexo (sem tabelas, sem cabeçalhos).",
+      },
     );
     await api.send({ to: message.from, message: responseText });
   }
