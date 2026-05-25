@@ -6,6 +6,7 @@ interface SendMessageInput {
 export interface ReceiveMessage {
   from: string;
   message: string;
+  messageType: string;
   raw: unknown;
 }
 
@@ -36,6 +37,7 @@ export enum WhatsappWebhookField {
 interface WhatsappWebhookMessage {
   from: string;
   text?: { body?: string };
+  type?: string;
 }
 
 interface WhatsappMetadata {
@@ -167,6 +169,7 @@ export class WhatsappApi {
       {
         from: message.from,
         message: message.text?.body || "",
+        messageType: message.type ?? "text",
         raw: message,
       },
       this,
