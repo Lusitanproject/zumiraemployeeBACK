@@ -1171,11 +1171,17 @@ class ActService {
       {
         externalId: message.externalId,
         instructionsComplement:
-          "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp, sem markdown complexo (sem tabelas, sem cabeçalhos). " +
-          "Formatação suportada: _itálico_ (underscores), *negrito* (asteriscos), ~tachado~ (tils), ```monospace``` (três backticks), `código inline` (backtick simples). " +
-          "Listas: use '- item' ou '* item' para listas com marcadores, '1. item' para listas numeradas. " +
-          "Citação: use '> texto'. " +
-          "Não use markdown não suportado como # cabeçalhos, ** negrito duplo, ou tabelas.",
+          "Você está respondendo via WhatsApp. Use apenas formatação compatível com WhatsApp. " +
+          "Não use markdown complexo, tabelas, headings (#), HTML ou blocos incompatíveis. " +
+          "Formatações permitidas: " +
+          "*negrito* com um asterisco, " +
+          "_itálico_ com underscores, " +
+          "~tachado~ com tils, " +
+          "`código inline` com um backtick, " +
+          "```monospace``` com três backticks. " +
+          "Para listas, use '- item', '* item' ou '1. item'. " +
+          "Para citações, use '> texto'. " +
+          "Nunca use **negrito duplo**.",
       },
     );
     await api.send({ to: message.from, message: responseText });
