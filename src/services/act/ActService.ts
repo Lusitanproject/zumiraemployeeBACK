@@ -1126,6 +1126,7 @@ class ActService {
       user.currentActChatbotId = assignedActId;
     }
 
+    // rollback: trocar condição por `message.messageType !== "text"` e restaurar mensagem "Não é possível enviar mensagens de voz. Por favor, envie uma mensagem de texto."
     if (message.messageType !== "text" && message.messageType !== "audio") {
       await api.send({
         to: message.from,
@@ -1166,6 +1167,7 @@ class ActService {
       return;
     }
 
+    // rollback: remover este bloco inteiro (let messageContent + if "audio") e trocar messageContent por message.message na chamada this.message() abaixo
     let messageContent = message.message;
 
     if (message.messageType === "audio") {
@@ -1194,6 +1196,8 @@ class ActService {
           return;
         }
 
+        // rollback: remover esta linha
+        messageContent = `__audio__: ${messageContent}`;
         console.log(`[WhatsApp] audio transcribed for ${message.from}: "${messageContent}"`);
       } catch (error) {
         console.error(`[WhatsApp] failed to process audio from ${message.from}:`, error);
@@ -1211,6 +1215,8 @@ class ActService {
         externalId: message.externalId,
         instructionsComplement: [
           "Você está respondendo via WhatsApp. Use apenas formatação compatível com WhatsApp.",
+          // rollback: remover esta linha
+          "Quando a mensagem do usuário começar com __audio__: significa que o conteúdo foi transcrito de um áudio de voz. Considere isso ao interpretar a mensagem.",
           "Não use markdown complexo, tabelas, headings (#), HTML ou blocos incompatíveis.",
           "Formatações permitidas:",
           "*negrito* com um asterisco,",
