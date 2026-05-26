@@ -56,8 +56,9 @@ export class OpenAiApi {
   private client: OpenAI;
   private apiKey: string;
   private model: string;
+  private transcriptionModel: string;
 
-  constructor(opts?: { model?: string }) {
+  constructor(opts?: { model?: string; transcriptionModel?: string }) {
     const key = process.env.OPENAI_API_KEY;
     if (!key) {
       throw new Error("Environment variable OPENAI_API_KEY is not set");
@@ -66,6 +67,7 @@ export class OpenAiApi {
     this.apiKey = key;
     this.client = new OpenAI({ apiKey: this.apiKey });
     this.model = opts?.model ?? "gpt-5-mini";
+    this.transcriptionModel = opts?.transcriptionModel ?? "gpt-4o-mini-transcribe";
   }
 
   async generateResponse({ instructions, messages, openaiVectorStoreId }: GenerateOpenAiResponseWithRagRequest) {
@@ -407,6 +409,25 @@ export class OpenAiApi {
     } catch (error) {
       console.error("Failed to create OpenAI batch:", error);
       throw error;
+    }
+  }
+
+  async transcribeAudio(filePath: string): Promise<string> {
+    console.log(`[OpenAI] transcribing audio file: ${filePath}`);
+    try {
+      const start = Date.now();
+      const transcription = await this.client.audio.transcriptions.create({
+        file: fs.createReadStream(filePath),
+        model: this.transcriptionModel,
+        language: "pt",
+      });
+      console.log(`[OpenAI] audio transcribed in ${Date.now() - start}ms: "${transcription.text}"`);
+      return transcription.text;
+    } catch (error) {
+      console.error("[OpenAI] failed to transcribe audio:", error);
+      throw error;
+    } finally {
+      await fs.promises.unlink(filePath).catch((err) => console.error("[OpenAI] failed to delete temp audio:", err));
     }
   }
 

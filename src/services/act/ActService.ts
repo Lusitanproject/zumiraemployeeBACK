@@ -1126,10 +1126,10 @@ class ActService {
       user.currentActChatbotId = assignedActId;
     }
 
-    if (message.messageType !== "text") {
+    if (message.messageType !== "text" && message.messageType !== "audio") {
       await api.send({
         to: message.from,
-        message: "Não é possível enviar mensagens de voz. Por favor, envie uma mensagem de texto.",
+        message: "Não é possível enviar este tipo de mensagem. Por favor, envie uma mensagem de texto ou áudio de voz.",
       });
       return;
     }
@@ -1166,8 +1166,47 @@ class ActService {
       return;
     }
 
+    let messageContent = message.message;
+
+    if (message.messageType === "audio") {
+      if (!message.audioId) {
+        console.log(`[WhatsApp] audio message without audioId from ${message.from}`);
+        await api.send({
+          to: message.from,
+          message: "Não foi possível processar o áudio. Por favor, tente novamente.",
+        });
+        return;
+      }
+
+      try {
+        const mediaUrl = await api.getMediaUrl(message.audioId);
+        const audioBuffer = await api.downloadAudio(mediaUrl);
+        const tempFilePath = await api.saveTempAudio(audioBuffer);
+
+        const openai = new OpenAiApi();
+        messageContent = await openai.transcribeAudio(tempFilePath);
+
+        if (!messageContent.trim()) {
+          await api.send({
+            to: message.from,
+            message: "Não consegui entender o áudio. Por favor, tente novamente ou envie uma mensagem de texto.",
+          });
+          return;
+        }
+
+        console.log(`[WhatsApp] audio transcribed for ${message.from}: "${messageContent}"`);
+      } catch (error) {
+        console.error(`[WhatsApp] failed to process audio from ${message.from}:`, error);
+        await api.send({
+          to: message.from,
+          message: "Ocorreu um erro ao processar o áudio. Por favor, tente novamente ou envie uma mensagem de texto.",
+        });
+        return;
+      }
+    }
+
     const responseText = await this.message(
-      { content: message.message, actChapterId: chapterId, userId: user.id },
+      { content: messageContent, actChapterId: chapterId, userId: user.id },
       {
         externalId: message.externalId,
         instructionsComplement: [

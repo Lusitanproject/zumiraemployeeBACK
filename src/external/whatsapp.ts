@@ -1,3 +1,8 @@
+import { randomUUID } from "crypto";
+import { promises as fsPromises } from "fs";
+import os from "os";
+import path from "path";
+
 interface SendMessageInput {
   message: string;
   to: string;
@@ -9,6 +14,7 @@ export interface ReceiveMessage {
   message: string;
   messageType: string;
   raw: unknown;
+  audioId?: string;
 }
 
 export type OnMessageReceived = (message: ReceiveMessage, api: WhatsappApi) => Promise<void>;
@@ -38,6 +44,7 @@ export enum WhatsappWebhookField {
 interface WhatsappWebhookMessage {
   from: string;
   id: string;
+  audio?: { id: string; mime_type: string; url?: string; voice?: boolean };
   text?: { body?: string };
   type?: string;
 }
@@ -117,6 +124,46 @@ export class WhatsappApi {
     }
   }
 
+  async getMediaUrl(mediaId: string): Promise<string> {
+    console.log(`[WhatsApp] fetching media URL for media ID: ${mediaId}`);
+    const response = await fetch(`${this.baseUrl}/${mediaId}`, {
+      headers: { Authorization: `Bearer ${this.token}` },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`WhatsApp media metadata error: ${response.status} - ${JSON.stringify(errorData)}`);
+    }
+
+    const data = (await response.json()) as { url: string; mime_type: string };
+    console.log(`[WhatsApp] resolved media URL for ${mediaId}`);
+    return data.url;
+  }
+
+  async downloadAudio(mediaUrl: string): Promise<Buffer> {
+    console.log(`[WhatsApp] downloading audio`);
+    const response = await fetch(mediaUrl, {
+      headers: { Authorization: `Bearer ${this.token}` },
+    });
+
+    if (!response.ok) {
+      throw new Error(`WhatsApp audio download error: ${response.status}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    console.log(`[WhatsApp] audio downloaded: ${buffer.length} bytes`);
+    return buffer;
+  }
+
+  async saveTempAudio(buffer: Buffer): Promise<string> {
+    const fileName = `whatsapp-audio-${randomUUID()}.ogg`;
+    const filePath = path.join(os.tmpdir(), fileName);
+    await fsPromises.writeFile(filePath, buffer);
+    console.log(`[WhatsApp] audio saved to temp file: ${filePath}`);
+    return filePath;
+  }
+
   matchesPhoneNumberId(payload: unknown, phoneNumberId: string): boolean {
     const p = payload as WhatsappWebhookPayload;
     const change = p?.entry?.[0]?.changes?.[0];
@@ -173,6 +220,7 @@ export class WhatsappApi {
         externalId: message.id,
         message: message.text?.body || "",
         messageType: message.type ?? "text",
+        audioId: message.type === "audio" ? message.audio?.id : undefined,
         raw: message,
       },
       this,
