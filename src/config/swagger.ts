@@ -537,3 +537,13 @@ const options: swaggerJSDoc.Options = {
 };
 
 export const swaggerSpec = swaggerJSDoc(options);
+
+console.log("[swagger] __dirname:", __dirname);
+console.log("[swagger] isDistRuntime:", isDistRuntime);
+console.log("[swagger] apis globs:", apis);
+console.log(
+  "[swagger] paths count:",
+  (swaggerSpec as { paths?: Record<string, unknown> }).paths
+    ? Object.keys((swaggerSpec as { paths: Record<string, unknown> }).paths).length
+    : 0,
+);
