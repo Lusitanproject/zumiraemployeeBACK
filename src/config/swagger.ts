@@ -1,3 +1,4 @@
+import path from "path";
 import swaggerJSDoc from "swagger-jsdoc";
 
 const isDistRuntime = __dirname.includes("/dist/");
@@ -6,11 +7,13 @@ const docsBaseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : `http://localhost:${process.env.PORT ?? "3000"}`;
 
-const srcRoutes = ["./src/routes/*.ts", "./src/routes/admin/*.ts", "./src/routes/webhooks/*.ts"];
+const routeExt = isDistRuntime ? "js" : "ts";
 
-const distRoutes = ["./dist/routes/*.js", "./dist/routes/admin/*.js", "./dist/routes/webhooks/*.js"];
-
-const apis = isDistRuntime ? distRoutes : srcRoutes;
+const apis = [
+  path.resolve(__dirname, `../routes/*.${routeExt}`),
+  path.resolve(__dirname, `../routes/admin/*.${routeExt}`),
+  path.resolve(__dirname, `../routes/webhooks/*.${routeExt}`),
+];
 
 const options: swaggerJSDoc.Options = {
   definition: {
