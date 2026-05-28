@@ -26,6 +26,7 @@ class UserAdminService {
       data: {
         ...data,
         currentActChatbotId: firstAct?.id,
+        registrationComplete: false,
       },
     });
 
@@ -72,7 +73,7 @@ class UserAdminService {
     });
 
     const result = await prismaClient.user.createMany({
-      data: data.map((d) => ({ ...d, currentActChatbotId: firstAct?.id })),
+      data: data.map((d) => ({ ...d, currentActChatbotId: firstAct?.id, registrationComplete: false })),
     });
 
     return result;

@@ -72,6 +72,7 @@ model User {
   roleId               String      @map("role_id")
   companyId            String?     @map("company_id")
   currentActChatbotId  String?     @map("current_act_chatbot_id")
+  registrationComplete Boolean     @default(true) @map("registration_complete")
   createdAt            DateTime    @default(now()) @map("created_at")
   updatedAt            DateTime    @updatedAt @map("updated_at")
 

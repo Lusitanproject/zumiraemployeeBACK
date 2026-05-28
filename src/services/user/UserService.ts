@@ -5,7 +5,7 @@ import { z } from "zod";
 import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { FindUserByRequest, SearchUsersRequest, UpdateUserSchema, UserFilterColumn } from "../../schemas/admin/users";
-import { CreateUserRequest, SyncUserItem } from "../../schemas/user";
+import { CreateUserRequest, SyncUserItem, UpdateMeRequest } from "../../schemas/user";
 import { tryParsePhone } from "../../utils/phone";
 
 type UpdateUser = z.infer<typeof UpdateUserSchema>;
@@ -249,6 +249,38 @@ class UserService {
     return { ...response };
   }
 
+  async updateMe({ id, password, ...data }: UpdateMeRequest & { id: string }) {
+    const user = await prismaClient.user.findUnique({ where: { id } });
+    if (!user) throw new PublicError("Usuário não encontrado");
+
+    if (data.phoneNumber) {
+      const phoneExists = await prismaClient.user.findFirst({
+        where: { phoneNumber: data.phoneNumber, NOT: { id } },
+      });
+      if (phoneExists) throw new PublicError("Número de telefone já está em uso");
+    }
+
+    let passwordUpdate: { password: string; registrationComplete?: boolean } | undefined;
+
+    if (password) {
+      if (user.password && user.registrationComplete) {
+        throw new PublicError("Não é possível alterar a senha após o cadastro ser concluído");
+      }
+      passwordUpdate = {
+        password: await hash(password),
+        ...(user.password ? { registrationComplete: true } : {}),
+      };
+    }
+
+    const updated = await prismaClient.user.update({
+      where: { id },
+      data: { ...data, ...passwordUpdate },
+    });
+
+    const { password: _password, ...response } = updated;
+    return { ...response };
+  }
+
   async delete(id: string, where?: Prisma.UserWhereInput) {
     if (where) {
       const { count } = await prismaClient.user.deleteMany({ where: { id, ...where } });
@@ -265,7 +297,12 @@ class UserService {
 
     type SyncPlan = {
       creates: Array<{ customId: string; data: Omit<SyncUserItem, "customId"> }>;
-      updates: Array<{ customId: string; userId: string; changes: Record<string, { from: unknown; to: unknown }> }>;
+      updates: Array<{
+        customId: string;
+        userId: string;
+        changes: Record<string, { from: unknown; to: unknown }>;
+        password?: string;
+      }>;
       unchanged: Array<{ customId: string; userId: string }>;
       conflicts: Array<{
         type: ConflictType;
@@ -339,6 +376,8 @@ class UserService {
       admissionDate: true,
       gender: true,
       nationalityId: true,
+      password: true,
+      registrationComplete: true,
     } as const;
 
     const [byCustomId, byEmail, byPhone] = await Promise.all([
@@ -432,6 +471,9 @@ class UserService {
       }
 
       if (candidate) {
+        const effectivePassword =
+          item.password && candidate.password && candidate.registrationComplete ? undefined : item.password;
+
         const changes: SyncPlan["updates"][0]["changes"] = {};
         for (const field of DIFFABLE_FIELDS) {
           const toRaw = item[field as keyof typeof item];
@@ -442,8 +484,8 @@ class UserService {
           if (from !== to) changes[field] = { from, to };
         }
 
-        if (Object.keys(changes).length > 0) {
-          updates.push({ customId: item.customId, userId: candidate.id, changes });
+        if (Object.keys(changes).length > 0 || effectivePassword) {
+          updates.push({ customId: item.customId, userId: candidate.id, changes, password: effectivePassword });
         } else {
           unchanged.push({ customId: item.customId, userId: candidate.id });
         }
@@ -491,8 +533,16 @@ class UserService {
     const created: Array<{ customId: string; userId: string }> = [];
     for (const op of plan.creates) {
       try {
+        const { password: rawPassword, ...userData } = op.data;
         const user = await prismaClient.user.create({
-          data: { ...op.data, customId: op.customId, companyId, roleId: role.id, currentActChatbotId: firstAct?.id },
+          data: {
+            ...userData,
+            customId: op.customId,
+            companyId,
+            roleId: role.id,
+            currentActChatbotId: firstAct?.id,
+            ...(rawPassword && { password: await hash(rawPassword), registrationComplete: false }),
+          },
         });
         created.push({ customId: op.customId, userId: user.id });
       } catch (err) {
@@ -503,8 +553,10 @@ class UserService {
     const updated: Array<{ customId: string; userId: string }> = [];
     for (const op of plan.updates) {
       try {
+        const passwordData = op.password ? { password: await hash(op.password), registrationComplete: false } : {};
+
         const data = Object.fromEntries(Object.entries(op.changes).map(([k, v]) => [k, v.to]));
-        await prismaClient.user.update({ where: { id: op.userId }, data });
+        await prismaClient.user.update({ where: { id: op.userId }, data: { ...data, ...passwordData } });
         updated.push({ customId: op.customId, userId: op.userId });
       } catch (err) {
         failed.push({ customId: op.customId, reason: err instanceof Error ? err.message : "Erro desconhecido" });
