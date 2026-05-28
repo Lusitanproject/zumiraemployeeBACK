@@ -536,6 +536,7 @@ const options: swaggerJSDoc.Options = {
   apis,
 };
 
+export const swaggerApis = apis;
 export const swaggerSpec = swaggerJSDoc(options);
 
 console.log("[swagger] __dirname:", __dirname);
