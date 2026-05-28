@@ -1,19 +1,15 @@
 import path from "path";
 import swaggerJSDoc from "swagger-jsdoc";
 
-const isDistRuntime = __dirname.includes("/dist/");
+const isLocal = process.env.ENV === "local";
 
 const docsBaseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : `http://localhost:${process.env.PORT ?? "3000"}`;
 
-const routeExt = isDistRuntime ? "js" : "ts";
+const routeExt = isLocal ? "ts" : "js";
 
-const apis = [
-  path.resolve(__dirname, `../routes/*.${routeExt}`),
-  path.resolve(__dirname, `../routes/admin/*.${routeExt}`),
-  path.resolve(__dirname, `../routes/webhooks/*.${routeExt}`),
-];
+const apis = [path.resolve(__dirname, `../**/*.routes.${routeExt}`)];
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -538,13 +534,3 @@ const options: swaggerJSDoc.Options = {
 
 export const swaggerApis = apis;
 export const swaggerSpec = swaggerJSDoc(options);
-
-console.log("[swagger] __dirname:", __dirname);
-console.log("[swagger] isDistRuntime:", isDistRuntime);
-console.log("[swagger] apis globs:", apis);
-console.log(
-  "[swagger] paths count:",
-  (swaggerSpec as { paths?: Record<string, unknown> }).paths
-    ? Object.keys((swaggerSpec as { paths: Record<string, unknown> }).paths).length
-    : 0,
-);
