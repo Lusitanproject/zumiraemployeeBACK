@@ -322,6 +322,7 @@ model CompanyAssessmentAnalysis {
   assessment  Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   vectorStore OpenAIVectorStore? @relation(fields: [vectorStoreId], references: [id])
 
+  @@index([companyId, assessmentId, createdAt(sort: Desc)])
   @@map("company_assessment_analysis")
 }
 
@@ -485,6 +486,7 @@ model CompanyActAnalysis {
   vectorStore               OpenAIVectorStore?        @relation(fields: [vectorStoreId], references: [id])
   companyActAnalysisBatches CompanyActAnalysisBatch[]
 
+  @@index([companyId, actChatbotId, createdAt(sort: Desc)])
   @@map("company_act_analyses")
 }
 
