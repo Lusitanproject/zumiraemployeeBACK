@@ -104,7 +104,12 @@ export class WhatsappApi {
     this.phoneNumberId = phoneNumberId;
   }
 
-  async send({ to, message }: SendMessageInput): Promise<unknown> {
+  async send({ to, message }: SendMessageInput): Promise<unknown | void> {
+    if (this.phoneNumberId === "123456123") {
+      console.log("Test webhook phone number detected. Message will not be sent.");
+      return;
+    }
+
     console.log(`[WhatsApp] sending message to ${to}:`, message);
     try {
       const response = await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
