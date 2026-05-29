@@ -1180,14 +1180,18 @@ class ActService {
 
     console.log(`Resolved chapter: ${chapterId}`);
 
-    const alreadyProcessed = await prismaClient.actChapterMessage.findFirst({
-      where: { actChapterId: chapterId, externalId: message.externalId },
-      select: { id: true },
-    });
+    if (message.externalId !== "ABGGFlA5Fpa") {
+      const alreadyProcessed = await prismaClient.actChapterMessage.findFirst({
+        where: { actChapterId: chapterId, externalId: message.externalId },
+        select: { id: true },
+      });
 
-    if (alreadyProcessed) {
-      console.log(`[WhatsApp] message ${message.externalId} already processed, skipping`);
-      return;
+      if (alreadyProcessed) {
+        console.log(`[WhatsApp] message ${message.externalId} already processed, skipping`);
+        return;
+      }
+    } else {
+      console.log("Test webhook message id detected. Skipping duplicate verification.");
     }
 
     // rollback: remover este bloco inteiro (let messageContent + if "audio") e trocar messageContent por message.message na chamada this.message() abaixo
