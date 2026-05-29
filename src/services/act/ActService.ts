@@ -525,10 +525,16 @@ class ActService {
 
     const alreadySaved = analysis.companyActAnalysisBatches.every((batch) => batch.status === "completed");
 
+    console.log(
+      `[act/analysis] resolveLatestAnalysis analysisId=${analysis.id} alreadySaved=${alreadySaved} batches=${JSON.stringify(analysis.companyActAnalysisBatches.map((b) => ({ id: b.id, status: b.status })))}`,
+    );
+
     if (!alreadySaved) {
       const allDone = await this.retrieveAndSaveAnalysisResults(analysis.companyActAnalysisBatches);
+      console.log(`[act/analysis] retrieveAndSaveAnalysisResults allDone=${allDone}`);
       if (!allDone) return null;
 
+      console.log(`[act/analysis] calling generateAnalysisReportRag for analysisId=${analysis.id}`);
       await this.generateAnalysisReportRag(companyId, actChatbotId, analysis);
 
       analysis = await prismaClient.companyActAnalysis.findFirst({
@@ -869,6 +875,9 @@ class ActService {
       ]);
 
     // os segmentos chamam resolveLatestAnalysis internamente — se um retorna available: false (batches pendentes), todos retornariam; usamos esse como proxy
+    console.log(
+      `[act/analysis] buildAnalysisReportData companyId=${companyId} actChatbotId=${actChatbotId} bySimilarExposureGroup.available=${bySimilarExposureGroup.available}`,
+    );
     if (!bySimilarExposureGroup.available) return null;
 
     const factorWeights = weightsResult.available ? weightsResult.factors : [];
@@ -917,7 +926,12 @@ class ActService {
     analysis: { id: string },
   ): Promise<void> {
     const report = await this.buildAnalysisReportData(companyId, actChatbotId);
-    if (!report) return;
+    if (!report) {
+      console.log(
+        `[RAG/act] buildAnalysisReportData returned null for analysisId=${analysis.id} — batches still pending, skipping RAG`,
+      );
+      return;
+    }
 
     console.log(`[RAG/act] starting RAG setup for analysis ${analysis.id} (actChatbotId: ${actChatbotId})`);
     try {
@@ -945,6 +959,15 @@ class ActService {
       });
 
       console.log(`[RAG/act] analysis ${analysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
+
+      const saved = await prismaClient.companyActAnalysis.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: { companyId, actChatbotId },
+        select: { id: true, vectorStoreId: true, text: true },
+      });
+      console.log(
+        `[RAG/act] verify after update: id=${saved?.id} vectorStoreId=${saved?.vectorStoreId} hasText=${!!saved?.text}`,
+      );
     } catch (error) {
       throw new Error(`[RAG/act] failed to create RAG for analysis ${analysis.id}: ${error}`);
     }

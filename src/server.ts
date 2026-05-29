@@ -3,7 +3,7 @@ import "express-async-errors";
 import express, { RequestHandler } from "express";
 import swaggerUi from "swagger-ui-express";
 
-import { swaggerSpec } from "./config/swagger";
+import { swaggerApis, swaggerSpec } from "./config/swagger";
 import { errorHandler } from "./middlewares/errorHandler";
 import { requestLogger } from "./middlewares/requestLogger";
 import { router } from "./routes";
@@ -22,6 +22,15 @@ app.use(requestLogger);
 app.get("/", (_req, res) => res.redirect("/docs"));
 app.use("/docs", ...swaggerServeHandlers, swaggerSetupHandler);
 app.get("/docs-json", (_req, res) => res.json(swaggerSpec));
+app.get("/docs-debug", (_req, res) => {
+  const spec = swaggerSpec as { paths?: Record<string, unknown> };
+  res.json({
+    __dirname: __dirname,
+    apis: swaggerApis,
+    pathsCount: spec.paths ? Object.keys(spec.paths).length : 0,
+    paths: spec.paths ? Object.keys(spec.paths) : [],
+  });
+});
 
 app.use(router);
 

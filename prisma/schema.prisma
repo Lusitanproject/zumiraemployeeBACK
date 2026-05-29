@@ -72,6 +72,7 @@ model User {
   roleId               String      @map("role_id")
   companyId            String?     @map("company_id")
   currentActChatbotId  String?     @map("current_act_chatbot_id")
+  registrationComplete Boolean     @default(true) @map("registration_complete")
   createdAt            DateTime    @default(now()) @map("created_at")
   updatedAt            DateTime    @updatedAt @map("updated_at")
 
@@ -321,6 +322,7 @@ model CompanyAssessmentAnalysis {
   assessment  Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   vectorStore OpenAIVectorStore? @relation(fields: [vectorStoreId], references: [id])
 
+  @@index([companyId, assessmentId, createdAt(sort: Desc)])
   @@map("company_assessment_analysis")
 }
 
@@ -484,6 +486,7 @@ model CompanyActAnalysis {
   vectorStore               OpenAIVectorStore?        @relation(fields: [vectorStoreId], references: [id])
   companyActAnalysisBatches CompanyActAnalysisBatch[]
 
+  @@index([companyId, actChatbotId, createdAt(sort: Desc)])
   @@map("company_act_analyses")
 }
 
