@@ -73,20 +73,31 @@ interface WhatsappWebhookPayload {
   }[];
 }
 
+export function getWebhookFieldFromPayload(payload: unknown): string | null {
+  const p = payload as WhatsappWebhookPayload;
+  return p?.entry?.[0]?.changes?.[0]?.field ?? null;
+}
+
+export function getPhoneNumberIdFromPayload(payload: unknown): string | null {
+  const p = payload as WhatsappWebhookPayload;
+  const change = p?.entry?.[0]?.changes?.[0];
+  if (!change || change.field !== WhatsappWebhookField.MESSAGES) {
+    return null;
+  }
+  const metadata = (change.value as WhatsappMessagesValue)?.metadata;
+  return metadata?.phone_number_id ?? null;
+}
+
 export class WhatsappApi {
   private baseUrl = "https://graph.facebook.com/v22.0";
   private token: string;
   private phoneNumberId: string;
 
-  constructor() {
+  constructor(phoneNumberId: string) {
     const token = process.env.WHATSAPP_TOKEN;
-    const phoneNumberId = process.env.PHONE_NUMBER_ID;
 
     if (!token) {
       throw new Error("Environment variable WHATSAPP_TOKEN is not set");
-    }
-    if (!phoneNumberId) {
-      throw new Error("Environment variable PHONE_NUMBER_ID is not set");
     }
 
     this.token = token;
@@ -165,27 +176,16 @@ export class WhatsappApi {
   }
 
   matchesPhoneNumberId(payload: unknown, phoneNumberId: string): boolean {
-    const p = payload as WhatsappWebhookPayload;
-    const change = p?.entry?.[0]?.changes?.[0];
-    if (!change || change.field !== WhatsappWebhookField.MESSAGES) {
-      console.log("[WhatsApp] matchesPhoneNumberId: field is not messages, skipping check");
+    const phoneNumberIdFromPayload = getPhoneNumberIdFromPayload(payload);
+    if (!phoneNumberIdFromPayload) {
+      console.log("[WhatsApp] matchesPhoneNumberId: no phone_number_id in payload, skipping check");
       return true;
     }
-    const metadata = (change.value as WhatsappMessagesValue)?.metadata;
-    if (!metadata?.phone_number_id) {
-      console.log("[WhatsApp] matchesPhoneNumberId: no phone_number_id in metadata, skipping check");
-      return true;
-    }
-    const matches = metadata.phone_number_id === phoneNumberId;
+    const matches = phoneNumberIdFromPayload === phoneNumberId;
     console.log(
-      `[WhatsApp] matchesPhoneNumberId: payload="${metadata.phone_number_id}" expected="${phoneNumberId}" matches=${matches}`,
+      `[WhatsApp] matchesPhoneNumberId: payload="${phoneNumberIdFromPayload}" expected="${phoneNumberId}" matches=${matches}`,
     );
     return matches;
-  }
-
-  getField(payload: unknown): string | null {
-    const p = payload as WhatsappWebhookPayload;
-    return p?.entry?.[0]?.changes?.[0]?.field ?? null;
   }
 
   async receive(payload: unknown, onMessage: OnMessageReceived): Promise<void> {
