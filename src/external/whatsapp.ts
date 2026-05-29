@@ -3,6 +3,8 @@ import { promises as fsPromises } from "fs";
 import os from "os";
 import path from "path";
 
+import { Settings } from "../settings";
+
 interface SendMessageInput {
   message: string;
   to: string;
@@ -105,8 +107,11 @@ export class WhatsappApi {
   }
 
   async send({ to, message }: SendMessageInput): Promise<unknown | void> {
-    if (this.phoneNumberId === "123456123") {
-      console.log(`Test webhook phone number detected. Message will not be sent.\nContent: ${message}`);
+    const allowedIds = Settings.phoneNumberIds;
+    if (allowedIds.length > 0 && !allowedIds.includes(this.phoneNumberId)) {
+      console.log(
+        `[WhatsApp] phone number ID "${this.phoneNumberId}" is not in the allowed list. Message will not be sent.\nContent: ${message}`,
+      );
       return;
     }
 
