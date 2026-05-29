@@ -106,7 +106,7 @@ export class WhatsappApi {
 
   async send({ to, message }: SendMessageInput): Promise<unknown | void> {
     if (this.phoneNumberId === "123456123") {
-      console.log("Test webhook phone number detected. Message will not be sent.");
+      console.log(`Test webhook phone number detected. Message will not be sent.\nContent: ${message}`);
       return;
     }
 
