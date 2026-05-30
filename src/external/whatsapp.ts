@@ -185,6 +185,37 @@ export class WhatsappApi {
     return filePath;
   }
 
+  async markAsRead(messageId: string): Promise<void> {
+    await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        status: "read",
+        message_id: messageId,
+      }),
+    });
+  }
+
+  async sendTyping(to: string): Promise<void> {
+    await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to,
+        type: "text",
+        typing: { status: "typing" },
+      }),
+    });
+  }
+
   matchesPhoneNumberId(payload: unknown, phoneNumberId: string): boolean {
     const phoneNumberIdFromPayload = getPhoneNumberIdFromPayload(payload);
     if (!phoneNumberIdFromPayload) {

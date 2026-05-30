@@ -1194,6 +1194,8 @@ class ActService {
       console.log("Test webhook message id detected. Skipping duplicate verification.");
     }
 
+    await Promise.all([api.markAsRead(message.externalId), api.sendTyping(message.from)]);
+
     // rollback: remover este bloco inteiro (let messageContent + if "audio") e trocar messageContent por message.message na chamada this.message() abaixo
     let messageContent = message.message;
 
