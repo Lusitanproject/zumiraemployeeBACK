@@ -40,6 +40,7 @@ export interface ActAnalysisFilters {
   occupation?: string;
   occupationLevel?: string;
   search?: string;
+  similarExposureGroup?: string;
   skinColor?: string;
 }
 
@@ -115,6 +116,7 @@ export type FindActAnalysisSummaryResult =
   | { available: false }
   | {
       available: true;
+      userCount: number;
       totalScore: number;
       positiveScore: number;
       negativeScore: number;
@@ -547,13 +549,17 @@ class ActService {
     return analysis;
   }
 
-  private async queryAnalysisRows(analysisId: string, filters: ActAnalysisFilters): Promise<ActAnalysisItem[]> {
+  private async queryAnalysisRows(
+    analysisId: string,
+    filters: ActAnalysisFilters,
+  ): Promise<{ items: ActAnalysisItem[]; userCount: number }> {
     const gender = filters.gender ?? null;
     const area = filters.area ?? null;
     const location = filters.location ?? null;
     const search = filters.search ?? null;
     const occupation = filters.occupation ?? null;
     const occupationLevel = filters.occupationLevel ?? null;
+    const similarExposureGroup = filters.similarExposureGroup ?? null;
     const skinColor = filters.skinColor ?? null;
     const hasDisability = filters.hasDisability ?? null;
     const nationalityId = filters.nationalityId ?? null;
@@ -562,7 +568,8 @@ class ActService {
       WITH filtered AS (
         SELECT
           cab.company_act_analysis_id AS act_analysis_id,
-          ampf.factor_id
+          ampf.factor_id,
+          u.id AS user_id
         FROM act_messages_psychosocial_factors ampf
         JOIN company_act_analysis_batches cab ON cab.id = ampf.analysis_batch_id
         JOIN act_chapter_messages m ON m.id = ampf.message_id
@@ -576,9 +583,13 @@ class ActService {
           AND (${location}::text IS NULL OR u.location = ${location})
           AND (${occupation}::text IS NULL OR u.occupation = ${occupation})
           AND (${occupationLevel}::text IS NULL OR u.occupation_level = ${occupationLevel})
+          AND (${similarExposureGroup}::text IS NULL OR u.similar_exposure_group = ${similarExposureGroup})
           AND (${skinColor}::text IS NULL OR u.skin_color = ${skinColor})
           AND (${hasDisability}::boolean IS NULL OR u.has_disability = ${hasDisability}::boolean)
           AND (${nationalityId}::text IS NULL OR u.nationality_id = ${nationalityId})
+      ),
+      user_count AS (
+        SELECT COUNT(DISTINCT user_id)::int AS cnt FROM filtered
       ),
       aggregated AS (
         SELECT act_analysis_id, factor_id, COUNT(*)::int AS total
@@ -588,7 +599,8 @@ class ActService {
       SELECT
         a.factor_id, a.total,
         f.id as factor_id_full, f.name as factor_name, f.wheight as factor_wheight,
-        smb.id as smb_id, smb.title as smb_title
+        smb.id as smb_id, smb.title as smb_title,
+        (SELECT cnt FROM user_count) AS user_count
       FROM aggregated a
       JOIN psychosocial_factors f ON f.id = a.factor_id
       LEFT JOIN self_monitoring_blocks smb ON f.self_monitoring_block_id = smb.id
@@ -602,9 +614,11 @@ class ActService {
       factor_wheight: number;
       smb_id: string;
       smb_title: string;
+      user_count: number;
     }>;
 
-    return rows.map((r) => ({
+    const userCount = rows[0]?.user_count ?? 0;
+    const items = rows.map((r) => ({
       factor: {
         id: r.factor_id_full,
         name: r.factor_name,
@@ -614,6 +628,8 @@ class ActService {
       selfMonitoringBlock: { id: r.smb_id, name: r.smb_title! },
       count: r.total,
     }));
+
+    return { items, userCount };
   }
 
   private async findAnalysisSegments(
@@ -743,7 +759,7 @@ class ActService {
     const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
     if (!analysis) return { available: false };
 
-    const allItems = await this.queryAnalysisRows(analysis.id, filters);
+    const { items: allItems } = await this.queryAnalysisRows(analysis.id, filters);
     const { page, pageSize } = pagination;
     const total = allItems.length;
     const offset = (page - 1) * pageSize;
@@ -760,7 +776,7 @@ class ActService {
     const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
     if (!analysis) return { available: false };
 
-    const items = await this.queryAnalysisRows(analysis.id, filters);
+    const { items, userCount } = await this.queryAnalysisRows(analysis.id, filters);
 
     const totalScore = items.reduce((sum, item) => sum + item.factor.weightedScore, 0);
     const positiveScore = items
@@ -788,6 +804,7 @@ class ActService {
 
     return {
       available: true,
+      userCount,
       totalScore,
       positiveScore,
       negativeScore,
