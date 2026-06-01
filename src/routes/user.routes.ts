@@ -10,6 +10,7 @@ import { ListUsersByCompanyController } from "../controllers/user/ListUsersByCom
 import { SearchUsersController } from "../controllers/user/SearchUsersController";
 import { UpdateMeController } from "../controllers/user/UpdateMeController";
 import { UpdateUserController } from "../controllers/user/UpdateUserController";
+import { ValidatePermissionController } from "../controllers/user/ValidatePermissionController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { requirePermissions } from "../middlewares/requirePermissions";
 import { requireSameCompany } from "../middlewares/requireSameCompany";
@@ -188,6 +189,44 @@ userRouter.get("/", isAuthenticated, requirePermissions("admin-users-manage"), n
  *         $ref: '#/components/responses/Unauthorized'
  */
 userRouter.put("/me", isAuthenticated, new UpdateMeController().handle);
+
+/**
+ * @swagger
+ * /users/me/validate-permission:
+ *   get:
+ *     summary: Verifica se o usuário autenticado tem acesso a uma permission
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: permission
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Chave da permission a verificar (ex: companies-read)
+ *     responses:
+ *       200:
+ *         description: Resultado da verificação
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     hasPermission:
+ *                       type: boolean
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+userRouter.get("/me/validate-permission", isAuthenticated, new ValidatePermissionController().handle);
 
 /**
  * @swagger

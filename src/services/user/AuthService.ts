@@ -82,7 +82,7 @@ class AuthService {
     });
 
     const now = new Date().getTime();
-    const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30);
+    const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30); // 30 dias
 
     // name, gender, act, role estão na raiz por compatibilidade com clientes existentes e devem ser removidos no futuro.
     // Novos campos devem ir somente dentro de `user`. token e expiresAt são exceção e ficam na raiz.

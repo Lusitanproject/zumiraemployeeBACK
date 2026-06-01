@@ -1,6 +1,7 @@
 import { UserGender } from "@prisma/client";
 import { z } from "zod";
 
+import { ALL_PERMISSIONS, Permission } from "../permissions";
 import { DateStringSchema, PhoneNumberSchema } from "./common";
 
 export const CreateUserSchema = z.object({
@@ -77,3 +78,9 @@ export const SyncCompanyParamsSchema = z.object({
 });
 
 export type SyncUserItem = z.infer<typeof SyncUserItemSchema>;
+
+export const ValidatePermissionQuerySchema = z.object({
+  permission: z.enum(ALL_PERMISSIONS as [Permission, ...Permission[]]),
+});
+
+export type ValidatePermissionQuery = z.infer<typeof ValidatePermissionQuerySchema>;
