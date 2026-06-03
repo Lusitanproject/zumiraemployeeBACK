@@ -3,6 +3,7 @@ import { Router } from "express";
 import { CreateTrailController } from "../../controllers/admin/trails/CreateTrailController";
 import { FindAllTrailsController } from "../../controllers/admin/trails/FindAllTrailsController";
 import { FindTrailController } from "../../controllers/admin/trails/FindTrailController";
+import { SetTrailActsController } from "../../controllers/admin/trails/SetTrailActsController";
 import { UpdateTrailController } from "../../controllers/admin/trails/UpdateTrailController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
 import { requirePermissions } from "../../middlewares/requirePermissions";
@@ -211,6 +212,73 @@ adminTrailRouter.put(
   isAuthenticated,
   requirePermissions("admin-trails-manage"),
   new UpdateTrailController().handle,
+);
+
+/**
+ * @swagger
+ * /admin/trails/{trailId}/acts:
+ *   put:
+ *     summary: "[Admin] Definir atos de uma trilha"
+ *     description: >
+ *       Substitui completamente a lista de atos associados à trilha (replace, não merge).
+ *       Os índices recebidos são normalizados para 0..n-1 contíguos preservando a ordem enviada.
+ *       Progressos de usuários cujo ato atual foi removido são recalculados automaticamente:
+ *       o usuário é movido para o próximo ato disponível; se não houver, para o anterior.
+ *       Requer permissão `admin-trails-manage`.
+ *     tags: [Admin - Trails]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: trailId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da trilha
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - acts
+ *             properties:
+ *               acts:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - actChatbotId
+ *                     - index
+ *                   properties:
+ *                     actChatbotId:
+ *                       type: string
+ *                       format: cuid
+ *                     index:
+ *                       type: integer
+ *                       minimum: 0
+ *                       description: Posição desejada (será renormalizada para 0..n-1)
+ *     responses:
+ *       200:
+ *         description: Atos da trilha atualizados com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+adminTrailRouter.put(
+  "/:trailId/acts",
+  isAuthenticated,
+  requirePermissions("admin-trails-manage"),
+  new SetTrailActsController().handle,
 );
 
 export { adminTrailRouter };
