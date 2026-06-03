@@ -10,6 +10,7 @@ import { nationalityRouter } from "./nationality.routes";
 import { notificationRouter } from "./notification.routes";
 import { psychosocialFactorRouter } from "./psychosocial-factor.routes";
 import { selfMonitoringRouter } from "./self-monitoring.routes";
+import { trailRouter } from "./trail.routes";
 import { userRouter } from "./user.routes";
 import { webhooksRouter } from "./webhooks";
 
@@ -19,6 +20,7 @@ router.use("/auth", authRouter);
 router.use("/users", userRouter);
 router.use("/assessments", assessmentRouter);
 router.use("/acts", actRouter);
+router.use("/trails", trailRouter);
 router.use("/self-monitoring", selfMonitoringRouter);
 router.use("/notifications", notificationRouter);
 router.use("/nationalities", nationalityRouter);

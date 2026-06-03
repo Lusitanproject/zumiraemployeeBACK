@@ -6,7 +6,6 @@ declare namespace Express {
       email: string;
       role: string;
       permissions: string[];
-      currentChatbotId: string | null;
       companyId: string | null;
     };
   }

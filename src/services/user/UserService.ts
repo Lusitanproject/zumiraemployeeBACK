@@ -23,8 +23,6 @@ class UserService {
     const role = await prismaClient.role.findFirst({ where: { slug: "user" } });
     if (!role) throw new Error("Cargo usuario não encontrado");
 
-    const firstAct = await prismaClient.actChatbot.findFirst({ orderBy: { index: "asc" } });
-
     const passwordHash = password ? await hash(password) : null;
 
     const user = await prismaClient.user.create({
@@ -32,7 +30,6 @@ class UserService {
         ...data,
         password: passwordHash,
         roleId: role.id,
-        currentActChatbotId: firstAct?.id,
       },
     });
 
@@ -523,10 +520,7 @@ class UserService {
 
     const unchanged = plan.unchanged.map((u) => ({ customId: u.customId, userId: u.userId }));
 
-    const [role, firstAct] = await Promise.all([
-      prismaClient.role.findFirst({ where: { NOT: { slug: "admin" } } }),
-      prismaClient.actChatbot.findFirst({ orderBy: { index: "asc" } }),
-    ]);
+    const role = await prismaClient.role.findFirst({ where: { NOT: { slug: "admin" } } });
 
     if (!role) throw new Error("Nenhum cargo não-admin encontrado");
 
@@ -540,7 +534,6 @@ class UserService {
             customId: op.customId,
             companyId,
             roleId: role.id,
-            currentActChatbotId: firstAct?.id,
             ...(rawPassword && { password: await hash(rawPassword), registrationComplete: false }),
           },
         });

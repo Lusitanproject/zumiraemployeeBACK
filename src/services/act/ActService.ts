@@ -1,4 +1,4 @@
-import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
+import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor } from "@prisma/client";
 
 import { PublicError } from "../../error";
 import { GenerateOpenAiResponseRequest, OpenAiApi } from "../../external/openai";
@@ -13,6 +13,7 @@ import {
 } from "../../schemas/actChatbot";
 import { tryParsePhone } from "../../utils/phone";
 import { capitalize } from "../../utils/string";
+import { TrailService } from "../trail/TrailService";
 import { UserService } from "../user/UserService";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
@@ -124,31 +125,6 @@ export type FindActAnalysisSummaryResult =
       selfMonitoringBlocks: SelfMonitoringBlockSummary[];
     };
 
-function getProgress(
-  bots: { id: string; name: string; description: string; icon: string; index: number }[],
-  chapters: {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    title: string;
-    compilation: string | null;
-    actChatbotId: string;
-  }[],
-) {
-  const _bots = [...bots].sort((a, b) => a.index - b.index);
-
-  let completedActs = 0;
-  for (const bot of _bots) {
-    if (chapters.find((chapter) => chapter.actChatbotId === bot.id && !!chapter.compilation)) {
-      completedActs += 1;
-    } else {
-      break;
-    }
-  }
-
-  return completedActs / _bots.length;
-}
-
 class ActService {
   async compileChapter({ actChapterId, userId }: CompileActChapterRequest) {
     const chapter = await prismaClient.actChapter.findFirst({
@@ -222,87 +198,6 @@ class ActService {
     return { ...chapter, messages };
   }
 
-  async list(userId: string) {
-    const user = await prismaClient.user.findFirst({
-      where: { id: userId },
-      include: { company: true },
-    });
-
-    if (!user) throw new PublicError("Usuário não encontrado");
-
-    const [chatbots, chapters] = await Promise.all([
-      prismaClient.actChatbot.findMany({
-        where: { trailId: user.company?.trailId },
-        select: { id: true, name: true, description: true, icon: true, index: true },
-        orderBy: { index: "asc" },
-      }),
-      prismaClient.actChapter.findMany({
-        where: {
-          userId,
-          type: "REGULAR",
-          actChatbot: { trailId: user.company?.trailId },
-        },
-        select: {
-          id: true,
-          title: true,
-          actChatbotId: true,
-          compilation: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-        orderBy: { updatedAt: "desc" },
-      }),
-    ]);
-
-    const progress = getProgress(chatbots, chapters);
-
-    let currAct = chatbots.find((bot) => bot.id === user.currentActChatbotId);
-    if (!currAct) {
-      if (!chatbots.length) return { chatbots: [], chapters: [] };
-
-      currAct = chatbots[0];
-      await prismaClient.user.update({ where: { id: userId }, data: { currentActChatbotId: currAct?.id } });
-    }
-
-    const processedChatbots = chatbots.map((bot) => ({
-      ...bot,
-      locked: bot.index > currAct.index,
-      current: bot.id === currAct.id,
-    }));
-
-    const processedChapters = chapters.map((chapter) => {
-      const { compilation: _, ...formatted } = chapter;
-      return formatted;
-    });
-
-    return { chatbots: processedChatbots, chapters: processedChapters, progress };
-  }
-
-  async getFullStory(userId: string) {
-    const user = await prismaClient.user.findFirst({ where: { id: userId }, select: { company: true } });
-
-    if (!user) throw new PublicError("Usuário não encontrado");
-
-    const chapters = await prismaClient.actChapter.findMany({
-      where: {
-        userId,
-        type: "REGULAR",
-        compilation: { not: null },
-        actChatbot: { trailId: user.company?.trailId },
-      },
-      select: {
-        id: true,
-        title: true,
-        compilation: true,
-        createdAt: true,
-        updatedAt: true,
-        actChatbot: { select: { index: true, name: true } },
-      },
-    });
-
-    return { chapters };
-  }
-
   async message(
     { content, actChapterId, userId }: MessageActChatbotRequest,
     opts?: { externalId?: string; instructionsComplement?: string },
@@ -357,37 +252,6 @@ class ActService {
     return response.output_text;
   }
 
-  async moveToNext(userId: string): Promise<{ currActChatbotId: string }> {
-    const user = await prismaClient.user.findFirst({
-      where: { id: userId },
-      include: { currentActChatbot: true, company: true },
-    });
-
-    if (!user) throw new PublicError("Usuário não encontrado");
-    if (!user.currentActChatbot) throw new PublicError("Usuário não está atribuído a nenhum ato");
-
-    const trailId = user.company?.trailId;
-
-    const currentActMessages = await prismaClient.actChapterMessage.findMany({
-      where: { actChapter: { userId, actChatbotId: user.currentActChatbot.id } },
-    });
-
-    if (!currentActMessages.length) throw new PublicError("Usuário não iniciou o ato atual");
-
-    const nextAct = await prismaClient.actChatbot.findFirst({
-      where: { trailId, index: user.currentActChatbot.index + 1 },
-    });
-
-    if (!nextAct) return { currActChatbotId: user.currentActChatbot.id };
-
-    await prismaClient.user.update({
-      where: { id: userId },
-      data: { currentActChatbotId: nextAct.id },
-    });
-
-    return { currActChatbotId: nextAct.id };
-  }
-
   async updateChapter({ userId, actChapterId, compilation, title }: UpdateActChapterRequest) {
     const chapter = await prismaClient.actChapter.findFirst({ where: { id: actChapterId, userId } });
 
@@ -414,8 +278,6 @@ class ActService {
         initialMessage: true,
         messageInstructions: true,
         compilationInstructions: true,
-        index: true,
-        trailId: true,
       },
     });
     return bot;
@@ -429,23 +291,18 @@ class ActService {
 
     if (!company) throw new PublicError("Company not found");
 
-    const actListSelect = {
-      id: true,
-      name: true,
-      description: true,
-      icon: true,
-      index: true,
-      trailId: true,
-      createdAt: true,
-    } satisfies Prisma.ActChatbotSelect;
-
-    const bots = await prismaClient.actChatbot.findMany({
-      select: actListSelect,
+    const rows = await prismaClient.trailActChatbot.findMany({
       where: { trailId: company.trailId },
       orderBy: { index: "asc" },
+      select: {
+        index: true,
+        actChatbot: {
+          select: { id: true, name: true, description: true, icon: true, createdAt: true },
+        },
+      },
     });
 
-    return { items: bots };
+    return { items: rows.map((r) => ({ ...r.actChatbot, index: r.index })) };
   }
 
   // ── Analysis private helpers ──────────────────────────────────────────────
@@ -1104,36 +961,6 @@ class ActService {
     return { response, reportText };
   }
 
-  private async assignFirstActToUser(userId: string, companyId: string | null): Promise<string | null> {
-    let trailId: string | undefined;
-
-    if (companyId) {
-      const company = await prismaClient.company.findUnique({
-        where: { id: companyId },
-        select: { trailId: true },
-      });
-      trailId = company?.trailId;
-    }
-
-    const firstAct = await prismaClient.actChatbot.findFirst({
-      where: { trailId },
-      orderBy: { index: "asc" },
-      select: { id: true },
-    });
-
-    if (!firstAct) return null;
-
-    console.log(
-      `[ActService] auto-assigning actChatbot ${firstAct.id} to user ${userId} (companyId: ${companyId ?? "none"})`,
-    );
-    await prismaClient.user.update({
-      where: { id: userId },
-      data: { currentActChatbotId: firstAct.id },
-    });
-
-    return firstAct.id;
-  }
-
   async handleWhatsappMessage(message: ReceiveMessage, api: WhatsappApi): Promise<void> {
     const from = message.from.startsWith("+") ? message.from : `+${message.from}`;
     const phoneE164 = tryParsePhone(from)?.format("E.164") ?? message.from;
@@ -1152,18 +979,27 @@ class ActService {
       return;
     }
 
-    if (!user.currentActChatbotId) {
-      const assignedActId = await this.assignFirstActToUser(user.id, user.companyId);
-      if (!assignedActId) {
-        console.log(`[WhatsApp] no act available to assign to user ${user.email} (${user.id})`);
-        await api.send({
-          to: message.from,
-          message:
-            "Olá! Não identifiquei nenhum Ato ou Pesquisa atribuída ao seu cadastro. Pode ser que a pesquisa já tenha sido finalizada ou ainda não foi iniciada. Entre em contato com a sua empresa para mais informações. Obrigada",
-        });
-        return;
-      }
-      user.currentActChatbotId = assignedActId;
+    // WhatsApp não tem trailId no request — resolve da empresa do usuário
+    const company = user.companyId
+      ? await prismaClient.company.findUnique({
+          where: { id: user.companyId },
+          select: { trailId: true },
+        })
+      : null;
+
+    const trailId = company?.trailId;
+    const trailService = new TrailService();
+    const progress = trailId ? await trailService.ensureProgress(user.id, trailId) : null;
+    const currentActChatbotId = progress?.currentActChatbotId;
+
+    if (!currentActChatbotId) {
+      console.log(`[WhatsApp] no act available to assign to user ${user.email} (${user.id})`);
+      await api.send({
+        to: message.from,
+        message:
+          "Olá! Não identifiquei nenhum Ato ou Pesquisa atribuída ao seu cadastro. Pode ser que a pesquisa já tenha sido finalizada ou ainda não foi iniciada. Entre em contato com a sua empresa para mais informações. Obrigada",
+      });
+      return;
     }
 
     // rollback: trocar condição por `message.messageType !== "text"` e restaurar mensagem "Não é possível enviar mensagens de voz. Por favor, envie uma mensagem de texto."
@@ -1175,7 +1011,7 @@ class ActService {
       return;
     }
 
-    const actChatbotId = user.currentActChatbotId!;
+    const actChatbotId = currentActChatbotId;
 
     console.log(`Identified user: ${user.email} (${user.id})`);
 
