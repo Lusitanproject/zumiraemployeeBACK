@@ -1,4 +1,4 @@
-import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor, Prisma } from "@prisma/client";
+import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor } from "@prisma/client";
 
 import { PublicError } from "../../error";
 import { GenerateOpenAiResponseRequest, OpenAiApi } from "../../external/openai";
@@ -12,6 +12,8 @@ import {
   UpdateActChapterRequest,
 } from "../../schemas/actChatbot";
 import { tryParsePhone } from "../../utils/phone";
+import { capitalize } from "../../utils/string";
+import { TrailService } from "../trail/TrailService";
 import { UserService } from "../user/UserService";
 
 // ── Analysis types ────────────────────────────────────────────────────────────
@@ -39,6 +41,7 @@ export interface ActAnalysisFilters {
   occupation?: string;
   occupationLevel?: string;
   search?: string;
+  similarExposureGroup?: string;
   skinColor?: string;
 }
 
@@ -114,37 +117,13 @@ export type FindActAnalysisSummaryResult =
   | { available: false }
   | {
       available: true;
+      userCount: number;
       totalScore: number;
       positiveScore: number;
       negativeScore: number;
       absoluteScore: number;
       selfMonitoringBlocks: SelfMonitoringBlockSummary[];
     };
-
-function getProgress(
-  bots: { id: string; name: string; description: string; icon: string; index: number }[],
-  chapters: {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    title: string;
-    compilation: string | null;
-    actChatbotId: string;
-  }[],
-) {
-  const _bots = [...bots].sort((a, b) => a.index - b.index);
-
-  let completedActs = 0;
-  for (const bot of _bots) {
-    if (chapters.find((chapter) => chapter.actChatbotId === bot.id && !!chapter.compilation)) {
-      completedActs += 1;
-    } else {
-      break;
-    }
-  }
-
-  return completedActs / _bots.length;
-}
 
 class ActService {
   async compileChapter({ actChapterId, userId }: CompileActChapterRequest) {
@@ -219,88 +198,10 @@ class ActService {
     return { ...chapter, messages };
   }
 
-  async list(userId: string) {
-    const user = await prismaClient.user.findFirst({
-      where: { id: userId },
-      include: { company: true },
-    });
-
-    if (!user) throw new PublicError("Usuário não encontrado");
-
-    const [chatbots, chapters] = await Promise.all([
-      prismaClient.actChatbot.findMany({
-        where: { trailId: user.company?.trailId },
-        select: { id: true, name: true, description: true, icon: true, index: true },
-        orderBy: { index: "asc" },
-      }),
-      prismaClient.actChapter.findMany({
-        where: {
-          userId,
-          type: "REGULAR",
-          actChatbot: { trailId: user.company?.trailId },
-        },
-        select: {
-          id: true,
-          title: true,
-          actChatbotId: true,
-          compilation: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-        orderBy: { updatedAt: "desc" },
-      }),
-    ]);
-
-    const progress = getProgress(chatbots, chapters);
-
-    let currAct = chatbots.find((bot) => bot.id === user.currentActChatbotId);
-    if (!currAct) {
-      if (!chatbots.length) return { chatbots: [], chapters: [] };
-
-      currAct = chatbots[0];
-      await prismaClient.user.update({ where: { id: userId }, data: { currentActChatbotId: currAct?.id } });
-    }
-
-    const processedChatbots = chatbots.map((bot) => ({
-      ...bot,
-      locked: bot.index > currAct.index,
-      current: bot.id === currAct.id,
-    }));
-
-    const processedChapters = chapters.map((chapter) => {
-      const { compilation: _, ...formatted } = chapter;
-      return formatted;
-    });
-
-    return { chatbots: processedChatbots, chapters: processedChapters, progress };
-  }
-
-  async getFullStory(userId: string) {
-    const user = await prismaClient.user.findFirst({ where: { id: userId }, select: { company: true } });
-
-    if (!user) throw new PublicError("Usuário não encontrado");
-
-    const chapters = await prismaClient.actChapter.findMany({
-      where: {
-        userId,
-        type: "REGULAR",
-        compilation: { not: null },
-        actChatbot: { trailId: user.company?.trailId },
-      },
-      select: {
-        id: true,
-        title: true,
-        compilation: true,
-        createdAt: true,
-        updatedAt: true,
-        actChatbot: { select: { index: true, name: true } },
-      },
-    });
-
-    return { chapters };
-  }
-
-  async message({ content, actChapterId, userId }: MessageActChatbotRequest, instructionsComplement?: string) {
+  async message(
+    { content, actChapterId, userId }: MessageActChatbotRequest,
+    opts?: { externalId?: string; instructionsComplement?: string },
+  ) {
     const conv = await prismaClient.actChapter.findFirst({
       where: { id: actChapterId, userId },
       include: { actChatbot: true, user: true },
@@ -309,7 +210,7 @@ class ActService {
     if (!conv) throw new PublicError("Conversa não existe");
 
     await prismaClient.actChapterMessage.create({
-      data: { actChapterId, role: "user", content },
+      data: { actChapterId, role: "user", content, externalId: opts?.externalId },
     });
 
     const { actChatbot: bot } = conv;
@@ -330,8 +231,8 @@ class ActService {
     const response = await openai.generateResponse({
       instructions: [
         bot.messageInstructions,
-        `O nome do usuário é: ${conv.user.name.split(" ")[0]}`,
-        instructionsComplement,
+        `O nome do usuário é: ${capitalize(conv.user.name.split(" ")[0])}`,
+        opts?.instructionsComplement,
       ]
         .filter(Boolean)
         .join("\n"),
@@ -349,37 +250,6 @@ class ActService {
     ]);
 
     return response.output_text;
-  }
-
-  async moveToNext(userId: string): Promise<{ currActChatbotId: string }> {
-    const user = await prismaClient.user.findFirst({
-      where: { id: userId },
-      include: { currentActChatbot: true, company: true },
-    });
-
-    if (!user) throw new PublicError("Usuário não encontrado");
-    if (!user.currentActChatbot) throw new PublicError("Usuário não está atribuído a nenhum ato");
-
-    const trailId = user.company?.trailId;
-
-    const currentActMessages = await prismaClient.actChapterMessage.findMany({
-      where: { actChapter: { userId, actChatbotId: user.currentActChatbot.id } },
-    });
-
-    if (!currentActMessages.length) throw new PublicError("Usuário não iniciou o ato atual");
-
-    const nextAct = await prismaClient.actChatbot.findFirst({
-      where: { trailId, index: user.currentActChatbot.index + 1 },
-    });
-
-    if (!nextAct) return { currActChatbotId: user.currentActChatbot.id };
-
-    await prismaClient.user.update({
-      where: { id: userId },
-      data: { currentActChatbotId: nextAct.id },
-    });
-
-    return { currActChatbotId: nextAct.id };
   }
 
   async updateChapter({ userId, actChapterId, compilation, title }: UpdateActChapterRequest) {
@@ -408,8 +278,6 @@ class ActService {
         initialMessage: true,
         messageInstructions: true,
         compilationInstructions: true,
-        index: true,
-        trailId: true,
       },
     });
     return bot;
@@ -423,23 +291,18 @@ class ActService {
 
     if (!company) throw new PublicError("Company not found");
 
-    const actListSelect = {
-      id: true,
-      name: true,
-      description: true,
-      icon: true,
-      index: true,
-      trailId: true,
-      createdAt: true,
-    } satisfies Prisma.ActChatbotSelect;
-
-    const bots = await prismaClient.actChatbot.findMany({
-      select: actListSelect,
+    const rows = await prismaClient.trailActChatbot.findMany({
       where: { trailId: company.trailId },
       orderBy: { index: "asc" },
+      select: {
+        index: true,
+        actChatbot: {
+          select: { id: true, name: true, description: true, icon: true, createdAt: true },
+        },
+      },
     });
 
-    return { items: bots };
+    return { items: rows.map((r) => ({ ...r.actChatbot, index: r.index })) };
   }
 
   // ── Analysis private helpers ──────────────────────────────────────────────
@@ -521,10 +384,16 @@ class ActService {
 
     const alreadySaved = analysis.companyActAnalysisBatches.every((batch) => batch.status === "completed");
 
+    console.log(
+      `[act/analysis] resolveLatestAnalysis analysisId=${analysis.id} alreadySaved=${alreadySaved} batches=${JSON.stringify(analysis.companyActAnalysisBatches.map((b) => ({ id: b.id, status: b.status })))}`,
+    );
+
     if (!alreadySaved) {
       const allDone = await this.retrieveAndSaveAnalysisResults(analysis.companyActAnalysisBatches);
+      console.log(`[act/analysis] retrieveAndSaveAnalysisResults allDone=${allDone}`);
       if (!allDone) return null;
 
+      console.log(`[act/analysis] calling generateAnalysisReportRag for analysisId=${analysis.id}`);
       await this.generateAnalysisReportRag(companyId, actChatbotId, analysis);
 
       analysis = await prismaClient.companyActAnalysis.findFirst({
@@ -537,13 +406,17 @@ class ActService {
     return analysis;
   }
 
-  private async queryAnalysisRows(analysisId: string, filters: ActAnalysisFilters): Promise<ActAnalysisItem[]> {
+  private async queryAnalysisRows(
+    analysisId: string,
+    filters: ActAnalysisFilters,
+  ): Promise<{ items: ActAnalysisItem[]; userCount: number }> {
     const gender = filters.gender ?? null;
     const area = filters.area ?? null;
     const location = filters.location ?? null;
     const search = filters.search ?? null;
     const occupation = filters.occupation ?? null;
     const occupationLevel = filters.occupationLevel ?? null;
+    const similarExposureGroup = filters.similarExposureGroup ?? null;
     const skinColor = filters.skinColor ?? null;
     const hasDisability = filters.hasDisability ?? null;
     const nationalityId = filters.nationalityId ?? null;
@@ -552,7 +425,8 @@ class ActService {
       WITH filtered AS (
         SELECT
           cab.company_act_analysis_id AS act_analysis_id,
-          ampf.factor_id
+          ampf.factor_id,
+          u.id AS user_id
         FROM act_messages_psychosocial_factors ampf
         JOIN company_act_analysis_batches cab ON cab.id = ampf.analysis_batch_id
         JOIN act_chapter_messages m ON m.id = ampf.message_id
@@ -566,9 +440,13 @@ class ActService {
           AND (${location}::text IS NULL OR u.location = ${location})
           AND (${occupation}::text IS NULL OR u.occupation = ${occupation})
           AND (${occupationLevel}::text IS NULL OR u.occupation_level = ${occupationLevel})
+          AND (${similarExposureGroup}::text IS NULL OR u.similar_exposure_group = ${similarExposureGroup})
           AND (${skinColor}::text IS NULL OR u.skin_color = ${skinColor})
           AND (${hasDisability}::boolean IS NULL OR u.has_disability = ${hasDisability}::boolean)
           AND (${nationalityId}::text IS NULL OR u.nationality_id = ${nationalityId})
+      ),
+      user_count AS (
+        SELECT COUNT(DISTINCT user_id)::int AS cnt FROM filtered
       ),
       aggregated AS (
         SELECT act_analysis_id, factor_id, COUNT(*)::int AS total
@@ -578,7 +456,8 @@ class ActService {
       SELECT
         a.factor_id, a.total,
         f.id as factor_id_full, f.name as factor_name, f.wheight as factor_wheight,
-        smb.id as smb_id, smb.title as smb_title
+        smb.id as smb_id, smb.title as smb_title,
+        (SELECT cnt FROM user_count) AS user_count
       FROM aggregated a
       JOIN psychosocial_factors f ON f.id = a.factor_id
       LEFT JOIN self_monitoring_blocks smb ON f.self_monitoring_block_id = smb.id
@@ -592,9 +471,11 @@ class ActService {
       factor_wheight: number;
       smb_id: string;
       smb_title: string;
+      user_count: number;
     }>;
 
-    return rows.map((r) => ({
+    const userCount = rows[0]?.user_count ?? 0;
+    const items = rows.map((r) => ({
       factor: {
         id: r.factor_id_full,
         name: r.factor_name,
@@ -604,6 +485,8 @@ class ActService {
       selfMonitoringBlock: { id: r.smb_id, name: r.smb_title! },
       count: r.total,
     }));
+
+    return { items, userCount };
   }
 
   private async findAnalysisSegments(
@@ -733,7 +616,7 @@ class ActService {
     const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
     if (!analysis) return { available: false };
 
-    const allItems = await this.queryAnalysisRows(analysis.id, filters);
+    const { items: allItems } = await this.queryAnalysisRows(analysis.id, filters);
     const { page, pageSize } = pagination;
     const total = allItems.length;
     const offset = (page - 1) * pageSize;
@@ -750,7 +633,7 @@ class ActService {
     const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
     if (!analysis) return { available: false };
 
-    const items = await this.queryAnalysisRows(analysis.id, filters);
+    const { items, userCount } = await this.queryAnalysisRows(analysis.id, filters);
 
     const totalScore = items.reduce((sum, item) => sum + item.factor.weightedScore, 0);
     const positiveScore = items
@@ -778,6 +661,7 @@ class ActService {
 
     return {
       available: true,
+      userCount,
       totalScore,
       positiveScore,
       negativeScore,
@@ -865,6 +749,9 @@ class ActService {
       ]);
 
     // os segmentos chamam resolveLatestAnalysis internamente — se um retorna available: false (batches pendentes), todos retornariam; usamos esse como proxy
+    console.log(
+      `[act/analysis] buildAnalysisReportData companyId=${companyId} actChatbotId=${actChatbotId} bySimilarExposureGroup.available=${bySimilarExposureGroup.available}`,
+    );
     if (!bySimilarExposureGroup.available) return null;
 
     const factorWeights = weightsResult.available ? weightsResult.factors : [];
@@ -913,7 +800,12 @@ class ActService {
     analysis: { id: string },
   ): Promise<void> {
     const report = await this.buildAnalysisReportData(companyId, actChatbotId);
-    if (!report) return;
+    if (!report) {
+      console.log(
+        `[RAG/act] buildAnalysisReportData returned null for analysisId=${analysis.id} — batches still pending, skipping RAG`,
+      );
+      return;
+    }
 
     console.log(`[RAG/act] starting RAG setup for analysis ${analysis.id} (actChatbotId: ${actChatbotId})`);
     try {
@@ -941,6 +833,15 @@ class ActService {
       });
 
       console.log(`[RAG/act] analysis ${analysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
+
+      const saved = await prismaClient.companyActAnalysis.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: { companyId, actChatbotId },
+        select: { id: true, vectorStoreId: true, text: true },
+      });
+      console.log(
+        `[RAG/act] verify after update: id=${saved?.id} vectorStoreId=${saved?.vectorStoreId} hasText=${!!saved?.text}`,
+      );
     } catch (error) {
       throw new Error(`[RAG/act] failed to create RAG for analysis ${analysis.id}: ${error}`);
     }
@@ -1060,36 +961,6 @@ class ActService {
     return { response, reportText };
   }
 
-  private async assignFirstActToUser(userId: string, companyId: string | null): Promise<string | null> {
-    let trailId: string | undefined;
-
-    if (companyId) {
-      const company = await prismaClient.company.findUnique({
-        where: { id: companyId },
-        select: { trailId: true },
-      });
-      trailId = company?.trailId;
-    }
-
-    const firstAct = await prismaClient.actChatbot.findFirst({
-      where: { trailId },
-      orderBy: { index: "asc" },
-      select: { id: true },
-    });
-
-    if (!firstAct) return null;
-
-    console.log(
-      `[ActService] auto-assigning actChatbot ${firstAct.id} to user ${userId} (companyId: ${companyId ?? "none"})`,
-    );
-    await prismaClient.user.update({
-      where: { id: userId },
-      data: { currentActChatbotId: firstAct.id },
-    });
-
-    return firstAct.id;
-  }
-
   async handleWhatsappMessage(message: ReceiveMessage, api: WhatsappApi): Promise<void> {
     const from = message.from.startsWith("+") ? message.from : `+${message.from}`;
     const phoneE164 = tryParsePhone(from)?.format("E.164") ?? message.from;
@@ -1103,25 +974,44 @@ class ActService {
       await api.send({
         to: message.from,
         message:
-          "Olá! Você ainda não está cadastrado no programa Zumira. Para participar, entre em contato com o seu gestor.",
+          "Olá! Não identifiquei seu cadastro. Pode ser que seu número ainda não esteja em nossos registros ou esteja desatualizado. Para continuar, entre em contato com a sua empresa. Obrigada",
       });
       return;
     }
 
-    if (!user.currentActChatbotId) {
-      const assignedActId = await this.assignFirstActToUser(user.id, user.companyId);
-      if (!assignedActId) {
-        console.log(`[WhatsApp] no act available to assign to user ${user.email} (${user.id})`);
-        await api.send({
-          to: message.from,
-          message: "Olá! Ainda não há atos disponíveis no programa Zumira. Entre em contato com o seu gestor.",
-        });
-        return;
-      }
-      user.currentActChatbotId = assignedActId;
+    // WhatsApp não tem trailId no request — resolve da empresa do usuário
+    const company = user.companyId
+      ? await prismaClient.company.findUnique({
+          where: { id: user.companyId },
+          select: { trailId: true },
+        })
+      : null;
+
+    const trailId = company?.trailId;
+    const trailService = new TrailService();
+    const progress = trailId ? await trailService.ensureProgress(user.id, trailId) : null;
+    const currentActChatbotId = progress?.currentActChatbotId;
+
+    if (!currentActChatbotId) {
+      console.log(`[WhatsApp] no act available to assign to user ${user.email} (${user.id})`);
+      await api.send({
+        to: message.from,
+        message:
+          "Olá! Não identifiquei nenhum Ato ou Pesquisa atribuída ao seu cadastro. Pode ser que a pesquisa já tenha sido finalizada ou ainda não foi iniciada. Entre em contato com a sua empresa para mais informações. Obrigada",
+      });
+      return;
     }
 
-    const actChatbotId = user.currentActChatbotId!;
+    // rollback: trocar condição por `message.messageType !== "text"` e restaurar mensagem "Não é possível enviar mensagens de voz. Por favor, envie uma mensagem de texto."
+    if (message.messageType !== "text" && message.messageType !== "audio") {
+      await api.send({
+        to: message.from,
+        message: "Não é possível enviar este tipo de mensagem. Por favor, envie uma mensagem de texto ou áudio de voz.",
+      });
+      return;
+    }
+
+    const actChatbotId = currentActChatbotId;
 
     console.log(`Identified user: ${user.email} (${user.id})`);
 
@@ -1143,9 +1033,84 @@ class ActService {
 
     console.log(`Resolved chapter: ${chapterId}`);
 
+    if (message.externalId !== "ABGGFlA5Fpa") {
+      const alreadyProcessed = await prismaClient.actChapterMessage.findFirst({
+        where: { actChapterId: chapterId, externalId: message.externalId },
+        select: { id: true },
+      });
+
+      if (alreadyProcessed) {
+        console.log(`[WhatsApp] message ${message.externalId} already processed, skipping`);
+        return;
+      }
+    } else {
+      console.log("Test webhook message id detected. Skipping duplicate verification.");
+    }
+
+    await Promise.all([api.markAsRead(message.externalId), api.sendTyping(message.from)]);
+
+    // rollback: remover este bloco inteiro (let messageContent + if "audio") e trocar messageContent por message.message na chamada this.message() abaixo
+    let messageContent = message.message;
+
+    if (message.messageType === "audio") {
+      if (!message.audioId) {
+        console.log(`[WhatsApp] audio message without audioId from ${message.from}`);
+        await api.send({
+          to: message.from,
+          message: "Não foi possível processar o áudio. Por favor, tente novamente.",
+        });
+        return;
+      }
+
+      try {
+        const mediaUrl = await api.getMediaUrl(message.audioId);
+        const audioBuffer = await api.downloadAudio(mediaUrl);
+        const tempFilePath = await api.saveTempAudio(audioBuffer);
+
+        const openai = new OpenAiApi();
+        messageContent = await openai.transcribeAudio(tempFilePath);
+
+        if (!messageContent.trim()) {
+          await api.send({
+            to: message.from,
+            message: "Não consegui entender o áudio. Por favor, tente novamente ou envie uma mensagem de texto.",
+          });
+          return;
+        }
+
+        // rollback: remover esta linha
+        messageContent = `__audio__: ${messageContent}`;
+        console.log(`[WhatsApp] audio transcribed for ${message.from}: "${messageContent}"`);
+      } catch (error) {
+        console.error(`[WhatsApp] failed to process audio from ${message.from}:`, error);
+        await api.send({
+          to: message.from,
+          message: "Ocorreu um erro ao processar o áudio. Por favor, tente novamente ou envie uma mensagem de texto.",
+        });
+        return;
+      }
+    }
+
     const responseText = await this.message(
-      { content: message.message, actChapterId: chapterId, userId: user.id },
-      "Você está respondendo via WhatsApp. Use um formato adequado para WhatsApp, sem markdown complexo (sem tabelas, sem cabeçalhos).",
+      { content: messageContent, actChapterId: chapterId, userId: user.id },
+      {
+        externalId: message.externalId,
+        instructionsComplement: [
+          "Você está respondendo via WhatsApp. Use apenas formatação compatível com WhatsApp.",
+          // rollback: remover esta linha
+          "Quando a mensagem do usuário começar com __audio__: significa que o conteúdo foi transcrito de um áudio de voz. Considere isso ao interpretar a mensagem.",
+          "Não use markdown complexo, tabelas, headings (#), HTML ou blocos incompatíveis.",
+          "Formatações permitidas:",
+          "*negrito* com um asterisco,",
+          "_itálico_ com underscores,",
+          "~tachado~ com tils,",
+          "`código inline` com um backtick,",
+          "```monospace``` com três backticks.",
+          "Para listas, use '- item', '* item' ou '1. item'.",
+          "Para citações, use '> texto'.",
+          "Nunca use **negrito duplo**.",
+        ].join("\n"),
+      },
     );
     await api.send({ to: message.from, message: responseText });
   }

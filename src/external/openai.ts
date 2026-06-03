@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import fs from "fs";
 import OpenAI from "openai";
+import { Stream } from "openai/streaming";
 
 import prisma from "../prisma";
 
@@ -56,8 +57,9 @@ export class OpenAiApi {
   private client: OpenAI;
   private apiKey: string;
   private model: string;
+  private transcriptionModel: string;
 
-  constructor(opts?: { model?: string }) {
+  constructor(opts?: { model?: string; transcriptionModel?: string }) {
     const key = process.env.OPENAI_API_KEY;
     if (!key) {
       throw new Error("Environment variable OPENAI_API_KEY is not set");
@@ -66,30 +68,41 @@ export class OpenAiApi {
     this.apiKey = key;
     this.client = new OpenAI({ apiKey: this.apiKey });
     this.model = opts?.model ?? "gpt-5-mini";
+    this.transcriptionModel = opts?.transcriptionModel ?? "gpt-4o-mini-transcribe";
   }
 
-  async generateResponse({ instructions, messages, openaiVectorStoreId }: GenerateOpenAiResponseWithRagRequest) {
+  async generateResponse(
+    params: GenerateOpenAiResponseWithRagRequest & { stream: true },
+  ): Promise<Stream<OpenAI.Responses.ResponseStreamEvent>>;
+  async generateResponse(
+    params: GenerateOpenAiResponseWithRagRequest & { stream?: false },
+  ): Promise<OpenAI.Responses.Response>;
+  async generateResponse({
+    instructions,
+    messages,
+    openaiVectorStoreId,
+    stream,
+  }: GenerateOpenAiResponseWithRagRequest & { stream?: boolean }) {
     try {
       const input = [{ role: "system", content: instructions }, ...messages].filter(
         (item) => !!item.content,
       ) as OpenAI.Responses.ResponseInput;
 
-      const start = Date.now();
-      const response = await this.client.responses.create({
+      const base = {
         model: this.model,
         input,
         ...(openaiVectorStoreId && {
           tools: [
             {
-              type: "file_search",
+              type: "file_search" as const,
               vector_store_ids: [openaiVectorStoreId],
             },
           ],
         }),
-      });
-      console.log(`OpenAI response generated in ${Date.now() - start}ms (model: ${this.model})`);
+      };
 
-      return response;
+      if (stream) return this.client.responses.create({ ...base, stream: true });
+      return this.client.responses.create(base);
     } catch (error) {
       console.error("Failed to generate OpenAI response:", error);
       throw error;
@@ -407,6 +420,25 @@ export class OpenAiApi {
     } catch (error) {
       console.error("Failed to create OpenAI batch:", error);
       throw error;
+    }
+  }
+
+  async transcribeAudio(filePath: string): Promise<string> {
+    console.log(`[OpenAI] transcribing audio file: ${filePath}`);
+    try {
+      const start = Date.now();
+      const transcription = await this.client.audio.transcriptions.create({
+        file: fs.createReadStream(filePath),
+        model: this.transcriptionModel,
+        language: "pt",
+      });
+      console.log(`[OpenAI] audio transcribed in ${Date.now() - start}ms: "${transcription.text}"`);
+      return transcription.text;
+    } catch (error) {
+      console.error("[OpenAI] failed to transcribe audio:", error);
+      throw error;
+    } finally {
+      await fs.promises.unlink(filePath).catch((err) => console.error("[OpenAI] failed to delete temp audio:", err));
     }
   }
 

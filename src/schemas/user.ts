@@ -1,6 +1,7 @@
 import { UserGender } from "@prisma/client";
 import { z } from "zod";
 
+import { ALL_PERMISSIONS, Permission } from "../permissions";
 import { DateStringSchema, PhoneNumberSchema } from "./common";
 
 export const CreateUserSchema = z.object({
@@ -22,6 +23,24 @@ export const CreateUserSchema = z.object({
   hasDisability: z.boolean().optional(),
 });
 
+export const UpdateMeSchema = z.object({
+  name: z.string().nonempty().optional(),
+  phoneNumber: PhoneNumberSchema.optional(),
+  birthdate: DateStringSchema.optional(),
+  nationalityId: z.string().cuid().optional(),
+  gender: z.nativeEnum(UserGender).optional(),
+  occupation: z.string().nonempty().optional(),
+  occupationLevel: z.string().nonempty().optional(),
+  area: z.string().nonempty().optional(),
+  similarExposureGroup: z.string().nonempty().optional(),
+  location: z.string().nonempty().optional(),
+  skinColor: z.string().nonempty().optional(),
+  hasDisability: z.boolean().optional(),
+  password: z.string().min(8).optional(),
+});
+
+export type UpdateMeRequest = z.infer<typeof UpdateMeSchema>;
+
 export const AuthUserSchema = z.object({
   email: z.string().email(),
   code: z.string().length(6).optional(),
@@ -35,6 +54,7 @@ export const SyncUserItemSchema = z.object({
   customId: z.string().min(1),
   email: z.string().email(),
   name: z.string().min(1),
+  password: z.string().min(8).optional(),
   phoneNumber: z.string().optional(),
   occupation: z.string().optional(),
   occupationLevel: z.string().optional(),
@@ -58,3 +78,9 @@ export const SyncCompanyParamsSchema = z.object({
 });
 
 export type SyncUserItem = z.infer<typeof SyncUserItemSchema>;
+
+export const ValidatePermissionQuerySchema = z.object({
+  permission: z.enum(ALL_PERMISSIONS as [Permission, ...Permission[]]),
+});
+
+export type ValidatePermissionQuery = z.infer<typeof ValidatePermissionQuerySchema>;

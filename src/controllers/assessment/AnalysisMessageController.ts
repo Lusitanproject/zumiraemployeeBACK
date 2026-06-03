@@ -39,16 +39,36 @@ class AnalysisMessageController {
       select: { consultiveAiInstructions: true },
     });
 
-    console.log(assessment);
+    const t0 = Date.now();
 
     const openAiApi = new OpenAiApi();
-    const response = await openAiApi.generateResponse({
+    const stream = await openAiApi.generateResponse({
       messages,
       instructions: assessment.consultiveAiInstructions,
       openaiVectorStoreId: analysis.vectorStore.openaiVectorStoreId,
+      stream: true,
     });
 
-    return res.json({ status: "SUCCESS", data: { text: response.output_text } });
+    const tStreamOpen = Date.now();
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    let firstToken = true;
+    for await (const event of stream) {
+      if (event.type === "response.output_text.delta") {
+        if (firstToken) {
+          console.log(`[assessment/analysis] ttft=${Date.now() - tStreamOpen}ms db=${tStreamOpen - t0}ms`);
+          firstToken = false;
+        }
+        res.write(`data: ${JSON.stringify({ delta: event.delta })}\n\n`);
+      }
+    }
+
+    console.log(`[assessment/analysis] stream_total=${Date.now() - tStreamOpen}ms total=${Date.now() - t0}ms`);
+    res.write("data: [DONE]\n\n");
+    res.end();
   }
 }
 

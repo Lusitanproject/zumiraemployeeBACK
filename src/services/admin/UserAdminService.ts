@@ -18,14 +18,10 @@ class UserAdminService {
     if (emailExists) throw new PublicError("E-mail já está em uso");
     if (phoneExists) throw new PublicError("Número de telefone já está em uso");
 
-    const firstAct = await prismaClient.actChatbot.findFirst({
-      orderBy: { index: "asc" },
-    });
-
     const user = await prismaClient.user.create({
       data: {
         ...data,
-        currentActChatbotId: firstAct?.id,
+        registrationComplete: false,
       },
     });
 
@@ -60,19 +56,13 @@ class UserAdminService {
     const company = companyId
       ? await prismaClient.company.findFirst({
           where: { id: companyId },
-          include: { trail: true },
         })
       : null;
 
     if (companyId && !company) throw new PublicError("Empresa não encontrada");
 
-    const firstAct = await prismaClient.actChatbot.findFirst({
-      where: company ? { trailId: company.trail.id } : undefined,
-      orderBy: { index: "asc" },
-    });
-
     const result = await prismaClient.user.createMany({
-      data: data.map((d) => ({ ...d, currentActChatbotId: firstAct?.id })),
+      data: data.map((d) => ({ ...d, registrationComplete: false })),
     });
 
     return result;

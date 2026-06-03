@@ -768,6 +768,7 @@ class AssessmentService {
       pageSize,
       gender,
       area,
+      similarExposureGroup,
       location,
       occupation,
       occupationLevel,
@@ -793,6 +794,7 @@ class AssessmentService {
           ...(companyId && { companyId }),
           ...(gender && { gender }),
           ...(area && { area }),
+          ...(similarExposureGroup && { similarExposureGroup }),
           ...(location && { location }),
           ...(occupation && { occupation }),
           ...(occupationLevel && { occupationLevel }),
@@ -809,7 +811,7 @@ class AssessmentService {
     const offset = (page - 1) * pageSize;
     const items = allItems.slice(offset, offset + pageSize);
 
-    return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
+    return { available: true, items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
   }
 
   async getResultUserFilters(

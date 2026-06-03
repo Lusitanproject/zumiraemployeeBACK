@@ -1,12 +1,22 @@
+import { randomUUID } from "crypto";
+import { promises as fsPromises } from "fs";
+import os from "os";
+import path from "path";
+
+import { Settings } from "../settings";
+
 interface SendMessageInput {
   message: string;
   to: string;
 }
 
 export interface ReceiveMessage {
+  externalId: string;
   from: string;
   message: string;
+  messageType: string;
   raw: unknown;
+  audioId?: string;
 }
 
 export type OnMessageReceived = (message: ReceiveMessage, api: WhatsappApi) => Promise<void>;
@@ -35,7 +45,10 @@ export enum WhatsappWebhookField {
 
 interface WhatsappWebhookMessage {
   from: string;
+  id: string;
+  audio?: { id: string; mime_type: string; url?: string; voice?: boolean };
   text?: { body?: string };
+  type?: string;
 }
 
 interface WhatsappMetadata {
@@ -62,27 +75,46 @@ interface WhatsappWebhookPayload {
   }[];
 }
 
+export function getWebhookFieldFromPayload(payload: unknown): string | null {
+  const p = payload as WhatsappWebhookPayload;
+  return p?.entry?.[0]?.changes?.[0]?.field ?? null;
+}
+
+export function getPhoneNumberIdFromPayload(payload: unknown): string | null {
+  const p = payload as WhatsappWebhookPayload;
+  const change = p?.entry?.[0]?.changes?.[0];
+  if (!change || change.field !== WhatsappWebhookField.MESSAGES) {
+    return null;
+  }
+  const metadata = (change.value as WhatsappMessagesValue)?.metadata;
+  return metadata?.phone_number_id ?? null;
+}
+
 export class WhatsappApi {
   private baseUrl = "https://graph.facebook.com/v22.0";
   private token: string;
   private phoneNumberId: string;
 
-  constructor() {
+  constructor(phoneNumberId: string) {
     const token = process.env.WHATSAPP_TOKEN;
-    const phoneNumberId = process.env.PHONE_NUMBER_ID;
 
     if (!token) {
       throw new Error("Environment variable WHATSAPP_TOKEN is not set");
-    }
-    if (!phoneNumberId) {
-      throw new Error("Environment variable PHONE_NUMBER_ID is not set");
     }
 
     this.token = token;
     this.phoneNumberId = phoneNumberId;
   }
 
-  async send({ to, message }: SendMessageInput): Promise<unknown> {
+  async send({ to, message }: SendMessageInput): Promise<unknown | void> {
+    const allowedIds = Settings.phoneNumberIds;
+    if (allowedIds.length > 0 && !allowedIds.includes(this.phoneNumberId)) {
+      console.log(
+        `[WhatsApp] phone number ID "${this.phoneNumberId}" is not in the allowed list. Message will not be sent.\nContent: ${message}`,
+      );
+      return;
+    }
+
     console.log(`[WhatsApp] sending message to ${to}:`, message);
     try {
       const response = await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
@@ -113,28 +145,88 @@ export class WhatsappApi {
     }
   }
 
-  matchesPhoneNumberId(payload: unknown, phoneNumberId: string): boolean {
-    const p = payload as WhatsappWebhookPayload;
-    const change = p?.entry?.[0]?.changes?.[0];
-    if (!change || change.field !== WhatsappWebhookField.MESSAGES) {
-      console.log("[WhatsApp] matchesPhoneNumberId: field is not messages, skipping check");
-      return true;
+  async getMediaUrl(mediaId: string): Promise<string> {
+    console.log(`[WhatsApp] fetching media URL for media ID: ${mediaId}`);
+    const response = await fetch(`${this.baseUrl}/${mediaId}`, {
+      headers: { Authorization: `Bearer ${this.token}` },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`WhatsApp media metadata error: ${response.status} - ${JSON.stringify(errorData)}`);
     }
-    const metadata = (change.value as WhatsappMessagesValue)?.metadata;
-    if (!metadata?.phone_number_id) {
-      console.log("[WhatsApp] matchesPhoneNumberId: no phone_number_id in metadata, skipping check");
-      return true;
-    }
-    const matches = metadata.phone_number_id === phoneNumberId;
-    console.log(
-      `[WhatsApp] matchesPhoneNumberId: payload="${metadata.phone_number_id}" expected="${phoneNumberId}" matches=${matches}`,
-    );
-    return matches;
+
+    const data = (await response.json()) as { url: string; mime_type: string };
+    console.log(`[WhatsApp] resolved media URL for ${mediaId}`);
+    return data.url;
   }
 
-  getField(payload: unknown): string | null {
-    const p = payload as WhatsappWebhookPayload;
-    return p?.entry?.[0]?.changes?.[0]?.field ?? null;
+  async downloadAudio(mediaUrl: string): Promise<Buffer> {
+    console.log(`[WhatsApp] downloading audio`);
+    const response = await fetch(mediaUrl, {
+      headers: { Authorization: `Bearer ${this.token}` },
+    });
+
+    if (!response.ok) {
+      throw new Error(`WhatsApp audio download error: ${response.status}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    console.log(`[WhatsApp] audio downloaded: ${buffer.length} bytes`);
+    return buffer;
+  }
+
+  async saveTempAudio(buffer: Buffer): Promise<string> {
+    const fileName = `whatsapp-audio-${randomUUID()}.ogg`;
+    const filePath = path.join(os.tmpdir(), fileName);
+    await fsPromises.writeFile(filePath, buffer);
+    console.log(`[WhatsApp] audio saved to temp file: ${filePath}`);
+    return filePath;
+  }
+
+  async markAsRead(messageId: string): Promise<void> {
+    await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        status: "read",
+        message_id: messageId,
+      }),
+    });
+  }
+
+  async sendTyping(to: string): Promise<void> {
+    await fetch(`${this.baseUrl}/${this.phoneNumberId}/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to,
+        type: "text",
+        typing: { status: "typing" },
+      }),
+    });
+  }
+
+  matchesPhoneNumberId(payload: unknown, phoneNumberId: string): boolean {
+    const phoneNumberIdFromPayload = getPhoneNumberIdFromPayload(payload);
+    if (!phoneNumberIdFromPayload) {
+      console.log("[WhatsApp] matchesPhoneNumberId: no phone_number_id in payload, skipping check");
+      return true;
+    }
+    const matches = phoneNumberIdFromPayload === phoneNumberId;
+    console.log(
+      `[WhatsApp] matchesPhoneNumberId: payload="${phoneNumberIdFromPayload}" expected="${phoneNumberId}" matches=${matches}`,
+    );
+    return matches;
   }
 
   async receive(payload: unknown, onMessage: OnMessageReceived): Promise<void> {
@@ -166,7 +258,10 @@ export class WhatsappApi {
     await onMessage(
       {
         from: message.from,
+        externalId: message.id,
         message: message.text?.body || "",
+        messageType: message.type ?? "text",
+        audioId: message.type === "audio" ? message.audio?.id : undefined,
         raw: message,
       },
       this,

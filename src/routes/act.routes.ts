@@ -9,12 +9,9 @@ import { FindActAnalysisSummaryController } from "../controllers/act/FindActAnal
 import { FindActChatbotController } from "../controllers/act/FindActChatbotController";
 import { FindByCompanyController } from "../controllers/act/FindByCompanyController";
 import { GetActChapterController } from "../controllers/act/GetActChapterController";
-import { GetActsDataController } from "../controllers/act/GetActsDataController";
 import { GetAnalysisReportController } from "../controllers/act/GetAnalysisReportController";
 import { GetAnalysisUserFiltersController } from "../controllers/act/GetAnalysisUserFiltersController";
-import { GetFullStoryController } from "../controllers/act/GetFullStoryController";
 import { MessageActChatbotController } from "../controllers/act/MessageActChatbotController";
-import { MoveToNextActController } from "../controllers/act/MoveToNextActController";
 import { UpdateActChapterController } from "../controllers/act/UpdateActChapterController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { requirePermissions } from "../middlewares/requirePermissions";
@@ -40,42 +37,6 @@ const actRouter = Router();
  *         $ref: '#/components/responses/Forbidden'
  */
 actRouter.get("/by-company", isAuthenticated, requirePermissions("acts-engage"), new FindByCompanyController().handle);
-
-/**
- * @swagger
- * /acts:
- *   get:
- *     summary: Listar ACTs da trilha do usuário
- *     description: >
- *       Retorna os ACTs (atividades narrativas interativas) disponíveis para o usuário autenticado,
- *       com base na trilha da empresa à qual ele pertence.
- *       Cada ACT representa uma narrativa reflexiva/terapêutica que o usuário realiza em capítulos.
- *       Inclui o progresso atual do usuário em cada ACT.
- *       Requer permissão `answer-act`.
- *     tags: [ACTs]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Lista de ACTs com progresso do usuário
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: SUCCESS
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/ActChatbot'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       403:
- *         $ref: '#/components/responses/Forbidden'
- */
-actRouter.get("/", isAuthenticated, requirePermissions("acts-engage"), new GetActsDataController().handle);
 
 /**
  * @swagger
@@ -126,79 +87,6 @@ actRouter.get("/", isAuthenticated, requirePermissions("acts-engage"), new GetAc
  *         $ref: '#/components/responses/NotFound'
  */
 actRouter.get("/chapters", isAuthenticated, requirePermissions("acts-engage"), new GetActChapterController().handle);
-
-/**
- * @swagger
- * /acts/full-story:
- *   get:
- *     summary: Obter história completa compilada do usuário
- *     description: >
- *       Retorna a narrativa completa do usuário — a compilação de todos os capítulos já concluídos.
- *       Cada capítulo tem um campo `compilation` com a narrativa compilada pela IA.
- *       Este endpoint agrega todos os capítulos compilados do usuário na trilha atual.
- *       Requer permissão `answer-act`.
- *     tags: [ACTs]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Narrativa completa compilada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: SUCCESS
- *                 data:
- *                   type: object
- *                   properties:
- *                     chapters:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/ActChapter'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       403:
- *         $ref: '#/components/responses/Forbidden'
- */
-actRouter.get("/full-story", isAuthenticated, requirePermissions("acts-engage"), new GetFullStoryController().handle);
-
-/**
- * @swagger
- * /acts/next:
- *   put:
- *     summary: Avançar para o próximo ACT
- *     description: >
- *       Avança o progresso do usuário para o próximo ACT na trilha.
- *       Atualiza o campo `currentActChatbotId` do usuário para apontar para o próximo ACT disponível.
- *       Deve ser chamado após a conclusão do ACT atual.
- *       Requer permissão `answer-act`.
- *     tags: [ACTs]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Usuário avançado para o próximo ACT
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: SUCCESS
- *                 data:
- *                   $ref: '#/components/schemas/ActChatbot'
- *       401:
- *         $ref: '#/components/responses/Unauthorized'
- *       403:
- *         $ref: '#/components/responses/Forbidden'
- *       404:
- *         $ref: '#/components/responses/NotFound'
- */
-actRouter.put("/next", isAuthenticated, requirePermissions("acts-engage"), new MoveToNextActController().handle);
 
 /**
  * @swagger

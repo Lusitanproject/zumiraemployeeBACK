@@ -15,6 +15,7 @@ export const CreateUserSchema = z.object({
   location: z.string().min(1).optional(),
   skinColor: z.string().min(1).optional(),
   hasDisability: z.boolean().optional(),
+  birthdate: DateStringSchema.optional(),
   admissionDate: DateStringSchema.optional(),
   phoneNumber: PhoneNumberSchema.optional(),
 });
@@ -37,6 +38,7 @@ export const UpdateUserSchema = z.object({
   location: z.string().min(1).optional(),
   skinColor: z.string().min(1).optional(),
   hasDisability: z.boolean().optional(),
+  birthdate: DateStringSchema.optional(),
   admissionDate: DateStringSchema.optional(),
   phoneNumber: PhoneNumberSchema.optional(),
 });

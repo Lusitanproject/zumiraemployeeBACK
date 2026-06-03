@@ -32,6 +32,7 @@ enum UserGender {
 enum ChapterType {
   REGULAR
   WHATSAPP
+  CHATBASE
 }
 
 enum BatchStatus {
@@ -70,19 +71,19 @@ model User {
   nationalityId        String?     @map("nationality_id")
   roleId               String      @map("role_id")
   companyId            String?     @map("company_id")
-  currentActChatbotId  String?     @map("current_act_chatbot_id")
+  registrationComplete Boolean     @default(true) @map("registration_complete")
   createdAt            DateTime    @default(now()) @map("created_at")
   updatedAt            DateTime    @updatedAt @map("updated_at")
 
   nationality               Nationality?               @relation(fields: [nationalityId], references: [id])
   company                   Company?                   @relation(fields: [companyId], references: [id])
   role                      Role                       @relation(fields: [roleId], references: [id])
-  currentActChatbot         ActChatbot?                @relation(fields: [currentActChatbotId], references: [id])
   codes                     AuthCode[]
   assessmentResults         AssessmentResult[]
   assessmentQuestionAnswers AssessmentQuestionAnswer[]
   notificationRecipients    NotificationRecipient[]
   actChapters               ActChapter[]
+  trailProgresses           UserTrailProgress[]
 
   @@map("users")
 }
@@ -320,6 +321,7 @@ model CompanyAssessmentAnalysis {
   assessment  Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   vectorStore OpenAIVectorStore? @relation(fields: [vectorStoreId], references: [id])
 
+  @@index([companyId, assessmentId, createdAt(sort: Desc)])
   @@map("company_assessment_analysis")
 }
 
@@ -388,8 +390,9 @@ model Trail {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  actChatbots ActChatbot[]
-  companies   Company[]
+  actChatbots    TrailActChatbot[]
+  companies      Company[]
+  userProgresses UserTrailProgress[]
 
   @@map("trails")
 }
@@ -404,17 +407,41 @@ model ActChatbot {
   compilationInstructions  String?  @map("compilation_instructions")
   reportInstructions       String?  @map("report_instructions")
   consultiveAiInstructions String?  @map("constultive_ai_instructions")
-  trailId                  String   @map("trail_id")
-  index                    Int
   createdAt                DateTime @default(now()) @map("created_at")
   updatedAt                DateTime @updatedAt @map("updated_at")
 
-  trail              Trail                @relation(fields: [trailId], references: [id])
+  trails             TrailActChatbot[]
   actChapters        ActChapter[]
-  currentUsers       User[]
+  userProgresses     UserTrailProgress[]
   companyActAnalyses CompanyActAnalysis[]
 
   @@map("act_chatbots")
+}
+
+model TrailActChatbot {
+  trailId      String @map("trail_id")
+  actChatbotId String @map("act_chatbot_id")
+  index        Int
+
+  trail      Trail      @relation(fields: [trailId], references: [id])
+  actChatbot ActChatbot @relation(fields: [actChatbotId], references: [id])
+
+  @@id([trailId, actChatbotId])
+  @@map("trail_act_chatbots")
+}
+
+model UserTrailProgress {
+  userId              String  @map("user_id")
+  trailId             String  @map("trail_id")
+  currentActChatbotId String? @map("current_act_chatbot_id")
+  currentIndex        Int     @default(0) @map("current_index")
+
+  user              User        @relation(fields: [userId], references: [id])
+  trail             Trail       @relation(fields: [trailId], references: [id])
+  currentActChatbot ActChatbot? @relation(fields: [currentActChatbotId], references: [id])
+
+  @@id([userId, trailId])
+  @@map("user_trail_progress")
 }
 
 model ActChapter {
@@ -432,11 +459,13 @@ model ActChapter {
   user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages   ActChapterMessage[]
 
+  @@index([userId, actChatbotId, type, updatedAt(sort: Desc)])
   @@map("act_chapters")
 }
 
 model ActChapterMessage {
   id               String      @id @default(cuid())
+  externalId       String?     @map("external_id")
   actChapterId     String      @map("act_chapter_id")
   content          String
   anonymousContent String?     @map("anonymous_content")
@@ -447,6 +476,8 @@ model ActChapterMessage {
   actChapter                     ActChapter                       @relation(fields: [actChapterId], references: [id], onDelete: Cascade)
   actMessagesPsychosocialFactors ActMessagesPsychosocialFactors[]
 
+  @@index([actChapterId, createdAt(sort: Asc)])
+  @@index([actChapterId, externalId])
   @@map("act_chapter_messages")
 }
 
@@ -479,6 +510,7 @@ model CompanyActAnalysis {
   vectorStore               OpenAIVectorStore?        @relation(fields: [vectorStoreId], references: [id])
   companyActAnalysisBatches CompanyActAnalysisBatch[]
 
+  @@index([companyId, actChatbotId, createdAt(sort: Desc)])
   @@map("company_act_analyses")
 }
 

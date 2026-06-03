@@ -19,18 +19,12 @@ class ActAdminService {
     name: true,
     description: true,
     icon: true,
-    index: true,
-    trailId: true,
     createdAt: true,
   } satisfies Prisma.ActChatbotSelect;
 
   async findAll() {
     const bots = await prismaClient.actChatbot.findMany({
       select: this.actListSelect,
-
-      orderBy: {
-        index: "asc",
-      },
     });
 
     return { items: bots };
@@ -44,8 +38,6 @@ class ActAdminService {
         name: true,
         description: true,
         icon: true,
-        index: true,
-        trailId: true,
         initialMessage: true,
         messageInstructions: true,
         compilationInstructions: true,
@@ -61,64 +53,20 @@ class ActAdminService {
   }
 
   async findByTrail(trailId: string) {
-    const bots = await prismaClient.actChatbot.findMany({
-      select: this.actListSelect,
-
-      where: {
-        trailId,
-      },
-
-      orderBy: {
-        index: "asc",
+    const rows = await prismaClient.trailActChatbot.findMany({
+      where: { trailId },
+      orderBy: { index: "asc" },
+      select: {
+        index: true,
+        actChatbot: { select: this.actListSelect },
       },
     });
 
-    return { items: bots };
+    return { items: rows.map((r) => ({ ...r.actChatbot, index: r.index })) };
   }
 
   async create(data: CreateActChatbotRequest) {
-    const existingBots = await prismaClient.actChatbot.findMany({ where: { trailId: data.trailId } });
-
-    const bot = await prismaClient.actChatbot.create({
-      data: {
-        ...data,
-        index: existingBots.length,
-      },
-    });
-
-    // Garantir que todo usuário sem ato é atualizado quando o primeiro bot é criado
-    const first = existingBots.find((b) => b.index === 0);
-    if (first) {
-      const noActUsers = await prismaClient.user.findMany({
-        where: {
-          currentActChatbotId: null,
-        },
-      });
-
-      await Promise.all([
-        prismaClient.user.updateMany({
-          where: {
-            id: {
-              in: noActUsers.map((u) => u.id),
-            },
-          },
-          data: {
-            currentActChatbotId: first.id,
-          },
-        }),
-
-        ...noActUsers.map((user) =>
-          prismaClient.actChapter.create({
-            data: {
-              actChatbotId: first.id,
-              userId: user.id,
-              type: "REGULAR",
-            },
-          }),
-        ),
-      ]);
-    }
-
+    const bot = await prismaClient.actChatbot.create({ data });
     return bot;
   }
 
@@ -134,9 +82,7 @@ class ActAdminService {
     await Promise.all(
       chatbots.map((bot) =>
         prismaClient.actChatbot.update({
-          where: {
-            id: bot.id,
-          },
+          where: { id: bot.id },
           data: { ...bot },
         }),
       ),
@@ -156,6 +102,11 @@ class ActAdminService {
       chatbotId: chatbaseChatbotId,
       filteredSources: "WhatsApp",
     });
+
+    console.log(`${conversations.length} conversas encontradas no chatbase`);
+    for (const conv of conversations) {
+      console.log(`${conv.form_submission?.name} (${conv.form_submission?.phone}) - ${conv.messages.length} mensagens`);
+    }
 
     // Remove previously imported chapters/messages for these conversations and import again.
     const existingChapters = await prismaClient.actChapter.findMany({
@@ -222,7 +173,7 @@ class ActAdminService {
           return {
             actChatbotId: id,
             userId,
-            type: ChapterType.WHATSAPP,
+            type: ChapterType.CHATBASE,
             externalId: conv.id,
             createdAt: conv.created_at,
           };

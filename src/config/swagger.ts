@@ -1,16 +1,15 @@
+import path from "path";
 import swaggerJSDoc from "swagger-jsdoc";
 
-const isDistRuntime = __dirname.includes("/dist/");
+const isLocal = process.env.ENV === "local";
 
 const docsBaseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : `http://localhost:${process.env.PORT ?? "3000"}`;
 
-const srcRoutes = ["./src/routes/*.ts", "./src/routes/admin/*.ts", "./src/routes/webhooks/*.ts"];
+const routeExt = isLocal ? "ts" : "js";
 
-const distRoutes = ["./dist/routes/*.js", "./dist/routes/admin/*.js", "./dist/routes/webhooks/*.js"];
-
-const apis = isDistRuntime ? distRoutes : srcRoutes;
+const apis = [path.resolve(__dirname, `../**/*.routes.${routeExt}`)];
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -196,12 +195,6 @@ const options: swaggerJSDoc.Options = {
             nationalityId: { type: "string", format: "cuid", nullable: true },
             roleId: { type: "string", format: "uuid", description: "Papel de acesso do usuário" },
             companyId: { type: "string", format: "cuid", nullable: true },
-            currentActChatbotId: {
-              type: "string",
-              format: "cuid",
-              nullable: true,
-              description: "ID do ACT que o usuário está realizando atualmente",
-            },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
           },
@@ -407,8 +400,6 @@ const options: swaggerJSDoc.Options = {
               nullable: true,
               description: "Prompt de sistema para guiar a IA na compilação final do capítulo em narrativa",
             },
-            trailId: { type: "string", format: "cuid", description: "Trilha à qual este ACT pertence" },
-            index: { type: "integer", description: "Posição de ordenação (0-based) dentro da trilha" },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
           },
@@ -533,4 +524,5 @@ const options: swaggerJSDoc.Options = {
   apis,
 };
 
+export const swaggerApis = apis;
 export const swaggerSpec = swaggerJSDoc(options);

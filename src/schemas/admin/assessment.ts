@@ -68,6 +68,7 @@ export type AssessmentResultFilterColumn = (typeof ASSESSMENT_RESULT_FILTER_COLU
 const assessmentResultFilters = {
   gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
   area: z.string().optional(),
+  similarExposureGroup: z.string().optional(),
   location: z.string().optional(),
   occupation: z.string().optional(),
   occupationLevel: z.string().optional(),

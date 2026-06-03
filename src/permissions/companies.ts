@@ -7,6 +7,7 @@ export const CompanyPermissions = {
   USERS_WRITE: "company-users-write",
   USERS_UPDATE: "company-users-update",
   USERS_DELETE: "company-users-delete",
+  ACCESS_DASHBOARD: "company-access-dashboard",
 } as const;
 
 export const CompanyDomain: PermissionDomainDefinition = {
@@ -19,5 +20,6 @@ export const CompanyDomain: PermissionDomainDefinition = {
     { key: CompanyPermissions.USERS_WRITE, label: "Adicionar Usuários à Empresa" },
     { key: CompanyPermissions.USERS_UPDATE, label: "Atualizar Usuários da Empresa" },
     { key: CompanyPermissions.USERS_DELETE, label: "Remover Usuários da Empresa" },
+    { key: CompanyPermissions.ACCESS_DASHBOARD, label: "Acessar Dashboard da Empresa" },
   ],
 };

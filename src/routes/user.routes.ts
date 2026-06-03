@@ -8,7 +8,9 @@ import { GetUserFiltersController } from "../controllers/user/GetUserFiltersCont
 import { ListAllUsersController } from "../controllers/user/ListAllUsersController";
 import { ListUsersByCompanyController } from "../controllers/user/ListUsersByCompanyController";
 import { SearchUsersController } from "../controllers/user/SearchUsersController";
+import { UpdateMeController } from "../controllers/user/UpdateMeController";
 import { UpdateUserController } from "../controllers/user/UpdateUserController";
+import { ValidatePermissionController } from "../controllers/user/ValidatePermissionController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { requirePermissions } from "../middlewares/requirePermissions";
 import { requireSameCompany } from "../middlewares/requireSameCompany";
@@ -129,6 +131,102 @@ userRouter.get(
  */
 // TODO: migrar para /admin/users (permissão: admin-users-manage)
 userRouter.get("/", isAuthenticated, requirePermissions("admin-users-manage"), new ListAllUsersController().handle);
+
+/**
+ * @swagger
+ * /users/me:
+ *   put:
+ *     summary: Atualizar perfil do usuário autenticado
+ *     description: >
+ *       Permite ao usuário autenticado atualizar seus próprios dados. Todos os campos são opcionais.
+ *       O campo `password` só é aceito enquanto `registrationComplete` for `false`.
+ *       Ao definir uma nova senha (quando já existe senha pré-definida), o cadastro é automaticamente marcado como concluído.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *                 description: Aceito somente quando registrationComplete for false
+ *               phoneNumber:
+ *                 type: string
+ *               gender:
+ *                 type: string
+ *                 enum: [MALE, FEMALE, OTHER]
+ *               birthdate:
+ *                 type: string
+ *               nationalityId:
+ *                 type: string
+ *               occupation:
+ *                 type: string
+ *               occupationLevel:
+ *                 type: string
+ *               area:
+ *                 type: string
+ *               similarExposureGroup:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               skinColor:
+ *                 type: string
+ *               hasDisability:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+userRouter.put("/me", isAuthenticated, new UpdateMeController().handle);
+
+/**
+ * @swagger
+ * /users/me/validate-permission:
+ *   get:
+ *     summary: Verifica se o usuário autenticado tem acesso a uma permission
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: permission
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Chave da permission a verificar (ex: companies-read)
+ *     responses:
+ *       200:
+ *         description: Resultado da verificação
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     hasPermission:
+ *                       type: boolean
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+userRouter.get("/me/validate-permission", isAuthenticated, new ValidatePermissionController().handle);
 
 /**
  * @swagger

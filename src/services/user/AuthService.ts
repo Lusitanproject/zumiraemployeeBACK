@@ -82,20 +82,10 @@ class AuthService {
     });
 
     const now = new Date().getTime();
-    const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30);
+    const expiresAt = new Date(now + 1000 * 60 * 60 * 24 * 30); // 30 dias
 
-    return {
-      name: user.name,
-      gender: user.gender,
-      act: user.currentActChatbotId,
-      role: user.role.slug,
-      token,
-      expiresAt,
-      user: (() => {
-        const { password: _password, ...response } = user;
-        return { ...response };
-      })(),
-    };
+    const { password: _password, ...userResponse } = user;
+    return { token, expiresAt, user: userResponse };
   }
 
   async sendCode(email: string) {

@@ -9,7 +9,6 @@ export const CreateActChatbotSchema = z.object({
   consultiveAiInstructions: z.string().optional(),
   reportInstructions: z.string().optional(),
   icon: z.string().nonempty(),
-  trailId: z.string().cuid(),
 });
 
 export const UpdateActChatbotSchema = z.object({
@@ -21,9 +20,7 @@ export const UpdateActChatbotSchema = z.object({
   compilationInstructions: z.string().nonempty().optional(),
   consultiveAiInstructions: z.string().optional(),
   reportInstructions: z.string().optional(),
-  index: z.number().int().optional(),
   icon: z.string().nonempty().optional(),
-  trailId: z.string().cuid().optional(),
 });
 
 export const UpdateManyActChatbotsSchema = z.object({
@@ -33,6 +30,8 @@ export const UpdateManyActChatbotsSchema = z.object({
 export const FindByTrailSchema = z.object({
   trailId: z.string().cuid(),
 });
+
+export type FindByTrailRequest = z.infer<typeof FindByTrailSchema>;
 
 export const FindByCompanySchema = z.object({
   companyId: z.string().cuid(),
