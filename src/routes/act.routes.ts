@@ -9,6 +9,7 @@ import { FindActAnalysisController } from "../controllers/act/FindActAnalysisCon
 import { FindActAnalysisFactorMessagesController } from "../controllers/act/FindActAnalysisFactorMessagesController";
 import { FindActAnalysisSummaryController } from "../controllers/act/FindActAnalysisSummaryController";
 import { FindActChatbotController } from "../controllers/act/FindActChatbotController";
+import { FindActConfigController } from "../controllers/act/FindActConfigController";
 import { FindAvailableActsController } from "../controllers/act/FindAvailableActsController";
 import { FindByCompanyController } from "../controllers/act/FindByCompanyController";
 import { FindOwnedActsController } from "../controllers/act/FindOwnedActsController";
@@ -576,10 +577,10 @@ actRouter.get(
 
 /**
  * @swagger
- * /acts/{id}/test-message:
- *   post:
- *     summary: Testar mensagem de ACT próprio
- *     description: "Envia um histórico de mensagens ao chatbot do ACT usando instruções fornecidas no payload, sem persistir nada. Só funciona para ACTs pertencentes à empresa do usuário. Requer permissão `acts-test`."
+ * /acts/{id}/config:
+ *   get:
+ *     summary: Buscar configuração completa de ACT próprio
+ *     description: "Retorna todos os campos de configuração do ACT. Só funciona para ACTs pertencentes à empresa do usuário. Requer permissão `acts-update`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -590,6 +591,31 @@ actRouter.get(
  *         schema:
  *           type: string
  *           format: cuid
+ *     responses:
+ *       200:
+ *         description: Configuração completa do ACT
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+actRouter.get(
+  "/:id/config",
+  isAuthenticated,
+  requirePermissions("acts-update"),
+  requireCompany,
+  new FindActConfigController().handle,
+);
+
+/**
+ * @swagger
+ * /acts/test-message:
+ *   post:
+ *     summary: Testar mensagem de chatbot
+ *     description: "Envia instruções e um histórico de mensagens para a IA e retorna a resposta via stream. Não persiste nada nem requer um ACT existente. Requer permissão `acts-test`."
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -617,19 +643,13 @@ actRouter.get(
  *                       type: string
  *     responses:
  *       200:
- *         description: Resposta gerada pelo chatbot
+ *         description: Stream SSE com a resposta da IA
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-actRouter.post(
-  "/:id/test-message",
-  isAuthenticated,
-  requirePermissions("acts-test"),
-  requireCompany,
-  new TestActController().handle,
-);
+actRouter.post("/test-message", isAuthenticated, requirePermissions("acts-test"), new TestActController().handle);
 
 /**
  * @swagger

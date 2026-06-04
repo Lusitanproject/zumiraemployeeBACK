@@ -232,13 +232,11 @@ class ActService {
 
     const openai = new OpenAiApi();
     const response = await openai.generateResponse({
-      instructions: [
+      instructions: this.buildMessageInstructions(
         bot.messageInstructions,
-        `O nome do usuário é: ${capitalize(conv.user.name.split(" ")[0])}`,
+        conv.user.name,
         opts?.instructionsComplement,
-      ]
-        .filter(Boolean)
-        .join("\n"),
+      ),
       messages: historyAndInput,
     });
 
@@ -308,6 +306,34 @@ class ActService {
     return { items: rows.map((r) => ({ ...r.actChatbot, index: r.index })) };
   }
 
+  async findByIdConfig({ id, companyId }: { id: string; companyId: string }) {
+    const bot = await prismaClient.actChatbot.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        icon: true,
+        published: true,
+        initialMessage: true,
+        messageInstructions: true,
+        compilationInstructions: true,
+        reportGenerationInstructions: true,
+        reportLookupInstructions: true,
+        individualAnalysisInstructions: true,
+        companyId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!bot || bot.companyId !== companyId) {
+      throw new PublicError("Ato não encontrado ou sem permissão de acesso");
+    }
+
+    return bot;
+  }
+
   async create(data: CreateActRequest & { companyId: string }) {
     return prismaClient.actChatbot.create({ data });
   }
@@ -335,23 +361,13 @@ class ActService {
     });
   }
 
-  async testMessage({
-    actChatbotId,
-    companyId,
-    instructions,
-    messages,
-  }: TestActRequest & { actChatbotId: string; companyId: string }) {
-    const bot = await prismaClient.actChatbot.findUnique({
-      where: { id: actChatbotId },
-      select: { companyId: true },
-    });
-
-    if (!bot || bot.companyId !== companyId) {
-      throw new PublicError("Ato não encontrado ou sem permissão para teste");
-    }
-
+  async testMessage({ instructions, messages, userName }: TestActRequest & { userName: string }) {
     const openai = new OpenAiApi();
-    return openai.generateResponse({ instructions, messages, stream: true });
+    return openai.generateResponse({
+      instructions: this.buildMessageInstructions(instructions, userName),
+      messages,
+      stream: true,
+    });
   }
 
   async findAvailable(companyId: string) {
@@ -361,6 +377,16 @@ class ActService {
       },
       orderBy: { createdAt: "desc" },
     });
+  }
+
+  private buildMessageInstructions(
+    messageInstructions: string | null | undefined,
+    userName: string,
+    complement?: string,
+  ): string {
+    return [messageInstructions, `O nome do usuário é: ${capitalize(userName.split(" ")[0])}`, complement]
+      .filter(Boolean)
+      .join("\n");
   }
 
   // ── Analysis private helpers ──────────────────────────────────────────────

@@ -5,15 +5,10 @@ import { ActService } from "../../services/act/ActService";
 
 class TestActController {
   async handle(req: Request, res: Response) {
-    const actChatbotId = req.params.id;
     const data = TestActSchema.parse(req.body);
 
     const service = new ActService();
-    const stream = await service.testMessage({
-      actChatbotId,
-      companyId: req.user.companyId!,
-      ...data,
-    });
+    const stream = await service.testMessage({ ...data, userName: req.user.name });
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
