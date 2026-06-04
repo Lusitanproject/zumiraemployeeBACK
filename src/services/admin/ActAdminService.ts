@@ -41,8 +41,8 @@ class ActAdminService {
         initialMessage: true,
         messageInstructions: true,
         compilationInstructions: true,
-        consultiveAiInstructions: true,
-        reportInstructions: true,
+        reportGenerationInstructions: true,
+        reportLookupInstructions: true,
         createdAt: true,
       },
     });

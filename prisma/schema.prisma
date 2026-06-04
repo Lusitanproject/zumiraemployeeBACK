@@ -136,6 +136,7 @@ model Company {
 
   trail                       Trail                        @relation(fields: [trailId], references: [id])
   users                       User[]
+  ownedActChatbots            ActChatbot[]
   companyAssessmentAnalyses   CompanyAssessmentAnalysis[]
   companyAvailableAssessments CompanyAvailableAssessment[]
   companyActAnalyses          CompanyActAnalysis[]
@@ -398,18 +399,23 @@ model Trail {
 }
 
 model ActChatbot {
-  id                       String   @id @default(cuid())
-  name                     String
-  description              String
-  icon                     String
-  initialMessage           String?  @map("initial_message")
-  messageInstructions      String?  @map("message_instructions")
-  compilationInstructions  String?  @map("compilation_instructions")
-  reportInstructions       String?  @map("report_instructions")
-  consultiveAiInstructions String?  @map("constultive_ai_instructions")
-  createdAt                DateTime @default(now()) @map("created_at")
-  updatedAt                DateTime @updatedAt @map("updated_at")
+  id                             String   @id @default(cuid())
+  name                           String
+  description                    String
+  icon                           String
+  companyId                      String?  @map("company_id")
+  published                      Boolean  @default(true)
+  allowIndividualAnalysis        Boolean  @default(false) @map("allow_individual_analysis")
+  initialMessage                 String?  @map("initial_message")
+  messageInstructions            String?  @map("message_instructions")
+  compilationInstructions        String?  @map("compilation_instructions")
+  reportGenerationInstructions   String?  @map("report_generation_instructions")
+  reportLookupInstructions       String?  @map("report_lookup_instructions")
+  individualAnalysisInstructions String?  @map("individual_analysis_instructions")
+  createdAt                      DateTime @default(now()) @map("created_at")
+  updatedAt                      DateTime @updatedAt @map("updated_at")
 
+  company            Company?             @relation(fields: [companyId], references: [id])
   trails             TrailActChatbot[]
   actChapters        ActChapter[]
   userProgresses     UserTrailProgress[]

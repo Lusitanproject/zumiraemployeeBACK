@@ -7,9 +7,12 @@ import prismaClient from "../../prisma";
 import {
   CompileActChapterRequest,
   CreateActChapterRequest,
+  CreateActRequest,
   GetActChapterRequest,
   MessageActChatbotRequest,
+  TestActRequest,
   UpdateActChapterRequest,
+  UpdateActRequest,
 } from "../../schemas/actChatbot";
 import { tryParsePhone } from "../../utils/phone";
 import { capitalize } from "../../utils/string";
@@ -229,13 +232,11 @@ class ActService {
 
     const openai = new OpenAiApi();
     const response = await openai.generateResponse({
-      instructions: [
+      instructions: this.buildMessageInstructions(
         bot.messageInstructions,
-        `O nome do usuário é: ${capitalize(conv.user.name.split(" ")[0])}`,
+        conv.user.name,
         opts?.instructionsComplement,
-      ]
-        .filter(Boolean)
-        .join("\n"),
+      ),
       messages: historyAndInput,
     });
 
@@ -303,6 +304,89 @@ class ActService {
     });
 
     return { items: rows.map((r) => ({ ...r.actChatbot, index: r.index })) };
+  }
+
+  async findByIdConfig({ id, companyId }: { id: string; companyId: string }) {
+    const bot = await prismaClient.actChatbot.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        icon: true,
+        published: true,
+        initialMessage: true,
+        messageInstructions: true,
+        compilationInstructions: true,
+        reportGenerationInstructions: true,
+        reportLookupInstructions: true,
+        individualAnalysisInstructions: true,
+        companyId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!bot || bot.companyId !== companyId) {
+      throw new PublicError("Ato não encontrado ou sem permissão de acesso");
+    }
+
+    return bot;
+  }
+
+  async create(data: CreateActRequest & { companyId: string }) {
+    return prismaClient.actChatbot.create({ data });
+  }
+
+  async update({ id, companyId, ...data }: UpdateActRequest & { id: string; companyId: string }) {
+    const act = await prismaClient.actChatbot.findUnique({ where: { id } });
+    if (!act || act.companyId !== companyId) {
+      throw new PublicError("Ato não encontrado ou sem permissão para alteração");
+    }
+    return prismaClient.actChatbot.update({ where: { id }, data });
+  }
+
+  async deleteAct({ id, companyId }: { id: string; companyId: string }) {
+    const act = await prismaClient.actChatbot.findUnique({ where: { id } });
+    if (!act || act.companyId !== companyId) {
+      throw new PublicError("Ato não encontrado ou sem permissão para exclusão");
+    }
+    return prismaClient.actChatbot.delete({ where: { id } });
+  }
+
+  async findOwned(companyId: string) {
+    return prismaClient.actChatbot.findMany({
+      where: { companyId },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  async testMessage({ instructions, messages, userName }: TestActRequest & { userName: string }) {
+    const openai = new OpenAiApi();
+    return openai.generateResponse({
+      instructions: this.buildMessageInstructions(instructions, userName),
+      messages,
+      stream: true,
+    });
+  }
+
+  async findAvailable(companyId: string) {
+    return prismaClient.actChatbot.findMany({
+      where: {
+        OR: [{ companyId }, { trails: { some: { trail: { companies: { some: { id: companyId } } } } } }],
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  private buildMessageInstructions(
+    messageInstructions: string | null | undefined,
+    userName: string,
+    complement?: string,
+  ): string {
+    return [messageInstructions, `O nome do usuário é: ${capitalize(userName.split(" ")[0])}`, complement]
+      .filter(Boolean)
+      .join("\n");
   }
 
   // ── Analysis private helpers ──────────────────────────────────────────────
@@ -848,7 +932,7 @@ class ActService {
   }
 
   private async buildActRagResponse(
-    actChatbot: { name: string; reportInstructions: string | null },
+    actChatbot: { name: string; reportGenerationInstructions: string | null },
     report: Omit<AnalysisReport, "aiDescription">,
     openAiApi: OpenAiApi,
   ) {
@@ -955,7 +1039,7 @@ class ActService {
 
     const response = await openAiApi.generateResponse({
       messages: [{ role: "user", content: reportText }],
-      instructions: actChatbot.reportInstructions,
+      instructions: actChatbot.reportGenerationInstructions,
     });
 
     return { response, reportText };
