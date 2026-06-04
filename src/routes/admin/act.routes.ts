@@ -560,11 +560,16 @@ adminActRouter.post(
  *         application/json:
  *           schema:
  *             type: object
- *             required: [messages]
+ *             required:
+ *               - content
  *             properties:
+ *               content:
+ *                 type: string
+ *                 description: Mensagem atual do usuário
  *               messages:
  *                 type: array
- *                 minItems: 1
+ *                 default: []
+ *                 description: Histórico anterior (deve terminar com role assistant)
  *                 items:
  *                   type: object
  *                   required: [role, content]

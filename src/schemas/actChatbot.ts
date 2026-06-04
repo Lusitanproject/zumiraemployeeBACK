@@ -1,6 +1,8 @@
 import { ChapterType } from "@prisma/client";
 import { z } from "zod";
 
+import { MessageWithHistorySchema } from "./common";
+
 export const GetActChapterSchema = z.object({
   actChapterId: z.string().cuid(),
 });
@@ -60,24 +62,14 @@ export const UpdateActSchema = z.object({
   individualAnalysisInstructions: z.string().optional(),
 });
 
-export const TestActSchema = z.object({
+export const TestActSchema = MessageWithHistorySchema.extend({
   instructions: z.string().optional(),
-  messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().nonempty() })).min(1),
 });
 
 export type CreateActRequest = z.infer<typeof CreateActSchema>;
 export type UpdateActRequest = z.infer<typeof UpdateActSchema>;
 export type TestActRequest = z.infer<typeof TestActSchema>;
 
-export const ActAnalysisMessageSchema = z.object({
-  messages: z
-    .array(
-      z.object({
-        role: z.enum(["user", "assistant"]),
-        content: z.string().min(1),
-      }),
-    )
-    .min(1),
-});
+export const ActAnalysisMessageSchema = MessageWithHistorySchema;
 
 export type ActAnalysisMessageRequest = z.infer<typeof ActAnalysisMessageSchema>;

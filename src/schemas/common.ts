@@ -77,3 +77,18 @@ export const PhoneNumberSchema = z
 export const UserIdSchema = z.object({
   userId: z.string().uuid(),
 });
+
+export const ChatMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().nonempty(),
+});
+
+export const ChatHistorySchema = z.array(ChatMessageSchema).default([]);
+
+export const MessageWithHistorySchema = z.object({
+  content: z.string().nonempty(),
+  messages: ChatHistorySchema,
+});
+
+export type ChatMessage = z.infer<typeof ChatMessageSchema>;
+export type MessageWithHistoryRequest = z.infer<typeof MessageWithHistorySchema>;
