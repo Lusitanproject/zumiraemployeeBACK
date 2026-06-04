@@ -202,7 +202,7 @@ class ActService {
     return { ...chapter, messages };
   }
 
-  async message(
+  private async prepareMessageContext(
     { content, actChapterId, userId }: MessageActChatbotRequest,
     opts?: { externalId?: string; instructionsComplement?: string },
   ) {
@@ -217,7 +217,6 @@ class ActService {
       data: { actChapterId, role: "user", content, externalId: opts?.externalId },
     });
 
-    const { actChatbot: bot } = conv;
     const messages = await prismaClient.actChapterMessage.findMany({
       where: { actChapterId },
       orderBy: { createdAt: "asc" },
@@ -231,27 +230,41 @@ class ActService {
     if (conv.actChatbot.initialMessage)
       historyAndInput.unshift({ role: "assistant", content: conv.actChatbot.initialMessage });
 
-    const openai = new OpenAiApi();
-    const response = await openai.generateResponse({
-      instructions: this.buildMessageInstructions(
-        bot.messageInstructions,
-        conv.user.name,
-        opts?.instructionsComplement,
-      ),
-      messages: historyAndInput,
-    });
+    const instructions = this.buildMessageInstructions(
+      conv.actChatbot.messageInstructions,
+      conv.user.name,
+      opts?.instructionsComplement,
+    );
 
+    return { actChapterId, historyAndInput, instructions };
+  }
+
+  private async persistAssistantMessage(actChapterId: string, content: string) {
     await Promise.all([
       prismaClient.actChapterMessage.create({
-        data: { actChapterId, role: "assistant", content: response.output_text },
+        data: { actChapterId, role: "assistant", content },
       }),
       prismaClient.actChapter.update({
         where: { id: actChapterId },
         data: { updatedAt: new Date() },
       }),
     ]);
+  }
 
+  async message(req: MessageActChatbotRequest, opts?: { externalId?: string; instructionsComplement?: string }) {
+    const { actChapterId, historyAndInput, instructions } = await this.prepareMessageContext(req, opts);
+    const openai = new OpenAiApi();
+    const response = await openai.generateResponse({ instructions, messages: historyAndInput });
+    await this.persistAssistantMessage(actChapterId, response.output_text);
     return response.output_text;
+  }
+
+  async messageStream(req: MessageActChatbotRequest, opts?: { instructionsComplement?: string }) {
+    const { actChapterId, historyAndInput, instructions } = await this.prepareMessageContext(req, opts);
+    const openai = new OpenAiApi();
+    const stream = await openai.generateResponse({ instructions, messages: historyAndInput, stream: true });
+    const persist = (responseText: string) => this.persistAssistantMessage(actChapterId, responseText);
+    return { stream, persist };
   }
 
   async updateChapter({ userId, actChapterId, compilation, title }: UpdateActChapterRequest) {

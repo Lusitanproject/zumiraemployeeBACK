@@ -209,10 +209,9 @@ actRouter.get("/chapters", isAuthenticated, requirePermissions("acts-engage"), n
  *   post:
  *     summary: Enviar mensagem ao chatbot do ACT
  *     description: >
- *       Envia uma mensagem do usuário ao chatbot de um capítulo de ACT e retorna a resposta da IA.
- *       A mensagem é salva no histórico do capítulo com `role: "user"`, e a resposta com `role: "assistant"`.
- *       A IA utiliza as `messageInstructions` do ACT e o histórico anterior do capítulo como contexto.
- *       Requer permissão `answer-act`.
+ *       Envia uma mensagem do usuário ao chatbot de um capítulo de ACT e retorna a resposta via stream SSE.
+ *       A mensagem é salva no histórico com `role: "user"` e a resposta com `role: "assistant"` após o stream completar.
+ *       Requer permissão `acts-engage`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -229,23 +228,13 @@ actRouter.get("/chapters", isAuthenticated, requirePermissions("acts-engage"), n
  *               actChapterId:
  *                 type: string
  *                 format: cuid
- *                 description: ID do capítulo ativo em que o usuário está conversando
+ *                 description: ID do capítulo ativo
  *               content:
  *                 type: string
- *                 description: Texto da mensagem enviada pelo usuário
+ *                 description: Texto da mensagem do usuário
  *     responses:
  *       200:
- *         description: Resposta do chatbot
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: SUCCESS
- *                 data:
- *                   $ref: '#/components/schemas/ActChapterMessage'
+ *         description: Stream SSE com a resposta da IA
  *       400:
  *         $ref: '#/components/responses/BadRequest'
  *       401:
