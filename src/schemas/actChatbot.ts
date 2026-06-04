@@ -60,8 +60,14 @@ export const UpdateActSchema = z.object({
   individualAnalysisInstructions: z.string().optional(),
 });
 
+export const TestActSchema = z.object({
+  instructions: z.string().optional(),
+  messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().nonempty() })).min(1),
+});
+
 export type CreateActRequest = z.infer<typeof CreateActSchema>;
 export type UpdateActRequest = z.infer<typeof UpdateActSchema>;
+export type TestActRequest = z.infer<typeof TestActSchema>;
 
 export const ActAnalysisMessageSchema = z.object({
   messages: z

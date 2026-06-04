@@ -9,6 +9,7 @@ export const ActPermissions = {
   DELETE: "acts-delete",
   READ_OWNED: "acts-read-owned",
   READ_AVAILABLE: "acts-read-available",
+  TEST: "acts-test",
 } as const;
 
 export const ActDomain: PermissionDomainDefinition = {
@@ -23,5 +24,6 @@ export const ActDomain: PermissionDomainDefinition = {
     { key: ActPermissions.DELETE, label: "Deletar Atos Próprios" },
     { key: ActPermissions.READ_OWNED, label: "Listar Atos Próprios" },
     { key: ActPermissions.READ_AVAILABLE, label: "Listar Atos Disponíveis" },
+    { key: ActPermissions.TEST, label: "Testar Atos Próprio" },
   ],
 };

@@ -16,6 +16,7 @@ import { GetActChapterController } from "../controllers/act/GetActChapterControl
 import { GetAnalysisReportController } from "../controllers/act/GetAnalysisReportController";
 import { GetAnalysisUserFiltersController } from "../controllers/act/GetAnalysisUserFiltersController";
 import { MessageActChatbotController } from "../controllers/act/MessageActChatbotController";
+import { TestActController } from "../controllers/act/TestActController";
 import { UpdateActChapterController } from "../controllers/act/UpdateActChapterController";
 import { UpdateActController } from "../controllers/act/UpdateActController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
@@ -571,6 +572,63 @@ actRouter.get(
   requirePermissions("acts-read-analysis"),
   requireSameCompany(),
   new FindActAnalysisController().handle,
+);
+
+/**
+ * @swagger
+ * /acts/{id}/test-message:
+ *   post:
+ *     summary: Testar mensagem de ACT próprio
+ *     description: "Envia um histórico de mensagens ao chatbot do ACT usando instruções fornecidas no payload, sem persistir nada. Só funciona para ACTs pertencentes à empresa do usuário. Requer permissão `acts-test`."
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - messages
+ *             properties:
+ *               instructions:
+ *                 type: string
+ *               messages:
+ *                 type: array
+ *                 minItems: 1
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - role
+ *                     - content
+ *                   properties:
+ *                     role:
+ *                       type: string
+ *                       enum: [user, assistant]
+ *                     content:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Resposta gerada pelo chatbot
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+actRouter.post(
+  "/:id/test-message",
+  isAuthenticated,
+  requirePermissions("acts-test"),
+  requireCompany,
+  new TestActController().handle,
 );
 
 /**

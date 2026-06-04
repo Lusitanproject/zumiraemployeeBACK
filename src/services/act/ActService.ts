@@ -10,6 +10,7 @@ import {
   CreateActRequest,
   GetActChapterRequest,
   MessageActChatbotRequest,
+  TestActRequest,
   UpdateActChapterRequest,
   UpdateActRequest,
 } from "../../schemas/actChatbot";
@@ -332,6 +333,25 @@ class ActService {
       where: { companyId },
       orderBy: { createdAt: "desc" },
     });
+  }
+
+  async testMessage({
+    actChatbotId,
+    companyId,
+    instructions,
+    messages,
+  }: TestActRequest & { actChatbotId: string; companyId: string }) {
+    const bot = await prismaClient.actChatbot.findUnique({
+      where: { id: actChatbotId },
+      select: { companyId: true },
+    });
+
+    if (!bot || bot.companyId !== companyId) {
+      throw new PublicError("Ato não encontrado ou sem permissão para teste");
+    }
+
+    const openai = new OpenAiApi();
+    return openai.generateResponse({ instructions, messages, stream: true });
   }
 
   async findAvailable(companyId: string) {
