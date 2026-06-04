@@ -25,9 +25,9 @@ Cria um ACT vinculado à empresa do usuário autenticado.
   "initialMessage": "string (opcional)",
   "messageInstructions": "string (opcional)",
   "compilationInstructions": "string (opcional)",
-  "reportInstructions": "string (opcional)",
-  "consultiveAiInstructions": "string (opcional)",
-  "bioanalysisInstructions": "string (opcional)"
+  "reportGenerationInstructions": "string (opcional)",
+  "reportLookupInstructions": "string (opcional)",
+  "individualAnalysisInstructions": "string (opcional)"
 }
 ```
 
@@ -107,9 +107,9 @@ Atualiza um ACT. Só funciona se o ACT pertencer à empresa do usuário (`compan
   "initialMessage": "string (opcional)",
   "messageInstructions": "string (opcional)",
   "compilationInstructions": "string (opcional)",
-  "reportInstructions": "string (opcional)",
-  "consultiveAiInstructions": "string (opcional)",
-  "bioanalysisInstructions": "string (opcional)"
+  "reportGenerationInstructions": "string (opcional)",
+  "reportLookupInstructions": "string (opcional)",
+  "individualAnalysisInstructions": "string (opcional)"
 }
 ```
 
