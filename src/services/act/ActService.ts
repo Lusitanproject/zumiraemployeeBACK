@@ -892,6 +892,16 @@ class ActService {
     };
   }
 
+  async regenerateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis)
+      throw new PublicError("A análise ainda está sendo processada. Por favor, tente novamente em alguns instantes.");
+
+    await this.generateAnalysisReportRag(companyId, actChatbotId, analysis);
+
+    return this.getAnalysisReport(companyId, actChatbotId);
+  }
+
   private async generateAnalysisReportRag(
     companyId: string,
     actChatbotId: string,
