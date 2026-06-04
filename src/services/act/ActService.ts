@@ -886,7 +886,7 @@ class ActService {
   }
 
   private async buildActRagResponse(
-    actChatbot: { name: string; reportInstructions: string | null },
+    actChatbot: { name: string; reportGenerationInstructions: string | null },
     report: Omit<AnalysisReport, "aiDescription">,
     openAiApi: OpenAiApi,
   ) {
@@ -993,7 +993,7 @@ class ActService {
 
     const response = await openAiApi.generateResponse({
       messages: [{ role: "user", content: reportText }],
-      instructions: actChatbot.reportInstructions,
+      instructions: actChatbot.reportGenerationInstructions,
     });
 
     return { response, reportText };

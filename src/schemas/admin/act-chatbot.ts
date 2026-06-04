@@ -6,8 +6,8 @@ export const CreateActChatbotSchema = z.object({
   initialMessage: z.string().optional(),
   messageInstructions: z.string().nonempty().optional(),
   compilationInstructions: z.string().nonempty().optional(),
-  consultiveAiInstructions: z.string().optional(),
-  reportInstructions: z.string().optional(),
+  reportGenerationInstructions: z.string().optional(),
+  reportLookupInstructions: z.string().optional(),
   icon: z.string().nonempty(),
 });
 
@@ -18,8 +18,8 @@ export const UpdateActChatbotSchema = z.object({
   initialMessage: z.string().optional(),
   messageInstructions: z.string().nonempty().optional(),
   compilationInstructions: z.string().nonempty().optional(),
-  consultiveAiInstructions: z.string().optional(),
-  reportInstructions: z.string().optional(),
+  reportGenerationInstructions: z.string().optional(),
+  reportLookupInstructions: z.string().optional(),
   icon: z.string().nonempty().optional(),
 });
 

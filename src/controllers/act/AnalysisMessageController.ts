@@ -36,7 +36,7 @@ class AnalysisMessageController {
 
     const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
       where: { id: actChatbotId },
-      select: { consultiveAiInstructions: true },
+      select: { reportLookupInstructions: true },
     });
 
     const t0 = Date.now();
@@ -44,7 +44,7 @@ class AnalysisMessageController {
     const openAiApi = new OpenAiApi();
     const stream = await openAiApi.generateResponse({
       messages,
-      instructions: actChatbot.consultiveAiInstructions,
+      instructions: actChatbot.reportLookupInstructions,
       openaiVectorStoreId: analysis.vectorStore.openaiVectorStoreId,
       stream: true,
     });

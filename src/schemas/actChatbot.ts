@@ -42,9 +42,9 @@ export const CreateActSchema = z.object({
   initialMessage: z.string().optional(),
   messageInstructions: z.string().nonempty().optional(),
   compilationInstructions: z.string().nonempty().optional(),
-  reportInstructions: z.string().optional(),
-  consultiveAiInstructions: z.string().optional(),
-  bioanalysisInstructions: z.string().optional(),
+  reportGenerationInstructions: z.string().optional(),
+  reportLookupInstructions: z.string().optional(),
+  individualAnalysisInstructions: z.string().optional(),
 });
 
 export const UpdateActSchema = z.object({
@@ -55,9 +55,9 @@ export const UpdateActSchema = z.object({
   initialMessage: z.string().optional(),
   messageInstructions: z.string().nonempty().optional(),
   compilationInstructions: z.string().nonempty().optional(),
-  reportInstructions: z.string().optional(),
-  consultiveAiInstructions: z.string().optional(),
-  bioanalysisInstructions: z.string().optional(),
+  reportGenerationInstructions: z.string().optional(),
+  reportLookupInstructions: z.string().optional(),
+  individualAnalysisInstructions: z.string().optional(),
 });
 
 export type CreateActRequest = z.infer<typeof CreateActSchema>;

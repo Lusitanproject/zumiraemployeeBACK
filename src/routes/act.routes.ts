@@ -59,11 +59,11 @@ const actRouter = Router();
  *                 type: string
  *               compilationInstructions:
  *                 type: string
- *               reportInstructions:
+ *               reportGenerationInstructions:
  *                 type: string
- *               consultiveAiInstructions:
+ *               reportLookupInstructions:
  *                 type: string
- *               bioanalysisInstructions:
+ *               individualAnalysisInstructions:
  *                 type: string
  *     responses:
  *       200:
