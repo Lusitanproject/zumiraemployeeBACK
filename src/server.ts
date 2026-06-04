@@ -1,3 +1,4 @@
+import "dotenv/config";
 import cors from "cors";
 import "express-async-errors";
 import express, { RequestHandler } from "express";

@@ -7,9 +7,11 @@ import prismaClient from "../../prisma";
 import {
   CompileActChapterRequest,
   CreateActChapterRequest,
+  CreateActRequest,
   GetActChapterRequest,
   MessageActChatbotRequest,
   UpdateActChapterRequest,
+  UpdateActRequest,
 } from "../../schemas/actChatbot";
 import { tryParsePhone } from "../../utils/phone";
 import { capitalize } from "../../utils/string";
@@ -303,6 +305,42 @@ class ActService {
     });
 
     return { items: rows.map((r) => ({ ...r.actChatbot, index: r.index })) };
+  }
+
+  async create(data: CreateActRequest & { companyId: string }) {
+    return prismaClient.actChatbot.create({ data });
+  }
+
+  async update({ id, companyId, ...data }: UpdateActRequest & { id: string; companyId: string }) {
+    const act = await prismaClient.actChatbot.findUnique({ where: { id } });
+    if (!act || act.companyId !== companyId) {
+      throw new PublicError("Ato não encontrado ou sem permissão para alteração");
+    }
+    return prismaClient.actChatbot.update({ where: { id }, data });
+  }
+
+  async deleteAct({ id, companyId }: { id: string; companyId: string }) {
+    const act = await prismaClient.actChatbot.findUnique({ where: { id } });
+    if (!act || act.companyId !== companyId) {
+      throw new PublicError("Ato não encontrado ou sem permissão para exclusão");
+    }
+    return prismaClient.actChatbot.delete({ where: { id } });
+  }
+
+  async findOwned(companyId: string) {
+    return prismaClient.actChatbot.findMany({
+      where: { companyId },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  async findAvailable(companyId: string) {
+    return prismaClient.actChatbot.findMany({
+      where: {
+        OR: [{ companyId }, { trails: { some: { trail: { companies: { some: { id: companyId } } } } } }],
+      },
+      orderBy: { createdAt: "desc" },
+    });
   }
 
   // ── Analysis private helpers ──────────────────────────────────────────────

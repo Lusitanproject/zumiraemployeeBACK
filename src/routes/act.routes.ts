@@ -3,17 +3,23 @@ import { Router } from "express";
 import { AnalysisMessageController } from "../controllers/act/AnalysisMessageController";
 import { CompileActChapterController } from "../controllers/act/CompileActChapterController";
 import { CreateActChapterController } from "../controllers/act/CreateActChapterController";
+import { CreateActController } from "../controllers/act/CreateActController";
+import { DeleteActController } from "../controllers/act/DeleteActController";
 import { FindActAnalysisController } from "../controllers/act/FindActAnalysisController";
 import { FindActAnalysisFactorMessagesController } from "../controllers/act/FindActAnalysisFactorMessagesController";
 import { FindActAnalysisSummaryController } from "../controllers/act/FindActAnalysisSummaryController";
 import { FindActChatbotController } from "../controllers/act/FindActChatbotController";
+import { FindAvailableActsController } from "../controllers/act/FindAvailableActsController";
 import { FindByCompanyController } from "../controllers/act/FindByCompanyController";
+import { FindOwnedActsController } from "../controllers/act/FindOwnedActsController";
 import { GetActChapterController } from "../controllers/act/GetActChapterController";
 import { GetAnalysisReportController } from "../controllers/act/GetAnalysisReportController";
 import { GetAnalysisUserFiltersController } from "../controllers/act/GetAnalysisUserFiltersController";
 import { MessageActChatbotController } from "../controllers/act/MessageActChatbotController";
 import { UpdateActChapterController } from "../controllers/act/UpdateActChapterController";
+import { UpdateActController } from "../controllers/act/UpdateActController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { requireCompany } from "../middlewares/requireCompany";
 import { requirePermissions } from "../middlewares/requirePermissions";
 import { requireSameCompany } from "../middlewares/requireSameCompany";
 
@@ -21,10 +27,117 @@ const actRouter = Router();
 
 /**
  * @swagger
+ * /acts:
+ *   post:
+ *     summary: Criar ACT
+ *     description: "Cria um ACT vinculado à empresa do usuário autenticado. Requer permissão `acts-create`."
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - icon
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               icon:
+ *                 type: string
+ *               published:
+ *                 type: boolean
+ *               initialMessage:
+ *                 type: string
+ *               messageInstructions:
+ *                 type: string
+ *               compilationInstructions:
+ *                 type: string
+ *               reportInstructions:
+ *                 type: string
+ *               consultiveAiInstructions:
+ *                 type: string
+ *               bioanalysisInstructions:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: ACT criado com sucesso
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+actRouter.post(
+  "/",
+  isAuthenticated,
+  requirePermissions("acts-create"),
+  requireCompany,
+  new CreateActController().handle,
+);
+
+/**
+ * @swagger
+ * /acts/owned:
+ *   get:
+ *     summary: Listar ACTs próprios da empresa
+ *     description: "Lista todos os ACTs cujo dono é a empresa do usuário autenticado. Requer permissão `acts-read-owned`."
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: ACTs próprios da empresa
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+actRouter.get(
+  "/owned",
+  isAuthenticated,
+  requirePermissions("acts-read-owned"),
+  requireCompany,
+  new FindOwnedActsController().handle,
+);
+
+/**
+ * @swagger
+ * /acts/available:
+ *   get:
+ *     summary: Listar ACTs disponíveis para a empresa
+ *     description: "Lista ACTs próprios da empresa mais os ACTs da trilha à qual a empresa pertence. Requer permissão `acts-read-available`."
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: ACTs disponíveis
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+actRouter.get(
+  "/available",
+  isAuthenticated,
+  requirePermissions("acts-read-available"),
+  requireCompany,
+  new FindAvailableActsController().handle,
+);
+
+/**
+ * @swagger
  * /acts/by-company:
  *   get:
  *     summary: Listar ACTs de uma empresa
- *     description: "Requer permissão `answer-act`."
+ *     deprecated: true
+ *     description: "**Deprecated** — use `GET /acts/available` no lugar. Requer permissão `acts-engage`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -463,12 +576,98 @@ actRouter.get(
 /**
  * @swagger
  * /acts/{id}:
- *   get:
- *     summary: Detalhar ACT
- *     description: "Requer permissão `answer-act`."
+ *   put:
+ *     summary: Atualizar ACT próprio
+ *     description: "Atualiza um ACT pertencente à empresa do usuário autenticado. Requer permissão `acts-update`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               icon:
+ *                 type: string
+ *               published:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: ACT atualizado com sucesso
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+actRouter.put(
+  "/:id",
+  isAuthenticated,
+  requirePermissions("acts-update"),
+  requireCompany,
+  new UpdateActController().handle,
+);
+
+/**
+ * @swagger
+ * /acts/{id}:
+ *   delete:
+ *     summary: Deletar ACT próprio
+ *     description: "Deleta um ACT pertencente à empresa do usuário autenticado. Requer permissão `acts-delete`."
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *     responses:
+ *       200:
+ *         description: ACT deletado com sucesso
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+actRouter.delete(
+  "/:id",
+  isAuthenticated,
+  requirePermissions("acts-delete"),
+  requireCompany,
+  new DeleteActController().handle,
+);
+
+/**
+ * @swagger
+ * /acts/{id}:
+ *   get:
+ *     summary: Detalhar ACT
+ *     description: "Requer permissão `acts-engage`."
+ *     tags: [ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
  *     responses:
  *       200:
  *         description: Dados do ACT
