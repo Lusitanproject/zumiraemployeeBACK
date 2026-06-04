@@ -14,6 +14,7 @@ import {
   UpdateActChapterRequest,
   UpdateActRequest,
 } from "../../schemas/actChatbot";
+import { buildFullMessages } from "../../utils/chat";
 import { tryParsePhone } from "../../utils/phone";
 import { capitalize } from "../../utils/string";
 import { TrailService } from "../trail/TrailService";
@@ -361,11 +362,11 @@ class ActService {
     });
   }
 
-  async testMessage({ instructions, messages, userName }: TestActRequest & { userName: string }) {
+  async testMessage({ instructions, content, messages, userName }: TestActRequest & { userName: string }) {
     const openai = new OpenAiApi();
     return openai.generateResponse({
       instructions: this.buildMessageInstructions(instructions, userName),
-      messages,
+      messages: buildFullMessages(messages, content),
       stream: true,
     });
   }

@@ -5,6 +5,7 @@ import { PublicError } from "../../error";
 import { OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
 import { AssessmentAnalysisMessageSchema } from "../../schemas/assessment";
+import { buildFullMessages } from "../../utils/chat";
 
 const ParamsSchema = z.object({
   assessmentId: z.string().cuid(),
@@ -17,7 +18,7 @@ class AnalysisMessageController {
     const parsedBody = AssessmentAnalysisMessageSchema.parse(req.body);
 
     const { assessmentId } = parsedParams;
-    const { messages } = parsedBody;
+    const { content, messages } = parsedBody;
 
     const user = await prismaClient.user.findUniqueOrThrow({
       where: { id: req.user.id },
@@ -43,7 +44,7 @@ class AnalysisMessageController {
 
     const openAiApi = new OpenAiApi();
     const stream = await openAiApi.generateResponse({
-      messages,
+      messages: buildFullMessages(messages, content),
       instructions: assessment.consultiveAiInstructions,
       openaiVectorStoreId: analysis.vectorStore.openaiVectorStoreId,
       stream: true,

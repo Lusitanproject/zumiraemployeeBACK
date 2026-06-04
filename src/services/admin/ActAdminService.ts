@@ -11,6 +11,7 @@ import {
   UpdateActChatbotRequest,
   UpdateManyActChatbotsRequest,
 } from "../../schemas/admin/act-chatbot";
+import { buildFullMessages } from "../../utils/chat";
 import { tryParsePhone } from "../../utils/phone";
 
 class ActAdminService {
@@ -229,7 +230,7 @@ class ActAdminService {
     };
   }
 
-  async testMessage(actChatbotId: string, messages: TestMessageActChatbotRequest["messages"]) {
+  async testMessage(actChatbotId: string, content: string, messages: TestMessageActChatbotRequest["messages"]) {
     const bot = await prismaClient.actChatbot.findUnique({
       where: { id: actChatbotId },
       select: { messageInstructions: true, initialMessage: true },
@@ -237,7 +238,7 @@ class ActAdminService {
 
     if (!bot) throw new PublicError("Act chatbot does not exist");
 
-    const history = [...messages] as GenerateOpenAiResponseRequest["messages"];
+    const history = buildFullMessages(messages, content) as GenerateOpenAiResponseRequest["messages"];
 
     if (bot.initialMessage) history.unshift({ role: "assistant", content: bot.initialMessage });
 

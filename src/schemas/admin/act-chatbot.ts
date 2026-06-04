@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MessageWithHistorySchema } from "../common";
+
 export const CreateActChatbotSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().nonempty(),
@@ -41,9 +43,7 @@ export const ImportChatbaseChaptersSchema = z.object({
   chatbaseChatbotId: z.string().nonempty(),
 });
 
-export const TestMessageActChatbotSchema = z.object({
-  messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().nonempty() })).min(1),
-});
+export const TestMessageActChatbotSchema = MessageWithHistorySchema;
 
 export type CreateActChatbotRequest = z.infer<typeof CreateActChatbotSchema>;
 export type UpdateActChatbotRequest = z.infer<typeof UpdateActChatbotSchema>;

@@ -5,6 +5,7 @@ import { PublicError } from "../../error";
 import { OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
 import { ActAnalysisMessageSchema } from "../../schemas/actChatbot";
+import { buildFullMessages } from "../../utils/chat";
 
 const ParamsSchema = z.object({
   actChatbotId: z.string().cuid(),
@@ -17,7 +18,7 @@ class AnalysisMessageController {
     const parsedBody = ActAnalysisMessageSchema.parse(req.body);
 
     const { actChatbotId } = parsedParams;
-    const { messages } = parsedBody;
+    const { content, messages } = parsedBody;
 
     const user = await prismaClient.user.findUniqueOrThrow({
       where: { id: req.user.id },
@@ -43,7 +44,7 @@ class AnalysisMessageController {
 
     const openAiApi = new OpenAiApi();
     const stream = await openAiApi.generateResponse({
-      messages,
+      messages: buildFullMessages(messages, content),
       instructions: actChatbot.reportLookupInstructions,
       openaiVectorStoreId: analysis.vectorStore.openaiVectorStoreId,
       stream: true,

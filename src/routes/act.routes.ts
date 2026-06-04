@@ -429,14 +429,41 @@ actRouter.put(
  * @swagger
  * /acts/{actChatbotId}/analysis/message:
  *   post:
- *     summary: "[Admin] Analisar mensagem de ACT"
- *     description: "Requer permissão `manage-acts`."
+ *     summary: Enviar mensagem para análise de ACT (RAG)
+ *     description: "Requer permissão `acts-read-analysis`."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 description: Mensagem atual do usuário
+ *               messages:
+ *                 type: array
+ *                 default: []
+ *                 description: Histórico anterior (deve terminar com role assistant)
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - role
+ *                     - content
+ *                   properties:
+ *                     role:
+ *                       type: string
+ *                       enum: [user, assistant]
+ *                     content:
+ *                       type: string
  *     responses:
  *       200:
- *         description: Análise gerada
+ *         description: Stream SSE com a resposta da IA
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
@@ -623,13 +650,17 @@ actRouter.get(
  *           schema:
  *             type: object
  *             required:
- *               - messages
+ *               - content
  *             properties:
+ *               content:
+ *                 type: string
+ *                 description: Mensagem atual do usuário
  *               instructions:
  *                 type: string
  *               messages:
  *                 type: array
- *                 minItems: 1
+ *                 default: []
+ *                 description: Histórico anterior (deve terminar com role assistant)
  *                 items:
  *                   type: object
  *                   required:
