@@ -252,22 +252,69 @@ class ActAdminService {
   }
 
   async generateAnalysis(companyId: string, actChatbotId: string) {
-    console.log(`Gerando análise para a empresa ${companyId} e o chatbot ${actChatbotId}`);
+    console.log(`[act/generateAnalysis] iniciando para company=${companyId} act=${actChatbotId}`);
 
-    const factors = await prismaClient.psychosocialFactor.findMany({
-      select: { id: true, name: true, description: true },
+    // Reutilizamos sempre a mesma CompanyActAnalysis para acumular batches incrementais.
+    // Nunca criamos uma análise nova do zero — o report agrega todos os batches da análise.
+    const existingAnalysis = await prismaClient.companyActAnalysis.findFirst({
+      orderBy: { createdAt: "desc" },
+      where: { companyId, actChatbotId },
+      include: { companyActAnalysisBatches: true },
     });
 
+    console.log(
+      `[act/generateAnalysis] análise existente: ${existingAnalysis?.id ?? "nenhuma"}, batches: ${JSON.stringify(existingAnalysis?.companyActAnalysisBatches.map((b) => ({ id: b.id, status: b.status })) ?? [])}`,
+    );
+
+    // Evita sobreposição: um batch in_progress ainda está classificando mensagens.
+    // Criar outro batch em paralelo causaria contagem duplicada ao salvar os resultados.
+    const hasPendingBatch = existingAnalysis?.companyActAnalysisBatches.some((b) => b.status === "in_progress");
+    if (hasPendingBatch) {
+      throw new PublicError(
+        "Já existe uma análise em andamento para este ato. Aguarde a conclusão antes de gerar novamente.",
+      );
+    }
+
+    const processedAnalysisId = existingAnalysis?.id;
+
+    // Seleciona apenas capítulos que têm ≥1 mensagem de usuário ainda não processada nesta análise.
+    // O capítulo inteiro é reenviado à IA como contexto (necessário para a conversa fazer sentido),
+    // mas ao salvar os resultados só contamos as mensagens realmente novas.
     const chapters = await prismaClient.actChapter.findMany({
       where: {
-        actChatbot: { id: actChatbotId },
+        actChatbotId,
         user: { companyId },
+        messages: {
+          some: {
+            role: "user",
+            // Se já há uma análise, filtramos mensagens sem linha em ActMessagesPsychosocialFactors
+            // vinculada a ela — tanto positivas (com fator) quanto marcadores null (sem fator).
+            ...(processedAnalysisId && {
+              actMessagesPsychosocialFactors: {
+                none: { analysisBatch: { companyActAnalysisId: processedAnalysisId } },
+              },
+            }),
+          },
+        },
       },
       include: {
         messages: { select: { id: true, role: true, content: true } },
       },
     });
 
+    console.log(`[act/generateAnalysis] capítulos com mensagens novas: ${chapters.length}`);
+
+    if (chapters.length === 0) {
+      throw new PublicError("Não há novas mensagens para analisar.");
+    }
+
+    const factors = await prismaClient.psychosocialFactor.findMany({
+      select: { id: true, name: true, description: true },
+    });
+
+    // Cada item do batch corresponde a um capítulo (conversa completa).
+    // O customId é o id do capítulo — usado ao salvar os resultados para mapear
+    // resultado → capítulo → mensagens e saber quais mensagens marcar como processadas.
     const instructions = await this.buildPsychosocialPrompt(factors);
     const batchItems: CreateOpenAiBatchRequest["batchItems"] = chapters.map((chapter) => ({
       customId: chapter.id,
@@ -277,14 +324,19 @@ class ActAdminService {
     const openai = new OpenAiApi({ model: "gpt-5.4" });
     const batchResult = await openai.createBatch({ instructions, batchItems });
 
-    console.log(`Lote OpenAI criado com ${batchItems.length} itens`);
+    console.log(`[act/generateAnalysis] lote OpenAI criado: batchId=${batchResult.batchId} itens=${batchItems.length}`);
 
-    const newAnalysis = await prismaClient.companyActAnalysis.create({
-      data: { actChatbotId, companyId },
-    });
+    // Cria a CompanyActAnalysis apenas na primeira vez; nas seguintes reutiliza a existente.
+    const analysis =
+      existingAnalysis ??
+      (await prismaClient.companyActAnalysis.create({
+        data: { actChatbotId, companyId },
+      }));
+
+    console.log(`[act/generateAnalysis] análise canônica: ${analysis.id} (nova=${!existingAnalysis})`);
 
     await prismaClient.companyActAnalysisBatch.create({
-      data: { batchId: batchResult.batchId, companyActAnalysisId: newAnalysis.id },
+      data: { batchId: batchResult.batchId, companyActAnalysisId: analysis.id },
     });
   }
 

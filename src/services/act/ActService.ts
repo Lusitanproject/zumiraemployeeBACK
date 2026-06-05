@@ -409,36 +409,62 @@ class ActService {
     const openai = new OpenAiApi();
     const pendingBatches = storedBatches.filter((batch) => batch.status !== "completed");
 
+    // Busca o status atual de cada batch pendente na OpenAI
     const batchResults = await Promise.all(
       pendingBatches.map((pending) => openai.retrieveBatchResult<ActAnalysisBatchResult>(pending.batchId)),
     );
 
     batchResults.forEach(({ batchId, status }) => {
-      console.log(`Lote OpenAI ${batchId} retornou status ${status}`);
+      console.log(`[act/results] lote OpenAI ${batchId} status=${status}`);
     });
 
     const newCompletedBatchResults = batchResults.filter((batchRes) => batchRes.status === "completed");
     const allDone = newCompletedBatchResults.length === pendingBatches.length;
 
+    console.log(
+      `[act/results] batches concluídos nesta rodada: ${newCompletedBatchResults.length}/${pendingBatches.length}`,
+    );
+
+    // Mapeia batchId externo (OpenAI) → id interno (CompanyActAnalysisBatch) para uso nos inserts
     const externalToLocalBatchId = pendingBatches.reduce((prev, curr) => {
       prev.set(curr.batchId, curr.id);
       return prev;
     }, new Map<string, string>());
 
+    // Carrega todas as mensagens já processadas nesta análise (batches anteriores).
+    // Isso impede que mensagens antigas — reenviadas à IA como contexto do capítulo —
+    // sejam contadas novamente quando o capítulo tem mensagens novas.
+    const analysisId = storedBatches[0]?.companyActAnalysisId;
+    const processedMessageIds = new Set<string>();
+    if (analysisId) {
+      const processedRows = await prismaClient.actMessagesPsychosocialFactors.findMany({
+        where: { analysisBatch: { companyActAnalysisId: analysisId } },
+        select: { messageId: true },
+      });
+      processedRows.forEach((r) => processedMessageIds.add(r.messageId));
+      console.log(`[act/results] mensagens já processadas nesta análise: ${processedMessageIds.size}`);
+    }
+
+    // Extrai as associações positivas (mensagem → fator) retornadas pela IA,
+    // filtrando apenas as mensagens novas (não presentes em processedMessageIds)
     const candidateAssociations = newCompletedBatchResults.flatMap(
       ({ results, batchId }) =>
         results?.flatMap(({ data }) =>
           data
-            ? data.associations.map((a) => ({
-                factorId: a.factor_id,
-                messageId: a.message_id,
-                analysisBatchId: externalToLocalBatchId.get(batchId)!,
-                author: MessageFactorAuthor.AI,
-              }))
+            ? data.associations
+                .filter((a) => !processedMessageIds.has(a.message_id))
+                .map((a) => ({
+                  factorId: a.factor_id,
+                  messageId: a.message_id,
+                  analysisBatchId: externalToLocalBatchId.get(batchId)!,
+                  author: MessageFactorAuthor.AI,
+                }))
             : [],
         ) ?? [],
     );
 
+    // Valida que os message_ids retornados pela IA existem no banco
+    // (a IA pode alucinar ids que não existem)
     const candidateMessageIds = [...new Set(candidateAssociations.map((a) => a.messageId))];
     const existingMessages = await prismaClient.actChapterMessage.findMany({
       where: { id: { in: candidateMessageIds } },
@@ -449,13 +475,49 @@ class ActService {
     const invalidIds = candidateMessageIds.filter((id) => !validMessageIds.has(id));
     if (invalidIds.length > 0) {
       console.warn(
-        `[ActService] ${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados:`,
+        `[act/results] ${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados:`,
         invalidIds,
       );
     }
 
+    const validAssociations = candidateAssociations.filter((a) => validMessageIds.has(a.messageId));
+    const associationMessageIds = new Set(validAssociations.map((a) => a.messageId));
+
+    console.log(`[act/results] associações válidas a inserir: ${validAssociations.length}`);
+
+    // Para mensagens novas de usuário que a IA não associou a nenhum fator,
+    // gravamos uma linha com factorId=null. Isso serve de marcador de "já processado":
+    // na próxima geração incremental, essas mensagens estarão em processedMessageIds
+    // e não serão enviadas para reprocessamento. As queries de report filtram factorId IS NOT NULL,
+    // então essas linhas são invisíveis nos resultados.
+    const chaptersInCompletedBatches = newCompletedBatchResults.flatMap(({ results, batchId }) =>
+      (results ?? [])
+        .filter((r) => r.customId !== null)
+        .map((r) => ({ chapterId: r.customId as string, localBatchId: externalToLocalBatchId.get(batchId)! })),
+    );
+
+    const chapterIds = [...new Set(chaptersInCompletedBatches.map((r) => r.chapterId))];
+    const chapterMessages = await prismaClient.actChapterMessage.findMany({
+      where: { actChapterId: { in: chapterIds }, role: "user" },
+      select: { id: true, actChapterId: true },
+    });
+
+    // Mapeia capítulo → batch local para saber em qual batch registrar o marcador null
+    const chapterToBatchId = new Map(chaptersInCompletedBatches.map((r) => [r.chapterId, r.localBatchId]));
+
+    const nullRows = chapterMessages
+      .filter((m) => !processedMessageIds.has(m.id) && !associationMessageIds.has(m.id))
+      .map((m) => ({
+        messageId: m.id,
+        factorId: null,
+        analysisBatchId: chapterToBatchId.get(m.actChapterId)!,
+        author: MessageFactorAuthor.AI,
+      }));
+
+    console.log(`[act/results] marcadores null (mensagens sem fator): ${nullRows.length}`);
+
     await prismaClient.actMessagesPsychosocialFactors.createMany({
-      data: candidateAssociations.filter((a) => validMessageIds.has(a.messageId)),
+      data: [...validAssociations, ...nullRows],
       skipDuplicates: true,
     });
 
@@ -890,6 +952,16 @@ class ActService {
         aiDescription: latestAnalysis?.text ?? "O laudo qualitativo para esse ato ainda não foi gerado.",
       },
     };
+  }
+
+  async regenerateAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis)
+      throw new PublicError("A análise ainda está sendo processada. Por favor, tente novamente em alguns instantes.");
+
+    await this.generateAnalysisReportRag(companyId, actChatbotId, analysis);
+
+    return this.getAnalysisReport(companyId, actChatbotId);
   }
 
   private async generateAnalysisReportRag(
