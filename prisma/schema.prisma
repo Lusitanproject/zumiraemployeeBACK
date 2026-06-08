@@ -57,6 +57,13 @@ enum MessageFactorAuthor {
   AI
 }
 
+model SystemConfig {
+  id Int @id @default(1)
+  reportUnavailableInstructions String @default("")
+
+  @@map("system_config")
+}
+
 model User {
   id                   String      @id @default(uuid())
   email                String      @unique
