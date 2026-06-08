@@ -10,6 +10,7 @@ import { adminPermissionRouter } from "./permission.routes";
 import { adminPsychosocialFactorRouter } from "./psychosocial-factor.routes";
 import { adminRoleRouter } from "./role.routes";
 import { adminSelfMonitoringRouter } from "./self-monitoring.routes";
+import { adminSystemConfigRouter } from "./system-config.routes";
 import { adminTrailRouter } from "./trail.routes";
 import { adminUserRouter } from "./user.routes";
 
@@ -27,5 +28,6 @@ adminRouter.use("/nationalities", adminNationalityRouter);
 adminRouter.use("/notifications", adminNotificationRouter);
 adminRouter.use("/acts", adminActRouter);
 adminRouter.use("/trails", adminTrailRouter);
+adminRouter.use("/system-config", adminSystemConfigRouter);
 
 export { adminRouter };

@@ -69,6 +69,14 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
+        UnprocessableEntity: {
+          description: "Erro de validação dos dados enviados",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
       },
       schemas: {
         SuccessResponse: {
@@ -502,6 +510,17 @@ const options: swaggerJSDoc.Options = {
             },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
+          },
+        },
+        SystemConfig: {
+          type: "object",
+          description: "Configuração global do sistema",
+          properties: {
+            id: { type: "integer", example: 1 },
+            reportUnavailableInstructions: {
+              type: "string",
+              description: "Instruções exibidas quando o relatório não está disponível",
+            },
           },
         },
         PaginatedUsers: {

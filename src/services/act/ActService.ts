@@ -1,4 +1,4 @@
-import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor } from "@prisma/client";
+import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor, ReportStatus } from "@prisma/client";
 
 import { PublicError } from "../../error";
 import { GenerateOpenAiResponseRequest, OpenAiApi } from "../../external/openai";
@@ -553,8 +553,10 @@ class ActService {
       console.log(`[act/analysis] retrieveAndSaveAnalysisResults allDone=${allDone}`);
       if (!allDone) return null;
 
-      console.log(`[act/analysis] calling generateAnalysisReportRag for analysisId=${analysis.id}`);
-      await this.generateAnalysisReportRag(companyId, actChatbotId, analysis);
+      await prismaClient.companyActAnalysis.update({
+        where: { id: analysis.id },
+        data: { reportStatus: ReportStatus.OUTDATED },
+      });
 
       analysis = await prismaClient.companyActAnalysis.findFirst({
         orderBy: { createdAt: "desc" },
@@ -867,6 +869,7 @@ class ActService {
     await prismaClient.$transaction(async (tx) => {
       const existing = await tx.actMessagesPsychosocialFactors.findMany({
         where: { id: { in: existingIds } },
+        include: { analysisBatch: { select: { companyActAnalysisId: true } } },
       });
 
       await tx.actMessagesPsychosocialFactors.createMany({
@@ -886,6 +889,12 @@ class ActService {
       await tx.actMessagesPsychosocialFactors.updateMany({
         where: { id: { in: existingIds } },
         data: { effective: false },
+      });
+
+      const analysisIds = [...new Set(existing.map((e) => e.analysisBatch.companyActAnalysisId))];
+      await tx.companyActAnalysis.updateMany({
+        where: { id: { in: analysisIds } },
+        data: { reportStatus: ReportStatus.OUTDATED },
       });
     });
   }
@@ -940,7 +949,40 @@ class ActService {
   }
 
   async getAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
-    const latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    let latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+
+    // Estado GENERATING: outra requisição já está gerando o laudo — retorna indisponível para evitar geração dupla.
+    // Estado OUTDATED: dados mudaram desde o último laudo (nova rodada incremental ou override de fator) — ocupa o estado
+    // GENERATING como lock otimista, gera, e reverte para OUTDATED se der erro para permitir nova tentativa.
+    // Estado READY: laudo em dia, passa direto.
+    switch (latestAnalysis?.reportStatus) {
+      case ReportStatus.GENERATING:
+        return { available: false };
+
+      case ReportStatus.OUTDATED:
+        await prismaClient.companyActAnalysis.update({
+          where: { id: latestAnalysis.id },
+          data: { reportStatus: ReportStatus.GENERATING },
+        });
+        try {
+          await this.generateAnalysisReportRag(companyId, actChatbotId, latestAnalysis);
+        } catch (error) {
+          await prismaClient.companyActAnalysis.update({
+            where: { id: latestAnalysis.id },
+            data: { reportStatus: ReportStatus.OUTDATED },
+          });
+          throw error;
+        }
+        latestAnalysis = await prismaClient.companyActAnalysis.findFirst({
+          orderBy: { createdAt: "desc" },
+          where: { companyId, actChatbotId },
+          include: { companyActAnalysisBatches: true },
+        });
+        break;
+
+      default:
+        break;
+    }
 
     const report = await this.buildAnalysisReportData(companyId, actChatbotId);
     if (!report) return { available: false };
@@ -999,7 +1041,7 @@ class ActService {
 
       await prismaClient.companyActAnalysis.update({
         where: { id: analysis.id },
-        data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id } as object,
+        data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id, reportStatus: ReportStatus.READY },
       });
 
       console.log(`[RAG/act] analysis ${analysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
