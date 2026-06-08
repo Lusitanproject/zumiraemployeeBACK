@@ -33,20 +33,24 @@ class AnalysisMessageController {
       include: { vectorStore: true },
     });
 
-    if (!analysis?.vectorStore) throw new PublicError("Análise com RAG não disponível para este ato.");
-
     const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
       where: { id: actChatbotId },
       select: { reportLookupInstructions: true },
     });
+
+    let instructions: string | null | undefined = actChatbot.reportLookupInstructions;
+    if (!analysis?.vectorStore) {
+      const systemConfig = await prismaClient.systemConfig.findFirst({ where: { id: 1 } });
+      instructions = systemConfig?.reportUnavailableInstructions;
+    }
 
     const t0 = Date.now();
 
     const openAiApi = new OpenAiApi();
     const stream = await openAiApi.generateResponse({
       messages: buildFullMessages(messages, content),
-      instructions: actChatbot.reportLookupInstructions,
-      openaiVectorStoreId: analysis.vectorStore.openaiVectorStoreId,
+      instructions,
+      openaiVectorStoreId: analysis?.vectorStore?.openaiVectorStoreId,
       stream: true,
     });
 
