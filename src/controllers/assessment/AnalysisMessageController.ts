@@ -5,6 +5,7 @@ import { PublicError } from "../../error";
 import { OpenAiApi } from "../../external/openai";
 import prismaClient from "../../prisma";
 import { AssessmentAnalysisMessageSchema } from "../../schemas/assessment";
+import { buildFullMessages } from "../../utils/chat";
 
 const ParamsSchema = z.object({
   assessmentId: z.string().cuid(),
@@ -17,7 +18,7 @@ class AnalysisMessageController {
     const parsedBody = AssessmentAnalysisMessageSchema.parse(req.body);
 
     const { assessmentId } = parsedParams;
-    const { messages } = parsedBody;
+    const { content, messages } = parsedBody;
 
     const user = await prismaClient.user.findUniqueOrThrow({
       where: { id: req.user.id },
@@ -32,20 +33,24 @@ class AnalysisMessageController {
       include: { vectorStore: true },
     });
 
-    if (!analysis?.vectorStore) throw new PublicError("Análise com RAG não disponível para este assessment.");
-
     const assessment = await prismaClient.assessment.findUniqueOrThrow({
       where: { id: assessmentId },
       select: { consultiveAiInstructions: true },
     });
 
+    let instructions: string | null | undefined = assessment.consultiveAiInstructions;
+    if (!analysis?.vectorStore) {
+      const systemConfig = await prismaClient.systemConfig.findFirst({ where: { id: 1 } });
+      instructions = systemConfig?.reportUnavailableInstructions;
+    }
+
     const t0 = Date.now();
 
     const openAiApi = new OpenAiApi();
     const stream = await openAiApi.generateResponse({
-      messages,
-      instructions: assessment.consultiveAiInstructions,
-      openaiVectorStoreId: analysis.vectorStore.openaiVectorStoreId,
+      messages: buildFullMessages(messages, content),
+      instructions,
+      openaiVectorStoreId: analysis?.vectorStore?.openaiVectorStoreId,
       stream: true,
     });
 

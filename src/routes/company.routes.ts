@@ -6,6 +6,7 @@ import { DeleteCompanyUserController } from "../controllers/company/DeleteCompan
 import { FindCompanyController } from "../controllers/company/FindCompanyController";
 import { FindCompanyFeedbackController } from "../controllers/company/FindCompanyFeedbackController";
 import { FindCompanyUserController } from "../controllers/company/FindCompanyUserController";
+import { GetCompanyTrailController } from "../controllers/company/GetCompanyTrailController";
 import { ListCompanyUsersController } from "../controllers/company/ListCompanyUsersController";
 import { SearchCompanyUsersController } from "../controllers/company/SearchCompanyUsersController";
 import { SyncUsersExecuteController } from "../controllers/company/SyncUsersExecuteController";
@@ -16,6 +17,38 @@ import { requirePermissions } from "../middlewares/requirePermissions";
 import { requireSameCompany } from "../middlewares/requireSameCompany";
 
 const companyRouter = Router();
+
+/**
+ * @swagger
+ * /companies/trail:
+ *   get:
+ *     summary: Obter trilha da empresa do usuário autenticado
+ *     description: >
+ *       Retorna os dados da trilha vinculada à empresa do usuário autenticado.
+ *       Use o `id` retornado como `trailId` nos endpoints `GET /trails/acts`,
+ *       `GET /trails/full-story` e `PUT /trails/next`.
+ *     tags: [Companies]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Trilha da empresa
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   $ref: '#/components/schemas/Trail'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+companyRouter.get("/trail", isAuthenticated, new GetCompanyTrailController().handle);
 
 /**
  * @swagger

@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
+import { RegenerateAnalysisReportController } from "../../controllers/admin/acts/analysis/RegenerateAnalysisReportController";
 import { CreateActChatbotController } from "../../controllers/admin/acts/CreateActChatbotController";
 import { FindActChatbotController } from "../../controllers/admin/acts/FindActChatbotController";
 import { FindAllActChatbotsController } from "../../controllers/admin/acts/FindAllActChatbotsController";
@@ -536,6 +537,50 @@ adminActRouter.post(
 
 /**
  * @swagger
+ * /admin/acts/{actChatbotId}/analysis/report:
+ *   post:
+ *     summary: "[Admin] Regerar laudo qualitativo de análise ACT"
+ *     description: >
+ *       Força a regeração do laudo qualitativo (texto gerado por IA) para a análise mais recente de um ACT.
+ *       Útil quando as instruções de geração do laudo foram alteradas ou o resultado anterior não foi satisfatório.
+ *       Requer que todos os batches da análise estejam concluídos. Requer permissão `acts-manage-analysis`.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     responses:
+ *       200:
+ *         description: Laudo regerado — mesmo formato do GET /acts/{actChatbotId}/analysis/report
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+adminActRouter.post(
+  "/:actChatbotId/analysis/report",
+  isAuthenticated,
+  requirePermissions("acts-manage-analysis"),
+  new RegenerateAnalysisReportController().handle,
+);
+
+/**
+ * @swagger
  * /admin/acts/{actChatbotId}/test-message:
  *   post:
  *     summary: "[Admin] Testar mensagem com Act Chatbot sem criar chapter"
@@ -560,11 +605,16 @@ adminActRouter.post(
  *         application/json:
  *           schema:
  *             type: object
- *             required: [messages]
+ *             required:
+ *               - content
  *             properties:
+ *               content:
+ *                 type: string
+ *                 description: Mensagem atual do usuário
  *               messages:
  *                 type: array
- *                 minItems: 1
+ *                 default: []
+ *                 description: Histórico anterior (deve terminar com role assistant)
  *                 items:
  *                   type: object
  *                   required: [role, content]

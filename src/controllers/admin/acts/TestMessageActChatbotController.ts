@@ -6,10 +6,10 @@ import { ActChatbotAdminService } from "../../../services/admin/ActAdminService"
 class TestMessageActChatbotController {
   async handle(req: Request, res: Response) {
     const { actChatbotId } = req.params;
-    const { messages } = TestMessageActChatbotSchema.parse(req.body);
+    const { content, messages } = TestMessageActChatbotSchema.parse(req.body);
 
     const service = new ActChatbotAdminService();
-    const result = await service.testMessage(actChatbotId, messages);
+    const result = await service.testMessage(actChatbotId, content, messages);
 
     return res.json({ status: "SUCCESS", data: result });
   }

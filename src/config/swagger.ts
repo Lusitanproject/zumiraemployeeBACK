@@ -69,6 +69,14 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
+        UnprocessableEntity: {
+          description: "Erro de validação dos dados enviados",
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ErrorResponse" },
+            },
+          },
+        },
       },
       schemas: {
         SuccessResponse: {
@@ -195,12 +203,6 @@ const options: swaggerJSDoc.Options = {
             nationalityId: { type: "string", format: "cuid", nullable: true },
             roleId: { type: "string", format: "uuid", description: "Papel de acesso do usuário" },
             companyId: { type: "string", format: "cuid", nullable: true },
-            currentActChatbotId: {
-              type: "string",
-              format: "cuid",
-              nullable: true,
-              description: "ID do ACT que o usuário está realizando atualmente",
-            },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
           },
@@ -406,8 +408,6 @@ const options: swaggerJSDoc.Options = {
               nullable: true,
               description: "Prompt de sistema para guiar a IA na compilação final do capítulo em narrativa",
             },
-            trailId: { type: "string", format: "cuid", description: "Trilha à qual este ACT pertence" },
-            index: { type: "integer", description: "Posição de ordenação (0-based) dentro da trilha" },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
           },
@@ -510,6 +510,17 @@ const options: swaggerJSDoc.Options = {
             },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
+          },
+        },
+        SystemConfig: {
+          type: "object",
+          description: "Configuração global do sistema",
+          properties: {
+            id: { type: "integer", example: 1 },
+            reportUnavailableInstructions: {
+              type: "string",
+              description: "Instruções exibidas quando o relatório não está disponível",
+            },
           },
         },
         PaginatedUsers: {

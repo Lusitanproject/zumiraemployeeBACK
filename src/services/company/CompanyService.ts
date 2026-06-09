@@ -1,3 +1,4 @@
+import { PublicError } from "../../error";
 import prismaClient from "../../prisma";
 import { FindCompanyFeedbackRequest } from "../../schemas/company";
 
@@ -10,6 +11,15 @@ class CompanyService {
     });
 
     return feedback;
+  }
+
+  async findTrail(companyId: string) {
+    const company = await prismaClient.company.findUnique({
+      where: { id: companyId },
+      select: { trail: { select: { id: true, title: true, subtitle: true, description: true } } },
+    });
+    if (!company) throw new PublicError("Empresa não encontrada");
+    return company.trail;
   }
 
   async find(companyId: string) {

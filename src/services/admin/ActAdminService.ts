@@ -11,6 +11,7 @@ import {
   UpdateActChatbotRequest,
   UpdateManyActChatbotsRequest,
 } from "../../schemas/admin/act-chatbot";
+import { buildFullMessages } from "../../utils/chat";
 import { tryParsePhone } from "../../utils/phone";
 
 class ActAdminService {
@@ -19,18 +20,12 @@ class ActAdminService {
     name: true,
     description: true,
     icon: true,
-    index: true,
-    trailId: true,
     createdAt: true,
   } satisfies Prisma.ActChatbotSelect;
 
   async findAll() {
     const bots = await prismaClient.actChatbot.findMany({
       select: this.actListSelect,
-
-      orderBy: {
-        index: "asc",
-      },
     });
 
     return { items: bots };
@@ -44,13 +39,11 @@ class ActAdminService {
         name: true,
         description: true,
         icon: true,
-        index: true,
-        trailId: true,
         initialMessage: true,
         messageInstructions: true,
         compilationInstructions: true,
-        consultiveAiInstructions: true,
-        reportInstructions: true,
+        reportGenerationInstructions: true,
+        reportLookupInstructions: true,
         createdAt: true,
       },
     });
@@ -61,64 +54,20 @@ class ActAdminService {
   }
 
   async findByTrail(trailId: string) {
-    const bots = await prismaClient.actChatbot.findMany({
-      select: this.actListSelect,
-
-      where: {
-        trailId,
-      },
-
-      orderBy: {
-        index: "asc",
+    const rows = await prismaClient.trailActChatbot.findMany({
+      where: { trailId },
+      orderBy: { index: "asc" },
+      select: {
+        index: true,
+        actChatbot: { select: this.actListSelect },
       },
     });
 
-    return { items: bots };
+    return { items: rows.map((r) => ({ ...r.actChatbot, index: r.index })) };
   }
 
   async create(data: CreateActChatbotRequest) {
-    const existingBots = await prismaClient.actChatbot.findMany({ where: { trailId: data.trailId } });
-
-    const bot = await prismaClient.actChatbot.create({
-      data: {
-        ...data,
-        index: existingBots.length,
-      },
-    });
-
-    // Garantir que todo usuário sem ato é atualizado quando o primeiro bot é criado
-    const first = existingBots.find((b) => b.index === 0);
-    if (first) {
-      const noActUsers = await prismaClient.user.findMany({
-        where: {
-          currentActChatbotId: null,
-        },
-      });
-
-      await Promise.all([
-        prismaClient.user.updateMany({
-          where: {
-            id: {
-              in: noActUsers.map((u) => u.id),
-            },
-          },
-          data: {
-            currentActChatbotId: first.id,
-          },
-        }),
-
-        ...noActUsers.map((user) =>
-          prismaClient.actChapter.create({
-            data: {
-              actChatbotId: first.id,
-              userId: user.id,
-              type: "REGULAR",
-            },
-          }),
-        ),
-      ]);
-    }
-
+    const bot = await prismaClient.actChatbot.create({ data });
     return bot;
   }
 
@@ -134,9 +83,7 @@ class ActAdminService {
     await Promise.all(
       chatbots.map((bot) =>
         prismaClient.actChatbot.update({
-          where: {
-            id: bot.id,
-          },
+          where: { id: bot.id },
           data: { ...bot },
         }),
       ),
@@ -283,7 +230,7 @@ class ActAdminService {
     };
   }
 
-  async testMessage(actChatbotId: string, messages: TestMessageActChatbotRequest["messages"]) {
+  async testMessage(actChatbotId: string, content: string, messages: TestMessageActChatbotRequest["messages"]) {
     const bot = await prismaClient.actChatbot.findUnique({
       where: { id: actChatbotId },
       select: { messageInstructions: true, initialMessage: true },
@@ -291,7 +238,7 @@ class ActAdminService {
 
     if (!bot) throw new PublicError("Act chatbot does not exist");
 
-    const history = [...messages] as GenerateOpenAiResponseRequest["messages"];
+    const history = buildFullMessages(messages, content) as GenerateOpenAiResponseRequest["messages"];
 
     if (bot.initialMessage) history.unshift({ role: "assistant", content: bot.initialMessage });
 
@@ -305,22 +252,69 @@ class ActAdminService {
   }
 
   async generateAnalysis(companyId: string, actChatbotId: string) {
-    console.log(`Gerando análise para a empresa ${companyId} e o chatbot ${actChatbotId}`);
+    console.log(`[act/generateAnalysis] iniciando para company=${companyId} act=${actChatbotId}`);
 
-    const factors = await prismaClient.psychosocialFactor.findMany({
-      select: { id: true, name: true, description: true },
+    // Reutilizamos sempre a mesma CompanyActAnalysis para acumular batches incrementais.
+    // Nunca criamos uma análise nova do zero — o report agrega todos os batches da análise.
+    const existingAnalysis = await prismaClient.companyActAnalysis.findFirst({
+      orderBy: { createdAt: "desc" },
+      where: { companyId, actChatbotId },
+      include: { companyActAnalysisBatches: true },
     });
 
+    console.log(
+      `[act/generateAnalysis] análise existente: ${existingAnalysis?.id ?? "nenhuma"}, batches: ${JSON.stringify(existingAnalysis?.companyActAnalysisBatches.map((b) => ({ id: b.id, status: b.status })) ?? [])}`,
+    );
+
+    // Evita sobreposição: um batch in_progress ainda está classificando mensagens.
+    // Criar outro batch em paralelo causaria contagem duplicada ao salvar os resultados.
+    const hasPendingBatch = existingAnalysis?.companyActAnalysisBatches.some((b) => b.status === "in_progress");
+    if (hasPendingBatch) {
+      throw new PublicError(
+        "Já existe uma análise em andamento para este ato. Aguarde a conclusão antes de gerar novamente.",
+      );
+    }
+
+    const processedAnalysisId = existingAnalysis?.id;
+
+    // Seleciona apenas capítulos que têm ≥1 mensagem de usuário ainda não processada nesta análise.
+    // O capítulo inteiro é reenviado à IA como contexto (necessário para a conversa fazer sentido),
+    // mas ao salvar os resultados só contamos as mensagens realmente novas.
     const chapters = await prismaClient.actChapter.findMany({
       where: {
-        actChatbot: { id: actChatbotId },
+        actChatbotId,
         user: { companyId },
+        messages: {
+          some: {
+            role: "user",
+            // Se já há uma análise, filtramos mensagens sem linha em ActMessagesPsychosocialFactors
+            // vinculada a ela — tanto positivas (com fator) quanto marcadores null (sem fator).
+            ...(processedAnalysisId && {
+              actMessagesPsychosocialFactors: {
+                none: { analysisBatch: { companyActAnalysisId: processedAnalysisId } },
+              },
+            }),
+          },
+        },
       },
       include: {
         messages: { select: { id: true, role: true, content: true } },
       },
     });
 
+    console.log(`[act/generateAnalysis] capítulos com mensagens novas: ${chapters.length}`);
+
+    if (chapters.length === 0) {
+      throw new PublicError("Não há novas mensagens para analisar.");
+    }
+
+    const factors = await prismaClient.psychosocialFactor.findMany({
+      select: { id: true, name: true, description: true },
+    });
+
+    // Cada item do batch corresponde a um capítulo (conversa completa).
+    // O customId é o id do capítulo — usado ao salvar os resultados para mapear
+    // resultado → capítulo → mensagens e saber quais mensagens marcar como processadas.
     const instructions = await this.buildPsychosocialPrompt(factors);
     const batchItems: CreateOpenAiBatchRequest["batchItems"] = chapters.map((chapter) => ({
       customId: chapter.id,
@@ -330,14 +324,19 @@ class ActAdminService {
     const openai = new OpenAiApi({ model: "gpt-5.4" });
     const batchResult = await openai.createBatch({ instructions, batchItems });
 
-    console.log(`Lote OpenAI criado com ${batchItems.length} itens`);
+    console.log(`[act/generateAnalysis] lote OpenAI criado: batchId=${batchResult.batchId} itens=${batchItems.length}`);
 
-    const newAnalysis = await prismaClient.companyActAnalysis.create({
-      data: { actChatbotId, companyId },
-    });
+    // Cria a CompanyActAnalysis apenas na primeira vez; nas seguintes reutiliza a existente.
+    const analysis =
+      existingAnalysis ??
+      (await prismaClient.companyActAnalysis.create({
+        data: { actChatbotId, companyId },
+      }));
+
+    console.log(`[act/generateAnalysis] análise canônica: ${analysis.id} (nova=${!existingAnalysis})`);
 
     await prismaClient.companyActAnalysisBatch.create({
-      data: { batchId: batchResult.batchId, companyActAnalysisId: newAnalysis.id },
+      data: { batchId: batchResult.batchId, companyActAnalysisId: analysis.id },
     });
   }
 

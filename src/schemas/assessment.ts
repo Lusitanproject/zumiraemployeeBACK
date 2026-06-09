@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MessageWithHistorySchema } from "./common";
+
 export const ListAssessmentsSchema = z.object({
   nationalityId: z.string().cuid().optional(),
 });
@@ -23,15 +25,6 @@ export type GenerateAllUserFeedbackResponse = {
   };
 };
 
-export const AssessmentAnalysisMessageSchema = z.object({
-  messages: z
-    .array(
-      z.object({
-        role: z.enum(["user", "assistant"]),
-        content: z.string().min(1),
-      }),
-    )
-    .min(1),
-});
+export const AssessmentAnalysisMessageSchema = MessageWithHistorySchema;
 
 export type AssessmentAnalysisMessageRequest = z.infer<typeof AssessmentAnalysisMessageSchema>;
