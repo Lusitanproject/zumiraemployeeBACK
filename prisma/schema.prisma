@@ -474,7 +474,7 @@ model ActChapter {
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  actChatbot ActChatbot          @relation(fields: [actChatbotId], references: [id])
+  actChatbot ActChatbot          @relation(fields: [actChatbotId], references: [id], onDelete: Cascade)
   user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages   ActChapterMessage[]
 
@@ -523,7 +523,7 @@ model CompanyActAnalysis {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  actChatbot                ActChatbot                @relation(fields: [actChatbotId], references: [id])
+  actChatbot                ActChatbot                @relation(fields: [actChatbotId], references: [id], onDelete: Cascade)
   company                   Company                   @relation(fields: [companyId], references: [id])
   vectorStore               OpenAIVectorStore?        @relation(fields: [vectorStoreId], references: [id])
   companyActAnalysisBatches CompanyActAnalysisBatch[]
@@ -541,7 +541,7 @@ model CompanyActAnalysisBatch {
   createdAt            DateTime    @default(now()) @map("created_at")
   updatedAt            DateTime    @updatedAt @map("updated_at")
 
-  companyActAnalysys             CompanyActAnalysis               @relation(fields: [companyActAnalysisId], references: [id])
+  companyActAnalysys             CompanyActAnalysis               @relation(fields: [companyActAnalysisId], references: [id], onDelete: Cascade)
   actMessagesPsychosocialFactors ActMessagesPsychosocialFactors[]
 
   @@map("company_act_analysis_batches")
@@ -562,7 +562,7 @@ model ActAnalysisReport {
   createdAt                DateTime     @default(now()) @map("created_at")
   updatedAt                DateTime     @updatedAt @map("updated_at")
 
-  companyActAnalysys CompanyActAnalysis @relation(fields: [companyActAnalysisId], references: [id])
+  companyActAnalysys CompanyActAnalysis @relation(fields: [companyActAnalysisId], references: [id], onDelete: Cascade)
 
   @@map("act_analysis_reports")
 }
@@ -580,7 +580,7 @@ model ActMessagesPsychosocialFactors {
 
   message       ActChapterMessage       @relation(fields: [messageId], references: [id], onDelete: Cascade)
   factor        PsychosocialFactor?     @relation(fields: [factorId], references: [id])
-  analysisBatch CompanyActAnalysisBatch @relation(fields: [analysisBatchId], references: [id])
+  analysisBatch CompanyActAnalysisBatch @relation(fields: [analysisBatchId], references: [id], onDelete: Cascade)
 
   @@unique([messageId, factorId, analysisBatchId, revision])
   @@map("act_messages_psychosocial_factors")

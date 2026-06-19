@@ -24,6 +24,7 @@ import { UpdateAnalysisReportRequest } from "../../schemas/admin/act-analysis";
 import { buildFullMessages } from "../../utils/chat";
 import { tryParsePhone } from "../../utils/phone";
 import { capitalize } from "../../utils/string";
+import { TrailAdminService } from "../admin/TrailAdminService";
 import { TrailService } from "../trail/TrailService";
 import { UserService } from "../user/UserService";
 
@@ -389,6 +390,9 @@ class ActService {
     if (!act || act.companyId !== companyId) {
       throw new PublicError("Ato não encontrado ou sem permissão para exclusão");
     }
+
+    await new TrailAdminService().removeActFromTrails(id);
+
     return prismaClient.actChatbot.delete({ where: { id } });
   }
 
