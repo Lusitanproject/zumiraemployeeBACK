@@ -1,4 +1,10 @@
-import { ChapterType, CompanyActAnalysisBatch, MessageFactorAuthor, ReportStatus } from "@prisma/client";
+import {
+  ActAnalysisReport,
+  ChapterType,
+  CompanyActAnalysisBatch,
+  MessageFactorAuthor,
+  ReportStatus,
+} from "@prisma/client";
 
 import { PublicError } from "../../error";
 import { GenerateOpenAiResponseRequest, OpenAiApi } from "../../external/openai";
@@ -14,6 +20,7 @@ import {
   UpdateActChapterRequest,
   UpdateActRequest,
 } from "../../schemas/actChatbot";
+import { UpdateAnalysisReportRequest } from "../../schemas/admin/act-analysis";
 import { buildFullMessages } from "../../utils/chat";
 import { tryParsePhone } from "../../utils/phone";
 import { capitalize } from "../../utils/string";
@@ -1049,6 +1056,24 @@ class ActService {
     // Se não houver report (análise histórica), getAnalysisReport cria on-demand e gera direto.
     if (latestReport) await this.setReportStatus(latestReport.id, ReportStatus.PENDING);
     return this.getAnalysisReport(companyId, actChatbotId);
+  }
+
+  async updateAnalysisReport(
+    companyId: string,
+    actChatbotId: string,
+    data: UpdateAnalysisReportRequest,
+  ): Promise<ActAnalysisReport> {
+    const analysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!analysis)
+      throw new PublicError("A análise ainda está sendo processada. Por favor, tente novamente em alguns instantes.");
+
+    const latestReport = await this.resolveLatestReport(analysis.id);
+    if (!latestReport) throw new PublicError("Nenhum laudo encontrado para esta análise.");
+
+    return prismaClient.actAnalysisReport.update({
+      where: { id: latestReport.id },
+      data,
+    });
   }
 
   private async generateReportDescription(

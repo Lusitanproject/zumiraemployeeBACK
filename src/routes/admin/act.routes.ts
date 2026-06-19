@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { GenerateActAnalysisController } from "../../controllers/admin/acts/analysis/GenerateActAnalysisController";
 import { RegenerateAnalysisReportController } from "../../controllers/admin/acts/analysis/RegenerateAnalysisReportController";
+import { UpdateAnalysisReportController } from "../../controllers/admin/acts/analysis/UpdateAnalysisReportController";
 import { CreateActChatbotController } from "../../controllers/admin/acts/CreateActChatbotController";
 import { FindActChatbotController } from "../../controllers/admin/acts/FindActChatbotController";
 import { FindAllActChatbotsController } from "../../controllers/admin/acts/FindAllActChatbotsController";
@@ -533,6 +534,93 @@ adminActRouter.post(
   isAuthenticated,
   requirePermissions("admin-acts-manage"),
   new GenerateActAnalysisController().handle,
+);
+
+/**
+ * @swagger
+ * /admin/acts/{actChatbotId}/analysis/report:
+ *   put:
+ *     summary: "[Admin] Atualizar dados do laudo de análise ACT"
+ *     description: >
+ *       Atualiza os metadados editáveis do laudo mais recente de um ACT para uma empresa.
+ *       Todos os campos são opcionais — campos ausentes no body não são alterados.
+ *       Campos anuláveis (como `issuedAt`) podem ser explicitamente zerados passando `null`.
+ *       Não aciona regeneração por IA. Requer permissão `acts-manage-analysis`.
+ *     tags: [Admin - ACTs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               companyName:
+ *                 type: string
+ *               evaluationPeriod:
+ *                 type: string
+ *                 nullable: true
+ *               evaluationType:
+ *                 type: string
+ *                 nullable: true
+ *               description:
+ *                 type: string
+ *                 nullable: true
+ *                 description: Texto qualitativo do laudo (sobrescreve o gerado por IA)
+ *               totalParticipants:
+ *                 type: integer
+ *                 minimum: 0
+ *               technicalResponsible:
+ *                 type: string
+ *                 nullable: true
+ *               professionalRegistration:
+ *                 type: string
+ *                 nullable: true
+ *               issuedAt:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: Laudo atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   $ref: '#/components/schemas/AnalysisReport'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+adminActRouter.put(
+  "/:actChatbotId/analysis/report",
+  isAuthenticated,
+  requirePermissions("acts-manage-analysis"),
+  new UpdateAnalysisReportController().handle,
 );
 
 /**
