@@ -520,14 +520,43 @@ actRouter.get(
  * @swagger
  * /acts/{actChatbotId}/analysis/report:
  *   get:
- *     summary: "[Admin] Obter relatório de análise de ACT"
- *     description: "Requer permissão `manage-acts`."
+ *     summary: "[Admin] Obter laudo de análise de ACT"
+ *     description: >
+ *       Retorna o laudo da análise mais recente de um ACT. Quando o texto qualitativo ainda não foi
+ *       gerado (status `PENDING`), a geração roda de forma **síncrona** nesta requisição e o laudo
+ *       pronto é retornado na resposta. Se outra requisição já está gerando (status `GENERATING`),
+ *       retorna `available: false`. Requer permissão `acts-read-analysis`.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: actChatbotId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID do ACT
+ *       - in: query
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da empresa
  *     responses:
  *       200:
- *         description: Relatório de análise
+ *         description: Laudo de análise
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   $ref: '#/components/schemas/GenerateAnalysisReportResult'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:

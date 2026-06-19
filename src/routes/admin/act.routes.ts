@@ -542,8 +542,10 @@ adminActRouter.post(
  *     summary: "[Admin] Regerar laudo qualitativo de análise ACT"
  *     description: >
  *       Força a regeração do laudo qualitativo (texto gerado por IA) para a análise mais recente de um ACT.
- *       Útil quando as instruções de geração do laudo foram alteradas ou o resultado anterior não foi satisfatório.
- *       Requer que todos os batches da análise estejam concluídos. Requer permissão `acts-manage-analysis`.
+ *       Reseta o status do laudo para `PENDING` e dispara a geração de forma **síncrona**, retornando o
+ *       laudo pronto na resposta. Útil quando as instruções de geração foram alteradas ou o resultado
+ *       anterior não foi satisfatório. Requer que todos os batches da análise estejam concluídos.
+ *       Requer permissão `acts-manage-analysis`.
  *     tags: [Admin - ACTs]
  *     security:
  *       - bearerAuth: []
@@ -564,7 +566,11 @@ adminActRouter.post(
  *         description: ID da empresa
  *     responses:
  *       200:
- *         description: Laudo regerado — mesmo formato do GET /acts/{actChatbotId}/analysis/report
+ *         description: Laudo regerado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GenerateAnalysisReportResult'
  *       400:
  *         $ref: '#/components/responses/BadRequest'
  *       401:

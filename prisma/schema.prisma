@@ -19,7 +19,7 @@ enum AssessmentOperation {
 }
 
 enum ReportStatus {
-  OUTDATED
+  PENDING
   GENERATING
   READY
 }
@@ -58,7 +58,7 @@ enum MessageFactorAuthor {
 }
 
 model SystemConfig {
-  id Int @id @default(1)
+  id                            Int    @id @default(1)
   reportUnavailableInstructions String @default("")
 
   @@map("system_config")
@@ -516,19 +516,18 @@ model PsychosocialFactor {
 }
 
 model CompanyActAnalysis {
-  id             String   @id @default(cuid())
-  actChatbotId   String   @map("act_chatbot_id")
-  companyId      String   @map("company_id")
-  text           String?
-  vectorStoreId  String?  @map("vector_store_id")
-  reportStatus   ReportStatus @default(OUTDATED) @map("report_status")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  actChatbotId  String   @map("act_chatbot_id")
+  companyId     String   @map("company_id")
+  vectorStoreId String?  @map("vector_store_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   actChatbot                ActChatbot                @relation(fields: [actChatbotId], references: [id])
   company                   Company                   @relation(fields: [companyId], references: [id])
   vectorStore               OpenAIVectorStore?        @relation(fields: [vectorStoreId], references: [id])
   companyActAnalysisBatches CompanyActAnalysisBatch[]
+  actAnalysisReports        ActAnalysisReport[]
 
   @@index([companyId, actChatbotId, createdAt(sort: Desc)])
   @@map("company_act_analyses")
@@ -546,6 +545,26 @@ model CompanyActAnalysisBatch {
   actMessagesPsychosocialFactors ActMessagesPsychosocialFactors[]
 
   @@map("company_act_analysis_batches")
+}
+
+model ActAnalysisReport {
+  id                       String       @id @default(cuid())
+  companyActAnalysisId     String       @map("company_act_analysis_id")
+  companyName              String       @map("company_name")
+  evaluationPeriod         String?      @map("assessment_period")
+  evaluationType           String?      @map("assessment_type")
+  description              String?
+  totalParticipants        Int          @map("total_participants")
+  technicalResponsible     String?      @map("technical_responsible")
+  professionalRegistration String?      @map("professional_registration")
+  issuedAt                 DateTime?    @map("issued_at")
+  status                   ReportStatus @default(PENDING) @map("status")
+  createdAt                DateTime     @default(now()) @map("created_at")
+  updatedAt                DateTime     @updatedAt @map("updated_at")
+
+  companyActAnalysys CompanyActAnalysis @relation(fields: [companyActAnalysisId], references: [id])
+
+  @@map("act_analysis_reports")
 }
 
 model ActMessagesPsychosocialFactors {

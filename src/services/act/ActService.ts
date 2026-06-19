@@ -99,8 +99,7 @@ export type FindActAnalysisFactorWeightsResult =
   | { available: false }
   | { available: true; factors: FactorWeightItem[]; userCount: number };
 
-export type AnalysisReport = {
-  userCount: number;
+type AnalysisQuantitativeData = {
   overall: SegmentScores;
   bySimilarExposureGroup: AnalysisSegmentGroup[];
   byGender: AnalysisSegmentGroup[];
@@ -108,7 +107,25 @@ export type AnalysisReport = {
   byOccupationLevel: AnalysisSegmentGroup[];
   byAgeRange: AnalysisSegmentGroup[];
   factorWeights: FactorWeightItem[];
-  aiDescription: string;
+};
+
+export type AnalysisReport = AnalysisQuantitativeData & {
+  id: string;
+  companyName: string;
+  evaluationPeriod: string | null;
+  evaluationType: string | null;
+  description: string | null;
+  totalParticipants: number;
+  technicalResponsible: string | null;
+  professionalRegistration: string | null;
+  issuedAt: Date | null;
+  status: ReportStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  /** @deprecated use description */
+  aiDescription: string | null;
+  /** @deprecated use totalParticipants */
+  userCount: number;
 };
 
 export type GenerateAnalysisReportResult = { available: false } | { available: true; report: AnalysisReport };
@@ -553,9 +570,12 @@ class ActService {
       console.log(`[act/analysis] retrieveAndSaveAnalysisResults allDone=${allDone}`);
       if (!allDone) return null;
 
-      await prismaClient.companyActAnalysis.update({
-        where: { id: analysis.id },
-        data: { reportStatus: ReportStatus.OUTDATED },
+      const [totalParticipants, company] = await Promise.all([
+        this.countAnalysisParticipants(analysis.id),
+        prismaClient.company.findUniqueOrThrow({ where: { id: companyId }, select: { name: true } }),
+      ]);
+      await prismaClient.actAnalysisReport.create({
+        data: { companyActAnalysisId: analysis.id, companyName: company.name, totalParticipants },
       });
 
       analysis = await prismaClient.companyActAnalysis.findFirst({
@@ -738,14 +758,11 @@ class ActService {
       },
       include: {
         factor: { select: { id: true, name: true, wheight: true } },
-        message: { select: { actChapter: { select: { userId: true } } } },
       },
     });
 
     const factorMap = new Map<string, { factor: (typeof declarations)[0]["factor"]; count: number }>();
-    const userIds = new Set<string>();
     for (const d of declarations) {
-      userIds.add(d.message.actChapter.userId);
       const entry = factorMap.get(d.factorId!);
       if (entry) {
         entry.count++;
@@ -754,9 +771,10 @@ class ActService {
       }
     }
 
-    const allFactors = await prismaClient.psychosocialFactor.findMany({
-      select: { id: true, name: true, wheight: true },
-    });
+    const [allFactors, userCount] = await Promise.all([
+      prismaClient.psychosocialFactor.findMany({ select: { id: true, name: true, wheight: true } }),
+      this.countAnalysisParticipants(analysis.id),
+    ]);
 
     const factors: FactorWeightItem[] = allFactors.map((f) => {
       const entry = factorMap.get(f.id);
@@ -764,7 +782,30 @@ class ActService {
       return { id: f.id, name: f.name, wheight: f.wheight, count, totalWeight: f.wheight * count };
     });
 
-    return { available: true, factors, userCount: userIds.size };
+    return { available: true, factors, userCount };
+  }
+
+  private async setReportStatus(reportId: string, status: ReportStatus): Promise<void> {
+    await prismaClient.actAnalysisReport.update({ where: { id: reportId }, data: { status } });
+  }
+
+  private async resolveLatestReport(analysisId: string) {
+    return prismaClient.actAnalysisReport.findFirst({
+      where: { companyActAnalysisId: analysisId },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  private async countAnalysisParticipants(analysisId: string): Promise<number> {
+    const declarations = await prismaClient.actMessagesPsychosocialFactors.findMany({
+      where: {
+        effective: true,
+        factorId: { not: null },
+        analysisBatch: { companyActAnalysisId: analysisId },
+      },
+      select: { message: { select: { actChapter: { select: { userId: true } } } } },
+    });
+    return new Set(declarations.map((d) => d.message.actChapter.userId)).size;
   }
 
   // ── Analysis public methods ───────────────────────────────────────────────
@@ -869,7 +910,6 @@ class ActService {
     await prismaClient.$transaction(async (tx) => {
       const existing = await tx.actMessagesPsychosocialFactors.findMany({
         where: { id: { in: existingIds } },
-        include: { analysisBatch: { select: { companyActAnalysisId: true } } },
       });
 
       await tx.actMessagesPsychosocialFactors.createMany({
@@ -890,19 +930,13 @@ class ActService {
         where: { id: { in: existingIds } },
         data: { effective: false },
       });
-
-      const analysisIds = [...new Set(existing.map((e) => e.analysisBatch.companyActAnalysisId))];
-      await tx.companyActAnalysis.updateMany({
-        where: { id: { in: analysisIds } },
-        data: { reportStatus: ReportStatus.OUTDATED },
-      });
     });
   }
 
   private async buildAnalysisReportData(
     companyId: string,
     actChatbotId: string,
-  ): Promise<Omit<AnalysisReport, "aiDescription"> | null> {
+  ): Promise<AnalysisQuantitativeData | null> {
     const [bySimilarExposureGroup, byGender, byDisability, byOccupationLevel, byAgeRange, weightsResult] =
       await Promise.all([
         this.findAnalysisSegments(companyId, actChatbotId, "similarExposureGroup"),
@@ -937,7 +971,6 @@ class ActService {
     };
 
     return {
-      userCount: weightsResult.available ? weightsResult.userCount : 0,
       overall,
       bySimilarExposureGroup: bySimilarExposureGroup.groups,
       byGender: byGender.available ? byGender.groups : [],
@@ -949,49 +982,58 @@ class ActService {
   }
 
   async getAnalysisReport(companyId: string, actChatbotId: string): Promise<GenerateAnalysisReportResult> {
-    let latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    const latestAnalysis = await this.resolveLatestAnalysis(companyId, actChatbotId);
+    if (!latestAnalysis) return { available: false };
 
-    // Estado GENERATING: outra requisição já está gerando o laudo — retorna indisponível para evitar geração dupla.
-    // Estado OUTDATED: dados mudaram desde o último laudo (nova rodada incremental ou override de fator) — ocupa o estado
-    // GENERATING como lock otimista, gera, e reverte para OUTDATED se der erro para permitir nova tentativa.
-    // Estado READY: laudo em dia, passa direto.
-    switch (latestAnalysis?.reportStatus) {
+    let latestReport = await this.resolveLatestReport(latestAnalysis.id);
+    if (!latestReport) {
+      // Regra de transição: análises que completaram antes da tabela act_analysis_reports existir
+      // não têm report associado. A análise está completa aqui (resolveLatestAnalysis retorna null
+      // enquanto batches pendentes), então criamos o report on-demand.
+      // TODO: remover quando não houver mais análises sem report associado.
+      const [totalParticipants, company] = await Promise.all([
+        this.countAnalysisParticipants(latestAnalysis.id),
+        prismaClient.company.findUniqueOrThrow({ where: { id: companyId }, select: { name: true } }),
+      ]);
+      latestReport = await prismaClient.actAnalysisReport.create({
+        data: { companyActAnalysisId: latestAnalysis.id, companyName: company.name, totalParticipants },
+      });
+    }
+
+    // GENERATING: outra requisição já está gerando o laudo — retorna indisponível para evitar geração dupla.
+    // PENDING: batches concluíram mas o texto AI ainda não foi gerado — ocupa o estado GENERATING como lock
+    // otimista, gera de forma síncrona, e reverte para PENDING se der erro para permitir nova tentativa.
+    // READY: laudo em dia, passa direto.
+    switch (latestReport.status) {
       case ReportStatus.GENERATING:
         return { available: false };
 
-      case ReportStatus.OUTDATED:
-        await prismaClient.companyActAnalysis.update({
-          where: { id: latestAnalysis.id },
-          data: { reportStatus: ReportStatus.GENERATING },
-        });
+      case ReportStatus.PENDING:
+        await this.setReportStatus(latestReport.id, ReportStatus.GENERATING);
         try {
-          await this.generateAnalysisReportRag(companyId, actChatbotId, latestAnalysis);
+          await this.generateReportDescription(companyId, actChatbotId, latestAnalysis, latestReport);
         } catch (error) {
-          await prismaClient.companyActAnalysis.update({
-            where: { id: latestAnalysis.id },
-            data: { reportStatus: ReportStatus.OUTDATED },
-          });
+          await this.setReportStatus(latestReport.id, ReportStatus.PENDING);
           throw error;
         }
-        latestAnalysis = await prismaClient.companyActAnalysis.findFirst({
-          orderBy: { createdAt: "desc" },
-          where: { companyId, actChatbotId },
-          include: { companyActAnalysisBatches: true },
-        });
+        latestReport = await prismaClient.actAnalysisReport.findUniqueOrThrow({ where: { id: latestReport.id } });
         break;
 
       default:
         break;
     }
 
-    const report = await this.buildAnalysisReportData(companyId, actChatbotId);
-    if (!report) return { available: false };
+    const quantData = await this.buildAnalysisReportData(companyId, actChatbotId);
+    if (!quantData) return { available: false };
 
+    const { companyActAnalysisId: _, ...report } = latestReport;
     return {
       available: true,
       report: {
         ...report,
-        aiDescription: latestAnalysis?.text ?? "O laudo qualitativo para esse ato ainda não foi gerado.",
+        ...quantData,
+        aiDescription: report.description ?? "O laudo qualitativo para esse ato ainda não foi gerado.",
+        userCount: report.totalParticipants,
       },
     };
   }
@@ -1001,25 +1043,31 @@ class ActService {
     if (!analysis)
       throw new PublicError("A análise ainda está sendo processada. Por favor, tente novamente em alguns instantes.");
 
-    await this.generateAnalysisReportRag(companyId, actChatbotId, analysis);
+    const latestReport = await this.resolveLatestReport(analysis.id);
 
+    // Força nova geração: volta para PENDING e delega ao fluxo síncrono do getAnalysisReport
+    // Se não houver report (análise histórica), getAnalysisReport cria on-demand e gera direto.
+    if (latestReport) await this.setReportStatus(latestReport.id, ReportStatus.PENDING);
     return this.getAnalysisReport(companyId, actChatbotId);
   }
 
-  private async generateAnalysisReportRag(
+  private async generateReportDescription(
     companyId: string,
     actChatbotId: string,
     analysis: { id: string },
+    report: { id: string; totalParticipants: number },
   ): Promise<void> {
-    const report = await this.buildAnalysisReportData(companyId, actChatbotId);
-    if (!report) {
+    const quantData = await this.buildAnalysisReportData(companyId, actChatbotId);
+    if (!quantData) {
       console.log(
-        `[RAG/act] buildAnalysisReportData returned null for analysisId=${analysis.id} — batches still pending, skipping RAG`,
+        `[RAG/act] buildAnalysisReportData returned null for analysisId=${analysis.id} — batches still pending, skipping description generation`,
       );
       return;
     }
 
-    console.log(`[RAG/act] starting RAG setup for analysis ${analysis.id} (actChatbotId: ${actChatbotId})`);
+    console.log(
+      `[RAG/act] starting description generation for analysis ${analysis.id} (actChatbotId: ${actChatbotId})`,
+    );
     try {
       const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
         where: { id: actChatbotId },
@@ -1027,43 +1075,67 @@ class ActService {
 
       const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
 
-      console.log(`[RAG/act] generating RAG response from report`);
-      const { response: ragResponse, reportText } = await this.buildActRagResponse(actChatbot, report, openAiApi);
-      console.log(`[RAG/act] RAG response generated (${ragResponse.output_text.length} chars)`);
+      console.log(`[RAG/act] generating description from report data`);
+      const reportText = this.buildReportText(actChatbot, quantData, report.totalParticipants);
+      const response = await openAiApi.generateResponse({
+        messages: [{ role: "user", content: reportText }],
+        instructions: actChatbot.reportGenerationInstructions,
+      });
+      console.log(`[RAG/act] description generated (${response.output_text.length} chars)`);
 
-      const fullRagContent = `${reportText}\n\n${ragResponse.output_text}\n\n${actChatbot.description}`;
-
-      const { dbVectorStore } = await openAiApi.createVectorStoreWithContent({
-        storeName: `analysis-act-${actChatbotId}`,
-        content: fullRagContent,
-        filename: "act-analysis.md",
+      await prismaClient.actAnalysisReport.update({
+        where: { id: report.id },
+        data: { description: response.output_text, status: ReportStatus.READY },
       });
 
-      await prismaClient.companyActAnalysis.update({
-        where: { id: analysis.id },
-        data: { text: ragResponse.output_text, vectorStoreId: dbVectorStore.id, reportStatus: ReportStatus.READY },
-      });
-
-      console.log(`[RAG/act] analysis ${analysis.id} updated with vectorStoreId=${dbVectorStore.id}`);
-
-      const saved = await prismaClient.companyActAnalysis.findFirst({
-        orderBy: { createdAt: "desc" },
-        where: { companyId, actChatbotId },
-        select: { id: true, vectorStoreId: true, text: true },
+      const saved = await prismaClient.actAnalysisReport.findUnique({
+        where: { id: report.id },
+        select: { id: true, status: true, description: true },
       });
       console.log(
-        `[RAG/act] verify after update: id=${saved?.id} vectorStoreId=${saved?.vectorStoreId} hasText=${!!saved?.text}`,
+        `[RAG/act] verify after update: id=${saved?.id} status=${saved?.status} hasDescription=${!!saved?.description}`,
       );
+
+      await this.createReportRag(actChatbotId, analysis, report, reportText, response.output_text);
     } catch (error) {
-      throw new Error(`[RAG/act] failed to create RAG for analysis ${analysis.id}: ${error}`);
+      throw new Error(`[RAG/act] failed to generate description for analysis ${analysis.id}: ${error}`);
     }
   }
 
-  private async buildActRagResponse(
-    actChatbot: { name: string; reportGenerationInstructions: string | null },
-    report: Omit<AnalysisReport, "aiDescription">,
-    openAiApi: OpenAiApi,
-  ) {
+  private async createReportRag(
+    actChatbotId: string,
+    analysis: { id: string },
+    report: { id: string },
+    reportText: string,
+    // TODO: considerar persistir reportText no banco para desacoplar createReportRag de generateReportDescription
+    reportDescription: string,
+  ): Promise<void> {
+    const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
+      where: { id: actChatbotId },
+    });
+
+    const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
+    const fullRagContent = `${reportText}\n\n${reportDescription}\n\n${actChatbot.description}`;
+
+    const { dbVectorStore } = await openAiApi.createVectorStoreWithContent({
+      storeName: `analysis-act-${actChatbotId}`,
+      content: fullRagContent,
+      filename: "act-analysis.md",
+    });
+
+    await prismaClient.companyActAnalysis.update({
+      where: { id: analysis.id },
+      data: { vectorStoreId: dbVectorStore.id },
+    });
+
+    console.log(`[RAG/act] report ${report.id} RAG created, analysis ${analysis.id} vectorStoreId=${dbVectorStore.id}`);
+  }
+
+  private buildReportText(
+    actChatbot: { name: string },
+    report: AnalysisQuantitativeData,
+    totalParticipants: number,
+  ): string {
     const classify = (wellnessPercentage: number): string => {
       const w = wellnessPercentage;
       const r = 100 - w;
@@ -1128,7 +1200,7 @@ class ActService {
       `## INFORMAÇÕES TÉCNICAS`,
       ``,
       `**PARTICIPANTES**`,
-      `${report.userCount}`,
+      `${totalParticipants}`,
       ``,
       `**TIPO DE AVALIAÇÃO**`,
       `Ato`,
@@ -1165,12 +1237,7 @@ class ActService {
       segments,
     ].join("\n");
 
-    const response = await openAiApi.generateResponse({
-      messages: [{ role: "user", content: reportText }],
-      instructions: actChatbot.reportGenerationInstructions,
-    });
-
-    return { response, reportText };
+    return reportText;
   }
 
   async handleWhatsappMessage(message: ReceiveMessage, api: WhatsappApi): Promise<void> {
