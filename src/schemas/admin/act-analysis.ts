@@ -63,8 +63,20 @@ export const OverrideFactorAssociationsSchema = z.object({
     .min(1),
 });
 
+export const UpdateAnalysisReportSchema = z.object({
+  companyName: z.string().optional(),
+  evaluationPeriod: z.string().nullable().optional(),
+  evaluationType: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  totalParticipants: z.number().int().min(0).optional(),
+  technicalResponsible: z.string().nullable().optional(),
+  professionalRegistration: z.string().nullable().optional(),
+  issuedAt: z.coerce.date().nullable().optional(),
+});
+
 export type ActAnalysisCompanyQuery = z.infer<typeof ActAnalysisCompanyQuerySchema>;
 export type FindActAnalysisQuery = z.infer<typeof FindActAnalysisQuerySchema>;
 export type FindActAnalysisSummaryQuery = z.infer<typeof FindActAnalysisSummaryQuerySchema>;
 export type GetAnalysisUserFiltersQuery = z.infer<typeof GetAnalysisUserFiltersSchema>;
 export type OverrideFactorAssociationsRequest = z.infer<typeof OverrideFactorAssociationsSchema>;
+export type UpdateAnalysisReportRequest = z.infer<typeof UpdateAnalysisReportSchema>;

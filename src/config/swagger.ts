@@ -537,6 +537,110 @@ const options: swaggerJSDoc.Options = {
             totalPages: { type: "integer" },
           },
         },
+        SegmentScores: {
+          type: "object",
+          description: "Scores agregados de bem-estar para um segmento da análise de ACT",
+          properties: {
+            positiveScore: { type: "number", description: "Soma das declarações positivas" },
+            negativeScore: { type: "number", description: "Soma das declarações negativas" },
+            totalScore: { type: "number", description: "Soma total (positivo + negativo)" },
+            absoluteScore: { type: "number", description: "Score absoluto (positivo - negativo)" },
+            wellnessPercentage: {
+              type: "number",
+              description: "Percentual de bem-estar (0-100) calculado a partir dos scores",
+            },
+          },
+        },
+        AnalysisSegmentGroup: {
+          allOf: [
+            { $ref: "#/components/schemas/SegmentScores" },
+            {
+              type: "object",
+              properties: {
+                value: {
+                  type: "string",
+                  nullable: true,
+                  description: "Valor do segmento (ex: 'MALE', nome do GES); null quando não classificado",
+                },
+              },
+            },
+          ],
+        },
+        FactorWeightItem: {
+          type: "object",
+          description: "Fator psicossocial com sua frequência e peso acumulado na análise",
+          properties: {
+            id: { type: "string", format: "cuid" },
+            name: { type: "string" },
+            wheight: { type: "integer", description: "Peso/relevância do fator (campo 'wheight' do schema)" },
+            count: { type: "integer", description: "Quantidade de declarações efetivas do fator" },
+            totalWeight: { type: "number", description: "Peso acumulado (wheight * count)" },
+          },
+        },
+        AnalysisReport: {
+          type: "object",
+          description: "Laudo de análise de ACT — dados quantitativos por segmento + metadados do laudo qualitativo",
+          properties: {
+            id: { type: "string", format: "cuid" },
+            companyName: { type: "string" },
+            evaluationPeriod: { type: "string", nullable: true, description: "Período de avaliação do laudo" },
+            evaluationType: { type: "string", nullable: true, description: "Tipo de avaliação do laudo" },
+            description: {
+              type: "string",
+              nullable: true,
+              description: "Texto qualitativo do laudo gerado por IA — null até a geração concluir",
+            },
+            totalParticipants: { type: "integer", description: "Total de participantes distintos da análise" },
+            technicalResponsible: { type: "string", nullable: true, description: "Responsável técnico pelo laudo" },
+            professionalRegistration: {
+              type: "string",
+              nullable: true,
+              description: "Registro profissional do responsável técnico",
+            },
+            issuedAt: { type: "string", format: "date-time", nullable: true, description: "Data de emissão do laudo" },
+            status: {
+              type: "string",
+              enum: ["PENDING", "GENERATING", "READY"],
+              description: "Estado do laudo qualitativo (geração síncrona sob demanda no GET/regenerate)",
+            },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+            overall: { $ref: "#/components/schemas/SegmentScores" },
+            bySimilarExposureGroup: {
+              type: "array",
+              items: { $ref: "#/components/schemas/AnalysisSegmentGroup" },
+            },
+            byGender: { type: "array", items: { $ref: "#/components/schemas/AnalysisSegmentGroup" } },
+            byDisability: { type: "array", items: { $ref: "#/components/schemas/AnalysisSegmentGroup" } },
+            byOccupationLevel: { type: "array", items: { $ref: "#/components/schemas/AnalysisSegmentGroup" } },
+            byAgeRange: { type: "array", items: { $ref: "#/components/schemas/AnalysisSegmentGroup" } },
+            factorWeights: { type: "array", items: { $ref: "#/components/schemas/FactorWeightItem" } },
+            aiDescription: {
+              type: "string",
+              nullable: true,
+              deprecated: true,
+              description: "@deprecated use 'description'",
+            },
+            userCount: { type: "integer", deprecated: true, description: "@deprecated use 'totalParticipants'" },
+          },
+        },
+        GenerateAnalysisReportResult: {
+          description:
+            "Resultado da geração do laudo. `available: false` quando ainda em geração (status GENERATING); `available: true` com o laudo completo quando pronto.",
+          oneOf: [
+            {
+              type: "object",
+              properties: { available: { type: "boolean", example: false } },
+            },
+            {
+              type: "object",
+              properties: {
+                available: { type: "boolean", example: true },
+                report: { $ref: "#/components/schemas/AnalysisReport" },
+              },
+            },
+          ],
+        },
       },
     },
   },
