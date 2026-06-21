@@ -7,7 +7,7 @@ class DeleteActController {
     const id = req.params.id;
 
     const service = new ActService();
-    const result = await service.deleteAct({ id, companyId: req.user.companyId! });
+    const result = await service.deleteAct({ id });
 
     return res.json({ status: "SUCCESS", data: result });
   }

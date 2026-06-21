@@ -8,7 +8,7 @@ class CreateActController {
     const data = CreateActSchema.parse(req.body);
 
     const service = new ActService();
-    const result = await service.create({ ...data, companyId: req.user.companyId! });
+    const result = await service.create({ ...data, companyId: req.user.companyId!, ownerId: req.user.id });
 
     return res.json({ status: "SUCCESS", data: result });
   }

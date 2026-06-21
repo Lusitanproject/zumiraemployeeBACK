@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 
 import { ValidatePermissionQuerySchema } from "../../schemas/user";
+import { hasPermission } from "../../utils/permissions";
 
 class ValidatePermissionController {
   async handle(req: Request, res: Response) {
     const { permission } = ValidatePermissionQuerySchema.parse(req.query);
-    const hasPermission = req.user.role === "admin" || req.user.permissions.includes(permission);
-    return res.json({ status: "SUCCESS", data: { hasPermission } });
+    return res.json({ status: "SUCCESS", data: { hasPermission: hasPermission(req.user, permission) } });
   }
 }
 

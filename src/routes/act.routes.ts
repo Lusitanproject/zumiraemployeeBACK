@@ -10,9 +10,9 @@ import { FindActAnalysisFactorMessagesController } from "../controllers/act/Find
 import { FindActAnalysisSummaryController } from "../controllers/act/FindActAnalysisSummaryController";
 import { FindActChatbotController } from "../controllers/act/FindActChatbotController";
 import { FindActConfigController } from "../controllers/act/FindActConfigController";
+import { FindActsPanelController } from "../controllers/act/FindActsPanelController";
 import { FindAvailableActsController } from "../controllers/act/FindAvailableActsController";
 import { FindByCompanyController } from "../controllers/act/FindByCompanyController";
-import { FindOwnedActsController } from "../controllers/act/FindOwnedActsController";
 import { GetActChapterController } from "../controllers/act/GetActChapterController";
 import { GetAnalysisReportController } from "../controllers/act/GetAnalysisReportController";
 import { GetAnalysisUserFiltersController } from "../controllers/act/GetAnalysisUserFiltersController";
@@ -21,6 +21,7 @@ import { TestActController } from "../controllers/act/TestActController";
 import { UpdateActChapterController } from "../controllers/act/UpdateActChapterController";
 import { UpdateActController } from "../controllers/act/UpdateActController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { requireActAccess } from "../middlewares/requireActAccess";
 import { requireCompany } from "../middlewares/requireCompany";
 import { requirePermissions } from "../middlewares/requirePermissions";
 import { requireSameCompany } from "../middlewares/requireSameCompany";
@@ -85,27 +86,32 @@ actRouter.post(
 
 /**
  * @swagger
- * /acts/owned:
+ * /acts/panel:
  *   get:
- *     summary: Listar ACTs próprios da empresa
- *     description: "Lista todos os ACTs cujo dono é a empresa do usuário autenticado. Requer permissão `acts-read-owned`."
+ *     summary: Listar ACTs do painel do admin-empresa
+ *     description: >
+ *       Lista os ACTs exibidos no painel do admin-empresa. O conjunto retornado varia conforme as
+ *       permissões do usuário (com deduplicação): `acts-read-company` adiciona todos os ACTs da
+ *       empresa, `acts-read-owned` adiciona os ACTs criados pelo próprio usuário, e
+ *       `acts-read-platform` adiciona os ACTs da Zumira (sem dono). Requer **pelo menos uma** dessas
+ *       três permissões.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: ACTs próprios da empresa
+ *         description: ACTs visíveis no painel do admin-empresa
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
 actRouter.get(
-  "/owned",
+  "/panel",
   isAuthenticated,
-  requirePermissions("acts-read-owned"),
+  requirePermissions(["acts-read-company", "acts-read-owned", "acts-read-platform"], { match: "any" }),
   requireCompany,
-  new FindOwnedActsController().handle,
+  new FindActsPanelController().handle,
 );
 
 /**
@@ -419,7 +425,7 @@ actRouter.put(
  * /acts/{actChatbotId}/analysis/message:
  *   post:
  *     summary: Enviar mensagem para análise de ACT (RAG)
- *     description: "Requer permissão `acts-read-analysis`."
+ *     description: "Análise por ato: requer pelo menos uma de `acts-read-analysis-company`, `acts-read-analysis-owned` ou `acts-read-analysis-platform` (conforme o dono do ato), com `companyId` da própria empresa."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -461,7 +467,12 @@ actRouter.put(
 actRouter.post(
   "/:actChatbotId/analysis/message",
   isAuthenticated,
-  requirePermissions("acts-read-analysis"),
+  requireActAccess({
+    idParam: "actChatbotId",
+    company: "acts-read-analysis-company",
+    owned: "acts-read-analysis-owned",
+    platform: "acts-read-analysis-platform",
+  }),
   requireSameCompany(),
   new AnalysisMessageController().handle,
 );
@@ -471,7 +482,7 @@ actRouter.post(
  * /acts/{actChatbotId}/analysis/user-filters:
  *   get:
  *     summary: "[Admin] Filtros de usuário disponíveis na análise"
- *     description: "Requer permissão `manage-acts`."
+ *     description: "Análise por ato: requer pelo menos uma de `acts-read-analysis-company`, `acts-read-analysis-owned` ou `acts-read-analysis-platform` (conforme o dono do ato), com `companyId` da própria empresa."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -486,7 +497,12 @@ actRouter.post(
 actRouter.get(
   "/:actChatbotId/analysis/user-filters",
   isAuthenticated,
-  requirePermissions("acts-read-analysis"),
+  requireActAccess({
+    idParam: "actChatbotId",
+    company: "acts-read-analysis-company",
+    owned: "acts-read-analysis-owned",
+    platform: "acts-read-analysis-platform",
+  }),
   requireSameCompany(),
   new GetAnalysisUserFiltersController().handle,
 );
@@ -496,7 +512,7 @@ actRouter.get(
  * /acts/{actChatbotId}/analysis/summary:
  *   get:
  *     summary: "[Admin] Sumário de scores da análise de ACT"
- *     description: "Requer permissão `manage-acts`."
+ *     description: "Análise por ato: requer pelo menos uma de `acts-read-analysis-company`, `acts-read-analysis-owned` ou `acts-read-analysis-platform` (conforme o dono do ato), com `companyId` da própria empresa."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -511,7 +527,12 @@ actRouter.get(
 actRouter.get(
   "/:actChatbotId/analysis/summary",
   isAuthenticated,
-  requirePermissions("acts-read-analysis"),
+  requireActAccess({
+    idParam: "actChatbotId",
+    company: "acts-read-analysis-company",
+    owned: "acts-read-analysis-owned",
+    platform: "acts-read-analysis-platform",
+  }),
   requireSameCompany(),
   new FindActAnalysisSummaryController().handle,
 );
@@ -525,7 +546,8 @@ actRouter.get(
  *       Retorna o laudo da análise mais recente de um ACT. Quando o texto qualitativo ainda não foi
  *       gerado (status `PENDING`), a geração roda de forma **síncrona** nesta requisição e o laudo
  *       pronto é retornado na resposta. Se outra requisição já está gerando (status `GENERATING`),
- *       retorna `available: false`. Requer permissão `acts-read-analysis`.
+ *       retorna `available: false`. Análise por ato: requer pelo menos uma de `acts-read-analysis-company`,
+ *       `acts-read-analysis-owned` ou `acts-read-analysis-platform` (conforme o dono do ato), com `companyId` da própria empresa.
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -565,7 +587,12 @@ actRouter.get(
 actRouter.get(
   "/:actChatbotId/analysis/report",
   isAuthenticated,
-  requirePermissions("acts-read-analysis"),
+  requireActAccess({
+    idParam: "actChatbotId",
+    company: "acts-read-analysis-company",
+    owned: "acts-read-analysis-owned",
+    platform: "acts-read-analysis-platform",
+  }),
   requireSameCompany(),
   new GetAnalysisReportController().handle,
 );
@@ -575,7 +602,7 @@ actRouter.get(
  * /acts/{actChatbotId}/analysis/factors/{factorId}/messages:
  *   get:
  *     summary: "[Admin] Listar mensagens de um fator psicossocial na análise"
- *     description: "Requer permissão `manage-acts`."
+ *     description: "Análise por ato: requer pelo menos uma de `acts-read-analysis-company`, `acts-read-analysis-owned` ou `acts-read-analysis-platform` (conforme o dono do ato), com `companyId` da própria empresa."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -590,7 +617,12 @@ actRouter.get(
 actRouter.get(
   "/:actChatbotId/analysis/factors/:factorId/messages",
   isAuthenticated,
-  requirePermissions("acts-read-analysis"),
+  requireActAccess({
+    idParam: "actChatbotId",
+    company: "acts-read-analysis-company",
+    owned: "acts-read-analysis-owned",
+    platform: "acts-read-analysis-platform",
+  }),
   requireSameCompany(),
   new FindActAnalysisFactorMessagesController().handle,
 );
@@ -600,7 +632,7 @@ actRouter.get(
  * /acts/{actChatbotId}/analysis:
  *   get:
  *     summary: "[Admin] Buscar análise de ACT da empresa"
- *     description: "Requer permissão `manage-acts`."
+ *     description: "Análise por ato: requer pelo menos uma de `acts-read-analysis-company`, `acts-read-analysis-owned` ou `acts-read-analysis-platform` (conforme o dono do ato), com `companyId` da própria empresa."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -615,7 +647,12 @@ actRouter.get(
 actRouter.get(
   "/:actChatbotId/analysis",
   isAuthenticated,
-  requirePermissions("acts-read-analysis"),
+  requireActAccess({
+    idParam: "actChatbotId",
+    company: "acts-read-analysis-company",
+    owned: "acts-read-analysis-owned",
+    platform: "acts-read-analysis-platform",
+  }),
   requireSameCompany(),
   new FindActAnalysisController().handle,
 );
@@ -625,7 +662,7 @@ actRouter.get(
  * /acts/{id}/config:
  *   get:
  *     summary: Buscar configuração completa de ACT próprio
- *     description: "Retorna todos os campos de configuração do ACT. Só funciona para ACTs pertencentes à empresa do usuário. Requer permissão `acts-update`."
+ *     description: "Retorna todos os campos de configuração do ACT. Funciona para ACTs da empresa (`acts-update-company`) ou criados pelo próprio usuário (`acts-update-owned`); nunca para ACTs Zumira. Requer **pelo menos uma** dessas permissões."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -647,8 +684,7 @@ actRouter.get(
 actRouter.get(
   "/:id/config",
   isAuthenticated,
-  requirePermissions("acts-update"),
-  requireCompany,
+  requireActAccess({ company: "acts-update-company", owned: "acts-update-owned" }),
   new FindActConfigController().handle,
 );
 
@@ -704,8 +740,8 @@ actRouter.post("/test-message", isAuthenticated, requirePermissions("acts-test")
  * @swagger
  * /acts/{id}:
  *   put:
- *     summary: Atualizar ACT próprio
- *     description: "Atualiza um ACT pertencente à empresa do usuário autenticado. Requer permissão `acts-update`."
+ *     summary: Atualizar ACT
+ *     description: "Atualiza um ACT da empresa (`acts-update-company`) ou criado pelo próprio usuário (`acts-update-owned`). ACTs Zumira (sem dono) nunca podem ser editados por aqui. Requer **pelo menos uma** dessas permissões."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -742,8 +778,7 @@ actRouter.post("/test-message", isAuthenticated, requirePermissions("acts-test")
 actRouter.put(
   "/:id",
   isAuthenticated,
-  requirePermissions("acts-update"),
-  requireCompany,
+  requireActAccess({ company: "acts-update-company", owned: "acts-update-owned" }),
   new UpdateActController().handle,
 );
 
@@ -751,8 +786,8 @@ actRouter.put(
  * @swagger
  * /acts/{id}:
  *   delete:
- *     summary: Deletar ACT próprio
- *     description: "Deleta um ACT pertencente à empresa do usuário autenticado. Requer permissão `acts-delete`."
+ *     summary: Deletar ACT
+ *     description: "Deleta um ACT da empresa (`acts-delete-company`) ou criado pelo próprio usuário (`acts-delete-owned`). ACTs Zumira (sem dono) nunca podem ser deletados por aqui. Requer **pelo menos uma** dessas permissões."
  *     tags: [ACTs]
  *     security:
  *       - bearerAuth: []
@@ -774,8 +809,7 @@ actRouter.put(
 actRouter.delete(
   "/:id",
   isAuthenticated,
-  requirePermissions("acts-delete"),
-  requireCompany,
+  requireActAccess({ company: "acts-delete-company", owned: "acts-delete-owned" }),
   new DeleteActController().handle,
 );
 

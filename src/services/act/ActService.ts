@@ -1,4 +1,5 @@
-import { ChapterType } from "@prisma/client";
+import { ChapterType, Prisma } from "@prisma/client";
+import { Request } from "express";
 
 import { PublicError } from "../../error";
 import { GenerateOpenAiResponseRequest, OpenAiApi } from "../../external/openai";
@@ -15,6 +16,7 @@ import {
   UpdateActRequest,
 } from "../../schemas/actChatbot";
 import { buildFullMessages } from "../../utils/chat";
+import { hasPermission } from "../../utils/permissions";
 import { tryParsePhone } from "../../utils/phone";
 import { capitalize } from "../../utils/string";
 import { TrailAdminService } from "../admin/TrailAdminService";
@@ -181,6 +183,7 @@ class ActService {
         name: true,
         description: true,
         icon: true,
+        ownerId: true,
         initialMessage: true,
         messageInstructions: true,
         compilationInstructions: true,
@@ -211,7 +214,7 @@ class ActService {
     return { items: rows.map((r) => ({ ...r.actChatbot, index: r.index })) };
   }
 
-  async findByIdConfig({ id, companyId }: { id: string; companyId: string }) {
+  async findByIdConfig({ id }: { id: string }) {
     const bot = await prismaClient.actChatbot.findUnique({
       where: { id },
       select: {
@@ -227,44 +230,44 @@ class ActService {
         reportLookupInstructions: true,
         individualAnalysisInstructions: true,
         companyId: true,
+        ownerId: true,
         createdAt: true,
         updatedAt: true,
       },
     });
 
-    if (!bot || bot.companyId !== companyId) {
-      throw new PublicError("Ato não encontrado ou sem permissão de acesso");
+    if (!bot) {
+      throw new PublicError("Ato não encontrado");
     }
 
     return bot;
   }
 
-  async create(data: CreateActRequest & { companyId: string }) {
+  async create(data: CreateActRequest & { companyId: string; ownerId: string }) {
     return prismaClient.actChatbot.create({ data });
   }
 
-  async update({ id, companyId, ...data }: UpdateActRequest & { id: string; companyId: string }) {
-    const act = await prismaClient.actChatbot.findUnique({ where: { id } });
-    if (!act || act.companyId !== companyId) {
-      throw new PublicError("Ato não encontrado ou sem permissão para alteração");
-    }
+  async update({ id, ...data }: UpdateActRequest & { id: string }) {
     return prismaClient.actChatbot.update({ where: { id }, data });
   }
 
-  async deleteAct({ id, companyId }: { id: string; companyId: string }) {
-    const act = await prismaClient.actChatbot.findUnique({ where: { id } });
-    if (!act || act.companyId !== companyId) {
-      throw new PublicError("Ato não encontrado ou sem permissão para exclusão");
-    }
-
+  async deleteAct({ id }: { id: string }) {
     await new TrailAdminService().removeActFromTrails(id);
 
     return prismaClient.actChatbot.delete({ where: { id } });
   }
 
-  async findOwned(companyId: string) {
+  async findForPanel(user: Request["user"]) {
+    const conditions: Prisma.ActChatbotWhereInput[] = [];
+
+    if (hasPermission(user, "acts-read-company")) conditions.push({ companyId: user.companyId });
+    if (hasPermission(user, "acts-read-owned")) conditions.push({ ownerId: user.id });
+    if (hasPermission(user, "acts-read-platform")) conditions.push({ companyId: null });
+
+    if (conditions.length === 0) return [];
+
     return prismaClient.actChatbot.findMany({
-      where: { companyId },
+      where: { OR: conditions },
       orderBy: { createdAt: "desc" },
     });
   }
