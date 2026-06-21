@@ -145,15 +145,13 @@ class ActAnalysisService {
     );
 
     batchResults.forEach(({ batchId, status }) => {
-      console.log(`[act/results] lote OpenAI ${batchId} status=${status}`);
+      console.log(`lote OpenAI ${batchId} status=${status}`);
     });
 
     const newCompletedBatchResults = batchResults.filter((batchRes) => batchRes.status === "completed");
     const allDone = newCompletedBatchResults.length === pendingBatches.length;
 
-    console.log(
-      `[act/results] batches concluídos nesta rodada: ${newCompletedBatchResults.length}/${pendingBatches.length}`,
-    );
+    console.log(`batches concluídos nesta rodada: ${newCompletedBatchResults.length}/${pendingBatches.length}`);
 
     // Mapeia batchId externo (OpenAI) → id interno (CompanyActAnalysisBatch) para uso nos inserts
     const externalToLocalBatchId = pendingBatches.reduce((prev, curr) => {
@@ -172,7 +170,7 @@ class ActAnalysisService {
         select: { messageId: true },
       });
       processedRows.forEach((r) => processedMessageIds.add(r.messageId));
-      console.log(`[act/results] mensagens já processadas nesta análise: ${processedMessageIds.size}`);
+      console.log(`mensagens já processadas nesta análise: ${processedMessageIds.size}`);
     }
 
     // Extrai as associações positivas (mensagem → fator) retornadas pela IA,
@@ -204,16 +202,13 @@ class ActAnalysisService {
 
     const invalidIds = candidateMessageIds.filter((id) => !validMessageIds.has(id));
     if (invalidIds.length > 0) {
-      console.warn(
-        `[act/results] ${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados:`,
-        invalidIds,
-      );
+      console.warn(`${invalidIds.length} message_id(s) retornados pela IA não existem no banco e serão ignorados`);
     }
 
     const validAssociations = candidateAssociations.filter((a) => validMessageIds.has(a.messageId));
     const associationMessageIds = new Set(validAssociations.map((a) => a.messageId));
 
-    console.log(`[act/results] associações válidas a inserir: ${validAssociations.length}`);
+    console.log(`associações válidas a inserir: ${validAssociations.length}`);
 
     // Para mensagens novas de usuário que a IA não associou a nenhum fator,
     // gravamos uma linha com factorId=null. Isso serve de marcador de "já processado":
@@ -244,7 +239,7 @@ class ActAnalysisService {
         author: MessageFactorAuthor.AI,
       }));
 
-    console.log(`[act/results] marcadores null (mensagens sem fator): ${nullRows.length}`);
+    console.log(`marcadores null (mensagens sem fator): ${nullRows.length}`);
 
     await prismaClient.actMessagesPsychosocialFactors.createMany({
       data: [...validAssociations, ...nullRows],
@@ -274,13 +269,11 @@ class ActAnalysisService {
 
     const alreadySaved = analysis.companyActAnalysisBatches.every((batch) => batch.status === "completed");
 
-    console.log(
-      `[act/analysis] resolveLatestAnalysis analysisId=${analysis.id} alreadySaved=${alreadySaved} batches=${JSON.stringify(analysis.companyActAnalysisBatches.map((b) => ({ id: b.id, status: b.status })))}`,
-    );
+    console.log(`resolveLatestAnalysis analysisId=${analysis.id} alreadySaved=${alreadySaved}`);
 
     if (!alreadySaved) {
       const allDone = await this.retrieveAndSaveAnalysisResults(analysis.companyActAnalysisBatches);
-      console.log(`[act/analysis] retrieveAndSaveAnalysisResults allDone=${allDone}`);
+      console.log(`retrieveAndSaveAnalysisResults allDone=${allDone}`);
       if (!allDone) return null;
 
       const [totalParticipants, company] = await Promise.all([
@@ -665,9 +658,7 @@ class ActAnalysisService {
       ]);
 
     // os segmentos chamam resolveLatestAnalysis internamente — se um retorna available: false (batches pendentes), todos retornariam; usamos esse como proxy
-    console.log(
-      `[act/analysis] buildAnalysisReportData companyId=${companyId} actChatbotId=${actChatbotId} bySimilarExposureGroup.available=${bySimilarExposureGroup.available}`,
-    );
+    console.log(`buildAnalysisReportData companyId=${companyId} available=${bySimilarExposureGroup.available}`);
     if (!bySimilarExposureGroup.available) return null;
 
     const factorWeights = weightsResult.available ? weightsResult.factors : [];
@@ -790,15 +781,11 @@ class ActAnalysisService {
   ): Promise<void> {
     const quantData = await this.buildAnalysisReportData(companyId, actChatbotId);
     if (!quantData) {
-      console.log(
-        `[RAG/act] buildAnalysisReportData returned null for analysisId=${analysis.id} — batches still pending, skipping description generation`,
-      );
+      console.log(`batches ainda pendentes para analysisId=${analysis.id}, pulando geração de descrição`);
       return;
     }
 
-    console.log(
-      `[RAG/act] starting description generation for analysis ${analysis.id} (actChatbotId: ${actChatbotId})`,
-    );
+    console.log(`gerando descrição para analysisId=${analysis.id}`);
     try {
       const actChatbot = await prismaClient.actChatbot.findUniqueOrThrow({
         where: { id: actChatbotId },
@@ -806,30 +793,21 @@ class ActAnalysisService {
 
       const openAiApi = new OpenAiApi({ model: "gpt-5.4" });
 
-      console.log(`[RAG/act] generating description from report data`);
       const reportText = this.buildReportText(actChatbot, quantData, report.totalParticipants);
       const response = await openAiApi.generateResponse({
         messages: [{ role: "user", content: reportText }],
         instructions: actChatbot.reportGenerationInstructions,
       });
-      console.log(`[RAG/act] description generated (${response.output_text.length} chars)`);
+      console.log(`descrição gerada (${response.output_text.length} chars)`);
 
       await prismaClient.actAnalysisReport.update({
         where: { id: report.id },
         data: { description: response.output_text, status: ReportStatus.READY },
       });
 
-      const saved = await prismaClient.actAnalysisReport.findUnique({
-        where: { id: report.id },
-        select: { id: true, status: true, description: true },
-      });
-      console.log(
-        `[RAG/act] verify after update: id=${saved?.id} status=${saved?.status} hasDescription=${!!saved?.description}`,
-      );
-
       await this.createReportRag(actChatbotId, analysis, report, reportText, response.output_text);
     } catch (error) {
-      throw new Error(`[RAG/act] failed to generate description for analysis ${analysis.id}: ${error}`);
+      throw new Error(`falha ao gerar descrição para analysisId=${analysis.id}: ${error}`);
     }
   }
 
@@ -859,7 +837,7 @@ class ActAnalysisService {
       data: { vectorStoreId: dbVectorStore.id },
     });
 
-    console.log(`[RAG/act] report ${report.id} RAG created, analysis ${analysis.id} vectorStoreId=${dbVectorStore.id}`);
+    console.log(`RAG criado para reportId=${report.id} analysisId=${analysis.id} vectorStoreId=${dbVectorStore.id}`);
   }
 
   private buildReportText(
