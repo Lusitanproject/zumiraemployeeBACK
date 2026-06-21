@@ -98,6 +98,7 @@ model User {
   actChapters               ActChapter[]
   trailProgresses           UserTrailProgress[]
   ownedActs                 ActChatbot[]               @relation("ActOwner")
+  ownedAssessments          Assessment[]               @relation("AssessmentOwner")
 
   @@map("users")
 }
@@ -151,6 +152,7 @@ model Company {
   trail                       Trail                        @relation(fields: [trailId], references: [id])
   users                       User[]
   ownedActChatbots            ActChatbot[]
+  ownedAssessments            Assessment[]
   companyAssessmentAnalyses   CompanyAssessmentAnalysis[]
   companyAvailableAssessments CompanyAvailableAssessment[]
   companyActAnalyses          CompanyActAnalysis[]
@@ -183,11 +185,15 @@ model Assessment {
   public                      Boolean             @default(false)
   selfMonitoringBlockId       String              @map("self_monitoring_block_id")
   nationalityId               String              @map("nationality_id")
+  companyId                   String?             @map("company_id")
+  ownerId                     String?             @map("owner_id")
   createdAt                   DateTime            @default(now()) @map("created_at")
   updatedAt                   DateTime            @updatedAt @map("updated_at")
 
   selfMonitoringBlock         SelfMonitoringBlock          @relation(fields: [selfMonitoringBlockId], references: [id])
   nationality                 Nationality                  @relation(fields: [nationalityId], references: [id])
+  company                     Company?                     @relation(fields: [companyId], references: [id])
+  owner                       User?                        @relation("AssessmentOwner", fields: [ownerId], references: [id])
   assessmentQuestions         AssessmentQuestion[]
   assessmentResults           AssessmentResult[]
   companyAssessmentAnalyses   CompanyAssessmentAnalysis[]

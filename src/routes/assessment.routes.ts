@@ -1,13 +1,17 @@
 import { Router } from "express";
 
+import { UpdateResultRatingsController } from "../controllers/admin/assessments/UpdateResultRatingsController";
 import { ListAlertsController } from "../controllers/alert/ListAlertsController";
 import { ReadAlertController } from "../controllers/alert/ReadAlertController";
 import { AnalysisMessageController } from "../controllers/assessment/AnalysisMessageController";
 import { CreateAssessmentController } from "../controllers/assessment/CreateAssessmentController";
 import { CreateQuestionController } from "../controllers/assessment/CreateQuestionController";
 import { CreateResultController } from "../controllers/assessment/CreateResultController";
+import { DeleteAssessmentController } from "../controllers/assessment/DeleteAssessmentController";
 import { DetailAssessmentController } from "../controllers/assessment/DetailAssessmentController";
 import { DetailResultController } from "../controllers/assessment/DetailResultController";
+import { FindAssessmentConfigController } from "../controllers/assessment/FindAssessmentConfigController";
+import { FindAssessmentsPanelController } from "../controllers/assessment/FindAssessmentsPanelController";
 import { GenerateCompanyFeedbackController } from "../controllers/assessment/GenerateCompanyFeedbackController";
 import { GenerateUserFeedbackController } from "../controllers/assessment/GenerateUserFeedbackController";
 import { GetAssessmentResultUserFiltersController } from "../controllers/assessment/GetAssessmentResultUserFiltersController";
@@ -15,8 +19,11 @@ import { ListAssessmentsController } from "../controllers/assessment/ListAssessm
 import { ListCompanyAssessmentsController } from "../controllers/assessment/ListCompanyAssessmentsController";
 import { ListResultsController } from "../controllers/assessment/ListResultsController";
 import { SearchAssessmentResultsController } from "../controllers/assessment/SearchAssessmentResultsController";
+import { UpdateAssessmentController } from "../controllers/assessment/UpdateAssessmentController";
 import { UpdateQuestionsController } from "../controllers/assessment/UpdateQuestionsController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
+import { requireAssessmentAccess } from "../middlewares/requireAssessmentAccess";
+import { requireCompany } from "../middlewares/requireCompany";
 import { requirePermissions } from "../middlewares/requirePermissions";
 import { requireSameCompany } from "../middlewares/requireSameCompany";
 
@@ -164,9 +171,11 @@ assessmentRouter.post(
  * /assessments/questions:
  *   post:
  *     summary: Criar pergunta de avaliação
+ *     deprecated: true
  *     description: >
+ *       **Deprecated** — use `PUT /assessments/{id}/questions` (sync em lote, que também cria perguntas novas).
  *       Adiciona uma nova pergunta a uma avaliação existente, vinculada a uma dimensão psicológica.
- *       Requer permissão `manage-assessments`.
+ *       Requer permissão `admin-assessments-manage`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -226,7 +235,7 @@ assessmentRouter.post(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-// TODO: migrar para /admin/assessments/questions (permissão: admin-assessments-manage)
+// Deprecado: preferir PUT /assessments/:id/questions (sync em lote)
 assessmentRouter.post(
   "/questions",
   isAuthenticated,
@@ -236,12 +245,14 @@ assessmentRouter.post(
 
 /**
  * @swagger
- * /assessments/questions/{id}:
+ * /assessments/{id}/questions:
  *   put:
- *     summary: Atualizar pergunta de avaliação
+ *     summary: Sincronizar perguntas da avaliação (lote)
  *     description: >
- *       Atualiza os dados de uma pergunta existente, incluindo texto, ordenação e opções de resposta.
- *       Requer permissão `manage-assessments`.
+ *       Substitui/reconcilia o conjunto inteiro de perguntas de uma avaliação: itens sem `id` são criados,
+ *       itens existentes alterados são atualizados, e os ausentes são removidos (idem para as opções).
+ *       Funciona para avaliações da empresa (`assessments-update-company`) ou criadas pelo próprio usuário
+ *       (`assessments-update-owned`); avaliações Zumira (sem dono) nunca por aqui. Requer **pelo menos uma** dessas permissões.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -251,23 +262,18 @@ assessmentRouter.post(
  *         required: true
  *         schema:
  *           type: string
- *           format: uuid
- *         description: ID da pergunta
+ *           format: cuid
+ *         description: ID da avaliação
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - questions
  *             properties:
- *               description:
- *                 type: string
- *               index:
- *                 type: integer
- *               psychologicalDimensionId:
- *                 type: string
- *                 format: uuid
- *               choices:
+ *               questions:
  *                 type: array
  *                 items:
  *                   type: object
@@ -275,16 +281,32 @@ assessmentRouter.post(
  *                     id:
  *                       type: string
  *                       format: uuid
- *                       description: Omitir para criar nova opção
- *                     label:
+ *                       description: Omitir para criar nova pergunta
+ *                     description:
  *                       type: string
- *                     value:
- *                       type: number
  *                     index:
  *                       type: integer
+ *                     psychologicalDimensionId:
+ *                       type: string
+ *                       format: uuid
+ *                     choices:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                             description: Omitir para criar nova opção
+ *                           label:
+ *                             type: string
+ *                           value:
+ *                             type: number
+ *                           index:
+ *                             type: integer
  *     responses:
  *       200:
- *         description: Pergunta atualizada com sucesso
+ *         description: Perguntas sincronizadas com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -296,12 +318,81 @@ assessmentRouter.post(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-// TODO: migrar para /admin/assessments/questions/:id (permissão: admin-assessments-manage)
 assessmentRouter.put(
-  "/questions/:id",
+  "/:id/questions",
   isAuthenticated,
-  requirePermissions("admin-assessments-manage"),
+  requireAssessmentAccess({ company: "assessments-update-company", owned: "assessments-update-owned" }),
   new UpdateQuestionsController().handle,
+);
+
+/**
+ * @swagger
+ * /assessments/{id}/ratings:
+ *   put:
+ *     summary: Atualizar faixas de classificação de risco
+ *     description: >
+ *       Substitui integralmente as faixas de risco (`AssessmentResultRating`) de uma avaliação.
+ *       Omitir `id` em um item cria nova faixa; incluir atualiza a existente.
+ *       Funciona para avaliações da empresa (`assessments-update-company`) ou próprias (`assessments-update-owned`);
+ *       avaliações Zumira (sem dono) nunca por aqui. Requer **pelo menos uma** dessas permissões.
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da avaliação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - ratings
+ *             properties:
+ *               ratings:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - risk
+ *                     - profile
+ *                     - color
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     risk:
+ *                       type: string
+ *                     profile:
+ *                       type: string
+ *                     color:
+ *                       type: string
+ *                       pattern: '^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$'
+ *     responses:
+ *       200:
+ *         description: Faixas de risco atualizadas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.put(
+  "/:id/ratings",
+  isAuthenticated,
+  requireAssessmentAccess({ company: "assessments-update-company", owned: "assessments-update-owned" }),
+  new UpdateResultRatingsController().handle,
 );
 
 /**
@@ -449,10 +540,41 @@ assessmentRouter.get("/company", isAuthenticated, new ListCompanyAssessmentsCont
 
 /**
  * @swagger
+ * /assessments/panel:
+ *   get:
+ *     summary: Listar avaliações do painel do admin-empresa
+ *     description: >
+ *       Lista as avaliações exibidas no painel do admin-empresa. O conjunto retornado varia conforme as
+ *       permissões do usuário (com deduplicação): `assessments-read-company` adiciona todas as avaliações da
+ *       empresa, `assessments-read-owned` adiciona as criadas pelo próprio usuário, e
+ *       `assessments-read-platform` adiciona as da Zumira (sem dono). Requer **pelo menos uma** dessas três permissões.
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Avaliações visíveis no painel do admin-empresa
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.get(
+  "/panel",
+  isAuthenticated,
+  requirePermissions(["assessments-read-company", "assessments-read-owned", "assessments-read-platform"], {
+    match: "any",
+  }),
+  requireCompany,
+  new FindAssessmentsPanelController().handle,
+);
+
+/**
+ * @swagger
  * /assessments/{assessmentId}/analysis/message:
  *   post:
  *     summary: Enviar mensagem à análise de avaliação
- *     description: "Requer permissão `manage-assessments`."
+ *     description: "Análise por avaliação: requer pelo menos uma de `assessments-read-analysis-company`, `assessments-read-analysis-owned` ou `assessments-read-analysis-platform` (conforme o dono da avaliação), com `companyId` da própria empresa."
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -467,7 +589,12 @@ assessmentRouter.get("/company", isAuthenticated, new ListCompanyAssessmentsCont
 assessmentRouter.post(
   "/:assessmentId/analysis/message",
   isAuthenticated,
-  requirePermissions("assessments-read-analysis"),
+  requireAssessmentAccess({
+    idParam: "assessmentId",
+    company: "assessments-read-analysis-company",
+    owned: "assessments-read-analysis-owned",
+    platform: "assessments-read-analysis-platform",
+  }),
   requireSameCompany(),
   new AnalysisMessageController().handle,
 );
@@ -477,7 +604,7 @@ assessmentRouter.post(
  * /assessments/{id}/results/user-filters:
  *   get:
  *     summary: Filtros de usuários com resultados da avaliação
- *     description: "Requer permissão `manage-assessments`."
+ *     description: "Análise por avaliação: requer pelo menos uma de `assessments-read-analysis-company`, `assessments-read-analysis-owned` ou `assessments-read-analysis-platform` (conforme o dono da avaliação), com `companyId` da própria empresa."
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -492,7 +619,11 @@ assessmentRouter.post(
 assessmentRouter.get(
   "/:id/results/user-filters",
   isAuthenticated,
-  requirePermissions("assessments-read-analysis"),
+  requireAssessmentAccess({
+    company: "assessments-read-analysis-company",
+    owned: "assessments-read-analysis-owned",
+    platform: "assessments-read-analysis-platform",
+  }),
   requireSameCompany(),
   new GetAssessmentResultUserFiltersController().handle,
 );
@@ -502,7 +633,7 @@ assessmentRouter.get(
  * /assessments/{id}/results:
  *   get:
  *     summary: Buscar resultados paginados de uma avaliação
- *     description: "Requer permissão `manage-assessments`."
+ *     description: "Análise por avaliação: requer pelo menos uma de `assessments-read-analysis-company`, `assessments-read-analysis-owned` ou `assessments-read-analysis-platform` (conforme o dono da avaliação), com `companyId` da própria empresa."
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -517,7 +648,11 @@ assessmentRouter.get(
 assessmentRouter.get(
   "/:id/results",
   isAuthenticated,
-  requirePermissions("assessments-read-analysis"),
+  requireAssessmentAccess({
+    company: "assessments-read-analysis-company",
+    owned: "assessments-read-analysis-owned",
+    platform: "assessments-read-analysis-platform",
+  }),
   requireSameCompany(),
   new SearchAssessmentResultsController().handle,
 );
@@ -529,7 +664,7 @@ assessmentRouter.get(
  *     summary: Detalhar avaliação (com perguntas e opções)
  *     description: >
  *       Retorna os dados completos de uma avaliação, incluindo todas as perguntas e suas opções de resposta, ordenadas por `index`.
- *       Requer permissão `manage-assessments`.
+ *       Requer permissão `assessments-engage`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -577,14 +712,150 @@ assessmentRouter.get(
 
 /**
  * @swagger
+ * /assessments/{id}/config:
+ *   get:
+ *     summary: Buscar configuração completa da avaliação
+ *     description: >
+ *       Retorna a configuração completa para edição num único payload: campos escalares + perguntas/opções +
+ *       faixas de risco. Funciona para avaliações da empresa (`assessments-update-company`) ou criadas pelo
+ *       próprio usuário (`assessments-update-owned`); nunca para avaliações Zumira. Requer **pelo menos uma** dessas permissões.
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *     responses:
+ *       200:
+ *         description: Configuração completa da avaliação
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.get(
+  "/:id/config",
+  isAuthenticated,
+  requireAssessmentAccess({ company: "assessments-update-company", owned: "assessments-update-owned" }),
+  new FindAssessmentConfigController().handle,
+);
+
+/**
+ * @swagger
+ * /assessments/{id}:
+ *   put:
+ *     summary: Atualizar avaliação
+ *     description: >
+ *       Atualiza uma avaliação da empresa (`assessments-update-company`) ou criada pelo próprio usuário
+ *       (`assessments-update-owned`). Avaliações Zumira (sem dono) nunca podem ser editadas por aqui.
+ *       Requer **pelo menos uma** dessas permissões.
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - operationType
+ *               - nationalityId
+ *               - public
+ *             properties:
+ *               title:
+ *                 type: string
+ *               summary:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               selfMonitoringBlockId:
+ *                 type: string
+ *                 format: cuid
+ *               userFeedbackInstructions:
+ *                 type: string
+ *               companyFeedbackInstructions:
+ *                 type: string
+ *               operationType:
+ *                 type: string
+ *                 enum: [SUM, AVERAGE]
+ *               nationalityId:
+ *                 type: string
+ *                 format: cuid
+ *               public:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Avaliação atualizada com sucesso
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.put(
+  "/:id",
+  isAuthenticated,
+  requireAssessmentAccess({ company: "assessments-update-company", owned: "assessments-update-owned" }),
+  new UpdateAssessmentController().handle,
+);
+
+/**
+ * @swagger
+ * /assessments/{id}:
+ *   delete:
+ *     summary: Deletar avaliação
+ *     description: >
+ *       Deleta uma avaliação da empresa (`assessments-delete-company`) ou criada pelo próprio usuário
+ *       (`assessments-delete-owned`). Avaliações Zumira (sem dono) nunca podem ser deletadas por aqui.
+ *       Requer **pelo menos uma** dessas permissões.
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *     responses:
+ *       200:
+ *         description: Avaliação deletada com sucesso
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.delete(
+  "/:id",
+  isAuthenticated,
+  requireAssessmentAccess({ company: "assessments-delete-company", owned: "assessments-delete-owned" }),
+  new DeleteAssessmentController().handle,
+);
+
+/**
+ * @swagger
  * /assessments:
  *   post:
  *     summary: Criar avaliação
  *     description: >
- *       Cria um novo template de avaliação psicossocial.
+ *       Cria um novo template de avaliação psicossocial vinculado à empresa do usuário autenticado
+ *       (`companyId`/`ownerId` setados a partir do token).
  *       `operationType` define a fórmula de score: `SUM` = soma dos valores das respostas; `AVERAGE` = média.
  *       `public: true` disponibiliza a avaliação para qualquer usuário do sistema; `false` restringe às empresas vinculadas manualmente.
- *       Requer permissão `manage-assessments`.
+ *       Requer permissão `assessments-create`.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -648,11 +919,11 @@ assessmentRouter.get(
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  */
-// TODO: migrar para /admin/assessments (permissão: admin-assessments-manage)
 assessmentRouter.post(
   "/",
   isAuthenticated,
-  requirePermissions("admin-assessments-manage"),
+  requirePermissions("assessments-create"),
+  requireCompany,
   new CreateAssessmentController().handle,
 );
 
@@ -665,7 +936,8 @@ assessmentRouter.post(
  *       Dispara a geração de feedback textual via IA para o resultado de avaliação indicado por `id`.
  *       O feedback é gerado com base nas `userFeedbackInstructions` da avaliação e nas respostas do usuário.
  *       O texto gerado é salvo no campo `feedback` do `AssessmentResult`.
- *       Requer permissão `manage-assessments`.
+ *       O `id` é o `AssessmentResult.id`. Requer pelo menos uma de `assessments-read-analysis-company`,
+ *       `assessments-read-analysis-owned` ou `assessments-read-analysis-platform`, com `companyId` da própria empresa.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -693,7 +965,10 @@ assessmentRouter.post(
 assessmentRouter.post(
   "/feedback/users/:id",
   isAuthenticated,
-  requirePermissions("assessments-read-analysis"),
+  requirePermissions(
+    ["assessments-read-analysis-company", "assessments-read-analysis-owned", "assessments-read-analysis-platform"],
+    { match: "any" },
+  ),
   requireSameCompany(),
   new GenerateUserFeedbackController().handle,
 );
@@ -708,7 +983,8 @@ assessmentRouter.post(
  *       O `id` refere-se ao ID da avaliação (`Assessment.id`).
  *       O feedback é gerado com base nas `companyFeedbackInstructions` e nos resultados agregados dos colaboradores.
  *       O texto gerado é salvo em `CompanyAssessmentFeedback`.
- *       Requer permissão `manage-assessments`.
+ *       Análise por avaliação: requer pelo menos uma de `assessments-read-analysis-company`,
+ *       `assessments-read-analysis-owned` ou `assessments-read-analysis-platform` (conforme o dono da avaliação), com `companyId` da própria empresa.
  *     tags: [Assessments]
  *     security:
  *       - bearerAuth: []
@@ -743,7 +1019,11 @@ assessmentRouter.post(
 assessmentRouter.post(
   "/feedback/companies/:id",
   isAuthenticated,
-  requirePermissions("assessments-read-analysis"),
+  requireAssessmentAccess({
+    company: "assessments-read-analysis-company",
+    owned: "assessments-read-analysis-owned",
+    platform: "assessments-read-analysis-platform",
+  }),
   requireSameCompany(),
   new GenerateCompanyFeedbackController().handle,
 );

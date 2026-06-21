@@ -162,7 +162,10 @@ companyRouter.post(
 companyRouter.get(
   "/:id/feedback",
   isAuthenticated,
-  requirePermissions("assessments-read-analysis"),
+  requirePermissions(
+    ["assessments-read-analysis-company", "assessments-read-analysis-owned", "assessments-read-analysis-platform"],
+    { match: "any" },
+  ),
   requireSameCompany("params", "id"),
   new FindCompanyFeedbackController().handle,
 );
