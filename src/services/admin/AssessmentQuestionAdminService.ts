@@ -3,7 +3,7 @@ import prismaClient from "../../prisma";
 class AssessmentQuestionAdminService {
   async findByAssessment(assessmentId: string) {
     const questions = await prismaClient.assessmentQuestion.findMany({
-      where: { assessmentId },
+      where: { assessmentId, assessment: { companyId: null } },
       select: {
         id: true,
         index: true,

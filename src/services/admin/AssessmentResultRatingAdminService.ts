@@ -7,7 +7,7 @@ import { UpdateRatingsRequest } from "../../schemas/admin/assessment";
 class AssessmentResultRatingAdminService {
   async findByAssessment(assessmentId: string) {
     const ratings = await prismaClient.assessmentResultRating.findMany({
-      where: { assessmentId },
+      where: { assessmentId, assessment: { companyId: null } },
       select: {
         id: true,
         risk: true,
@@ -21,7 +21,7 @@ class AssessmentResultRatingAdminService {
 
   async updateAssessmentResultRatings(data: UpdateRatingsRequest) {
     const assessment = await prismaClient.assessment.findFirst({
-      where: { id: data.assessmentId },
+      where: { id: data.assessmentId, companyId: null },
       include: { assessmentResultRatings: true },
     });
     if (!assessment) throw new PublicError("Avaliação não existe");
