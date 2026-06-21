@@ -238,6 +238,7 @@ adminRoleRouter.delete(
  *     summary: "[Admin] Definir permissões de um papel"
  *     description: >
  *       Substitui integralmente as permissões de um papel (operação idempotente: sempre sobrescreve tudo).
+ *       Permissões que não existem no sistema são ignoradas e retornadas no campo `ignoredPermissions`.
  *       Use `GET /admin/permissions` para obter a lista de permissões disponíveis no sistema.
  *       Requer permissão `manage-roles`.
  *     tags: [Admin - Roles]
@@ -272,7 +273,18 @@ adminRoleRouter.delete(
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/SuccessResponse'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/SuccessResponse'
+ *                 - type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       description: Presente apenas quando há permissões ignoradas
+ *                     ignoredPermissions:
+ *                       type: array
+ *                       description: Permissões inexistentes que foram ignoradas (ausente quando todas são válidas)
+ *                       items:
+ *                         type: string
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:

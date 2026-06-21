@@ -97,6 +97,7 @@ model User {
   notificationRecipients    NotificationRecipient[]
   actChapters               ActChapter[]
   trailProgresses           UserTrailProgress[]
+  ownedActs                 ActChatbot[]               @relation("ActOwner")
 
   @@map("users")
 }
@@ -417,6 +418,7 @@ model ActChatbot {
   description                    String
   icon                           String
   companyId                      String?  @map("company_id")
+  ownerId                        String?  @map("owner_id")
   published                      Boolean  @default(true)
   allowIndividualAnalysis        Boolean  @default(false) @map("allow_individual_analysis")
   initialMessage                 String?  @map("initial_message")
@@ -429,6 +431,7 @@ model ActChatbot {
   updatedAt                      DateTime @updatedAt @map("updated_at")
 
   company            Company?             @relation(fields: [companyId], references: [id])
+  owner              User?                @relation("ActOwner", fields: [ownerId], references: [id])
   trails             TrailActChatbot[]
   actChapters        ActChapter[]
   userProgresses     UserTrailProgress[]

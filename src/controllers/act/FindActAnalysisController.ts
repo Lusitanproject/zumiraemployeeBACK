@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { FindActAnalysisQuerySchema } from "../../schemas/admin/act-analysis";
-import { ActService } from "../../services/act/ActService";
+import { ActAnalysisService } from "../../services/act/ActAnalysisService";
 
 const RequestParams = z.object({
   actChatbotId: z.string().cuid(),
@@ -16,7 +16,7 @@ class FindActAnalysisController {
 
     const { companyId, page, pageSize, ...filters } = parsedQuery;
 
-    const service = new ActService();
+    const service = new ActAnalysisService();
     const analysis = await service.findAnalysis(companyId, parsedParams.actChatbotId, filters, { page, pageSize });
 
     return res.json({ status: "SUCCESS", data: analysis });
