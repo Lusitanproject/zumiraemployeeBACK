@@ -5,7 +5,7 @@ import { UpdateAssessment } from "../../schemas/admin/assessment";
 class AssessmentAdminService {
   async find(assessmentId: string) {
     const assessment = await prismaClient.assessment.findUnique({
-      where: { id: assessmentId },
+      where: { id: assessmentId, companyId: null },
       select: {
         id: true,
         title: true,
@@ -27,6 +27,7 @@ class AssessmentAdminService {
   async findAll() {
     // O RETORNO DA FUNCAO NAO ESTÁ 100% APROPRIADO PARA A INTERFACE DO ADMIN
     const assessments = await prismaClient.assessment.findMany({
+      where: { companyId: null },
       select: {
         id: true,
         title: true,
@@ -59,16 +60,18 @@ class AssessmentAdminService {
   }
 
   async update({ id, ...data }: UpdateAssessment) {
-    const assessment = await prismaClient.assessment.update({
-      where: { id },
-      data,
+    const existing = await prismaClient.assessment.findUnique({
+      where: { id, companyId: null },
+      select: { id: true },
     });
+    if (!existing) throw new PublicError("Avaliação não existe");
+    const assessment = await prismaClient.assessment.update({ where: { id }, data });
     return assessment;
   }
 
   async duplicate(assessmentId: string) {
     const assessment = await prismaClient.assessment.findFirst({
-      where: { id: assessmentId },
+      where: { id: assessmentId, companyId: null },
       include: {
         assessmentQuestions: {
           include: {
@@ -150,6 +153,11 @@ class AssessmentAdminService {
   }
 
   async delete(assessmentId: string) {
+    const existing = await prismaClient.assessment.findUnique({
+      where: { id: assessmentId, companyId: null },
+      select: { id: true },
+    });
+    if (!existing) throw new PublicError("Avaliação não existe");
     await prismaClient.assessment.delete({ where: { id: assessmentId } });
   }
 }

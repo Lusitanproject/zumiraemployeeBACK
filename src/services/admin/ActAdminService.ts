@@ -25,6 +25,7 @@ class ActAdminService {
 
   async findAll() {
     const bots = await prismaClient.actChatbot.findMany({
+      where: { companyId: null },
       select: this.actListSelect,
     });
 
@@ -33,7 +34,7 @@ class ActAdminService {
 
   async findById(id: string) {
     const bot = await prismaClient.actChatbot.findUnique({
-      where: { id },
+      where: { id, companyId: null },
       select: {
         id: true,
         name: true,
@@ -72,10 +73,12 @@ class ActAdminService {
   }
 
   async update({ id, ...data }: UpdateActChatbotRequest) {
-    const bot = await prismaClient.actChatbot.update({
-      where: { id },
-      data,
+    const existing = await prismaClient.actChatbot.findUnique({
+      where: { id, companyId: null },
+      select: { id: true },
     });
+    if (!existing) throw new PublicError("Act chatbot does not exist");
+    const bot = await prismaClient.actChatbot.update({ where: { id }, data });
     return bot;
   }
 
