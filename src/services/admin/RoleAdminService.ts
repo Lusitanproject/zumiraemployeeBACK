@@ -1,4 +1,5 @@
 import prismaClient from "../../prisma";
+import { partitionPermissions } from "../../utils/permissions";
 
 class RoleAdminService {
   async find(roleId: string) {
@@ -39,12 +40,16 @@ class RoleAdminService {
   }
 
   async setPermissions(roleId: string, permissions: string[]) {
+    const { valid, invalid } = partitionPermissions(permissions);
+
     await prismaClient.$transaction([
       prismaClient.rolePermission.deleteMany({ where: { roleId } }),
       prismaClient.rolePermission.createMany({
-        data: permissions.map((permission) => ({ roleId, permission })),
+        data: valid.map((permission) => ({ roleId, permission })),
       }),
     ]);
+
+    return { ignored: invalid };
   }
 }
 

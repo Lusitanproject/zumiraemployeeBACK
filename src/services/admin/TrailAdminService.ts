@@ -22,12 +22,8 @@ class TrailAdminService {
     return trail;
   }
 
-  async setActs({ trailId, acts }: SetTrailActsRequest) {
-    const ordered = [...acts]
-      .sort((a, b) => a.index - b.index)
-      .map((a, i) => ({ actChatbotId: a.actChatbotId, index: i }));
-
-    // Trilha esvaziada: remove junction e todos os progressos (recriados lazily ao primeiro acesso)
+  // Trilha esvaziada: remove junction e todos os progressos (recriados lazily ao primeiro acesso)
+  async syncTrailActs(trailId: string, ordered: { actChatbotId: string; index: number }[]) {
     if (ordered.length === 0) {
       await prismaClient.$transaction([
         prismaClient.trailActChatbot.deleteMany({ where: { trailId } }),
@@ -39,19 +35,16 @@ class TrailAdminService {
     const newIndexById = new Map(ordered.map((a) => [a.actChatbotId, a.index]));
     const maxIndex = ordered.length - 1;
 
-    // Lê os progressos antes da transação para não segurá-la aberta durante o loop
     const progresses = await prismaClient.userTrailProgress.findMany({
       where: { trailId, currentActChatbotId: { not: null } },
       select: { userId: true, currentActChatbotId: true, currentIndex: true },
     });
 
-    // Substituição atômica da junction (forma de array — rápida, sem timeout)
     await prismaClient.$transaction([
       prismaClient.trailActChatbot.deleteMany({ where: { trailId } }),
       prismaClient.trailActChatbot.createMany({ data: ordered.map((a) => ({ trailId, ...a })) }),
     ]);
 
-    // Recalcula progressos em paralelo, fora da transação
     await Promise.all(
       progresses.map((p) => {
         const newIdx = newIndexById.get(p.currentActChatbotId!);
@@ -73,6 +66,33 @@ class TrailAdminService {
         });
       }),
     );
+  }
+
+  async removeActFromTrails(actChatbotId: string) {
+    const trailAssocs = await prismaClient.trailActChatbot.findMany({
+      where: { actChatbotId },
+      select: { trailId: true },
+    });
+
+    await Promise.all(
+      trailAssocs.map(async ({ trailId }) => {
+        const remaining = await prismaClient.trailActChatbot.findMany({
+          where: { trailId, actChatbotId: { not: actChatbotId } },
+          orderBy: { index: "asc" },
+          select: { actChatbotId: true },
+        });
+        const ordered = remaining.map((r, i) => ({ actChatbotId: r.actChatbotId, index: i }));
+        return this.syncTrailActs(trailId, ordered);
+      }),
+    );
+  }
+
+  async setActs({ trailId, acts }: SetTrailActsRequest) {
+    const ordered = [...acts]
+      .sort((a, b) => a.index - b.index)
+      .map((a, i) => ({ actChatbotId: a.actChatbotId, index: i }));
+
+    return this.syncTrailActs(trailId, ordered);
   }
 }
 

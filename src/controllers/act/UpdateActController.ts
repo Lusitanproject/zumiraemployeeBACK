@@ -9,7 +9,7 @@ class UpdateActController {
     const data = UpdateActSchema.parse(req.body);
 
     const service = new ActService();
-    const result = await service.update({ id, companyId: req.user.companyId!, ...data });
+    const result = await service.update({ id, ...data });
 
     return res.json({ status: "SUCCESS", data: result });
   }

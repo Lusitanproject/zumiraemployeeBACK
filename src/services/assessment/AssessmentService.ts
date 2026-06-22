@@ -1,4 +1,5 @@
 import { AssessmentResultRating, Prisma } from "@prisma/client";
+import { Request } from "express";
 import OpenAI from "openai";
 import { ResponseInputItem } from "openai/resources/responses/responses";
 
@@ -13,6 +14,7 @@ import {
 import { DetailResultRequest, ListAssessmentsRequest } from "../../schemas/assessment";
 import { calculateResultScores } from "../../utils/calculateResultScores";
 import { devLog } from "../../utils/devLog";
+import { hasPermission } from "../../utils/permissions";
 import { UserService } from "../user/UserService";
 
 interface QuestionRequest {
@@ -217,7 +219,7 @@ async function generateUserFeedbackResponse(
 }
 
 class AssessmentService {
-  async create(data: CreateAssessment) {
+  async create(data: CreateAssessment & { companyId?: string | null; ownerId?: string | null }) {
     const block = await prismaClient.selfMonitoringBlock.findFirst({
       where: { id: data.selfMonitoringBlockId },
     });
@@ -232,8 +234,78 @@ class AssessmentService {
         summary: true,
         description: true,
         selfMonitoringBlockId: true,
+        companyId: true,
+        ownerId: true,
       },
     });
+
+    return assessment;
+  }
+
+  async findForPanel(user: Request["user"]) {
+    const conditions: Prisma.AssessmentWhereInput[] = [];
+
+    if (hasPermission(user, "assessments-read-company")) conditions.push({ companyId: user.companyId });
+    if (hasPermission(user, "assessments-read-owned")) conditions.push({ ownerId: user.id });
+    if (hasPermission(user, "assessments-read-platform")) conditions.push({ companyId: null });
+
+    if (conditions.length === 0) return [];
+
+    return prismaClient.assessment.findMany({
+      where: { OR: conditions },
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        public: true,
+        companyId: true,
+        ownerId: true,
+        selfMonitoringBlock: { select: { id: true, title: true } },
+        createdAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  async findByIdConfig({ id }: { id: string }) {
+    const assessment = await prismaClient.assessment.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        summary: true,
+        description: true,
+        selfMonitoringBlockId: true,
+        userFeedbackInstructions: true,
+        companyFeedbackInstructions: true,
+        consultiveAiInstructions: true,
+        operationType: true,
+        nationalityId: true,
+        public: true,
+        companyId: true,
+        ownerId: true,
+        createdAt: true,
+        updatedAt: true,
+        assessmentQuestions: {
+          orderBy: { index: "asc" },
+          select: {
+            id: true,
+            description: true,
+            index: true,
+            psychologicalDimensionId: true,
+            assessmentQuestionChoices: {
+              orderBy: { index: "asc" },
+              select: { id: true, label: true, value: true, index: true },
+            },
+          },
+        },
+        assessmentResultRatings: {
+          select: { id: true, risk: true, profile: true, color: true },
+        },
+      },
+    });
+
+    if (!assessment) throw new PublicError("Avaliação não encontrada");
 
     return assessment;
   }
@@ -555,8 +627,15 @@ class AssessmentService {
     const assessments = await prismaClient.assessment.findMany({
       where: {
         nationalityId,
-        public: true,
-        companyAvailableAssessments: user.companyId ? { some: { companyId: user.companyId } } : undefined,
+        OR: [
+          // testes Zumira (platform) públicos disponibilizados à empresa
+          {
+            public: true,
+            companyAvailableAssessments: user.companyId ? { some: { companyId: user.companyId } } : undefined,
+          },
+          // testes da própria empresa ficam automaticamente disponíveis
+          ...(user.companyId ? [{ companyId: user.companyId }] : []),
+        ],
       },
       select: {
         id: true,
@@ -592,7 +671,11 @@ class AssessmentService {
 
     const assessments = await prismaClient.assessment.findMany({
       where: {
-        companyAvailableAssessments: { some: { companyId: user.companyId } },
+        OR: [
+          { companyAvailableAssessments: { some: { companyId: user.companyId } } },
+          // testes da própria empresa ficam automaticamente disponíveis
+          { companyId: user.companyId },
+        ],
       },
       select: {
         id: true,

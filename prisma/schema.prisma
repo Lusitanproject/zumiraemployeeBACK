@@ -19,7 +19,7 @@ enum AssessmentOperation {
 }
 
 enum ReportStatus {
-  OUTDATED
+  PENDING
   GENERATING
   READY
 }
@@ -58,7 +58,7 @@ enum MessageFactorAuthor {
 }
 
 model SystemConfig {
-  id Int @id @default(1)
+  id                            Int    @id @default(1)
   reportUnavailableInstructions String @default("")
 
   @@map("system_config")
@@ -97,6 +97,8 @@ model User {
   notificationRecipients    NotificationRecipient[]
   actChapters               ActChapter[]
   trailProgresses           UserTrailProgress[]
+  ownedActs                 ActChatbot[]               @relation("ActOwner")
+  ownedAssessments          Assessment[]               @relation("AssessmentOwner")
 
   @@map("users")
 }
@@ -150,6 +152,7 @@ model Company {
   trail                       Trail                        @relation(fields: [trailId], references: [id])
   users                       User[]
   ownedActChatbots            ActChatbot[]
+  ownedAssessments            Assessment[]
   companyAssessmentAnalyses   CompanyAssessmentAnalysis[]
   companyAvailableAssessments CompanyAvailableAssessment[]
   companyActAnalyses          CompanyActAnalysis[]
@@ -182,11 +185,15 @@ model Assessment {
   public                      Boolean             @default(false)
   selfMonitoringBlockId       String              @map("self_monitoring_block_id")
   nationalityId               String              @map("nationality_id")
+  companyId                   String?             @map("company_id")
+  ownerId                     String?             @map("owner_id")
   createdAt                   DateTime            @default(now()) @map("created_at")
   updatedAt                   DateTime            @updatedAt @map("updated_at")
 
   selfMonitoringBlock         SelfMonitoringBlock          @relation(fields: [selfMonitoringBlockId], references: [id])
   nationality                 Nationality                  @relation(fields: [nationalityId], references: [id])
+  company                     Company?                     @relation(fields: [companyId], references: [id])
+  owner                       User?                        @relation("AssessmentOwner", fields: [ownerId], references: [id])
   assessmentQuestions         AssessmentQuestion[]
   assessmentResults           AssessmentResult[]
   companyAssessmentAnalyses   CompanyAssessmentAnalysis[]
@@ -417,6 +424,7 @@ model ActChatbot {
   description                    String
   icon                           String
   companyId                      String?  @map("company_id")
+  ownerId                        String?  @map("owner_id")
   published                      Boolean  @default(true)
   allowIndividualAnalysis        Boolean  @default(false) @map("allow_individual_analysis")
   initialMessage                 String?  @map("initial_message")
@@ -429,6 +437,7 @@ model ActChatbot {
   updatedAt                      DateTime @updatedAt @map("updated_at")
 
   company            Company?             @relation(fields: [companyId], references: [id])
+  owner              User?                @relation("ActOwner", fields: [ownerId], references: [id])
   trails             TrailActChatbot[]
   actChapters        ActChapter[]
   userProgresses     UserTrailProgress[]
@@ -474,7 +483,7 @@ model ActChapter {
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
 
-  actChatbot ActChatbot          @relation(fields: [actChatbotId], references: [id])
+  actChatbot ActChatbot          @relation(fields: [actChatbotId], references: [id], onDelete: Cascade)
   user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages   ActChapterMessage[]
 
@@ -516,19 +525,18 @@ model PsychosocialFactor {
 }
 
 model CompanyActAnalysis {
-  id             String   @id @default(cuid())
-  actChatbotId   String   @map("act_chatbot_id")
-  companyId      String   @map("company_id")
-  text           String?
-  vectorStoreId  String?  @map("vector_store_id")
-  reportStatus   ReportStatus @default(OUTDATED) @map("report_status")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  actChatbotId  String   @map("act_chatbot_id")
+  companyId     String   @map("company_id")
+  vectorStoreId String?  @map("vector_store_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-  actChatbot                ActChatbot                @relation(fields: [actChatbotId], references: [id])
+  actChatbot                ActChatbot                @relation(fields: [actChatbotId], references: [id], onDelete: Cascade)
   company                   Company                   @relation(fields: [companyId], references: [id])
   vectorStore               OpenAIVectorStore?        @relation(fields: [vectorStoreId], references: [id])
   companyActAnalysisBatches CompanyActAnalysisBatch[]
+  actAnalysisReports        ActAnalysisReport[]
 
   @@index([companyId, actChatbotId, createdAt(sort: Desc)])
   @@map("company_act_analyses")
@@ -542,10 +550,30 @@ model CompanyActAnalysisBatch {
   createdAt            DateTime    @default(now()) @map("created_at")
   updatedAt            DateTime    @updatedAt @map("updated_at")
 
-  companyActAnalysys             CompanyActAnalysis               @relation(fields: [companyActAnalysisId], references: [id])
+  companyActAnalysys             CompanyActAnalysis               @relation(fields: [companyActAnalysisId], references: [id], onDelete: Cascade)
   actMessagesPsychosocialFactors ActMessagesPsychosocialFactors[]
 
   @@map("company_act_analysis_batches")
+}
+
+model ActAnalysisReport {
+  id                       String       @id @default(cuid())
+  companyActAnalysisId     String       @map("company_act_analysis_id")
+  companyName              String       @map("company_name")
+  evaluationPeriod         String?      @map("assessment_period")
+  evaluationType           String?      @map("assessment_type")
+  description              String?
+  totalParticipants        Int          @map("total_participants")
+  technicalResponsible     String?      @map("technical_responsible")
+  professionalRegistration String?      @map("professional_registration")
+  issuedAt                 DateTime?    @map("issued_at")
+  status                   ReportStatus @default(PENDING) @map("status")
+  createdAt                DateTime     @default(now()) @map("created_at")
+  updatedAt                DateTime     @updatedAt @map("updated_at")
+
+  companyActAnalysys CompanyActAnalysis @relation(fields: [companyActAnalysisId], references: [id], onDelete: Cascade)
+
+  @@map("act_analysis_reports")
 }
 
 model ActMessagesPsychosocialFactors {
@@ -561,7 +589,7 @@ model ActMessagesPsychosocialFactors {
 
   message       ActChapterMessage       @relation(fields: [messageId], references: [id], onDelete: Cascade)
   factor        PsychosocialFactor?     @relation(fields: [factorId], references: [id])
-  analysisBatch CompanyActAnalysisBatch @relation(fields: [analysisBatchId], references: [id])
+  analysisBatch CompanyActAnalysisBatch @relation(fields: [analysisBatchId], references: [id], onDelete: Cascade)
 
   @@unique([messageId, factorId, analysisBatchId, revision])
   @@map("act_messages_psychosocial_factors")

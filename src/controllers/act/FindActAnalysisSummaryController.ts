@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { FindActAnalysisSummaryQuerySchema } from "../../schemas/admin/act-analysis";
-import { ActService } from "../../services/act/ActService";
+import { ActAnalysisService } from "../../services/act/ActAnalysisService";
 
 const RequestParams = z.object({
   actChatbotId: z.string().cuid(),
@@ -16,7 +16,7 @@ class FindActAnalysisSummaryController {
 
     const { companyId, ...filters } = parsedQuery;
 
-    const service = new ActService();
+    const service = new ActAnalysisService();
     const summary = await service.findAnalysisSummary(companyId, parsedParams.actChatbotId, filters);
 
     return res.json({ status: "SUCCESS", data: summary });

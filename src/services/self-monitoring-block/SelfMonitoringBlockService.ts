@@ -11,6 +11,14 @@ class SelfMonitoringBlockService {
     return { blocks };
   }
 
+  async listAll() {
+    const items = await prismaClient.selfMonitoringBlock.findMany({
+      select: { id: true, title: true, summary: true, icon: true },
+    });
+
+    return { items };
+  }
+
   async listResults({ userId, selfMonitoringBlockId }: ListSelfMonitoringBlockResultsRequest) {
     const results = await prismaClient.assessmentResult.findMany({
       where: { userId, assessment: { selfMonitoringBlockId } },
