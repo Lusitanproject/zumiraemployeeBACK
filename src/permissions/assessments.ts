@@ -1,3 +1,5 @@
+import type { Permission } from "./index";
+
 import { PermissionDomainDefinition } from "../types/permissions";
 
 export const AssessmentPermissions = {
@@ -35,3 +37,9 @@ export const AssessmentDomain: PermissionDomainDefinition = {
     { key: AssessmentPermissions.READ_PLATFORM, label: "Listar Avaliações Zumira" },
   ],
 };
+
+export const ASSESSMENT_AUTHORING_PERMISSIONS: Permission[] = [
+  AssessmentPermissions.CREATE,
+  AssessmentPermissions.UPDATE_COMPANY,
+  AssessmentPermissions.UPDATE_OWNED,
+];

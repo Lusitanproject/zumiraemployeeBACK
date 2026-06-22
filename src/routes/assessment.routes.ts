@@ -17,6 +17,9 @@ import { GenerateUserFeedbackController } from "../controllers/assessment/Genera
 import { GetAssessmentResultUserFiltersController } from "../controllers/assessment/GetAssessmentResultUserFiltersController";
 import { ListAssessmentsController } from "../controllers/assessment/ListAssessmentsController";
 import { ListCompanyAssessmentsController } from "../controllers/assessment/ListCompanyAssessmentsController";
+import { ListReferenceBlocksController } from "../controllers/assessment/ListReferenceBlocksController";
+import { ListReferenceDimensionsController } from "../controllers/assessment/ListReferenceDimensionsController";
+import { ListReferenceNationalitiesController } from "../controllers/assessment/ListReferenceNationalitiesController";
 import { ListResultsController } from "../controllers/assessment/ListResultsController";
 import { SearchAssessmentResultsController } from "../controllers/assessment/SearchAssessmentResultsController";
 import { UpdateAssessmentController } from "../controllers/assessment/UpdateAssessmentController";
@@ -26,6 +29,7 @@ import { requireAssessmentAccess } from "../middlewares/requireAssessmentAccess"
 import { requireCompany } from "../middlewares/requireCompany";
 import { requirePermissions } from "../middlewares/requirePermissions";
 import { requireSameCompany } from "../middlewares/requireSameCompany";
+import { ASSESSMENT_AUTHORING_PERMISSIONS } from "../permissions/assessments";
 
 const assessmentRouter = Router();
 
@@ -703,6 +707,151 @@ assessmentRouter.get(
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */
+/**
+ * @swagger
+ * /assessments/references/nationalities:
+ *   get:
+ *     summary: Listar nacionalidades para montagem de avaliações
+ *     description: >
+ *       Retorna todas as nacionalidades para uso na criação/edição de avaliações.
+ *       Requer **pelo menos uma** das permissões de autoria de avaliação
+ *       (`assessments-create`, `assessments-update-company` ou `assessments-update-owned`).
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de nacionalidades
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Nationality'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.get(
+  "/references/nationalities",
+  isAuthenticated,
+  requirePermissions(ASSESSMENT_AUTHORING_PERMISSIONS, { match: "any" }),
+  new ListReferenceNationalitiesController().handle,
+);
+
+/**
+ * @swagger
+ * /assessments/references/self-monitoring-blocks:
+ *   get:
+ *     summary: Listar blocos de automonitoramento para montagem de avaliações
+ *     description: >
+ *       Retorna **todos** os blocos de automonitoramento (sem filtrar por avaliações vinculadas),
+ *       para uso na criação/edição de avaliações. Requer **pelo menos uma** das permissões de autoria
+ *       (`assessments-create`, `assessments-update-company` ou `assessments-update-owned`).
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de blocos de automonitoramento
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/SelfMonitoringBlock'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+assessmentRouter.get(
+  "/references/self-monitoring-blocks",
+  isAuthenticated,
+  requirePermissions(ASSESSMENT_AUTHORING_PERMISSIONS, { match: "any" }),
+  new ListReferenceBlocksController().handle,
+);
+
+/**
+ * @swagger
+ * /assessments/references/dimensions:
+ *   get:
+ *     summary: Listar dimensões psicológicas do bloco de uma avaliação
+ *     description: >
+ *       Retorna as dimensões psicológicas do bloco de automonitoramento salvo na avaliação informada,
+ *       para uso na edição/montagem da avaliação. Requer **pelo menos uma** das permissões de autoria
+ *       (`assessments-create`, `assessments-update-company` ou `assessments-update-owned`).
+ *     tags: [Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: assessmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da avaliação cujo bloco define as dimensões retornadas
+ *     responses:
+ *       200:
+ *         description: Dimensões psicológicas do bloco da avaliação
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                           acronym:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *       400:
+ *         description: Avaliação não existe
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       422:
+ *         description: Erro de validação (assessmentId ausente ou inválido)
+ */
+assessmentRouter.get(
+  "/references/dimensions",
+  isAuthenticated,
+  requirePermissions(ASSESSMENT_AUTHORING_PERMISSIONS, { match: "any" }),
+  new ListReferenceDimensionsController().handle,
+);
+
 assessmentRouter.get(
   "/:id",
   isAuthenticated,

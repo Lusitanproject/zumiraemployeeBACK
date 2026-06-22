@@ -6,6 +6,10 @@ export const ListAssessmentsSchema = z.object({
   nationalityId: z.string().cuid().optional(),
 });
 
+export const ListReferenceDimensionsQuerySchema = z.object({
+  assessmentId: z.string().cuid(),
+});
+
 export type ListAssessmentsRequest = { userId: string } & z.infer<typeof ListAssessmentsSchema>;
 export type DetailResultRequest = { userId: string; assessmentId: string };
 
