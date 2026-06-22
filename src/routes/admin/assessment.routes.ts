@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import { CreateAssessmentController } from "../../controllers/admin/assessments/CreateAssessmentController";
 import { DuplicateAssessmentController } from "../../controllers/admin/assessments/DuplicateAssessmentController";
 import { FindAllAssessmentsController } from "../../controllers/admin/assessments/FindAllAssessmentsController";
 import { FindQuestionByAssessmentController } from "../../controllers/admin/assessments/FindQuestionByAssessmentController";
@@ -9,6 +10,7 @@ import { GenerateExcelReportController } from "../../controllers/admin/assessmen
 import { UpdateAssessmentController } from "../../controllers/admin/assessments/UpdateAssessmentController";
 import { UpdateResultRatingsController } from "../../controllers/admin/assessments/UpdateResultRatingsController";
 import { AssessmentDetailForAdminController } from "../../controllers/assessment/AssessmentDetailForAdminController";
+import { UpdateQuestionsController } from "../../controllers/assessment/UpdateQuestionsController";
 import { isAuthenticated } from "../../middlewares/isAuthenticated";
 import { requirePermissions } from "../../middlewares/requirePermissions";
 
@@ -180,6 +182,96 @@ adminAssessmentRouter.get(
 
 /**
  * @swagger
+ * /admin/assessments/questions/{id}:
+ *   put:
+ *     summary: "[Admin] Sincronizar perguntas de uma avaliação (lote)"
+ *     description: >
+ *       Substitui/reconcilia o conjunto inteiro de perguntas de uma avaliação: itens sem `id` são criados,
+ *       itens existentes alterados são atualizados, e os ausentes são removidos (idem para as opções).
+ *       O `id` é o ID da avaliação. Requer permissão `admin-assessments-manage`.
+ *     tags: [Admin - Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: cuid
+ *         description: ID da avaliação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - questions
+ *             properties:
+ *               questions:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - description
+ *                     - index
+ *                     - psychologicalDimensionId
+ *                     - choices
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                       description: Omitir para criar nova pergunta; incluir para atualizar existente
+ *                     description:
+ *                       type: string
+ *                     index:
+ *                       type: integer
+ *                     psychologicalDimensionId:
+ *                       type: string
+ *                       format: uuid
+ *                     choices:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         required:
+ *                           - label
+ *                           - value
+ *                           - index
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                             description: Omitir para criar nova opção; incluir para atualizar existente
+ *                           label:
+ *                             type: string
+ *                           value:
+ *                             type: number
+ *                           index:
+ *                             type: integer
+ *     responses:
+ *       200:
+ *         description: Perguntas sincronizadas com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+adminAssessmentRouter.put(
+  "/questions/:id",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new UpdateQuestionsController().handle,
+);
+
+/**
+ * @swagger
  * /admin/assessments/ratings/{id}:
  *   get:
  *     summary: "[Admin] Listar faixas de classificação de risco de uma avaliação"
@@ -337,6 +429,70 @@ adminAssessmentRouter.get(
   isAuthenticated,
   requirePermissions("admin-assessments-manage"),
   new FindAllAssessmentsController().handle,
+);
+
+/**
+ * @swagger
+ * /admin/assessments:
+ *   post:
+ *     summary: "[Admin] Criar avaliação Zumira (platform)"
+ *     description: >
+ *       Cria um template de avaliação **platform** (sem `companyId`/`ownerId`), disponível para vincular a
+ *       empresas via `CompanyAvailableAssessment`. `operationType`: SUM = soma; AVERAGE = média.
+ *       Requer permissão `admin-assessments-manage`.
+ *     tags: [Admin - Assessments]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - summary
+ *               - selfMonitoringBlockId
+ *               - operationType
+ *               - nationalityId
+ *               - public
+ *             properties:
+ *               title:
+ *                 type: string
+ *               summary:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               selfMonitoringBlockId:
+ *                 type: string
+ *                 format: cuid
+ *               userFeedbackInstructions:
+ *                 type: string
+ *               companyFeedbackInstructions:
+ *                 type: string
+ *               operationType:
+ *                 type: string
+ *                 enum: [SUM, AVERAGE]
+ *               nationalityId:
+ *                 type: string
+ *                 format: cuid
+ *               public:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Avaliação criada com sucesso
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ */
+adminAssessmentRouter.post(
+  "/",
+  isAuthenticated,
+  requirePermissions("admin-assessments-manage"),
+  new CreateAssessmentController().handle,
 );
 
 /**

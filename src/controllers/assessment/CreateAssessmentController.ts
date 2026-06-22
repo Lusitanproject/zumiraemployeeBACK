@@ -8,7 +8,11 @@ class CreateAssessmentController {
     const data = CreateAssessmentSchema.parse(req.body);
 
     const createAssessment = new AssessmentService();
-    const assessment = await createAssessment.create({ ...data });
+    const assessment = await createAssessment.create({
+      ...data,
+      companyId: req.user.companyId!,
+      ownerId: req.user.id,
+    });
 
     return res.json({ status: "SUCCESS", data: assessment });
   }
