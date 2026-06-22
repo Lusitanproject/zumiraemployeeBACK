@@ -247,7 +247,11 @@ class AssessmentService {
 
     if (hasPermission(user, "assessments-read-company")) conditions.push({ companyId: user.companyId });
     if (hasPermission(user, "assessments-read-owned")) conditions.push({ ownerId: user.id });
-    if (hasPermission(user, "assessments-read-platform")) conditions.push({ companyId: null });
+    if (hasPermission(user, "assessments-read-platform") && user.companyId)
+      conditions.push({
+        companyId: null,
+        companyAvailableAssessments: { some: { companyId: user.companyId } },
+      });
 
     if (conditions.length === 0) return [];
 

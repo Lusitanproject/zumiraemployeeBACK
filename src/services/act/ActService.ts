@@ -262,7 +262,11 @@ class ActService {
 
     if (hasPermission(user, "acts-read-company")) conditions.push({ companyId: user.companyId });
     if (hasPermission(user, "acts-read-owned")) conditions.push({ ownerId: user.id });
-    if (hasPermission(user, "acts-read-platform")) conditions.push({ companyId: null });
+    if (hasPermission(user, "acts-read-platform") && user.companyId)
+      conditions.push({
+        companyId: null,
+        trails: { some: { trail: { companies: { some: { id: user.companyId } } } } },
+      });
 
     if (conditions.length === 0) return [];
 
